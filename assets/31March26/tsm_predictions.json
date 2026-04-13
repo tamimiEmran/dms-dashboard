@@ -1,0 +1,94 @@
+[
+  {
+    "class": "eating_drinking",
+    "correct": {
+      "video": "tsm_pred_eating_drinking_correct.mp4",
+      "confidence": 99.7
+    },
+    "wrong": {
+      "video": "tsm_pred_eating_drinking_wrong.mp4",
+      "confidence": 99.1,
+      "predicted_as": "visual_distraction"
+    }
+  },
+  {
+    "class": "looking_around",
+    "correct": {
+      "video": "tsm_pred_looking_around_correct.mp4",
+      "confidence": 71.3
+    },
+    "wrong": {
+      "video": "tsm_pred_looking_around_wrong.mp4",
+      "confidence": 94.4,
+      "predicted_as": "safe_driving"
+    }
+  },
+  {
+    "class": "manual_distraction",
+    "correct": {
+      "video": "tsm_pred_manual_distraction_correct.mp4",
+      "confidence": 97.3
+    },
+    "wrong": {
+      "video": "tsm_pred_manual_distraction_wrong.mp4",
+      "confidence": 97.4,
+      "predicted_as": "eating_drinking"
+    }
+  },
+  {
+    "class": "phone_use",
+    "correct": {
+      "video": "tsm_pred_phone_use_correct.mp4",
+      "confidence": 95.7
+    },
+    "wrong": {
+      "video": "tsm_pred_phone_use_wrong.mp4",
+      "confidence": 99.6,
+      "predicted_as": "eating_drinking"
+    }
+  },
+  {
+    "class": "safe_driving",
+    "correct": {
+      "video": "tsm_pred_safe_driving_correct.mp4",
+      "confidence": 99.2
+    },
+    "wrong": {
+      "video": "tsm_pred_safe_driving_wrong.mp4",
+      "confidence": 99.2,
+      "predicted_as": "visual_distraction"
+    }
+  },
+  {
+    "class": "seatbelt_interaction",
+    "correct": {
+      "video": "tsm_pred_seatbelt_interaction_correct.mp4",
+      "confidence": 98.6
+    },
+    "wrong": {
+      "video": "tsm_pred_seatbelt_interaction_wrong.mp4",
+      "confidence": 53.5,
+      "predicted_as": "looking_around"
+    }
+  },
+  {
+    "class": "vehicle_entry_exit",
+    "correct": {
+      "video": "tsm_pred_vehicle_entry_exit_correct.mp4",
+      "confidence": 100.0
+    },
+    "wrong": null
+  },
+  {
+    "class": "visual_distraction",
+    "correct": {
+      "video": "tsm_pred_visual_distraction_correct.mp4",
+      "confidence": 99.7
+    },
+    "wrong": {
+      "video": "tsm_pred_visual_distraction_wrong.mp4",
+      "confidence": 99.3,
+      "predicted_as": "eating_drinking"
+    }
+  }
+]

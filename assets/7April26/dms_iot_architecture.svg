@@ -1,0 +1,493 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1760 1100" font-family="'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif">
+  <defs>
+    <filter id="card-shadow" x="-3%" y="-3%" width="106%" height="112%">
+      <feDropShadow dx="0" dy="2" stdDeviation="5" flood-opacity="0.07"/>
+    </filter>
+    <filter id="badge-glow">
+      <feDropShadow dx="0" dy="1" stdDeviation="4" flood-color="#0E9A7E" flood-opacity="0.25"/>
+    </filter>
+    <filter id="amber-glow">
+      <feDropShadow dx="0" dy="1" stdDeviation="4" flood-color="#D97706" flood-opacity="0.2"/>
+    </filter>
+    <marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#94A3B8"/>
+    </marker>
+    <marker id="arrow-teal" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#0E9A7E"/>
+    </marker>
+    <marker id="arrow-amber" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#D97706"/>
+    </marker>
+    <marker id="arrow-blue" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#3B82F6"/>
+    </marker>
+    <linearGradient id="edge-grad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F0FDFA"/>
+      <stop offset="100%" stop-color="#FFFFFF"/>
+    </linearGradient>
+    <pattern id="hatch" patternUnits="userSpaceOnUse" width="8" height="8" patternTransform="rotate(45)">
+      <line x1="0" y1="0" x2="0" y2="8" stroke="#9CA3AF" stroke-width="1" opacity="0.12"/>
+    </pattern>
+  </defs>
+
+  <!-- ===== BACKGROUND ===== -->
+  <rect width="1760" height="1100" fill="#FAFBFD"/>
+
+  <!-- ===== ZONE BACKGROUNDS ===== -->
+  <!-- In-Vehicle Zone -->
+  <rect x="20" y="60" width="800" height="990" rx="14" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="6 3" opacity="0.7"/>
+  <rect x="20" y="60" width="800" height="32" rx="14" fill="#475569"/>
+  <rect x="20" y="78" width="800" height="14" fill="#475569"/>
+  <text x="420" y="82" text-anchor="middle" font-size="11" font-weight="700" fill="#FFFFFF" letter-spacing="3">IN-VEHICLE</text>
+
+  <!-- Connectivity Zone -->
+  <rect x="840" y="60" width="190" height="990" rx="14" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1" stroke-dasharray="6 3" opacity="0.7"/>
+  <rect x="840" y="60" width="190" height="32" rx="14" fill="#3B82F6"/>
+  <rect x="840" y="78" width="190" height="14" fill="#3B82F6"/>
+  <text x="935" y="82" text-anchor="middle" font-size="11" font-weight="700" fill="#FFFFFF" letter-spacing="3">CONNECTIVITY</text>
+
+  <!-- Cloud Zone -->
+  <rect x="1050" y="60" width="220" height="990" rx="14" fill="#F5F3FF" stroke="#DDD6FE" stroke-width="1" stroke-dasharray="6 3" opacity="0.7"/>
+  <rect x="1050" y="60" width="220" height="32" rx="14" fill="#7C3AED"/>
+  <rect x="1050" y="78" width="220" height="14" fill="#7C3AED"/>
+  <text x="1160" y="82" text-anchor="middle" font-size="11" font-weight="700" fill="#FFFFFF" letter-spacing="3">CLOUD</text>
+
+  <!-- Application Zone -->
+  <rect x="1290" y="60" width="450" height="990" rx="14" fill="#ECFDF5" stroke="#A7F3D0" stroke-width="1" stroke-dasharray="6 3" opacity="0.7"/>
+  <rect x="1290" y="60" width="450" height="32" rx="14" fill="#059669"/>
+  <rect x="1290" y="78" width="450" height="14" fill="#059669"/>
+  <text x="1515" y="82" text-anchor="middle" font-size="11" font-weight="700" fill="#FFFFFF" letter-spacing="3">APPLICATION LAYER</text>
+
+
+  <!-- ================================================================ -->
+  <!-- CARD 1: ARDUCAM DUAL CAMERA                                     -->
+  <!-- ================================================================ -->
+  <g transform="translate(310, 115)">
+    <rect width="280" height="234" rx="12" fill="white" filter="url(#card-shadow)"/>
+    <rect width="280" height="4" rx="2" fill="#0EA5E9" y="0"/>
+
+    <!-- Camera Icon -->
+    <g transform="translate(105, 20)">
+      <rect x="0" y="12" width="60" height="36" rx="6" fill="none" stroke="#0EA5E9" stroke-width="2"/>
+      <circle cx="30" cy="30" r="11" fill="none" stroke="#0EA5E9" stroke-width="2"/>
+      <circle cx="30" cy="30" r="5" fill="#0EA5E9" opacity="0.3"/>
+      <rect x="18" y="48" width="24" height="6" rx="2" fill="#0EA5E9" opacity="0.5"/>
+      <rect x="24" y="54" width="12" height="8" rx="1" fill="#0EA5E9" opacity="0.3"/>
+    </g>
+
+    <text x="140" y="88" text-anchor="middle" font-size="14" font-weight="700" fill="#1E293B">ArduCam Dual Camera</text>
+    <text x="140" y="105" text-anchor="middle" font-size="10.5" font-weight="500" fill="#94A3B8">OV2311 Global Shutter + RGB</text>
+
+    <text x="22" y="128" font-size="10.5" fill="#64748B">&#8226; OV2311 2MP NoIR Mono (IR, driver)</text>
+    <text x="22" y="145" font-size="10.5" fill="#64748B">&#8226; 1600&#215;1300 @ up to 60fps</text>
+    <text x="22" y="162" font-size="10.5" fill="#64748B">&#8226; MIPI CSI-2 interface</text>
+    <text x="22" y="179" font-size="10.5" fill="#64748B">&#8226; RGB module</text>
+    <text x="22" y="196" font-size="10.5" fill="#64748B">&#8226; Built-in speaker for live coaching</text>
+
+    <rect x="8" y="208" width="264" height="18" rx="4" fill="#E0F2FE"/>
+    <text x="140" y="221" text-anchor="middle" font-size="9" font-weight="600" fill="#0369A1" letter-spacing="1">PROVIDES: VIDEO STREAM</text>
+  </g>
+
+
+  <!-- ================================================================ -->
+  <!-- CARD 2: OBU / TELEMATICS — OUT OF SCOPE                        -->
+  <!-- ================================================================ -->
+  <g transform="translate(50, 410)">
+    <rect width="180" height="210" rx="12" fill="#F9FAFB" filter="url(#card-shadow)" stroke="#D1D5DB" stroke-width="0.5"/>
+    <rect width="180" height="4" rx="2" fill="#9CA3AF" y="0"/>
+
+    <g transform="translate(65, 18)" opacity="0.4">
+      <path d="M25 4 C15 4 8 12 8 22 C8 35 25 52 25 52 C25 52 42 35 42 22 C42 12 35 4 25 4Z" fill="none" stroke="#9CA3AF" stroke-width="2"/>
+      <circle cx="25" cy="22" r="7" fill="#9CA3AF" opacity="0.3"/>
+      <circle cx="25" cy="22" r="3" fill="#9CA3AF"/>
+    </g>
+
+    <text x="90" y="82" text-anchor="middle" font-size="13" font-weight="700" fill="#6B7280">OBU / Telematics</text>
+    <text x="90" y="98" text-anchor="middle" font-size="11" font-weight="500" fill="#9CA3AF">Tracker Unit</text>
+
+    <text x="16" y="118" font-size="10.5" fill="#9CA3AF">&#8226; GPS positioning</text>
+    <text x="16" y="135" font-size="10.5" fill="#9CA3AF">&#8226; Speed &amp; heading</text>
+    <text x="16" y="152" font-size="10.5" fill="#9CA3AF">&#8226; Route tracking</text>
+    <text x="16" y="169" font-size="10.5" fill="#9CA3AF">&#8226; Geofence alerts</text>
+
+    <rect width="180" height="210" rx="12" fill="url(#hatch)"/>
+
+    <rect x="16" y="184" width="148" height="20" rx="10" fill="#6B7280" stroke="#4B5563" stroke-width="1"/>
+    <text x="90" y="198" text-anchor="middle" font-size="9" font-weight="800" fill="white" letter-spacing="2">OUT OF SCOPE</text>
+  </g>
+
+
+  <!-- ================================================================ -->
+  <!-- CARD 3: EDGE AI BOX (MAIN COMPONENT)                           -->
+  <!-- ================================================================ -->
+  <g transform="translate(290, 415)">
+    <rect width="320" height="300" rx="14" fill="url(#edge-grad)" filter="url(#card-shadow)" stroke="#0E9A7E" stroke-width="1.5"/>
+    <rect width="320" height="5" rx="2" fill="#0E9A7E" y="0"/>
+
+    <g transform="translate(125, 16)">
+      <rect x="5" y="5" width="60" height="48" rx="4" fill="none" stroke="#0E9A7E" stroke-width="2"/>
+      <rect x="18" y="16" width="34" height="26" rx="2" fill="#0E9A7E" opacity="0.15"/>
+      <line x1="20" y1="0" x2="20" y2="5" stroke="#0E9A7E" stroke-width="2"/>
+      <line x1="35" y1="0" x2="35" y2="5" stroke="#0E9A7E" stroke-width="2"/>
+      <line x1="50" y1="0" x2="50" y2="5" stroke="#0E9A7E" stroke-width="2"/>
+      <line x1="20" y1="53" x2="20" y2="58" stroke="#0E9A7E" stroke-width="2"/>
+      <line x1="35" y1="53" x2="35" y2="58" stroke="#0E9A7E" stroke-width="2"/>
+      <line x1="50" y1="53" x2="50" y2="58" stroke="#0E9A7E" stroke-width="2"/>
+      <line x1="0" y1="18" x2="5" y2="18" stroke="#0E9A7E" stroke-width="2"/>
+      <line x1="0" y1="30" x2="5" y2="30" stroke="#0E9A7E" stroke-width="2"/>
+      <line x1="0" y1="42" x2="5" y2="42" stroke="#0E9A7E" stroke-width="2"/>
+      <line x1="65" y1="18" x2="70" y2="18" stroke="#0E9A7E" stroke-width="2"/>
+      <line x1="65" y1="30" x2="70" y2="30" stroke="#0E9A7E" stroke-width="2"/>
+      <line x1="65" y1="42" x2="70" y2="42" stroke="#0E9A7E" stroke-width="2"/>
+      <line x1="22" y1="24" x2="48" y2="24" stroke="#0E9A7E" stroke-width="1" opacity="0.4"/>
+      <line x1="22" y1="30" x2="48" y2="30" stroke="#0E9A7E" stroke-width="1" opacity="0.4"/>
+      <line x1="22" y1="36" x2="48" y2="36" stroke="#0E9A7E" stroke-width="1" opacity="0.4"/>
+    </g>
+
+    <text x="160" y="92" text-anchor="middle" font-size="15" font-weight="700" fill="#1E293B">NVIDIA Jetson Orin Nano</text>
+    <text x="160" y="109" text-anchor="middle" font-size="11" font-weight="500" fill="#64748B">Edge AI Processing Unit &#8212; Dev &amp; Testing</text>
+
+    <text x="24" y="132" font-size="11" fill="#475569">&#8226; 67 TOPS (INT8) Ampere architecture</text>
+    <text x="24" y="150" font-size="11" fill="#475569">&#8226; 8 GB RAM</text>
+    <text x="24" y="168" font-size="11" fill="#475569">&#8226; YOLO v8s DMS model</text>
+    <text x="24" y="186" font-size="11" fill="#475569">&#8226; On-device real-time inference</text>
+
+    <rect x="14" y="200" width="292" height="58" rx="6" fill="#F0FDFA" stroke="#99F6E4" stroke-width="1"/>
+    <text x="160" y="217" text-anchor="middle" font-size="9" font-weight="700" fill="#0E9A7E" letter-spacing="1.5">DETECTS ON-EDGE</text>
+    <text x="160" y="234" text-anchor="middle" font-size="10" fill="#115E59">Phone Usage &#183; Fatigue &#183; Distraction</text>
+    <text x="160" y="249" text-anchor="middle" font-size="10" fill="#115E59">Seatbelt &#183; Smoking &#183; Yawning &#183; Drowsiness</text>
+
+    <rect x="52" y="270" width="216" height="22" rx="11" fill="#0E9A7E" filter="url(#badge-glow)"/>
+    <text x="160" y="285" text-anchor="middle" font-size="10" font-weight="700" fill="white" letter-spacing="1.5">&#9889; MODEL INFERENCE HERE</text>
+  </g>
+
+
+  <!-- ================================================================ -->
+  <!-- CARD 4: IoT SENSORS — OUT OF SCOPE                             -->
+  <!-- ================================================================ -->
+  <g transform="translate(50, 680)">
+    <rect width="180" height="190" rx="12" fill="#F9FAFB" filter="url(#card-shadow)" stroke="#D1D5DB" stroke-width="0.5"/>
+    <rect width="180" height="4" rx="2" fill="#9CA3AF" y="0"/>
+
+    <g transform="translate(55, 14)" opacity="0.35">
+      <path d="M15 38 C6 38 0 32 0 25 C0 18 5 12 12 11 C14 5 20 0 28 0 C36 0 43 5 45 12 C52 12 58 18 58 25 C58 32 52 38 44 38 Z" fill="none" stroke="#9CA3AF" stroke-width="2"/>
+      <circle cx="18" cy="44" r="3" fill="#9CA3AF" opacity="0.5"/>
+      <circle cx="29" cy="50" r="3" fill="#9CA3AF" opacity="0.5"/>
+      <circle cx="40" cy="44" r="3" fill="#9CA3AF" opacity="0.5"/>
+      <line x1="18" y1="38" x2="18" y2="41" stroke="#9CA3AF" stroke-width="1.5"/>
+      <line x1="29" y1="38" x2="29" y2="47" stroke="#9CA3AF" stroke-width="1.5"/>
+      <line x1="40" y1="38" x2="40" y2="41" stroke="#9CA3AF" stroke-width="1.5"/>
+      <line x1="18" y1="44" x2="29" y2="50" stroke="#9CA3AF" stroke-width="1" opacity="0.5"/>
+      <line x1="40" y1="44" x2="29" y2="50" stroke="#9CA3AF" stroke-width="1" opacity="0.5"/>
+    </g>
+
+    <text x="90" y="82" text-anchor="middle" font-size="13" font-weight="700" fill="#6B7280">IoT Sensors</text>
+
+    <text x="16" y="104" font-size="10.5" fill="#9CA3AF">&#8226; OBD-II / CAN bus data</text>
+    <text x="16" y="121" font-size="10.5" fill="#9CA3AF">&#8226; Accelerometer / IMU</text>
+    <text x="16" y="138" font-size="10.5" fill="#9CA3AF">&#8226; Vehicle diagnostics</text>
+    <text x="16" y="155" font-size="10.5" fill="#9CA3AF">&#8226; Engine &amp; fuel status</text>
+
+    <rect width="180" height="190" rx="12" fill="url(#hatch)"/>
+
+    <rect x="16" y="164" width="148" height="20" rx="10" fill="#6B7280" stroke="#4B5563" stroke-width="1"/>
+    <text x="90" y="178" text-anchor="middle" font-size="9" font-weight="800" fill="white" letter-spacing="2">OUT OF SCOPE</text>
+  </g>
+
+
+  <!-- ================================================================ -->
+  <!-- CARD 5: PRODUCTION SoC (FUTURE) — ALIGNED WITH EDGE BOX        -->
+  <!-- ================================================================ -->
+  <g transform="translate(290, 755)">
+    <rect width="320" height="195" rx="14" fill="#FFFBEB" filter="url(#card-shadow)" stroke="#D97706" stroke-width="1.5" stroke-dasharray="8 4"/>
+    <rect width="320" height="5" rx="2" fill="#D97706" y="0"/>
+
+    <g transform="translate(130, 14)">
+      <rect x="8" y="8" width="44" height="36" rx="3" fill="none" stroke="#D97706" stroke-width="2"/>
+      <rect x="16" y="14" width="28" height="24" rx="2" fill="#D97706" opacity="0.12"/>
+      <line x1="18" y1="4" x2="18" y2="8" stroke="#D97706" stroke-width="1.5"/>
+      <line x1="30" y1="4" x2="30" y2="8" stroke="#D97706" stroke-width="1.5"/>
+      <line x1="42" y1="4" x2="42" y2="8" stroke="#D97706" stroke-width="1.5"/>
+      <line x1="18" y1="44" x2="18" y2="48" stroke="#D97706" stroke-width="1.5"/>
+      <line x1="30" y1="44" x2="30" y2="48" stroke="#D97706" stroke-width="1.5"/>
+      <line x1="42" y1="44" x2="42" y2="48" stroke="#D97706" stroke-width="1.5"/>
+      <text x="30" y="31" text-anchor="middle" font-size="9" font-weight="700" fill="#D97706" opacity="0.5">SoC</text>
+    </g>
+
+    <text x="160" y="80" text-anchor="middle" font-size="14" font-weight="700" fill="#92400E">Custom Production SoC</text>
+    <text x="160" y="97" text-anchor="middle" font-size="10.5" font-weight="500" fill="#B45309">System on Chip &#8212; Replaces Jetson</text>
+
+    <text x="22" y="119" font-size="10.5" fill="#78350F">&#8226; Designed after model testing &amp; verification</text>
+    <text x="22" y="136" font-size="10.5" fill="#78350F">&#8226; Cost-optimized for fleet-scale deployment</text>
+    <text x="22" y="153" font-size="10.5" fill="#78350F">&#8226; Same DMS inference, smaller form factor</text>
+
+    <rect x="52" y="162" width="216" height="30" rx="8" fill="#D97706" filter="url(#amber-glow)"/>
+    <text x="160" y="176" text-anchor="middle" font-size="8.5" font-weight="700" fill="white" letter-spacing="1.5">POST-VERIFICATION</text>
+    <text x="160" y="188" text-anchor="middle" font-size="8.5" font-weight="700" fill="white" letter-spacing="1.5">PRODUCTION TARGET</text>
+  </g>
+
+
+  <!-- ================================================================ -->
+  <!-- CARD 6: SIM MODULE                                              -->
+  <!-- ================================================================ -->
+  <g transform="translate(860, 410)">
+    <rect width="150" height="190" rx="12" fill="white" filter="url(#card-shadow)"/>
+    <rect width="150" height="4" rx="2" fill="#3B82F6" y="0"/>
+
+    <g transform="translate(45, 16)">
+      <path d="M0 8 L0 55 L50 55 L50 0 L15 0 L0 15 Z" fill="none" stroke="#3B82F6" stroke-width="2"/>
+      <rect x="10" y="18" width="30" height="22" rx="2" fill="#3B82F6" opacity="0.15" stroke="#3B82F6" stroke-width="1"/>
+      <line x1="10" y1="25" x2="40" y2="25" stroke="#3B82F6" stroke-width="0.8" opacity="0.5"/>
+      <line x1="10" y1="32" x2="40" y2="32" stroke="#3B82F6" stroke-width="0.8" opacity="0.5"/>
+      <line x1="25" y1="18" x2="25" y2="40" stroke="#3B82F6" stroke-width="0.8" opacity="0.5"/>
+    </g>
+
+    <text x="75" y="88" text-anchor="middle" font-size="13" font-weight="700" fill="#1E293B">SIM Module</text>
+    <text x="75" y="104" text-anchor="middle" font-size="11" font-weight="500" fill="#94A3B8">Real-time Uplink</text>
+
+    <text x="14" y="126" font-size="10.5" fill="#64748B">&#8226; 4G / LTE data link</text>
+    <text x="14" y="143" font-size="10.5" fill="#64748B">&#8226; Event video upload</text>
+    <text x="14" y="160" font-size="10.5" fill="#64748B">&#8226; Real-time alerts</text>
+
+    <rect x="8" y="172" width="134" height="12" rx="3" fill="#DBEAFE"/>
+    <text x="75" y="182" text-anchor="middle" font-size="8" font-weight="600" fill="#1E40AF" letter-spacing="1">LIVE UPLINK</text>
+  </g>
+
+
+  <!-- ================================================================ -->
+  <!-- CARD 7: SSD + WiFi BATCH UPLOAD                                -->
+  <!-- ================================================================ -->
+  <g transform="translate(860, 650)">
+    <rect width="150" height="250" rx="12" fill="white" filter="url(#card-shadow)"/>
+    <rect width="150" height="4" rx="2" fill="#6366F1" y="0"/>
+
+    <g transform="translate(40, 10)">
+      <rect x="0" y="8" width="42" height="28" rx="4" fill="none" stroke="#6366F1" stroke-width="2"/>
+      <rect x="6" y="14" width="14" height="16" rx="1" fill="#6366F1" opacity="0.15"/>
+      <text x="13" y="26" text-anchor="middle" font-size="7" font-weight="700" fill="#6366F1" opacity="0.6">SSD</text>
+      <circle cx="30" cy="18" r="1.5" fill="#6366F1" opacity="0.4"/>
+      <circle cx="30" cy="24" r="1.5" fill="#6366F1" opacity="0.4"/>
+      <circle cx="30" cy="30" r="1.5" fill="#6366F1" opacity="0.4"/>
+      <g transform="translate(50, 10)">
+        <path d="M5 22 A12 12 0 0 1 19 22" fill="none" stroke="#6366F1" stroke-width="1.5" opacity="0.3"/>
+        <path d="M8 18 A8 8 0 0 1 16 18" fill="none" stroke="#6366F1" stroke-width="1.5" opacity="0.5"/>
+        <path d="M10 14 A4 4 0 0 1 14 14" fill="none" stroke="#6366F1" stroke-width="1.5" opacity="0.7"/>
+        <circle cx="12" cy="24" r="2" fill="#6366F1"/>
+      </g>
+    </g>
+
+    <text x="75" y="68" text-anchor="middle" font-size="12" font-weight="700" fill="#1E293B">SSD + WiFi</text>
+    <text x="75" y="84" text-anchor="middle" font-size="10" font-weight="500" fill="#94A3B8">Batch Upload Gateway</text>
+
+    <rect x="8" y="90" width="134" height="24" rx="3" fill="#F0FDFA" stroke="#99F6E4" stroke-width="0.5"/>
+    <text x="75" y="100" text-anchor="middle" font-size="7.5" font-weight="600" fill="#0E9A7E">Receives: camera footage,</text>
+    <text x="75" y="110" text-anchor="middle" font-size="7.5" font-weight="600" fill="#0E9A7E">telemetry logs, alert events</text>
+
+    <text x="14" y="130" font-size="10" fill="#64748B">&#8226; Local SSD storage buffer</text>
+    <text x="14" y="146" font-size="10" fill="#64748B">&#8226; WiFi upload at depot</text>
+    <text x="14" y="162" font-size="10" fill="#64748B">&#8226; End-of-shift batch sync</text>
+    <text x="14" y="178" font-size="10" fill="#64748B">&#8226; Reduces SIM data costs</text>
+    <text x="14" y="194" font-size="10" fill="#64748B">&#8226; Full-resolution footage</text>
+
+    <rect x="8" y="206" width="134" height="32" rx="4" fill="#EEF2FF" stroke="#C7D2FE" stroke-width="0.5"/>
+    <text x="75" y="220" text-anchor="middle" font-size="8" font-weight="600" fill="#4338CA" letter-spacing="0.5">AFTER SHIFT / END OF DAY</text>
+    <text x="75" y="232" text-anchor="middle" font-size="8" font-weight="600" fill="#4338CA" letter-spacing="0.5">BULK DATA TRANSFER</text>
+  </g>
+
+
+  <!-- ================================================================ -->
+  <!-- CARD 8: MOWASALAT CLOUD                                        -->
+  <!-- ================================================================ -->
+  <g transform="translate(1070, 370)">
+    <rect width="180" height="310" rx="12" fill="white" filter="url(#card-shadow)"/>
+    <rect width="180" height="4" rx="2" fill="#7C3AED" y="0"/>
+
+    <g transform="translate(50, 14)">
+      <path d="M18 48 C8 48 0 40 0 31 C0 22 6 15 15 13 C18 5 26 0 36 0 C46 0 54 6 56 14 C66 15 74 22 74 31 C74 40 66 48 56 48 Z" fill="none" stroke="#7C3AED" stroke-width="2"/>
+      <path d="M26 30 L36 22 L46 30" fill="none" stroke="#7C3AED" stroke-width="1.5" opacity="0.5"/>
+      <line x1="36" y1="22" x2="36" y2="38" stroke="#7C3AED" stroke-width="1.5" opacity="0.5"/>
+    </g>
+
+    <text x="90" y="82" text-anchor="middle" font-size="14" font-weight="700" fill="#1E293B">Mowasalat Cloud</text>
+    <text x="90" y="98" text-anchor="middle" font-size="10.5" font-weight="500" fill="#94A3B8">Private Infrastructure</text>
+
+    <text x="16" y="120" font-size="10.5" fill="#64748B">&#8226; Raw video footage archive</text>
+    <text x="16" y="137" font-size="10.5" fill="#64748B">&#8226; Event &amp; telemetry storage</text>
+    <text x="16" y="154" font-size="10.5" fill="#64748B">&#8226; Alert logs &amp; metadata</text>
+    <text x="16" y="171" font-size="10.5" fill="#64748B">&#8226; Model training datasets</text>
+    <text x="16" y="188" font-size="10.5" fill="#64748B">&#8226; API gateway</text>
+
+    <rect x="8" y="202" width="164" height="58" rx="5" fill="#F5F3FF" stroke="#DDD6FE" stroke-width="0.5"/>
+    <text x="90" y="217" text-anchor="middle" font-size="8.5" font-weight="700" fill="#6D28D9" letter-spacing="0.5">MOW POLICIES</text>
+    <text x="16" y="232" font-size="9" fill="#7C3AED">&#8226; Firewalls &amp; network isolation</text>
+    <text x="16" y="246" font-size="9" fill="#7C3AED">&#8226; Access control &amp; audit logs</text>
+
+    <rect x="8" y="268" width="164" height="24" rx="4" fill="#EDE9FE"/>
+    <text x="90" y="284" text-anchor="middle" font-size="8.5" font-weight="600" fill="#5B21B6" letter-spacing="0.5">SIM (live) + WiFi (batch)</text>
+  </g>
+
+
+  <!-- ================================================================ -->
+  <!-- CARD 9: DASHBOARD &amp; ANALYTICS                                   -->
+  <!-- ================================================================ -->
+  <g transform="translate(1320, 150)">
+    <rect width="280" height="220" rx="12" fill="white" filter="url(#card-shadow)"/>
+    <rect width="280" height="4" rx="2" fill="#059669" y="0"/>
+
+    <g transform="translate(105, 14)">
+      <path d="M0 35 L35 50 L70 35 L35 20 Z" fill="#059669" opacity="0.1" stroke="#059669" stroke-width="1.5"/>
+      <path d="M0 25 L35 40 L70 25 L35 10 Z" fill="#059669" opacity="0.2" stroke="#059669" stroke-width="1.5"/>
+      <path d="M0 15 L35 30 L70 15 L35 0 Z" fill="#059669" opacity="0.3" stroke="#059669" stroke-width="1.5"/>
+      <circle cx="35" cy="15" r="5" fill="white" stroke="#059669" stroke-width="1.5"/>
+      <circle cx="35" cy="15" r="2" fill="#059669"/>
+    </g>
+
+    <text x="140" y="82" text-anchor="middle" font-size="14" font-weight="700" fill="#1E293B">Dashboard &amp; Analytics</text>
+    <text x="140" y="98" text-anchor="middle" font-size="11" font-weight="500" fill="#94A3B8">Monitoring Platform</text>
+
+    <text x="20" y="122" font-size="11" fill="#64748B">&#8226; Real-time fleet monitoring</text>
+    <text x="20" y="140" font-size="11" fill="#64748B">&#8226; DMS alert management</text>
+    <text x="20" y="158" font-size="11" fill="#64748B">&#8226; Driver behavior analytics</text>
+    <text x="20" y="176" font-size="11" fill="#64748B">&#8226; Video evidence review</text>
+
+    <rect x="8" y="195" width="264" height="18" rx="4" fill="#D1FAE5"/>
+    <text x="140" y="208" text-anchor="middle" font-size="9" font-weight="600" fill="#065F46" letter-spacing="1">OUTPUT: INSIGHTS + DECISIONS</text>
+  </g>
+
+
+  <!-- ================================================================ -->
+  <!-- CARD 10: FRONTEND / BACKEND                                     -->
+  <!-- ================================================================ -->
+  <g transform="translate(1320, 470)">
+    <rect width="280" height="180" rx="12" fill="white" filter="url(#card-shadow)"/>
+    <rect width="280" height="4" rx="2" fill="#059669" y="0"/>
+
+    <g transform="translate(105, 14)">
+      <rect x="5" y="0" width="58" height="38" rx="3" fill="none" stroke="#059669" stroke-width="2"/>
+      <line x1="12" y1="10" x2="40" y2="10" stroke="#059669" stroke-width="1.5" opacity="0.3"/>
+      <line x1="12" y1="17" x2="50" y2="17" stroke="#059669" stroke-width="1.5" opacity="0.3"/>
+      <line x1="12" y1="24" x2="35" y2="24" stroke="#059669" stroke-width="1.5" opacity="0.3"/>
+      <line x1="34" y1="38" x2="34" y2="46" stroke="#059669" stroke-width="2"/>
+      <line x1="20" y1="46" x2="48" y2="46" stroke="#059669" stroke-width="2.5" stroke-linecap="round"/>
+      <text x="48" y="30" font-size="14" fill="#059669" opacity="0.5" font-family="monospace">&lt;/&gt;</text>
+    </g>
+
+    <text x="140" y="78" text-anchor="middle" font-size="14" font-weight="700" fill="#1E293B">Web Application</text>
+    <text x="140" y="94" text-anchor="middle" font-size="11" font-weight="500" fill="#94A3B8">Frontend + Backend Services</text>
+
+    <text x="20" y="118" font-size="11" fill="#64748B">&#8226; REST / WebSocket API</text>
+    <text x="20" y="136" font-size="11" fill="#64748B">&#8226; User &amp; fleet management</text>
+    <text x="20" y="154" font-size="11" fill="#64748B">&#8226; Alert notification system</text>
+  </g>
+
+
+  <!-- ================================================================ -->
+  <!-- CARD 11: CENTRALIZED PROCESSING                                 -->
+  <!-- ================================================================ -->
+  <g transform="translate(1320, 780)">
+    <rect width="280" height="185" rx="12" fill="white" filter="url(#card-shadow)"/>
+    <rect width="280" height="4" rx="2" fill="#059669" y="0"/>
+
+    <g transform="translate(105, 14)">
+      <rect x="5" y="0" width="58" height="14" rx="3" fill="none" stroke="#059669" stroke-width="1.5"/>
+      <rect x="5" y="18" width="58" height="14" rx="3" fill="none" stroke="#059669" stroke-width="1.5"/>
+      <rect x="5" y="36" width="58" height="14" rx="3" fill="none" stroke="#059669" stroke-width="1.5"/>
+      <circle cx="14" cy="7" r="2" fill="#059669" opacity="0.6"/>
+      <circle cx="14" cy="25" r="2" fill="#059669" opacity="0.6"/>
+      <circle cx="14" cy="43" r="2" fill="#059669" opacity="0.6"/>
+      <line x1="22" y1="7" x2="54" y2="7" stroke="#059669" stroke-width="1" opacity="0.3"/>
+      <line x1="22" y1="25" x2="54" y2="25" stroke="#059669" stroke-width="1" opacity="0.3"/>
+      <line x1="22" y1="43" x2="54" y2="43" stroke="#059669" stroke-width="1" opacity="0.3"/>
+    </g>
+
+    <text x="140" y="82" text-anchor="middle" font-size="14" font-weight="700" fill="#1E293B">Centralized Processing</text>
+    <text x="140" y="98" text-anchor="middle" font-size="11" font-weight="500" fill="#94A3B8">Cloud Compute Layer</text>
+
+    <text x="20" y="122" font-size="11" fill="#64748B">&#8226; Data labelling &amp; model retraining</text>
+    <text x="20" y="140" font-size="11" fill="#64748B">&#8226; Batch video inference</text>
+
+    <rect x="8" y="156" width="264" height="18" rx="4" fill="#D1FAE5"/>
+    <text x="140" y="169" text-anchor="middle" font-size="9" font-weight="600" fill="#065F46" letter-spacing="1">OUTPUT: TRAINED MODELS + REPORTS</text>
+  </g>
+
+
+  <!-- ================================================================ -->
+  <!-- ARROWS / CONNECTIONS                                            -->
+  <!-- ================================================================ -->
+
+  <!-- Camera → Edge Box (vertical, aligned centers) -->
+  <line x1="450" y1="349" x2="450" y2="413" stroke="#94A3B8" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="422" y="368" width="56" height="16" rx="4" fill="white"/>
+  <text x="450" y="380" text-anchor="middle" font-size="8.5" fill="#94A3B8" font-weight="600">VIDEO</text>
+
+  <!-- OBU → Edge Box (horizontal, DASHED) -->
+  <line x1="230" y1="515" x2="288" y2="515" stroke="#9CA3AF" stroke-width="1.5" marker-end="url(#arrow)" stroke-dasharray="5 3"/>
+  <rect x="232" y="497" width="55" height="14" rx="3" fill="white"/>
+  <text x="260" y="508" text-anchor="middle" font-size="7.5" fill="#9CA3AF" font-weight="600">GPS/TEL</text>
+
+  <!-- IoT → Edge Box (diagonal up, DASHED) -->
+  <line x1="230" y1="755" x2="330" y2="715" stroke="#9CA3AF" stroke-width="1.5" marker-end="url(#arrow)" stroke-dasharray="5 3"/>
+  <rect x="250" y="722" width="55" height="14" rx="3" fill="white"/>
+  <text x="278" y="733" text-anchor="middle" font-size="7.5" fill="#9CA3AF" font-weight="600">CAN/OBD</text>
+
+  <!-- Edge Box → SIM (horizontal, main data flow) -->
+  <line x1="610" y1="540" x2="858" y2="510" stroke="#0E9A7E" stroke-width="2.5" marker-end="url(#arrow-teal)"/>
+  <rect x="694" y="506" width="84" height="16" rx="4" fill="#F0FDFA" stroke="#99F6E4" stroke-width="0.5"/>
+  <text x="736" y="518" text-anchor="middle" font-size="8.5" fill="#0E9A7E" font-weight="700">EVENTS &#8226; VIDEO</text>
+
+  <!-- Edge Box → SSD/WiFi (diagonal down) -->
+  <line x1="610" y1="620" x2="858" y2="720" stroke="#6366F1" stroke-width="2" marker-end="url(#arrow-blue)"/>
+  <rect x="674" y="660" width="128" height="16" rx="4" fill="#EEF2FF" stroke="#C7D2FE" stroke-width="0.5"/>
+  <text x="738" y="672" text-anchor="middle" font-size="8" fill="#4338CA" font-weight="700">RAW FOOTAGE + EVENTS</text>
+
+  <!-- Edge Box → SoC (vertical, DASHED — future replacement, aligned) -->
+  <line x1="450" y1="715" x2="450" y2="753" stroke="#D97706" stroke-width="2" marker-end="url(#arrow-amber)" stroke-dasharray="6 3"/>
+  <rect x="468" y="722" width="82" height="16" rx="4" fill="#FFFBEB" stroke="#FDE68A" stroke-width="0.5"/>
+  <text x="509" y="734" text-anchor="middle" font-size="8" fill="#D97706" font-weight="700">REPLACES &#9660;</text>
+
+  <!-- SIM → Cloud (horizontal, primary flow) -->
+  <line x1="1010" y1="505" x2="1068" y2="505" stroke="#0E9A7E" stroke-width="2.5" marker-end="url(#arrow-teal)"/>
+  <rect x="1015" y="488" width="46" height="14" rx="3" fill="white"/>
+  <text x="1038" y="499" text-anchor="middle" font-size="8" fill="#0E9A7E" font-weight="600">4G/LTE</text>
+
+  <!-- SSD/WiFi → Cloud (diagonal up) -->
+  <line x1="1010" y1="740" x2="1068" y2="620" stroke="#6366F1" stroke-width="2" marker-end="url(#arrow-blue)"/>
+  <rect x="1016" y="660" width="48" height="14" rx="3" fill="#EEF2FF"/>
+  <text x="1040" y="671" text-anchor="middle" font-size="7.5" fill="#4338CA" font-weight="600">WiFi</text>
+
+  <!-- Cloud → Dashboard (diagonal up, primary flow) -->
+  <line x1="1250" y1="440" x2="1318" y2="330" stroke="#0E9A7E" stroke-width="2.5" marker-end="url(#arrow-teal)"/>
+
+  <!-- Cloud → WebApp (diagonal down, primary flow) -->
+  <line x1="1250" y1="550" x2="1318" y2="560" stroke="#0E9A7E" stroke-width="2.5" marker-end="url(#arrow-teal)"/>
+
+  <!-- Cloud → Centralized Processing (primary flow) -->
+  <line x1="1250" y1="640" x2="1318" y2="860" stroke="#0E9A7E" stroke-width="2.5" marker-end="url(#arrow-teal)"/>
+
+  <!-- Labels -->
+  <rect x="1254" y="478" width="48" height="14" rx="3" fill="white"/>
+  <text x="1278" y="489" text-anchor="middle" font-size="8" fill="#0E9A7E" font-weight="600">API</text>
+
+  <rect x="1254" y="730" width="56" height="14" rx="3" fill="white"/>
+  <text x="1282" y="741" text-anchor="middle" font-size="8" fill="#0E9A7E" font-weight="600">DATA</text>
+
+
+  <!-- ================================================================ -->
+  <!-- DATA FLOW LEGEND                                                -->
+  <!-- ================================================================ -->
+  <g transform="translate(30, 1068)">
+    <rect width="580" height="24" rx="6" fill="white" stroke="#E2E8F0" stroke-width="0.5"/>
+    <line x1="16" y1="12" x2="42" y2="12" stroke="#0E9A7E" stroke-width="2.5" marker-end="url(#arrow-teal)"/>
+    <text x="52" y="16" font-size="9" fill="#64748B">Primary data flow</text>
+    <line x1="156" y1="12" x2="182" y2="12" stroke="#94A3B8" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="192" y="16" font-size="9" fill="#64748B">Input / output</text>
+    <line x1="270" y1="12" x2="296" y2="12" stroke="#9CA3AF" stroke-width="1.5" stroke-dasharray="5 3"/>
+    <text x="306" y="16" font-size="9" fill="#64748B">Out of scope</text>
+    <line x1="388" y1="12" x2="414" y2="12" stroke="#D97706" stroke-width="2" stroke-dasharray="6 3" marker-end="url(#arrow-amber)"/>
+    <text x="424" y="16" font-size="9" fill="#64748B">Future / planned</text>
+    <rect x="510" y="4" width="56" height="16" rx="3" fill="#6B7280"/>
+    <text x="538" y="15" text-anchor="middle" font-size="7" font-weight="700" fill="white" letter-spacing="1">SCOPED</text>
+  </g>
+
+</svg>
