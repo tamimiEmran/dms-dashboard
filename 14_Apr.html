@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1920">
+  <title>EfficientNet-B0 &mdash; Test Set Evaluation</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    :root {
+      --bg: #F8F9FB;
+      --bg-card: #FFFFFF;
+      --bg-elevated: #F0F1F4;
+      --border: #E0E2E8;
+      --text: #1A1D26;
+      --text-dim: #5A5E6E;
+      --text-muted: #8E92A0;
+      --accent: #0E9A7E;
+      --accent-dim: rgba(14, 154, 126, 0.08);
+      --accent-2: #3B6FD6;
+      --accent-2-dim: rgba(59, 111, 214, 0.08);
+      --accent-3: #C88A1A;
+      --accent-3-dim: rgba(200, 138, 26, 0.08);
+      --red: #D9453E;
+      --red-dim: rgba(217, 69, 62, 0.07);
+      --purple: #8B5CC4;
+      --purple-dim: rgba(139, 92, 196, 0.08);
+      --teal: #0E8A9A;
+      --teal-dim: rgba(14, 138, 154, 0.08);
+      --font: 'DM Sans', system-ui, sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+      --radius: 10px;
+      --radius-sm: 6px
+    }
+
+    html {
+      scroll-snap-type: y mandatory;
+      scroll-behavior: smooth
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      line-height: 1.5;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased
+    }
+
+    .slide {
+      min-height: 100vh;
+      scroll-snap-align: start;
+      display: flex;
+      flex-direction: column;
+      padding: 56px 64px 32px;
+      position: relative
+    }
+
+    .slide::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, var(--border) 20%, var(--border) 80%, transparent 100%)
+    }
+
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: rgba(248, 249, 251, 0.90);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 40px;
+      height: 44px;
+      gap: 4px
+    }
+
+    nav a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      padding: 5px 12px;
+      border-radius: 20px;
+      transition: all 0.2s
+    }
+
+    nav a:hover,
+    nav a.active {
+      color: var(--text);
+      background: var(--bg-elevated)
+    }
+
+    nav .slide-counter {
+      margin-left: auto;
+      color: var(--text-muted);
+      font-size: 11px;
+      font-family: var(--mono)
+    }
+
+    h1 {
+      font-size: 44px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.15
+    }
+
+    h2 {
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: 4px
+    }
+
+    h3 {
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--text-dim);
+      margin-bottom: 16px
+    }
+
+    .tag {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 600;
+      font-family: var(--mono);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin-bottom: 6px
+    }
+
+    .tag--accent {
+      background: var(--accent-dim);
+      color: var(--accent)
+    }
+
+    .tag--amber {
+      background: var(--accent-3-dim);
+      color: var(--accent-3)
+    }
+
+    .tag--red {
+      background: var(--red-dim);
+      color: var(--red)
+    }
+
+    .tag--purple {
+      background: var(--purple-dim);
+      color: var(--purple)
+    }
+
+    .tag--blue {
+      background: var(--accent-2-dim);
+      color: var(--accent-2)
+    }
+
+    .flex {
+      display: flex
+    }
+
+    .flex-col {
+      flex-direction: column
+    }
+
+    .gap-10 {
+      gap: 10px
+    }
+
+    .gap-12 {
+      gap: 12px
+    }
+
+    .gap-16 {
+      gap: 16px
+    }
+
+    .gap-20 {
+      gap: 20px
+    }
+
+    .grow {
+      flex: 1
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04)
+    }
+
+    .card h4 {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px
+    }
+
+    .card p {
+      font-size: 12.5px;
+      color: var(--text-dim);
+      line-height: 1.5
+    }
+
+    .summary-cards {
+      display: grid;
+      gap: 12px
+    }
+
+    .summary-card {
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+      border: 1px solid rgba(0, 0, 0, 0.04);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03)
+    }
+
+    .summary-card .label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-family: var(--mono);
+      color: var(--text-dim);
+      margin-bottom: 4px
+    }
+
+    .summary-card .value {
+      font-size: 36px;
+      font-weight: 700;
+      font-family: var(--mono)
+    }
+
+    .summary-card .detail {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px
+    }
+
+    .summary-card .baseline {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 6px;
+      font-family: var(--mono)
+    }
+
+    .delta {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      font-family: var(--mono);
+      padding: 2px 7px;
+      border-radius: 3px;
+      margin-left: 4px
+    }
+
+    .delta.pos {
+      background: rgba(14, 154, 126, 0.12);
+      color: #0A7D66
+    }
+
+    .delta.neg {
+      background: rgba(217, 69, 62, 0.10);
+      color: #B33A34
+    }
+
+    /* Bars */
+    .bar-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px
+    }
+
+    .bar-label {
+      width: 140px;
+      text-align: right;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-dim);
+      flex-shrink: 0
+    }
+
+    .bar-track {
+      flex: 1;
+      position: relative;
+      height: 22px;
+      border-radius: 4px;
+      overflow: hidden;
+      background: var(--bg-elevated)
+    }
+
+    .bar-fill {
+      height: 100%;
+      transition: width 0.4s ease;
+      border-radius: 0 4px 4px 0
+    }
+
+    .bar-value {
+      min-width: 140px;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-dim)
+    }
+
+    .bar-oem {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      border-right: 2.5px dashed var(--text-muted);
+      opacity: 0.5;
+      z-index: 1
+    }
+
+    /* Video table */
+    .vtable {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px
+    }
+
+    .vtable th {
+      text-align: left;
+      font-weight: 600;
+      font-size: 10px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      padding: 10px 12px;
+      border-bottom: 2px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: var(--bg-card);
+      z-index: 10
+    }
+
+    .vtable td {
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle
+    }
+
+    .vtable tr:hover td {
+      background: rgba(14, 154, 126, 0.03)
+    }
+
+    .chip {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 500;
+      padding: 2px 7px;
+      border-radius: 3px;
+      white-space: nowrap
+    }
+
+    .chip-safe {
+      background: var(--accent-dim);
+      color: var(--accent)
+    }
+
+    .chip-fatigue {
+      background: var(--bg-elevated);
+      color: var(--text-dim)
+    }
+
+    .chip-distracted {
+      background: var(--purple-dim);
+      color: var(--purple)
+    }
+
+    .chip-phone {
+      background: var(--red-dim);
+      color: var(--red)
+    }
+
+    .chip-seatbelt {
+      background: var(--teal-dim);
+      color: var(--teal)
+    }
+
+    .chip-drinking {
+      background: var(--accent-3-dim);
+      color: var(--accent-3)
+    }
+
+    .icon-ok {
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 13px
+    }
+
+    .icon-no {
+      color: var(--red);
+      font-weight: 700;
+      font-size: 13px
+    }
+
+    .change-tag {
+      font-size: 9px;
+      font-family: var(--mono);
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 3px
+    }
+
+    .change-fixed {
+      background: rgba(14, 154, 126, 0.12);
+      color: #0A7D66
+    }
+
+    .change-broke {
+      background: rgba(217, 69, 62, 0.10);
+      color: #B33A34
+    }
+
+    .change-both-right {
+      background: var(--accent-2-dim);
+      color: var(--accent-2)
+    }
+
+    .change-both-wrong {
+      background: var(--bg-elevated);
+      color: var(--text-muted)
+    }
+
+    .filter-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 12px;
+      flex-wrap: wrap
+    }
+
+    .filter-btn {
+      font-size: 11px;
+      font-family: var(--mono);
+      font-weight: 500;
+      padding: 5px 12px;
+      border-radius: 5px;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      color: var(--text-dim);
+      cursor: pointer;
+      transition: all 0.15s
+    }
+
+    .filter-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent)
+    }
+
+    .filter-btn.active {
+      background: var(--accent-dim);
+      border-color: var(--accent);
+      color: var(--accent)
+    }
+
+    .insight-box {
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 12.5px;
+      color: var(--text-dim);
+      line-height: 1.6;
+      margin-top: 16px
+    }
+
+    .img-card {
+      background: #1A1D26; border: 1px solid var(--border); border-radius: var(--radius);
+      overflow: hidden; display: flex; flex-direction: column
+    }
+    .img-card img { width: 100%; display: block; cursor: pointer; transition: opacity 0.2s }
+    .img-card img:hover { opacity: 0.9 }
+    .img-card .caption {
+      padding: 12px 16px; background: var(--bg-card); border-top: 1px solid var(--border)
+    }
+    .img-card .caption h4 { font-size: 13px; font-weight: 600; margin-bottom: 4px }
+    .img-card .caption p { font-size: 11.5px; color: var(--text-dim); line-height: 1.5 }
+
+    .lightbox {
+      display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      z-index: 9999; background: rgba(0,0,0,0.88); backdrop-filter: blur(8px);
+      cursor: pointer; align-items: center; justify-content: center
+    }
+    .lightbox.active { display: flex }
+    .lightbox img {
+      max-width: 92vw; max-height: 90vh; border-radius: 8px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.5)
+    }
+    .lightbox-hint {
+      position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%);
+      font-size: 11px; color: rgba(255,255,255,0.5); font-family: var(--mono)
+    }
+  </style>
+</head>
+
+<body>
+  <nav>
+    <a href="index.html" style="color:var(--text-muted);font-size:10px;margin-right:6px;opacity:0.7">&larr; Home</a>
+    <a href="#overview">Overview</a>
+    <a href="#perclass">Per-Class</a>
+    <a href="#videos">Videos</a>
+    <a href="#preprocessing">Preprocessing</a>
+    <span class="slide-counter" id="slideCounter">1 / 4</span>
+  </nav>
+
+  <!-- ==================== SLIDE 1: OVERVIEW ==================== -->
+  <section class="slide" id="overview">
+    <span class="tag tag--purple">Model Evaluation</span>
+    <h1>EfficientNet-B0 vs OEM</h1>
+    <h3>48 test videos &middot; devices KA3277 + KA3301 &middot; 4,865 frames &middot</h3>
+
+    <!-- Summary: 3 large cards -->
+    <div class="summary-cards" style="grid-template-columns:repeat(3,1fr)">
+      <div class="summary-card" style="background:var(--accent-dim)">
+        <div class="label">Accuracy (Tuned)</div>
+        <div class="value" style="color:var(--accent)">56.2%</div>
+        <div class="detail">27 of 48 videos correctly classified</div>
+        <div class="baseline">OEM: 33.3% <span class="delta pos">+22.9pp</span></div>
+      </div>
+      <div class="summary-card" style="background:var(--accent-dim)">
+        <div class="label">False Alerts</div>
+        <div class="value" style="color:var(--accent)">13.6%</div>
+        <div class="detail">3 of 22 safe videos misclassified as unsafe</div>
+        <div class="baseline">OEM: 100% <span class="delta pos">&minus;86pp</span></div>
+      </div>
+      <div class="summary-card" style="background:var(--red-dim)">
+        <div class="label">Missed Detections</div>
+        <div class="value" style="color:var(--red)">34.6%</div>
+        <div class="detail">9 of 26 unsafe videos predicted as safe</div>
+        <div class="baseline">OEM: 0% <span class="delta neg">+34.6pp</span></div>
+      </div>
+    </div>
+
+    <!-- What Changed grid -->
+    <div class="flex gap-16" style="flex:1;margin-top:16px">
+      <div class="card grow">
+        <h4>What Changed &mdash; Tuned vs OEM</h4>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:12px">
+          <div style="text-align:center;padding:16px;background:rgba(14,154,126,0.05);border-radius:8px">
+            <span class="change-tag change-fixed">fixed</span>
+            <div style="font-size:36px;font-weight:700;font-family:var(--mono);color:var(--accent);margin:8px 0 4px">19
+            </div>
+            <div style="font-size:11px;color:var(--text-muted)">OEM wrong &rarr; Tuned right</div>
+          </div>
+          <div style="text-align:center;padding:16px;background:rgba(217,69,62,0.04);border-radius:8px">
+            <span class="change-tag change-broke">broke</span>
+            <div style="font-size:36px;font-weight:700;font-family:var(--mono);color:var(--red);margin:8px 0 4px">8
+            </div>
+            <div style="font-size:11px;color:var(--text-muted)">OEM right &rarr; Tuned wrong</div>
+          </div>
+          <div style="text-align:center;padding:16px;background:rgba(59,111,214,0.04);border-radius:8px">
+            <span class="change-tag change-both-right">both ok</span>
+            <div style="font-size:36px;font-weight:700;font-family:var(--mono);color:var(--accent-2);margin:8px 0 4px">8
+            </div>
+            <div style="font-size:11px;color:var(--text-muted)">Both systems correct</div>
+          </div>
+          <div style="text-align:center;padding:16px;background:var(--bg-elevated);border-radius:8px">
+            <span class="change-tag change-both-wrong">both bad</span>
+            <div
+              style="font-size:36px;font-weight:700;font-family:var(--mono);color:var(--text-muted);margin:8px 0 4px">13
+            </div>
+            <div style="font-size:11px;color:var(--text-muted)">Both systems wrong</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="width:260px;flex-shrink:0">
+        <h4>By Modality</h4>
+        <div style="margin-top:8px" id="modality-card"></div>
+        <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--border)">
+          <h4>As-is Model</h4>
+          <p style="margin-top:4px">
+            <span style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--accent-3)">20.8%</span>
+            <span class="delta neg">&minus;12.5pp</span>
+          </p>
+          <p style="font-size:11px;color:var(--text-muted);margin-top:4px">
+            Predicts <em>distracted_driving</em> for all 48 videos. StateFarm pretrained model collapsed to a single
+            class.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== SLIDE 2: PER-CLASS ==================== -->
+  <section class="slide" id="perclass">
+    <span class="tag tag--blue">Per-Class Breakdown</span>
+    <h2>Accuracy by Event Type</h2>
+    <h3>Each system's accuracy per ground-truth class &middot; Dashed line = OEM baseline &middot; Sorted by video count
+    </h3>
+
+    <div class="flex gap-20" style="flex:1">
+      <!-- LEFT: Three bar panels stacked -->
+      <div class="flex flex-col gap-16 grow">
+
+        <!-- OEM -->
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px">
+            <h4 style="margin:0"><span
+                style="display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--text-muted);margin-right:6px"></span>OEM
+              System <span style="font-size:11px;font-weight:400;color:var(--text-muted)">(baseline)</span></h4>
+            <span style="font-family:var(--mono);font-size:20px;font-weight:700;color:var(--text-dim)">33.3%</span>
+          </div>
+          <div id="bars-oem"></div>
+        </div>
+
+        <!-- As-is -->
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px">
+            <h4 style="margin:0"><span
+                style="display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--accent-3);margin-right:6px"></span>As-is
+              <span style="font-size:11px;font-weight:400;color:var(--text-muted)">(StateFarm pretrained)</span></h4>
+            <div>
+              <span style="font-family:var(--mono);font-size:20px;font-weight:700;color:var(--accent-3)">20.8%</span>
+              <span class="delta neg">&minus;12.5pp</span>
+            </div>
+          </div>
+          <div id="bars-asis"></div>
+        </div>
+
+        <!-- Tuned -->
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px">
+            <h4 style="margin:0"><span
+                style="display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--accent);margin-right:6px"></span>Tuned
+              <span style="font-size:11px;font-weight:400;color:var(--text-muted)">(OEM fine-tuned)</span></h4>
+            <div>
+              <span style="font-family:var(--mono);font-size:20px;font-weight:700;color:var(--accent)">56.2%</span>
+              <span class="delta pos">+22.9pp</span>
+            </div>
+          </div>
+          <div id="bars-tuned"></div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Insights -->
+      <div class="flex flex-col gap-16" style="width:320px;flex-shrink:0">
+        <div class="card" style="background:rgba(14,154,126,0.03);border-color:var(--accent)">
+          <h4 style="color:var(--accent)">Tuned Wins</h4>
+          <p>
+            <strong>safe_driving +86pp</strong> &mdash; Eliminates nearly all false alerts. OEM fires on every safe
+            video; tuned correctly identifies 19 of 22.
+          </p>
+          <p style="margin-top:8px">
+            <strong>distracted_driving +50pp</strong> &mdash; Better at recognizing general distraction patterns.
+          </p>
+        </div>
+
+        <div class="card" style="background:rgba(217,69,62,0.03);border-color:var(--red)">
+          <h4 style="color:var(--red)">OEM Wins</h4>
+          <p>
+            <strong>fatigue &minus;92pp</strong> &mdash; OEM's specialized closed_eye and yawn detectors catch 12 of 13
+            fatigue videos. Tuned model catches zero.
+          </p>
+          <p style="margin-top:8px">
+            <strong>seatbelt &minus;100pp</strong> &mdash; OEM detects the one seatbelt violation; tuned misses it
+            entirely.
+          </p>
+        </div>
+
+        <div class="card">
+          <h4>Top Misclassifications &mdash; Tuned</h4>
+          <div style="margin-top:8px" id="top-errors"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== SLIDE 3: VIDEO TABLE ==================== -->
+  <section class="slide" id="videos">
+    <span class="tag tag--accent">Video-Level Detail</span>
+    <h2>Per-Video Comparison</h2>
+    <h3>All 48 test videos with OEM and Tuned predictions side by side &middot; Filter by change type to isolate error
+      patterns</h3>
+
+    <div class="filter-row" id="filters"></div>
+
+    <div class="card" style="flex:1;padding:0;overflow:hidden">
+      <div style="max-height:calc(100vh - 220px);overflow-y:auto">
+        <table class="vtable" id="video-table">
+          <thead>
+            <tr>
+              <th style="cursor:pointer;padding-left:20px" onclick="sortTable('video')">Video</th>
+              <th style="cursor:pointer" onclick="sortTable('modality')">Modality</th>
+              <th style="cursor:pointer" onclick="sortTable('gt_label')">Ground Truth</th>
+              <th style="cursor:pointer" onclick="sortTable('oem_mapped')">OEM Prediction</th>
+              <th style="cursor:pointer" onclick="sortTable('tuned_prediction')">Tuned Prediction</th>
+              <th style="cursor:pointer" onclick="sortTable('change')">Change</th>
+            </tr>
+          </thead>
+          <tbody id="video-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== SLIDE 4: PREPROCESSING ==================== -->
+  <section class="slide" id="preprocessing">
+    <span class="tag tag--blue">Computer Vision</span>
+    <h2>Preprocessing Pipeline</h2>
+    <h3>9-step image preprocessing applied to raw OEM footage before model fine-tuning &middot; Click any image to enlarge</h3>
+
+    <!-- Summary stats -->
+    <div class="summary-cards" style="grid-template-columns:repeat(4,1fr);margin-bottom:20px">
+      <div class="summary-card" style="background:var(--accent-2-dim)">
+        <div class="label">Pipeline Steps</div>
+        <div class="value" style="color:var(--accent-2)">9</div>
+        <div class="detail">Input &rarr; Resample &rarr; Equalize &rarr; Convert &rarr; Annotate &rarr; Augment</div>
+      </div>
+      <div class="summary-card" style="background:var(--accent-dim)">
+        <div class="label">Step 1 &mdash; Resampling</div>
+        <div class="value" style="color:var(--accent)">0.7ms</div>
+        <div class="detail">5 interpolation methods compared</div>
+      </div>
+      <div class="summary-card" style="background:var(--accent-3-dim)">
+        <div class="label">Step 2 &mdash; Equalization</div>
+        <div class="value" style="color:var(--accent-3)">0.6ms</div>
+        <div class="detail">CLAHE on L-channel (LAB space)</div>
+      </div>
+      <div class="summary-card" style="background:var(--purple-dim)">
+        <div class="label">Total Pipeline Time</div>
+        <div class="value" style="color:var(--purple)">52.7ms</div>
+        <div class="detail">Augmentations dominate at 51.4ms</div>
+      </div>
+    </div>
+
+    <!-- 2x2 image grid -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;flex:1">
+      <div class="img-card">
+        <img src="assets/14April26/pipeline_overview.png" alt="Pipeline Overview" onclick="openLightbox(this.src)">
+        <div class="caption">
+          <h4>Pipeline Overview &amp; Operational Challenges</h4>
+          <p>9-step CV preprocessing pipeline from data input to augmentation. Current bottleneck: video extraction takes 3+ hours per vehicle, 6+ hours fleet-wide.</p>
+        </div>
+      </div>
+      <div class="img-card">
+        <img src="assets/14April26/equalization_before_after.png" alt="Equalization Before/After" onclick="openLightbox(this.src)">
+        <div class="caption">
+          <h4>LAB Colour Space + Histogram Equalization</h4>
+          <p>Before vs after CLAHE equalization on the L-channel. Enhances contrast in low-light IR frames without altering hue or saturation.</p>
+        </div>
+      </div>
+      <div class="img-card">
+        <img src="assets/14April26/augmentation_timing.png" alt="Augmentation Timing" onclick="openLightbox(this.src)">
+        <div class="caption">
+          <h4>Augmentation Timing Breakdown</h4>
+          <p>Per-augmentation processing time. Most transforms under 1ms; Random Fog (41ms) dominates the total 52.7ms pipeline.</p>
+        </div>
+      </div>
+      <div class="img-card">
+        <img src="assets/14April26/histograms_timing.png" alt="Histograms and Timing" onclick="openLightbox(this.src)">
+        <div class="caption">
+          <h4>Luminance Histograms &amp; Equalization Benchmarks</h4>
+          <p>L-channel distribution before vs after CLAHE (clip=2.0). CLAHE variants all under 3ms; standard histogram equalization at 70ms.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lightbox overlay -->
+  <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+    <img id="lightbox-img" src="">
+    <div class="lightbox-hint">Click anywhere to close &middot; Press Esc</div>
+  </div>
+
+  <!-- ==================== DATA + RENDERING ==================== -->
+  <script>
+    const DATA = [{ "video": "KA3277_Call_34884404.mp4", "device_id": "KA3277", "gt_label": "safe_driving", "oem_prediction": "call", "oem_correct": false, "asis_prediction": "distracted_driving", "asis_correct": false, "tuned_prediction": "safe_driving", "tuned_correct": true, "modality": "rgb", "camera": "driver_right_top", "num_frames": 100, "asis_frame_distribution": { "distracted_driving": 85, "drinking_eating": 15 }, "tuned_frame_distribution": { "safe_driving": 99, "phone_usage": 1 } }, { "video": "KA3277_Call_34884954.mp4", "device_id": "KA3277", "gt_label": "safe_driving", "oem_prediction": "call", "oem_correct": false, "asis_prediction": "distracted_driving", "asis_correct": false, "tuned_prediction": "safe_driving", "tuned_correct": true, "modality": "rgb", "camera": "driver_right_top", "num_frames": 101, "asis_frame_distribution": { "distracted_driving": 101 }, "tuned_frame_distribution": { "safe_driving": 101 } }, { "video": "KA3277_Call_34885169.mp4", "device_id": "KA3277", "gt_label": "safe_driving", "oem_prediction": "call", "oem_correct": false, "asis_prediction": "distracted_driving", "asis_correct": false, "tuned_prediction": "safe_driving", "tuned_correct": true, "modality": "rgb", "camera": "driver_right_top", "num_frames": 101, "asis_frame_distribution": { "distracted_driving": 101 }, "tuned_frame_distribution": { "safe_driving": 101 } }, { "video": "KA3277_Call_34885269.mp4", "device_id": "KA3277", "gt_label": "safe_driving", "oem_prediction": "call", "oem_correct": false, "asis_prediction": "distracted_driving", "asis_correct": false, "tuned_prediction": "safe_driving", "tuned_correct": true, "modality": "rgb", "camera": "driver_right_top", "num_frames": 100, "asis_frame_distribution": { "distracted_driving": 100 }, "tuned_frame_distribution": { "safe_driving": 100 } }, { "video": "KA3277_Closed_Eye_34885291.mp4", "device_id": "KA3277", "gt_label": "safe_driving", "oem_prediction": "closed_eye", "oem_correct": false, "asis_prediction": "distracted_driving", "asis_correct": false, "tuned_prediction": "safe_driving", "tuned_correct": true, "modality": "rgb", "camera": "driver_right_top", "num_frames": 106, "asis_frame_distribution": { "distracted_driving": 106 }, "tuned_frame_distribution": { "safe_driving": 106 } }, { "video": "KA3277_Closed_Eye_34885400.mp4", "device_id": "KA3277", "gt_label": "safe_driving", "oem_prediction": "closed_eye", "oem_correct": false, "asis_prediction": "distracted_driving", "asis_correct": false, "tuned_prediction": "safe_driving", "tuned_correct": true, "modality": "ir", "camera": "driver_right_top", "num_frames": 101, "asis_frame_distribution": { "distracted_driving": 101 }, "tuned_frame_distribution": { "safe_driving": 76, "distracted_driving": 25 } }, { "video": "KA3277_Closed_Eye_34885411.mp4", "device_id": "KA3277", "gt_label": "fatigue", "oem_prediction": "closed_eye", "oem_correct": true, "asis_prediction": "distracted_driving", "asis_correct": false, "tuned_prediction": "phone_usage", "tuned_correct": false, "modality": "ir", "camera": "driver_right_top", "num_frames": 100, "asis_frame_distribution": { "distracted_driving": 100 }, "tuned_frame_distribution": { "phone_usage": 50, "distracted_driving": 50 } }, { "video": "KA3277_Closed_Eye_34885414.mp4", "device_id": "KA3277", "gt_label": "fatigue", "oem_prediction": "closed_eye", "oem_correct": true, "asis_prediction": "distracted_driving", "asis_correct": false, "tuned_prediction": "distracted_driving", "tuned_correct": false, "modality": "ir", "camera": "driver_right_top", "num_frames": 104, "asis_frame_distribution": { "distracted_driving": 104 }, "tuned_frame_distribution": { "phone_usage": 44, "distracted_driving": 60 } }, { "video": "KA3277_Closed_Eye_34885430.mp4", "device_id": "KA3277", "gt_label": "safe_driving", "oem_prediction": "closed_eye", "oem_correct": false, "asis_prediction": "distracted_driving", "asis_correct": false, "tuned_prediction": "phone_usage", "tuned_correct": false, "modality": "ir", "camera": "driver_right_top", "num_frames": 101, "asis_frame_distribution": { "distracted_driving": 101 }, "tuned_frame_distribution": { "phone_usage": 75, "distracted_driving": 26 } }, { "video": "KA3277_Closed_Eye_34885457.mp4", "device_id": "KA3277", "gt_label": "safe_driving", "oem_prediction": "closed_eye", "oem_correct": false, "asis_prediction": "distracted_driving", "asis_correct": false, "tuned_prediction": "safe_driving", "tuned_correct": true, "modality": "ir", "camera": "driver_right_top", "num_frames": 100, "asis_frame_distribution": { "distracted_driving": 100 }, "tuned_frame_distribution": { "safe_driving": 80, "fatigue": 18, "phone_usage": 2 } }, { "video": "KA3277_Closed_Eye_34885473.mp4", "device_id": "KA3277", "gt_label": "fatigue", "oem_prediction": "closed_eye", "oem_correct": true, "asis_prediction": "distracted_driving", "asis_correct": false, "tuned_prediction": "safe_driving", "tuned_correct": false, "modality": "ir", "camera": "driver_right_top", "num_frames": 101, "asis_frame_distribution": { "distracted_driving": 101 }, "tuned_frame_distribution": { "safe_driving": 99, "fatigue": 2 } }, { "video": "KA3277_Closed_Eye_34885480.mp4", "device_id": "KA3277", "gt_label": "fatigue", "oem_prediction": "closed_eye", "oem_correct": true, "asis_prediction": "distracted_driving", "asis_correct": false, "tuned_prediction": "safe_driving", "tuned_correct": false, "modality": "ir", "camera": "driver_right_top", "num_frames": 101, "asis_frame_distribution": { "distracted_driving": 101 }, "tuned_frame_distribution": { "safe_driving": 99, "phone_usage": 1, "fatigue": 1 } }, { "video": "KA3277_Closed_Eye_34885491.mp4", "device_id": "KA3277", "gt_label": "safe_driving", "oem_prediction": "closed_eye", "oem_correct": false, "asis_prediction": "distracted_driving", "asis_correct": false, "tuned_prediction": "safe_driving", "tuned_correct": true, "modality": "ir", "camera": "driver_right_top", "num_frames": 101, "asis_frame_distribution": { "distracted_driving": 101 }, "tuned_frame_distribution": { "safe_driving": 94, "fatigue": 4, "phone_usage": 3 } }, { "video": "KA3277_Closed_Eye_34885494.mp4", "device_id": "KA3277", "gt_label": "fatigue", "oem_prediction": "closed_eye", "oem_correct": true, "asis_prediction": "distracted_driving", "asis_correct": false, "tuned_prediction": "safe_driving", "tuned_correct": false, "modality": "ir", "camera": "driver_right_top", "num_frames": 101, "asis_frame_distribution": { "distracted_driving": 101 }, "tuned_frame_distribution": { "safe_driving": 95, "fatigue": 6 } }, { "video": "KA3277_Closed_Eye_34885541.mp4", "device_id": "KA3277", "gt_label": "distracted_driving", "oem_prediction": "closed_eye", "oem_correct": true, "asis_prediction": "distracted_driving", "asis_correct": true, "tuned_prediction": "phone_usage", "tuned_correct": false, "modality": "ir", "camera": "driver_right_top", "num_frames": 101, "asis_frame_distribution": { "distracted_driving": 101 }, "tuned_frame_distribution": { "phone_usage": 53, "distracted_driving": 42, "safe_driving": 6 } }, { "video": "KA3277_Closed_Eye_34885547.mp4", "device_id": "KA3277", "gt_label": "distracted_driving", "oem_prediction": "closed_eye", "oem_correct": false, "asis_prediction": "distracted_driving", "asis_correct": true, "tuned_prediction": "distracted_driving", "tuned_correct": true, "modality": "ir", "camera": "driver_right_top", "num_frames": 103, "asis_frame_distribution": { "distracted_driving": 103 }, "tuned_frame_distribution": { "distracted_driving": 86, "safe_driving": 1, "phone_usage": 16 } }, { "video": "KA3277_Distraction_Driving_34885066.mp4", "device_id": "KA3277", "gt_label": "safe_driving", "oem_prediction": "distraction_driving", "oem_correct": false, "asis_prediction": "distracted_driving", "asis_correct": false, "tuned_prediction": "safe_driving", "tuned_correct": true, "modality": "rgb", "camera": "driver_right_top", "num_frames": 100, "asis_frame_distribution": { "distracted_driving": 100 }, "tuned_frame_distribution": { "safe_driving": 97, "phone_usage": 3 } }, { "video": "KA3277_Distraction_Driving_34885090.mp4", "device_id": "KA3277", "gt_label": "safe_driving", "oem_prediction": "distraction_driving", "oem_correct": false, "asis_prediction": "distracted_driving", "asis_correct": false, "tuned_prediction": "safe_driving", "tuned_correct": true, "modality": "rgb", "camera": "driver_right_top", "num_frames": 101, "asis_frame_distribution": { "distracted_driving": 101 }, "tuned_frame_distribution": { "phone_usage": 22, "safe_driving": 79 } }, { "video": "KA3277_Distraction_Driving_34885309.mp4", "device_id": "KA3277", "gt_label": "safe_driving", "oem_prediction": "distraction_driving", "oem_correct": false, "asis_prediction": "distracted_driving", "asis_correct": false, "tuned_prediction": "safe_driving", "tuned_correct": true, "modality": "rgb", "camera": "driver_right_top", "num_frames": 105, "asis_frame_distribution": { "distracted_driving": 105 }, "tuned_frame_distribution": { "safe_driving": 105 } }, { "video": "KA3277_Distraction_Driving_34885332.mp4", "device_id": "KA3277", "gt_label": "distracted_driving", "oem_prediction": "distraction_driving", "oem_correct": false, "asis_prediction": "distracted_driving", "asis_correct": true, "tuned_prediction": "phone_usage", "tuned_correct": false, "modality": "rgb", "camera": "driver_right_top", "num_frames": 100, "asis_frame_distribution": { "distracted_driving": 100 }, "tuned_frame_distribution": { "safe_driving": 33, "phone_usage": 67 } }, { "video": "KA3277_Distraction_Driving_34885423.mp4", "device_id": "KA3277", "gt_label": "safe_driving", "oem_prediction": "distraction_driving", "oem_correct": false, "asis_prediction": "distracted_driving", "asis_correct": false, "tuned_prediction": "safe_driving", "tuned_correct": true, "modality": "ir", "camera": "driver_right_top", "num_frames": 100, "asis_frame_distribution": { "distracted_driving": 100 }, "tuned_frame_distribution": { "distracted_driving": 8, "safe_driving": 84, "phone_usage": 8 } }, { "video": "KA3277_Distraction_Driving_34885490.mp4", "device_id": "KA3277", "gt_label": "safe_driving", "oem_prediction": "distraction_driving", "oem_correct": false, "asis_prediction": "distracted_driving", "asis_correct": false, "tuned_prediction": "safe_driving", "tuned_correct": true, "modality": "ir", "camera": "driver_right_top", "num_frames": 104, "asis_frame_distribution": { "distracted_driving": 103, "drinking_eating": 1 }, "tuned_frame_distribution": { "safe_driving": 93, "fatigue": 4, "phone_usage": 7 } }, { "video": "KA3277_Distraction_Driving_34885533.mp4", "device_id": "KA3277", "gt_label": "safe_driving", "oem_prediction": "distraction_driving", "oem_correct": false, "asis_prediction": "distracted_driving", "asis_correct": false, "tuned_prediction": "safe_driving", "tuned_correct": true, "modality": "ir", "camera": "driver_right_top", "num_frames": 104, "asis_frame_distribution": { "distracted_driving": 104 }, "tuned_frame_distribution": { "phone_usage": 26, "distracted_driving": 18, "safe_driving": 60 } }, { "video": "KA3277_Yawn_34884463.mp4", "device_id": "KA3277", "gt_label": "fatigue", "oem_prediction": "yawn", "oem_correct": true, "asis_prediction": "distracted_driving", "asis_correct": false, "tuned_prediction": "distracted_driving", "tuned_correct": false, "modality": "rgb", "camera": "driver_right_top", "num_frames": 101, "asis_frame_distribution": { "distracted_driving": 101 }, "tuned_frame_distribution": { "distracted_driving": 77, "safe_driving": 24 } }, { "video": "KA3277_Yawn_34884666.mp4", "device_id": "KA3277", "gt_label": "fatigue", "oem_prediction": "yawn", "oem_correct": true, "asis_prediction": "distracted_driving", "asis_correct": false, "tuned_prediction": "safe_driving", "tuned_correct": false, "modality": "rgb", "camera": "driver_right_top", "num_frames": 101, "asis_frame_distribution": { "distracted_driving": 74, "drinking_eating": 27 }, "tuned_frame_distribution": { "safe_driving": 101 } }, { "video": "KA3277_Yawn_34884953.mp4", "device_id": "KA3277", "gt_label": "fatigue", "oem_prediction": "yawn", "oem_correct": true, "asis_prediction": "distracted_driving", "asis_correct": false, "tuned_prediction": "safe_driving", "tuned_correct": false, "modality": "rgb", "camera": "driver_right_top", "num_frames": 101, "asis_frame_distribution": { "distracted_driving": 101 }, "tuned_frame_distribution": { "safe_driving": 101 } }, { "video": "KA3277_Yawn_34885545.mp4", "device_id": "KA3277", "gt_label": "fatigue", "oem_prediction": "yawn", "oem_correct": true, "asis_prediction": "distracted_driving", "asis_correct": false, "tuned_prediction": "distracted_driving", "tuned_correct": false, "modality": "ir", "camera": "driver_right_top", "num_frames": 100, "asis_frame_distribution": { "distracted_driving": 100 }, "tuned_frame_distribution": { "safe_driving": 21, "distracted_driving": 68, "phone_usage": 11 } }, { "video": "KA3301_Call_34885326.mp4", "device_id": "KA3301", "gt_label": "phone_usage", "oem_prediction": "call", "oem_correct": true, "asis_prediction": "distracted_driving", "asis_correct": false, "tuned_prediction": "phone_usage", "tuned_correct": true, "modality": "rgb", "camera": "driver_right_top", "num_frames": 101, "asis_frame_distribution": { "distracted_driving": 101 }, "tuned_frame_distribution": { "safe_driving": 18, "phone_usage": 83 } }, { "video": "KA3301_Call_34885421.mp4", "device_id": "KA3301", "gt_label": "phone_usage", "oem_prediction": "call", "oem_correct": true, "asis_prediction": "distracted_driving", "asis_correct": false, "tuned_prediction": "phone_usage", "tuned_correct": true, "modality": "ir", "camera": "driver_right_top", "num_frames": 101, "asis_frame_distribution": { "distracted_driving": 101 }, "tuned_frame_distribution": { "safe_driving": 26, "phone_usage": 58, "distracted_driving": 17 } }, { "video": "KA3301_Closed_Eye_34885417.mp4", "device_id": "KA3301", "gt_label": "distracted_driving", "oem_prediction": "closed_eye", "oem_correct": false, "asis_prediction": "distracted_driving", "asis_correct": true, "tuned_prediction": "distracted_driving", "tuned_correct": true, "modality": "ir", "camera": "driver_right_top", "num_frames": 100, "asis_frame_distribution": { "distracted_driving": 100 }, "tuned_frame_distribution": { "distracted_driving": 73, "phone_usage": 5, "safe_driving": 22 } }, { "video": "KA3301_Closed_Eye_34885419.mp4", "device_id": "KA3301", "gt_label": "distracted_driving", "oem_prediction": "closed_eye", "oem_correct": false, "asis_prediction": "distracted_driving", "asis_correct": true, "tuned_prediction": "safe_driving", "tuned_correct": false, "modality": "ir", "camera": "driver_right_top", "num_frames": 100, "asis_frame_distribution": { "distracted_driving": 100 }, "tuned_frame_distribution": { "distracted_driving": 24, "safe_driving": 60, "phone_usage": 16 } }, { "video": "KA3301_Closed_Eye_34885469.mp4", "device_id": "KA3301", "gt_label": "fatigue", "oem_prediction": "closed_eye", "oem_correct": true, "asis_prediction": "distracted_driving", "asis_correct": false, "tuned_prediction": "distracted_driving", "tuned_correct": false, "modality": "ir", "camera": "driver_right_top", "num_frames": 100, "asis_frame_distribution": { "distracted_driving": 100 }, "tuned_frame_distribution": { "safe_driving": 3, "phone_usage": 41, "distracted_driving": 56 } }, { "video": "KA3301_Closed_Eye_34885470.mp4", "device_id": "KA3301", "gt_label": "distracted_driving", "oem_prediction": "closed_eye", "oem_correct": false, "asis_prediction": "distracted_driving", "asis_correct": true, "tuned_prediction": "distracted_driving", "tuned_correct": true, "modality": "ir", "camera": "driver_right_top", "num_frames": 101, "asis_frame_distribution": { "distracted_driving": 101 }, "tuned_frame_distribution": { "distracted_driving": 64, "safe_driving": 37 } }, { "video": "KA3301_Closed_Eye_34885471.mp4", "device_id": "KA3301", "gt_label": "safe_driving", "oem_prediction": "closed_eye", "oem_correct": false, "asis_prediction": "distracted_driving", "asis_correct": false, "tuned_prediction": "distracted_driving", "tuned_correct": false, "modality": "ir", "camera": "driver_right_top", "num_frames": 100, "asis_frame_distribution": { "distracted_driving": 100 }, "tuned_frame_distribution": { "safe_driving": 30, "distracted_driving": 49, "phone_usage": 21 } }, { "video": "KA3301_Closed_Eye_34885493.mp4", "device_id": "KA3301", "gt_label": "distracted_driving", "oem_prediction": "closed_eye", "oem_correct": false, "asis_prediction": "distracted_driving", "asis_correct": true, "tuned_prediction": "distracted_driving", "tuned_correct": true, "modality": "ir", "camera": "driver_right_top", "num_frames": 100, "asis_frame_distribution": { "distracted_driving": 100 }, "tuned_frame_distribution": { "safe_driving": 9, "phone_usage": 22, "distracted_driving": 69 } }, { "video": "KA3301_Closed_Eye_34885500.mp4", "device_id": "KA3301", "gt_label": "fatigue", "oem_prediction": "closed_eye", "oem_correct": true, "asis_prediction": "distracted_driving", "asis_correct": false, "tuned_prediction": "distracted_driving", "tuned_correct": false, "modality": "ir", "camera": "driver_right_top", "num_frames": 106, "asis_frame_distribution": { "distracted_driving": 106 }, "tuned_frame_distribution": { "phone_usage": 11, "distracted_driving": 95 } }, { "video": "KA3301_Closed_Eye_34885505.mp4", "device_id": "KA3301", "gt_label": "distracted_driving", "oem_prediction": "closed_eye", "oem_correct": false, "asis_prediction": "distracted_driving", "asis_correct": true, "tuned_prediction": "distracted_driving", "tuned_correct": true, "modality": "ir", "camera": "driver_right_top", "num_frames": 106, "asis_frame_distribution": { "distracted_driving": 106 }, "tuned_frame_distribution": { "distracted_driving": 83, "phone_usage": 15, "safe_driving": 8 } }, { "video": "KA3301_Closed_Eye_34885509.mp4", "device_id": "KA3301", "gt_label": "distracted_driving", "oem_prediction": "closed_eye", "oem_correct": false, "asis_prediction": "distracted_driving", "asis_correct": true, "tuned_prediction": "distracted_driving", "tuned_correct": true, "modality": "ir", "camera": "driver_right_top", "num_frames": 106, "asis_frame_distribution": { "distracted_driving": 106 }, "tuned_frame_distribution": { "distracted_driving": 58, "safe_driving": 44, "phone_usage": 4 } }, { "video": "KA3301_Closed_Eye_34885559.mp4", "device_id": "KA3301", "gt_label": "distracted_driving", "oem_prediction": "closed_eye", "oem_correct": false, "asis_prediction": "distracted_driving", "asis_correct": true, "tuned_prediction": "safe_driving", "tuned_correct": false, "modality": "ir", "camera": "driver_right_top", "num_frames": 100, "asis_frame_distribution": { "distracted_driving": 100 }, "tuned_frame_distribution": { "safe_driving": 61, "distracted_driving": 3, "phone_usage": 36 } }, { "video": "KA3301_Distraction_Driving_34885339.mp4", "device_id": "KA3301", "gt_label": "safe_driving", "oem_prediction": "distraction_driving", "oem_correct": false, "asis_prediction": "distracted_driving", "asis_correct": false, "tuned_prediction": "safe_driving", "tuned_correct": true, "modality": "rgb", "camera": "driver_right_top", "num_frames": 101, "asis_frame_distribution": { "distracted_driving": 101 }, "tuned_frame_distribution": { "safe_driving": 61, "phone_usage": 40 } }, { "video": "KA3301_Distraction_Driving_34885393.mp4", "device_id": "KA3301", "gt_label": "safe_driving", "oem_prediction": "distraction_driving", "oem_correct": false, "asis_prediction": "distracted_driving", "asis_correct": false, "tuned_prediction": "safe_driving", "tuned_correct": true, "modality": "ir", "camera": "driver_right_top", "num_frames": 101, "asis_frame_distribution": { "distracted_driving": 101 }, "tuned_frame_distribution": { "distracted_driving": 34, "safe_driving": 65, "phone_usage": 1, "fatigue": 1 } }, { "video": "KA3301_Distraction_Driving_34885549.mp4", "device_id": "KA3301", "gt_label": "safe_driving", "oem_prediction": "distraction_driving", "oem_correct": false, "asis_prediction": "distracted_driving", "asis_correct": false, "tuned_prediction": "safe_driving", "tuned_correct": true, "modality": "ir", "camera": "driver_right_top", "num_frames": 101, "asis_frame_distribution": { "distracted_driving": 101 }, "tuned_frame_distribution": { "safe_driving": 70, "phone_usage": 24, "distracted_driving": 7 } }, { "video": "KA3301_Distraction_Driving_34885553.mp4", "device_id": "KA3301", "gt_label": "fatigue", "oem_prediction": "distraction_driving", "oem_correct": false, "asis_prediction": "distracted_driving", "asis_correct": false, "tuned_prediction": "safe_driving", "tuned_correct": false, "modality": "ir", "camera": "driver_right_top", "num_frames": 100, "asis_frame_distribution": { "distracted_driving": 100 }, "tuned_frame_distribution": { "safe_driving": 84, "distracted_driving": 15, "phone_usage": 1 } }, { "video": "KA3301_Distraction_Driving_34885592.mp4", "device_id": "KA3301", "gt_label": "safe_driving", "oem_prediction": "distraction_driving", "oem_correct": false, "asis_prediction": "distracted_driving", "asis_correct": false, "tuned_prediction": "safe_driving", "tuned_correct": true, "modality": "ir", "camera": "driver_right_top", "num_frames": 101, "asis_frame_distribution": { "distracted_driving": 101 }, "tuned_frame_distribution": { "phone_usage": 32, "safe_driving": 61, "distracted_driving": 8 } }, { "video": "KA3301_Distraction_Driving_34885594.mp4", "device_id": "KA3301", "gt_label": "safe_driving", "oem_prediction": "distraction_driving", "oem_correct": false, "asis_prediction": "distracted_driving", "asis_correct": false, "tuned_prediction": "safe_driving", "tuned_correct": true, "modality": "ir", "camera": "driver_right_top", "num_frames": 100, "asis_frame_distribution": { "distracted_driving": 100 }, "tuned_frame_distribution": { "distracted_driving": 14, "safe_driving": 63, "phone_usage": 23 } }, { "video": "KA3301_Distraction_Driving_34885665.mp4", "device_id": "KA3301", "gt_label": "safe_driving", "oem_prediction": "distraction_driving", "oem_correct": false, "asis_prediction": "distracted_driving", "asis_correct": false, "tuned_prediction": "distracted_driving", "tuned_correct": false, "modality": "ir", "camera": "driver_right_top", "num_frames": 100, "asis_frame_distribution": { "distracted_driving": 100 }, "tuned_frame_distribution": { "distracted_driving": 56, "phone_usage": 9, "safe_driving": 35 } }, { "video": "KA3301_Seat_Belt_34885670.mp4", "device_id": "KA3301", "gt_label": "seatbelt", "oem_prediction": "seat_belt", "oem_correct": true, "asis_prediction": "distracted_driving", "asis_correct": false, "tuned_prediction": "safe_driving", "tuned_correct": false, "modality": "ir", "camera": "driver_right_top", "num_frames": 101, "asis_frame_distribution": { "distracted_driving": 101 }, "tuned_frame_distribution": { "distracted_driving": 41, "safe_driving": 60 } }, { "video": "KA3301_Yawn_34885507.mp4", "device_id": "KA3301", "gt_label": "fatigue", "oem_prediction": "yawn", "oem_correct": true, "asis_prediction": "distracted_driving", "asis_correct": false, "tuned_prediction": "distracted_driving", "tuned_correct": false, "modality": "ir", "camera": "driver_right_top", "num_frames": 100, "asis_frame_distribution": { "distracted_driving": 100 }, "tuned_frame_distribution": { "distracted_driving": 78, "safe_driving": 21, "phone_usage": 1 } }];
+
+    const OEM_MAP = {
+      'distraction_driving': 'distracted_driving', 'seat_belt': 'seatbelt',
+      'call': 'phone_usage', 'closed_eye': 'fatigue', 'yawn': 'fatigue',
+      'fatigue': 'fatigue', 'smoke': 'unknown'
+    };
+    DATA.forEach(d => {
+      d.oem_mapped = OEM_MAP[d.oem_prediction] || d.oem_prediction;
+      if (d.oem_correct && d.tuned_correct) d.change = 'both_right';
+      else if (!d.oem_correct && d.tuned_correct) d.change = 'fixed';
+      else if (d.oem_correct && !d.tuned_correct) d.change = 'broke';
+      else d.change = 'both_wrong';
+    });
+
+    const CLASS_CHIP = {
+      'safe_driving': 'chip-safe', 'fatigue': 'chip-fatigue', 'distracted_driving': 'chip-distracted',
+      'phone_usage': 'chip-phone', 'seatbelt': 'chip-seatbelt', 'drinking_eating': 'chip-drinking'
+    };
+    const CLASS_COLOR = {
+      'safe_driving': 'var(--accent)', 'fatigue': 'var(--text-dim)', 'distracted_driving': 'var(--purple)',
+      'phone_usage': 'var(--red)', 'seatbelt': 'var(--teal)', 'drinking_eating': 'var(--accent-3)'
+    };
+
+    function chip(label) { return `<span class="chip ${CLASS_CHIP[label] || ''}">${label}</span>`; }
+    function icon(ok) { return ok ? '<span class="icon-ok">&#x2713;</span>' : '<span class="icon-no">&#x2717;</span>'; }
+    function changeTag(c) {
+      const m = {
+        'fixed': ['change-fixed', 'fixed'], 'broke': ['change-broke', 'broke'],
+        'both_right': ['change-both-right', 'both ok'], 'both_wrong': ['change-both-wrong', 'both bad']
+      };
+      const [cls, txt] = m[c] || ['', c];
+      return `<span class="change-tag ${cls}">${txt}</span>`;
+    }
+
+    // ===== Per-Class Bars =====
+    (function () {
+      const classes = ['safe_driving', 'fatigue', 'distracted_driving', 'phone_usage', 'seatbelt'];
+      const cd = classes.map(cls => {
+        const v = DATA.filter(d => d.gt_label === cls); const n = v.length;
+        return {
+          cls, n,
+          oem: n ? v.filter(d => d.oem_correct).length / n * 100 : 0,
+          asis: n ? v.filter(d => d.asis_correct).length / n * 100 : 0,
+          tuned: n ? v.filter(d => d.tuned_correct).length / n * 100 : 0
+        };
+      }).sort((a, b) => b.n - a.n);
+
+      function render(id, getAcc, barColor, vsOem) {
+        let html = '';
+        cd.forEach(d => {
+          const acc = getAcc(d);
+          const c = barColor || CLASS_COLOR[d.cls] || 'var(--accent-2)';
+          let dHtml = '';
+          if (vsOem) {
+            const dl = acc - d.oem;
+            dHtml = ` <span class="delta ${dl >= 0 ? 'pos' : 'neg'}">${dl >= 0 ? '+' : ''}${dl.toFixed(0)}pp</span>`;
+          }
+          const marker = vsOem ? `<div class="bar-oem" style="left:${d.oem}%" title="OEM: ${d.oem.toFixed(0)}%"></div>` : '';
+          html += `<div class="bar-row">
+            <div class="bar-label">${d.cls} <span style="color:var(--text-muted)">(${d.n})</span></div>
+            <div class="bar-track">${marker}<div class="bar-fill" style="width:${acc}%;background:${c}"></div></div>
+            <div class="bar-value">${acc.toFixed(0)}%${dHtml}</div>
+          </div>`;
+        });
+        document.getElementById(id).innerHTML = html;
+      }
+
+      render('bars-oem', d => d.oem, 'var(--text-muted)', false);
+      render('bars-asis', d => d.asis, 'var(--accent-3)', true);
+      render('bars-tuned', d => d.tuned, null, true);
+    })();
+
+    // ===== Modality =====
+    (function () {
+      const c = document.getElementById('modality-card'); let html = '';
+      ['ir', 'rgb'].forEach((mod, i) => {
+        const v = DATA.filter(d => d.modality === mod); const n = v.length;
+        const oem = (v.filter(d => d.oem_correct).length / n * 100).toFixed(1);
+        const tuned = (v.filter(d => d.tuned_correct).length / n * 100).toFixed(1);
+        const dl = (parseFloat(tuned) - parseFloat(oem)).toFixed(1);
+        html += `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;${i === 0 ? 'border-bottom:1px solid var(--border)' : ''}">
+          <div><span style="font-family:var(--mono);font-size:13px;font-weight:600">${mod.toUpperCase()}</span>
+          <span style="font-size:10px;color:var(--text-muted);margin-left:4px">(${n} videos)</span></div>
+          <div style="text-align:right">
+            <span style="font-family:var(--mono);font-size:15px;font-weight:700">${tuned}%</span>
+            <span class="delta ${parseFloat(dl) >= 0 ? 'pos' : 'neg'}">${parseFloat(dl) >= 0 ? '+' : ''}${dl}pp</span>
+            <div style="font-size:9px;color:var(--text-muted)">OEM ${oem}%</div>
+          </div>
+        </div>`;
+      });
+      c.innerHTML = html;
+    })();
+
+    // ===== Top Errors =====
+    (function () {
+      const c = document.getElementById('top-errors');
+      const wrong = DATA.filter(d => !d.tuned_correct); const pairs = {};
+      wrong.forEach(d => { const k = d.gt_label + ' -> ' + d.tuned_prediction; pairs[k] = (pairs[k] || 0) + 1; });
+      const sorted = Object.entries(pairs).sort((a, b) => b[1] - a[1]).slice(0, 5);
+      let html = '';
+      sorted.forEach(([pair, count]) => {
+        const [gt, pred] = pair.split(' -> ');
+        html += `<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)">
+          <span style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--red);min-width:24px">${count}</span>
+          ${chip(gt)} <span style="color:var(--text-muted)">&rarr;</span> ${chip(pred)}
+        </div>`;
+      });
+      c.innerHTML = html;
+    })();
+
+    // ===== Video Table =====
+    let activeFilters = new Set(), sortKey = 'video', sortAsc = true;
+    function renderFilters() {
+      const c = document.getElementById('filters');
+      const counts = {}; DATA.forEach(d => { counts[d.change] = (counts[d.change] || 0) + 1; });
+      const types = [
+        ['all', `All (${DATA.length})`], ['fixed', `Fixed (${counts.fixed || 0})`],
+        ['broke', `Broke (${counts.broke || 0})`], ['both_right', `Both OK (${counts.both_right || 0})`],
+        ['both_wrong', `Both Bad (${counts.both_wrong || 0})`]
+      ];
+      let html = '';
+      types.forEach(([t, label]) => {
+        const active = (activeFilters.size === 0 && t === 'all') || activeFilters.has(t) ? ' active' : '';
+        html += `<button class="filter-btn${active}" onclick="toggleFilter('${t}')">${label}</button>`;
+      });
+      c.innerHTML = html;
+    }
+    function toggleFilter(t) {
+      if (t === 'all') activeFilters.clear();
+      else { if (activeFilters.has(t)) activeFilters.delete(t); else activeFilters.add(t); }
+      renderFilters(); renderTable();
+    }
+    function sortTable(key) {
+      if (sortKey === key) sortAsc = !sortAsc; else { sortKey = key; sortAsc = true; }
+      renderTable();
+    }
+    function renderTable() {
+      const tbody = document.getElementById('video-tbody');
+      let f = activeFilters.size > 0 ? DATA.filter(d => activeFilters.has(d.change)) : DATA;
+      f = [...f].sort((a, b) => { const va = a[sortKey] || '', vb = b[sortKey] || ''; return sortAsc ? (va < vb ? -1 : 1) : (va > vb ? -1 : 1); });
+      let html = '';
+      f.forEach(d => {
+        html += `<tr>
+          <td style="font-family:var(--mono);font-size:10px;padding-left:20px;max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${d.video}">${d.video.replace('.mp4', '')}</td>
+          <td><span style="font-family:var(--mono);font-size:10px;color:var(--text-muted)">${d.modality}</span></td>
+          <td>${chip(d.gt_label)}</td>
+          <td>${chip(d.oem_mapped)} ${icon(d.oem_correct)}</td>
+          <td>${chip(d.tuned_prediction)} ${icon(d.tuned_correct)}</td>
+          <td>${changeTag(d.change)}</td>
+        </tr>`;
+      });
+      tbody.innerHTML = html;
+    }
+    renderFilters(); renderTable();
+
+    // ===== Slide counter =====
+    const slides = document.querySelectorAll('.slide');
+    const counter = document.getElementById('slideCounter');
+    const navLinks = document.querySelectorAll('nav a:not([href="index.html"])');
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          const idx = [...slides].indexOf(e.target);
+          counter.textContent = `${idx + 1} / ${slides.length}`;
+          navLinks.forEach(a => a.classList.remove('active'));
+          const match = document.querySelector(`nav a[href="#${e.target.id}"]`);
+          if (match) match.classList.add('active');
+        }
+      });
+    }, { threshold: 0.5 });
+    slides.forEach(s => observer.observe(s));
+
+    // Lightbox
+    function openLightbox(src) {
+      document.getElementById('lightbox-img').src = src;
+      document.getElementById('lightbox').classList.add('active');
+    }
+    function closeLightbox() {
+      document.getElementById('lightbox').classList.remove('active');
+    }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+  </script>
+</body>
+
+</html>
