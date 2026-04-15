@@ -40,7 +40,7 @@
   <h3>Detailed pipeline stages for Data, Model, and HW teams — with action items and expected outcomes</h3>
 
   <div class="flowchart-container" style="align-items:center;">
-    <svg viewBox="0 0 1400 550" xmlns="http://www.w3.org/2000/svg" width="1700">
+    <svg viewBox="0 0 1400 660" xmlns="http://www.w3.org/2000/svg" width="1700">
       <defs>
         <marker id="arrow-g" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
           <path d="M0,0 L8,3 L0,6" fill="none" stroke="#0E9A7E" stroke-width="1.2" /></marker>
@@ -50,204 +50,260 @@
           <path d="M0,0 L8,3 L0,6" fill="none" stroke="#C88A1A" stroke-width="1.2" /></marker>
         <marker id="arrow-w" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
           <path d="M0,0 L8,3 L0,6" fill="none" stroke="#8E92A0" stroke-width="1.2" /></marker>
+        <!-- Status indicator styles (reference):
+             Planned:     circle fill="none" stroke="#B0B3BE" stroke-width="1.2"
+             In Progress: circle fill="#E8A317" stroke="none"
+             Done:        circle fill="#0E9A7E" stroke="none"
+        -->
       </defs>
 
       <!-- ===== DATA TEAM (Row 1) ===== -->
       <text x="20" y="44" fill="#0E9A7E" font-size="11" font-weight="600" letter-spacing="0.08em">DATA TEAM</text>
 
-      <!-- Sub-row 1: stages 1-5 -->
-      <rect x="20" y="56" width="140" height="54" rx="6" fill="#FFF" stroke="#E0E2E8" />
-      <text x="90" y="78" fill="#1A1D26" font-size="12.5" font-weight="500" text-anchor="middle">Data Ingestion</text>
-      <text x="90" y="93" fill="#8E92A0" font-size="10" text-anchor="middle">All data sources</text>
+      <!-- Sub-row 1: stages 1-5  (y=56, h=68) -->
+      <rect x="20" y="56" width="140" height="68" rx="6" fill="#FFF" stroke="#E0E2E8" />
+      <text x="90" y="76" fill="#1A1D26" font-size="12.5" font-weight="500" text-anchor="middle">Data Ingestion</text>
+      <text x="90" y="90" fill="#8E92A0" font-size="10" text-anchor="middle">All data sources</text>
+      <circle cx="36" cy="107" r="3" fill="none" stroke="#B0B3BE" stroke-width="1.2"/>
+      <text x="44" y="110" fill="#B0B3BE" font-size="9">Operational Challenge</text>
 
-      <rect x="186" y="56" width="140" height="54" rx="6" fill="#FFF" stroke="#0E9A7E" stroke-opacity="0.4" />
-      <text x="256" y="78" fill="#1A1D26" font-size="12.5" font-weight="500" text-anchor="middle">Storage &amp; Org</text>
-      <text x="256" y="93" fill="#0E9A7E" font-size="10" text-anchor="middle">Structured data lake</text>
+      <rect x="186" y="56" width="140" height="68" rx="6" fill="#FFF" stroke="#0E9A7E" stroke-opacity="0.4" />
+      <text x="256" y="76" fill="#1A1D26" font-size="12.5" font-weight="500" text-anchor="middle">Storage &amp; Org</text>
+      <text x="256" y="90" fill="#0E9A7E" font-size="10" text-anchor="middle">Structured data lake</text>
+      <circle cx="202" cy="107" r="3" fill="none" stroke="#B0B3BE" stroke-width="1.2"/>
+      <text x="210" y="110" fill="#B0B3BE" font-size="9">Operational Challenge</text>
 
-      <rect x="352" y="56" width="140" height="54" rx="6" fill="#FFF" stroke="#0E9A7E" stroke-opacity="0.4" />
-      <text x="422" y="78" fill="#1A1D26" font-size="12.5" font-weight="500" text-anchor="middle">Storage Optimiz.</text>
-      <text x="422" y="93" fill="#0E9A7E" font-size="10" text-anchor="middle">Dedup, compression</text>
+      <rect x="352" y="56" width="140" height="68" rx="6" fill="#FFF" stroke="#0E9A7E" stroke-opacity="0.4" />
+      <text x="422" y="76" fill="#1A1D26" font-size="12.5" font-weight="500" text-anchor="middle">Storage Optimiz.</text>
+      <text x="422" y="90" fill="#0E9A7E" font-size="10" text-anchor="middle">Dedup, compression</text>
+      <circle cx="368" cy="107" r="3" fill="none" stroke="#B0B3BE" stroke-width="1.2"/>
+      <text x="376" y="110" fill="#B0B3BE" font-size="9">Operational Challenge</text>
 
-      <rect x="518" y="56" width="140" height="54" rx="6" fill="#FFF" stroke="#0E9A7E" stroke-opacity="0.4" />
-      <text x="588" y="78" fill="#1A1D26" font-size="12.5" font-weight="500" text-anchor="middle">Frame Extraction</text>
-      <text x="588" y="93" fill="#0E9A7E" font-size="10" text-anchor="middle">Video → key frames</text>
+      <rect x="518" y="56" width="140" height="68" rx="6" fill="#FFF" stroke="#0E9A7E" stroke-opacity="0.4" />
+      <text x="588" y="76" fill="#1A1D26" font-size="12.5" font-weight="500" text-anchor="middle">Frame Extraction</text>
+      <text x="588" y="90" fill="#0E9A7E" font-size="10" text-anchor="middle">Video → key frames</text>
+      <circle cx="534" cy="107" r="3" fill="none" stroke="#B0B3BE" stroke-width="1.2"/>
+      <text x="542" y="110" fill="#B0B3BE" font-size="9">4d</text>
 
-      <rect x="684" y="56" width="140" height="54" rx="6" fill="#FFF" stroke="#0E9A7E" stroke-opacity="0.4" />
-      <text x="754" y="78" fill="#1A1D26" font-size="12.5" font-weight="500" text-anchor="middle">Preprocessing</text>
-      <text x="754" y="93" fill="#0E9A7E" font-size="10" text-anchor="middle">Resize, crop, normalize</text>
+      <rect x="684" y="56" width="140" height="68" rx="6" fill="#FFF" stroke="#0E9A7E" stroke-opacity="0.4" />
+      <text x="754" y="76" fill="#1A1D26" font-size="12.5" font-weight="500" text-anchor="middle">Preprocessing</text>
+      <text x="754" y="90" fill="#0E9A7E" font-size="10" text-anchor="middle">Resize, crop, normalize</text>
+      <circle cx="700" cy="107" r="3" fill="#E8A317"/>
+      <text x="708" y="110" fill="#B0B3BE" font-size="9">6d</text>
 
-      <!-- Sub-row 1 arrows -->
-      <line x1="160" y1="83" x2="186" y2="83" stroke="#0E9A7E" stroke-width="1.2" marker-end="url(#arrow-g)" />
-      <line x1="326" y1="83" x2="352" y2="83" stroke="#0E9A7E" stroke-width="1.2" marker-end="url(#arrow-g)" />
-      <line x1="492" y1="83" x2="518" y2="83" stroke="#0E9A7E" stroke-width="1.2" marker-end="url(#arrow-g)" />
-      <line x1="658" y1="83" x2="684" y2="83" stroke="#0E9A7E" stroke-width="1.2" marker-end="url(#arrow-g)" />
+      <!-- Sub-row 1 arrows (y=90) -->
+      <line x1="160" y1="90" x2="186" y2="90" stroke="#0E9A7E" stroke-width="1.2" marker-end="url(#arrow-g)" />
+      <line x1="326" y1="90" x2="352" y2="90" stroke="#0E9A7E" stroke-width="1.2" marker-end="url(#arrow-g)" />
+      <line x1="492" y1="90" x2="518" y2="90" stroke="#0E9A7E" stroke-width="1.2" marker-end="url(#arrow-g)" />
+      <line x1="658" y1="90" x2="684" y2="90" stroke="#0E9A7E" stroke-width="1.2" marker-end="url(#arrow-g)" />
 
       <!-- Wrap connector: sub-row 1 → sub-row 2 -->
-      <path d="M824,83 L848,83 L848,122 L8,122 L8,161 L20,161" fill="none" stroke="#0E9A7E" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#arrow-g)" />
+      <path d="M824,90 L848,90 L848,133 L8,133 L8,182 L20,182" fill="none" stroke="#0E9A7E" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#arrow-g)" />
 
-      <!-- Sub-row 2: stages 6-10 -->
-      <rect x="20" y="134" width="140" height="54" rx="6" fill="#FFF" stroke="#0E9A7E" stroke-opacity="0.4" />
-      <text x="90" y="156" fill="#1A1D26" font-size="12.5" font-weight="500" text-anchor="middle">Auto Annotation</text>
-      <text x="90" y="171" fill="#0E9A7E" font-size="10" text-anchor="middle">Model-assisted labels</text>
+      <!-- Sub-row 2: stages 6-10  (y=148, h=68 / milestone y=142, h=80) -->
+      <rect x="20" y="148" width="140" height="68" rx="6" fill="#FFF" stroke="#0E9A7E" stroke-opacity="0.4" />
+      <text x="90" y="168" fill="#1A1D26" font-size="12.5" font-weight="500" text-anchor="middle">Auto Annotation</text>
+      <text x="90" y="182" fill="#0E9A7E" font-size="10" text-anchor="middle">Model-assisted labels</text>
+      <circle cx="36" cy="199" r="3" fill="#E8A317"/>
+      <text x="44" y="202" fill="#B0B3BE" font-size="9">12d</text>
 
-      <rect x="186" y="134" width="140" height="54" rx="6" fill="#FFF" stroke="#0E9A7E" stroke-opacity="0.4" />
-      <text x="256" y="156" fill="#1A1D26" font-size="12.5" font-weight="500" text-anchor="middle">Data Augment.</text>
-      <text x="256" y="171" fill="#0E9A7E" font-size="10" text-anchor="middle">Transform pipeline</text>
+      <rect x="186" y="148" width="140" height="68" rx="6" fill="#FFF" stroke="#0E9A7E" stroke-opacity="0.4" />
+      <text x="256" y="168" fill="#1A1D26" font-size="12.5" font-weight="500" text-anchor="middle">Data Augment.</text>
+      <text x="256" y="182" fill="#0E9A7E" font-size="10" text-anchor="middle">Transform pipeline</text>
+      <circle cx="202" cy="199" r="3" fill="#E8A317"/>
+      <text x="210" y="202" fill="#B0B3BE" font-size="9">3d</text>
 
-      <rect x="352" y="134" width="140" height="54" rx="6" fill="#FFF" stroke="#0E9A7E" stroke-opacity="0.4" />
-      <text x="422" y="156" fill="#1A1D26" font-size="12.5" font-weight="500" text-anchor="middle">Manual Validation</text>
-      <text x="422" y="171" fill="#0E9A7E" font-size="10" text-anchor="middle">Human QA review</text>
+      <rect x="352" y="148" width="140" height="68" rx="6" fill="#FFF" stroke="#0E9A7E" stroke-opacity="0.4" />
+      <text x="422" y="168" fill="#1A1D26" font-size="12.5" font-weight="500" text-anchor="middle">Manual Validation</text>
+      <text x="422" y="182" fill="#0E9A7E" font-size="10" text-anchor="middle">Human QA review</text>
+      <circle cx="368" cy="199" r="3" fill="none" stroke="#B0B3BE" stroke-width="1.2"/>
+      <text x="376" y="202" fill="#B0B3BE" font-size="9">4d</text>
 
       <!-- Milestone: Consolidated Dataset -->
-      <rect x="518" y="128" width="140" height="66" rx="8" fill="#E8F5F1" stroke="#0E9A7E" stroke-width="1.5" />
-      <text x="588" y="152" fill="#0E9A7E" font-size="13" font-weight="600" text-anchor="middle">Consolidated</text>
-      <text x="588" y="166" fill="#0E9A7E" font-size="13" font-weight="600" text-anchor="middle">Dataset</text>
-      <text x="588" y="182" fill="#8E92A0" font-size="10" text-anchor="middle">Validated &amp; unified</text>
+      <rect x="518" y="142" width="140" height="80" rx="8" fill="#E8F5F1" stroke="#0E9A7E" stroke-width="1.5" />
+      <text x="588" y="160" fill="#0E9A7E" font-size="13" font-weight="600" text-anchor="middle">Consolidated</text>
+      <text x="588" y="174" fill="#0E9A7E" font-size="13" font-weight="600" text-anchor="middle">Dataset</text>
+      <text x="588" y="190" fill="#8E92A0" font-size="10" text-anchor="middle">Validated &amp; unified</text>
+      <circle cx="534" cy="207" r="3" fill="none" stroke="#B0B3BE" stroke-width="1.2"/>
+      <text x="542" y="210" fill="#B0B3BE" font-size="9">TBD</text>
 
-      <rect x="684" y="134" width="140" height="54" rx="6" fill="#FFF" stroke="#0E9A7E" stroke-opacity="0.4" />
-      <text x="754" y="156" fill="#1A1D26" font-size="12.5" font-weight="500" text-anchor="middle">Continuous Monitor</text>
-      <text x="754" y="171" fill="#0E9A7E" font-size="10" text-anchor="middle">Drift &amp; quality</text>
+      <rect x="684" y="148" width="140" height="68" rx="6" fill="#FFF" stroke="#0E9A7E" stroke-opacity="0.4" />
+      <text x="754" y="168" fill="#1A1D26" font-size="12.5" font-weight="500" text-anchor="middle">Continuous Monitor</text>
+      <text x="754" y="182" fill="#0E9A7E" font-size="10" text-anchor="middle">Drift &amp; quality</text>
+      <circle cx="700" cy="199" r="3" fill="none" stroke="#B0B3BE" stroke-width="1.2"/>
+      <text x="708" y="202" fill="#B0B3BE" font-size="9">TBD</text>
 
-      <!-- Sub-row 2 arrows -->
-      <line x1="160" y1="161" x2="186" y2="161" stroke="#0E9A7E" stroke-width="1.2" marker-end="url(#arrow-g)" />
-      <line x1="326" y1="161" x2="352" y2="161" stroke="#0E9A7E" stroke-width="1.2" marker-end="url(#arrow-g)" />
-      <line x1="492" y1="161" x2="518" y2="161" stroke="#0E9A7E" stroke-width="1.2" marker-end="url(#arrow-g)" />
-      <line x1="658" y1="161" x2="684" y2="161" stroke="#0E9A7E" stroke-width="1.2" marker-end="url(#arrow-g)" />
+      <!-- Sub-row 2 arrows (y=182) -->
+      <line x1="160" y1="182" x2="186" y2="182" stroke="#0E9A7E" stroke-width="1.2" marker-end="url(#arrow-g)" />
+      <line x1="326" y1="182" x2="352" y2="182" stroke="#0E9A7E" stroke-width="1.2" marker-end="url(#arrow-g)" />
+      <line x1="492" y1="182" x2="518" y2="182" stroke="#0E9A7E" stroke-width="1.2" marker-end="url(#arrow-g)" />
+      <line x1="658" y1="182" x2="684" y2="182" stroke="#0E9A7E" stroke-width="1.2" marker-end="url(#arrow-g)" />
 
       <!-- ===== MODEL TEAM (Row 2) ===== -->
-      <text x="20" y="232" fill="#3B6FD6" font-size="11" font-weight="600" letter-spacing="0.08em">MODEL TEAM</text>
+      <text x="20" y="248" fill="#3B6FD6" font-size="11" font-weight="600" letter-spacing="0.08em">MODEL TEAM</text>
 
-      <!-- Early phase: built & tested BEFORE consolidated data -->
-      <rect x="20" y="248" width="140" height="54" rx="6" fill="#FFF" stroke="#E0E2E8" />
-      <text x="90" y="270" fill="#1A1D26" font-size="12.5" font-weight="500" text-anchor="middle">Error Analysis</text>
-      <text x="90" y="285" fill="#8E92A0" font-size="10" text-anchor="middle">OEM benchmark gaps</text>
+      <!-- Error Analysis -->
+      <rect x="20" y="266" width="140" height="68" rx="6" fill="#FFF" stroke="#E0E2E8" />
+      <text x="90" y="286" fill="#1A1D26" font-size="12.5" font-weight="500" text-anchor="middle">Error Analysis</text>
+      <text x="90" y="300" fill="#8E92A0" font-size="10" text-anchor="middle">OEM benchmark gaps</text>
+      <circle cx="36" cy="317" r="3" fill="#0E9A7E"/>
+      <text x="44" y="320" fill="#B0B3BE" font-size="9">Done</text>
 
-      <rect x="186" y="248" width="140" height="54" rx="6" fill="#FFF" stroke="#3B6FD6" stroke-opacity="0.4" />
-      <text x="256" y="270" fill="#1A1D26" font-size="12.5" font-weight="500" text-anchor="middle">Pipeline Dev</text>
-      <text x="256" y="285" fill="#3B6FD6" font-size="10" text-anchor="middle">Eval &amp; training tools</text>
+      <!-- Arrow: Error Analysis → Top OS Models -->
+      <line x1="160" y1="300" x2="186" y2="300" stroke="#3B6FD6" stroke-width="1.2" marker-end="url(#arrow-b)" />
 
-      <rect x="352" y="248" width="140" height="54" rx="6" fill="#FFF" stroke="#3B6FD6" stroke-opacity="0.4" />
-      <text x="422" y="270" fill="#1A1D26" font-size="12.5" font-weight="500" text-anchor="middle">OS Frameworks</text>
-      <text x="422" y="285" fill="#3B6FD6" font-size="10" text-anchor="middle">Models &amp; architectures</text>
+      <!-- Top OS Models -->
+      <rect x="186" y="266" width="140" height="68" rx="6" fill="#FFF" stroke="#3B6FD6" stroke-opacity="0.4" />
+      <text x="256" y="286" fill="#1A1D26" font-size="12.5" font-weight="500" text-anchor="middle">Top OS Models</text>
+      <text x="256" y="300" fill="#3B6FD6" font-size="10" text-anchor="middle">Frameworks &amp; archs</text>
+      <circle cx="202" cy="317" r="3" fill="#0E9A7E"/>
+      <text x="210" y="320" fill="#B0B3BE" font-size="9">Done</text>
 
-      <!-- Arrows: early phase (solid — active work) -->
-      <line x1="160" y1="275" x2="186" y2="275" stroke="#3B6FD6" stroke-width="1.2" marker-end="url(#arrow-b)" />
-      <line x1="326" y1="275" x2="352" y2="275" stroke="#3B6FD6" stroke-width="1.2" marker-end="url(#arrow-b)" />
+      <!-- Fork: trunk line + junction dot -->
+      <line x1="326" y1="300" x2="422" y2="300" stroke="#3B6FD6" stroke-width="1.2" />
+      <circle cx="422" cy="300" r="4" fill="#3B6FD6" />
 
-      <!-- Dashed gap: awaiting consolidated data before fine-tuning -->
-      <line x1="492" y1="275" x2="534" y2="275" stroke="#3B6FD6" stroke-width="1.2" stroke-dasharray="6,4" marker-end="url(#arrow-b)" />
-      <text x="513" y="264" fill="#3B6FD6" font-size="9" font-style="italic" text-anchor="middle">awaits data</text>
+      <!-- Upper fork branch → Train on Dataset -->
+      <path d="M422,300 L422,284 L518,284" fill="none" stroke="#3B6FD6" stroke-width="1.2" marker-end="url(#arrow-b)" />
 
-      <!-- Post-data phase: fine-tune with consolidated dataset -->
-      <rect x="534" y="248" width="140" height="54" rx="6" fill="#FFF" stroke="#3B6FD6" stroke-opacity="0.4" />
-      <text x="604" y="270" fill="#1A1D26" font-size="12.5" font-weight="500" text-anchor="middle">Fine-tune &amp; Select</text>
-      <text x="604" y="285" fill="#3B6FD6" font-size="10" text-anchor="middle">On consolidated data</text>
+      <!-- Lower fork branch → Model Experiments -->
+      <path d="M422,300 L422,370 L518,370" fill="none" stroke="#3B6FD6" stroke-width="1.2" marker-end="url(#arrow-b)" />
 
-      <line x1="674" y1="275" x2="700" y2="275" stroke="#3B6FD6" stroke-width="1.2" marker-end="url(#arrow-b)" />
+      <!-- Train on Dataset (upper fork) -->
+      <rect x="518" y="250" width="140" height="68" rx="6" fill="#FFF" stroke="#3B6FD6" stroke-opacity="0.4" />
+      <text x="588" y="270" fill="#1A1D26" font-size="12.5" font-weight="500" text-anchor="middle">Train on Dataset</text>
+      <text x="588" y="284" fill="#3B6FD6" font-size="10" text-anchor="middle">Consolidated data</text>
+      <circle cx="534" cy="301" r="3" fill="none" stroke="#B0B3BE" stroke-width="1.2"/>
+      <text x="542" y="304" fill="#B0B3BE" font-size="9">5d</text>
+
+      <!-- Model Experiments (lower fork) -->
+      <rect x="518" y="336" width="140" height="68" rx="6" fill="#FFF" stroke="#3B6FD6" stroke-opacity="0.4" />
+      <text x="588" y="356" fill="#1A1D26" font-size="12.5" font-weight="500" text-anchor="middle">Model Experiments</text>
+      <text x="588" y="370" fill="#3B6FD6" font-size="10" text-anchor="middle">Best combos &amp; approaches</text>
+      <circle cx="534" cy="387" r="3" fill="#E8A317"/>
+      <text x="542" y="390" fill="#B0B3BE" font-size="9">2w</text>
+
+      <!-- Convergence arrows → Deploy-Ready -->
+      <path d="M658,284 L675,284 L675,327 L700,327" fill="none" stroke="#3B6FD6" stroke-width="1.2" marker-end="url(#arrow-b)" />
+      <path d="M658,370 L675,370 L675,327 L700,327" fill="none" stroke="#3B6FD6" stroke-width="1.2" marker-end="url(#arrow-b)" />
 
       <!-- Milestone: Deploy-Ready List -->
-      <rect x="700" y="242" width="140" height="66" rx="8" fill="#E8F0FA" stroke="#3B6FD6" stroke-width="1.5" />
-      <text x="770" y="266" fill="#3B6FD6" font-size="13" font-weight="600" text-anchor="middle">Deploy-Ready</text>
-      <text x="770" y="280" fill="#3B6FD6" font-size="13" font-weight="600" text-anchor="middle">List</text>
-      <text x="770" y="296" fill="#8E92A0" font-size="10" text-anchor="middle">Validated models</text>
+      <rect x="700" y="287" width="140" height="80" rx="8" fill="#E8F0FA" stroke="#3B6FD6" stroke-width="1.5" />
+      <text x="770" y="305" fill="#3B6FD6" font-size="13" font-weight="600" text-anchor="middle">Deploy-Ready</text>
+      <text x="770" y="319" fill="#3B6FD6" font-size="13" font-weight="600" text-anchor="middle">List</text>
+      <text x="770" y="335" fill="#8E92A0" font-size="10" text-anchor="middle">Validated models</text>
+      <circle cx="716" cy="352" r="3" fill="none" stroke="#B0B3BE" stroke-width="1.2"/>
+      <text x="724" y="355" fill="#B0B3BE" font-size="9">Planned · TBD</text>
 
       <!-- ===== HW TEAM (Row 3) ===== -->
-      <text x="20" y="348" fill="#C88A1A" font-size="11" font-weight="600" letter-spacing="0.08em">HW TEAM</text>
+      <text x="20" y="430" fill="#C88A1A" font-size="11" font-weight="600" letter-spacing="0.08em">HW TEAM</text>
 
-      <!-- Sub-row 1: early HW pipeline (proceeds independently of final models) -->
-      <rect x="20" y="362" width="140" height="54" rx="6" fill="#FFF" stroke="#E0E2E8" />
-      <text x="90" y="384" fill="#1A1D26" font-size="12.5" font-weight="500" text-anchor="middle">Defined Specs</text>
-      <text x="90" y="399" fill="#8E92A0" font-size="10" text-anchor="middle">Model reqs &amp; HW specs</text>
+      <!-- Sub-row 1  (y=444, h=68) -->
+      <rect x="20" y="444" width="140" height="68" rx="6" fill="#FFF" stroke="#E0E2E8" />
+      <text x="90" y="464" fill="#1A1D26" font-size="12.5" font-weight="500" text-anchor="middle">Defined Specs</text>
+      <text x="90" y="478" fill="#8E92A0" font-size="10" text-anchor="middle">Model reqs &amp; HW specs</text>
+      <circle cx="36" cy="495" r="3" fill="#0E9A7E"/>
+      <text x="44" y="498" fill="#B0B3BE" font-size="9">Done</text>
 
-      <line x1="160" y1="389" x2="352" y2="389" stroke="#C88A1A" stroke-width="1.2" marker-end="url(#arrow-a)" />
+      <line x1="160" y1="478" x2="352" y2="478" stroke="#C88A1A" stroke-width="1.2" marker-end="url(#arrow-a)" />
 
-      <rect x="352" y="362" width="140" height="54" rx="6" fill="#FFF" stroke="#C88A1A" stroke-opacity="0.4" />
-      <text x="422" y="384" fill="#1A1D26" font-size="12.5" font-weight="500" text-anchor="middle">Fleet Testing</text>
-      <text x="422" y="399" fill="#C88A1A" font-size="10" text-anchor="middle">Deploy &amp; compare</text>
+      <rect x="352" y="444" width="140" height="68" rx="6" fill="#FFF" stroke="#C88A1A" stroke-opacity="0.4" />
+      <text x="422" y="464" fill="#1A1D26" font-size="12.5" font-weight="500" text-anchor="middle">Fleet Testing</text>
+      <text x="422" y="478" fill="#C88A1A" font-size="10" text-anchor="middle">Deploy &amp; compare</text>
+      <circle cx="368" cy="495" r="3" fill="#E8A317"/>
+      <text x="376" y="498" fill="#B0B3BE" font-size="9">5d</text>
 
-      <line x1="492" y1="389" x2="518" y2="389" stroke="#C88A1A" stroke-width="1.2" marker-end="url(#arrow-a)" />
+      <line x1="492" y1="478" x2="518" y2="478" stroke="#C88A1A" stroke-width="1.2" marker-end="url(#arrow-a)" />
 
-      <rect x="518" y="362" width="140" height="54" rx="6" fill="#FFF" stroke="#C88A1A" stroke-opacity="0.4" />
-      <text x="588" y="384" fill="#1A1D26" font-size="12.5" font-weight="500" text-anchor="middle">Eng. Design</text>
-      <text x="588" y="399" fill="#C88A1A" font-size="10" text-anchor="middle">SoC, BOM, CAD</text>
+      <rect x="518" y="444" width="140" height="68" rx="6" fill="#FFF" stroke="#C88A1A" stroke-opacity="0.4" />
+      <text x="588" y="464" fill="#1A1D26" font-size="12.5" font-weight="500" text-anchor="middle">Eng. Design</text>
+      <text x="588" y="478" fill="#C88A1A" font-size="10" text-anchor="middle">SoC, BOM, CAD</text>
+      <circle cx="534" cy="495" r="3" fill="none" stroke="#B0B3BE" stroke-width="1.2"/>
+      <text x="542" y="498" fill="#B0B3BE" font-size="9">Planned · TBD</text>
 
-      <!-- Vertical connector: sent to contract manufacturer (dashed — mfg lead time) -->
-      <line x1="588" y1="416" x2="588" y2="446" stroke="#C88A1A" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#arrow-a)" />
-      <text x="602" y="435" fill="#C88A1A" font-size="8.5" font-style="italic">contract mfg</text>
+      <!-- Vertical connector: contract manufacturer -->
+      <line x1="588" y1="512" x2="588" y2="540" stroke="#C88A1A" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#arrow-a)" />
+      <text x="602" y="530" fill="#C88A1A" font-size="8.5" font-style="italic">contract mfg</text>
 
-      <!-- Sub-row 2: post-manufacturing -->
-      <rect x="518" y="446" width="140" height="54" rx="6" fill="#FFF" stroke="#C88A1A" stroke-opacity="0.4" />
-      <text x="588" y="468" fill="#1A1D26" font-size="12.5" font-weight="500" text-anchor="middle">Receive &amp; Test</text>
-      <text x="588" y="483" fill="#C88A1A" font-size="10" text-anchor="middle">Manufactured HW</text>
+      <!-- Sub-row 2  (y=540, h=68 / milestone y=534, h=80) -->
+      <rect x="518" y="540" width="140" height="68" rx="6" fill="#FFF" stroke="#C88A1A" stroke-opacity="0.4" />
+      <text x="588" y="560" fill="#1A1D26" font-size="12.5" font-weight="500" text-anchor="middle">Receive &amp; Test</text>
+      <text x="588" y="574" fill="#C88A1A" font-size="10" text-anchor="middle">Manufactured HW</text>
+      <circle cx="534" cy="591" r="3" fill="none" stroke="#B0B3BE" stroke-width="1.2"/>
+      <text x="542" y="594" fill="#B0B3BE" font-size="9">Planned · TBD</text>
 
-      <line x1="658" y1="473" x2="700" y2="473" stroke="#C88A1A" stroke-width="1.2" marker-end="url(#arrow-a)" />
+      <line x1="658" y1="574" x2="700" y2="574" stroke="#C88A1A" stroke-width="1.2" marker-end="url(#arrow-a)" />
 
-      <!-- Milestone: Deploy finalized model to fleet -->
-      <rect x="700" y="440" width="140" height="66" rx="8" fill="#E8F5F1" stroke="#0E9A7E" stroke-width="1.5" />
-      <text x="770" y="464" fill="#0E9A7E" font-size="13" font-weight="600" text-anchor="middle">Deploy to</text>
-      <text x="770" y="478" fill="#0E9A7E" font-size="13" font-weight="600" text-anchor="middle">Fleet</text>
-      <text x="770" y="494" fill="#8E92A0" font-size="10" text-anchor="middle">Finalized model on HW</text>
+      <!-- Milestone: Deploy to Fleet -->
+      <rect x="700" y="534" width="140" height="80" rx="8" fill="#E8F5F1" stroke="#0E9A7E" stroke-width="1.5" />
+      <text x="770" y="552" fill="#0E9A7E" font-size="13" font-weight="600" text-anchor="middle">Deploy to</text>
+      <text x="770" y="566" fill="#0E9A7E" font-size="13" font-weight="600" text-anchor="middle">Fleet</text>
+      <text x="770" y="582" fill="#8E92A0" font-size="10" text-anchor="middle">Finalized model on HW</text>
+      <circle cx="716" cy="599" r="3" fill="none" stroke="#B0B3BE" stroke-width="1.2"/>
+      <text x="724" y="602" fill="#B0B3BE" font-size="9">Planned · TBD</text>
 
       <!-- ===== CROSS-TEAM DEPENDENCIES ===== -->
 
-      <!-- Data Consolidated Dataset → Model Fine-tune -->
-      <line x1="588" y1="194" x2="588" y2="242" stroke="#8E92A0" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#arrow-w)" />
-      <text x="574" y="222" fill="#8E92A0" font-size="9" font-style="italic" text-anchor="end">feeds data</text>
+      <!-- Data Consolidated Dataset → Model Train on Dataset -->
+      <line x1="588" y1="222" x2="588" y2="250" stroke="#8E92A0" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#arrow-w)" />
+      <text x="574" y="238" fill="#8E92A0" font-size="9" font-style="italic" text-anchor="end">feeds data</text>
 
-      <!-- Model OS Frameworks → HW Fleet Testing (early fleet deployment) -->
-      <line x1="422" y1="302" x2="422" y2="362" stroke="#8E92A0" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#arrow-w)" />
-      <text x="436" y="336" fill="#8E92A0" font-size="9" font-style="italic">fleet testing</text>
+      <!-- Model fork boxes → HW Fleet Testing (both branches feed fleet) -->
+      <path d="M588,318 L588,324 L504,324 L504,418" fill="none" stroke="#8E92A0" stroke-width="1.2" stroke-dasharray="4,3" />
+      <path d="M588,404 L588,410 L504,410 L504,418" fill="none" stroke="#8E92A0" stroke-width="1.2" stroke-dasharray="4,3" />
+      <circle cx="504" cy="418" r="3" fill="#8E92A0" />
+      <path d="M504,418 L422,418 L422,444" fill="none" stroke="#8E92A0" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#arrow-w)" />
+      <text x="460" y="412" fill="#8E92A0" font-size="9" font-style="italic" text-anchor="middle">fleet testing</text>
 
-      <!-- Model Deploy-Ready → HW Deploy to Fleet (final model handoff) -->
-      <line x1="770" y1="308" x2="770" y2="440" stroke="#8E92A0" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#arrow-w)" />
-      <text x="784" y="378" fill="#8E92A0" font-size="9" font-style="italic">model handoff</text>
+      <!-- Model Deploy-Ready → HW Deploy to Fleet -->
+      <line x1="770" y1="367" x2="770" y2="534" stroke="#8E92A0" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#arrow-w)" />
+      <text x="784" y="453" fill="#8E92A0" font-size="9" font-style="italic">model handoff</text>
 
       <!-- HW Specs ↔ Model constraints -->
-      <line x1="90" y1="302" x2="90" y2="362" stroke="#8E92A0" stroke-width="1" stroke-dasharray="3,3" />
+      <line x1="90" y1="334" x2="90" y2="444" stroke="#8E92A0" stroke-width="1" stroke-dasharray="3,3" />
 
       <!-- ===== RIGHT COLUMN: ACTION ITEMS ===== -->
-      <line x1="858" y1="18" x2="858" y2="520" stroke="#E0E2E8" stroke-width="1" />
+      <line x1="858" y1="18" x2="858" y2="620" stroke="#E0E2E8" stroke-width="1" />
       <text x="878" y="30" fill="#8E92A0" font-size="9.5" font-weight="700" letter-spacing="0.1em">ACTION ITEMS &amp; EXPECTED OUTCOMES</text>
 
       <!-- Data Team outcomes -->
-      <rect x="868" y="48" width="3.5" height="100" rx="1.5" fill="#0E9A7E" opacity="0.5" />
+      <rect x="868" y="48" width="3.5" height="70" rx="1.5" fill="#0E9A7E" opacity="0.5" />
       <text x="884" y="64" fill="#0E9A7E" font-size="11" font-weight="600">Data Team</text>
       <text x="884" y="82" fill="#5A5E6E" font-size="10.5">• Build unified data lake (OEM + OS + raw)</text>
       <text x="884" y="96" fill="#5A5E6E" font-size="10.5">• Automate ingestion → annotation pipeline</text>
-      <text x="884" y="110" fill="#5A5E6E" font-size="10.5">• 95%+ annotation accuracy (model-assisted)</text>
-      <text x="884" y="124" fill="#5A5E6E" font-size="10.5">• Target: 500K+ validated, labeled frames</text>
-      <text x="884" y="138" fill="#5A5E6E" font-size="10.5">• Continuous quality monitoring &amp; drift detection</text>
+      <text x="884" y="110" fill="#5A5E6E" font-size="10.5">• Continuous quality monitoring &amp; drift detection</text>
 
       <!-- Model Team outcomes -->
-      <rect x="868" y="230" width="3.5" height="96" rx="1.5" fill="#3B6FD6" opacity="0.5" />
-      <text x="884" y="246" fill="#3B6FD6" font-size="11" font-weight="600">Model Team</text>
-      <text x="884" y="264" fill="#5A5E6E" font-size="10.5">• Build eval &amp; training pipelines (pre-data)</text>
-      <text x="884" y="278" fill="#5A5E6E" font-size="10.5">• Evaluate OS models &amp; frameworks on fleet early</text>
-      <text x="884" y="292" fill="#5A5E6E" font-size="10.5">• Outperform OEMs (target ≥97% accuracy)</text>
-      <text x="884" y="306" fill="#5A5E6E" font-size="10.5">• Edge-optimized: &lt;5ms latency, &lt;50MB</text>
-      <text x="884" y="320" fill="#5A5E6E" font-size="10.5">• Deliver curated deploy-ready model list</text>
+      <rect x="868" y="248" width="3.5" height="56" rx="1.5" fill="#3B6FD6" opacity="0.5" />
+      <text x="884" y="264" fill="#3B6FD6" font-size="11" font-weight="600">Model Team</text>
+      <text x="884" y="282" fill="#5A5E6E" font-size="10.5">• Evaluate top OS models &amp; frameworks</text>
+      <text x="884" y="296" fill="#5A5E6E" font-size="10.5">• Edge-optimized: &lt;5ms latency, &lt;50MB</text>
 
       <!-- HW Team outcomes -->
-      <rect x="868" y="346" width="3.5" height="112" rx="1.5" fill="#C88A1A" opacity="0.5" />
-      <text x="884" y="362" fill="#C88A1A" font-size="11" font-weight="600">HW Team</text>
-      <text x="884" y="380" fill="#5A5E6E" font-size="10.5">• Establish model requirements &amp; base HW specs</text>
-      <text x="884" y="394" fill="#5A5E6E" font-size="10.5">• Deploy &amp; compare OS frameworks on fleet</text>
-      <text x="884" y="408" fill="#5A5E6E" font-size="10.5">• Finalize SoC, sensor BOM, schematics &amp; Gerbers</text>
-      <text x="884" y="422" fill="#5A5E6E" font-size="10.5">• 3D CAD &amp; thermal design → send to mfg early</text>
-      <text x="884" y="436" fill="#5A5E6E" font-size="10.5">• Receive, assemble &amp; test manufactured HW</text>
-      <text x="884" y="450" fill="#5A5E6E" font-size="10.5">• Deploy finalized model to fleet vehicles</text>
+      <rect x="868" y="430" width="3.5" height="56" rx="1.5" fill="#C88A1A" opacity="0.5" />
+      <text x="884" y="446" fill="#C88A1A" font-size="11" font-weight="600">HW Team</text>
+      <text x="884" y="464" fill="#5A5E6E" font-size="10.5">• Finalize SoC, sensor BOM, schematics &amp; Gerbers</text>
+      <text x="884" y="478" fill="#5A5E6E" font-size="10.5">• Deploy finalized model to fleet vehicles</text>
 
       <!-- ===== LEGEND ===== -->
-      <rect x="20" y="526" width="10" height="10" rx="2" fill="#0E9A7E" opacity="0.6" />
-      <text x="36" y="535" fill="#8E92A0" font-size="10.5">Data team</text>
-      <rect x="120" y="526" width="10" height="10" rx="2" fill="#3B6FD6" opacity="0.6" />
-      <text x="136" y="535" fill="#8E92A0" font-size="10.5">Model team</text>
-      <rect x="230" y="526" width="10" height="10" rx="2" fill="#C88A1A" opacity="0.6" />
-      <text x="246" y="535" fill="#8E92A0" font-size="10.5">HW team</text>
-      <circle cx="345" cy="531" r="4" fill="none" stroke="#8E92A0" stroke-dasharray="2,2" />
-      <text x="355" y="535" fill="#8E92A0" font-size="10.5">Dependency / handoff</text>
-      <rect x="500" y="526" width="10" height="10" rx="3" fill="#E8F5F1" stroke="#0E9A7E" stroke-width="1" />
-      <text x="516" y="535" fill="#8E92A0" font-size="10.5">Milestone</text>
+      <rect x="20" y="636" width="10" height="10" rx="2" fill="#0E9A7E" opacity="0.6" />
+      <text x="36" y="645" fill="#8E92A0" font-size="10.5">Data</text>
+      <rect x="80" y="636" width="10" height="10" rx="2" fill="#3B6FD6" opacity="0.6" />
+      <text x="96" y="645" fill="#8E92A0" font-size="10.5">Model</text>
+      <rect x="150" y="636" width="10" height="10" rx="2" fill="#C88A1A" opacity="0.6" />
+      <text x="166" y="645" fill="#8E92A0" font-size="10.5">HW</text>
+      <circle cx="220" cy="641" r="4" fill="none" stroke="#8E92A0" stroke-dasharray="2,2" />
+      <text x="230" y="645" fill="#8E92A0" font-size="10.5">Dependency</text>
+      <rect x="310" y="636" width="10" height="10" rx="3" fill="#E8F5F1" stroke="#0E9A7E" stroke-width="1" />
+      <text x="326" y="645" fill="#8E92A0" font-size="10.5">Milestone</text>
+      <!-- Status indicators legend -->
+      <line x1="400" y1="632" x2="400" y2="652" stroke="#E0E2E8" stroke-width="0.8" />
+      <circle cx="420" cy="641" r="3" fill="none" stroke="#B0B3BE" stroke-width="1.2" />
+      <text x="428" y="645" fill="#8E92A0" font-size="10.5">Planned</text>
+      <circle cx="500" cy="641" r="3" fill="#E8A317" />
+      <text x="508" y="645" fill="#8E92A0" font-size="10.5">In Progress</text>
+      <circle cx="595" cy="641" r="3" fill="#0E9A7E" />
+      <text x="603" y="645" fill="#8E92A0" font-size="10.5">Done</text>
     </svg>
   </div>
 </body>
