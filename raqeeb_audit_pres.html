@@ -1,0 +1,1743 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1920">
+  <title>Raqeeb Events &mdash; OEM Quality Audit</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    :root {
+      --bg: #F8F9FB;
+      --bg-card: #FFFFFF;
+      --bg-elevated: #F0F1F4;
+      --border: #E0E2E8;
+      --text: #1A1D26;
+      --text-dim: #5A5E6E;
+      --text-muted: #8E92A0;
+      --accent: #0E9A7E;
+      --accent-dim: rgba(14, 154, 126, 0.08);
+      --accent-2: #3B6FD6;
+      --accent-2-dim: rgba(59, 111, 214, 0.08);
+      --accent-3: #C88A1A;
+      --accent-3-dim: rgba(200, 138, 26, 0.08);
+      --red: #D9453E;
+      --red-dim: rgba(217, 69, 62, 0.07);
+      --purple: #8B5CC4;
+      --purple-dim: rgba(139, 92, 196, 0.08);
+      --teal: #0E8A9A;
+      --teal-dim: rgba(14, 138, 154, 0.08);
+      --font: 'DM Sans', system-ui, sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+      --radius: 10px;
+      --radius-sm: 6px
+    }
+
+    html {
+      scroll-snap-type: y mandatory;
+      scroll-behavior: smooth
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      line-height: 1.5;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased
+    }
+
+    .slide {
+      min-height: 100vh;
+      scroll-snap-align: start;
+      display: flex;
+      flex-direction: column;
+      padding: 52px 56px 20px;
+      position: relative
+    }
+
+    .slide::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, var(--border) 20%, var(--border) 80%, transparent 100%)
+    }
+
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: rgba(248, 249, 251, 0.90);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 40px;
+      height: 44px;
+      gap: 4px
+    }
+
+    nav a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      padding: 5px 12px;
+      border-radius: 20px;
+      transition: all 0.2s
+    }
+
+    nav a:hover,
+    nav a.active {
+      color: var(--text);
+      background: var(--bg-elevated)
+    }
+
+    nav .slide-counter {
+      margin-left: auto;
+      color: var(--text-muted);
+      font-size: 11px;
+      font-family: var(--mono)
+    }
+
+    h1 {
+      font-size: 48px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.15
+    }
+
+    h2 {
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: 4px
+    }
+
+    h3 {
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--text-dim);
+      margin-bottom: 12px
+    }
+
+    .tag {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 600;
+      font-family: var(--mono);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin-bottom: 6px
+    }
+
+    .tag--accent {
+      background: var(--accent-dim);
+      color: var(--accent)
+    }
+
+    .tag--blue {
+      background: var(--accent-2-dim);
+      color: var(--accent-2)
+    }
+
+    .tag--amber {
+      background: var(--accent-3-dim);
+      color: var(--accent-3)
+    }
+
+    .tag--red {
+      background: var(--red-dim);
+      color: var(--red)
+    }
+
+    .tag--purple {
+      background: var(--purple-dim);
+      color: var(--purple)
+    }
+
+    .flex {
+      display: flex
+    }
+
+    .flex-col {
+      flex-direction: column
+    }
+
+    .gap-8 {
+      gap: 8px
+    }
+
+    .gap-10 {
+      gap: 10px
+    }
+
+    .gap-12 {
+      gap: 12px
+    }
+
+    .gap-16 {
+      gap: 16px
+    }
+
+    .gap-20 {
+      gap: 20px
+    }
+
+    .grow {
+      flex: 1
+    }
+
+    .items-center {
+      align-items: center
+    }
+
+    .mt-auto {
+      margin-top: auto
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04)
+    }
+
+    .card h4 {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px
+    }
+
+    .card p,
+    .card li {
+      font-size: 12.5px;
+      color: var(--text-dim);
+      line-height: 1.5
+    }
+
+    .card ul {
+      list-style: none;
+      padding: 0
+    }
+
+    .card ul li {
+      padding-left: 14px;
+      position: relative
+    }
+
+    .card ul li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 8px;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--text-muted)
+    }
+
+    .summary-cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px
+    }
+
+    .summary-card {
+      border-radius: 8px;
+      padding: 12px;
+      text-align: center;
+      border: 1px solid rgba(0, 0, 0, 0.04);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03)
+    }
+
+    .summary-card .label {
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-family: var(--mono);
+      color: var(--text-dim)
+    }
+
+    .summary-card .value {
+      font-size: 28px;
+      font-weight: 700;
+      font-family: var(--mono)
+    }
+
+    .summary-card .detail {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 2px
+    }
+
+    .action-bar {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 8px 12px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-size: 12.5px
+    }
+
+    .action-bar.red {
+      border-left-color: var(--red)
+    }
+
+    .action-bar.amber {
+      border-left-color: var(--accent-3)
+    }
+
+    .action-bar.blue {
+      border-left-color: var(--accent-2)
+    }
+
+    .action-bar.purple {
+      border-left-color: var(--purple)
+    }
+
+    .action-bar .action-text {
+      color: var(--text);
+      flex: 1
+    }
+
+    .action-bar .action-text strong {
+      font-weight: 600
+    }
+
+    .bar-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px
+    }
+
+    .bar-label {
+      width: 140px;
+      text-align: right;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-dim);
+      flex-shrink: 0
+    }
+
+    .bar-track {
+      flex: 1;
+      display: flex;
+      height: 18px;
+      border-radius: 3px;
+      overflow: hidden;
+      background: var(--bg-elevated)
+    }
+
+    .bar-fill {
+      height: 100%
+    }
+
+    .bar-fill.correct {
+      background: var(--accent)
+    }
+
+    .bar-fill.incorrect {
+      background: var(--red)
+    }
+
+    .bar-value {
+      min-width: 80px;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-dim)
+    }
+
+    .heatmap {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--mono);
+      font-size: 12px
+    }
+
+    .heatmap th {
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+      padding: 6px 8px;
+      border-bottom: 2px solid var(--border);
+      font-weight: 600
+    }
+
+    .heatmap td {
+      padding: 6px 8px;
+      text-align: center;
+      border-bottom: 1px solid var(--border)
+    }
+
+    .heatmap td.rl {
+      text-align: left;
+      color: var(--text);
+      font-weight: 500
+    }
+
+    .heatmap td.t {
+      font-weight: 600;
+      color: var(--text)
+    }
+
+    .pipe-row {
+      display: grid;
+      grid-template-columns: 100px 1fr;
+      gap: 12px;
+      align-items: start
+    }
+
+    .pipe-thumb {
+      width: 100px;
+      border-radius: 5px;
+      border: 2px solid var(--border)
+    }
+
+    .pipe-thumb.excluded {
+      opacity: 0.5
+    }
+
+    .pipe-body h4 {
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 1px
+    }
+
+    .pipe-body .meta {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-muted)
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 0
+    }
+
+    .title-slide {
+      justify-content: center;
+      align-items: flex-start;
+      padding-left: 90px
+    }
+
+    .title-slide .subtitle {
+      font-size: 17px;
+      color: var(--text-dim);
+      font-weight: 400;
+      margin-top: 8px;
+      max-width: 700px
+    }
+
+    .title-slide .meta {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 20px;
+      font-family: var(--mono)
+    }
+
+    .title-slide::after {
+      content: '';
+      position: absolute;
+      top: -120px;
+      right: -80px;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(14, 154, 126, 0.06) 0%, transparent 70%);
+      pointer-events: none
+    }
+
+    .event-badge {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 10px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text)
+    }
+
+    .event-badge .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px
+    }
+
+    .data-table th {
+      text-align: left;
+      font-weight: 600;
+      font-size: 10px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      padding: 6px 10px;
+      border-bottom: 1px solid var(--border)
+    }
+
+    .data-table td {
+      padding: 6px 10px;
+      color: var(--text-dim);
+      border-bottom: 1px solid var(--border)
+    }
+
+    .data-table tr:last-child td {
+      border-bottom: none
+    }
+
+    .data-table .num {
+      font-family: var(--mono);
+      font-size: 11px
+    }
+
+    .bias-bar {
+      position: relative;
+      height: 14px;
+      background: var(--bg-elevated);
+      border-radius: 3px;
+      overflow: hidden
+    }
+
+    .bias-bar .center {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background: var(--border)
+    }
+
+    .group-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 600;
+      margin-bottom: 10px;
+      padding-bottom: 6px;
+      border-bottom: 2px solid var(--border);
+      color: var(--accent-2)
+    }
+
+    .paired-cards {
+      display: flex;
+      gap: 16px;
+      justify-content: center
+    }
+
+    .paired-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 20px;
+      text-align: center;
+      min-width: 120px;
+      border-left: 3px solid var(--border)
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <a href="index.html" style="color:var(--text-muted);font-size:10px;margin-right:6px;opacity:0.7">&larr; Home</a>
+    <a href="#intro">Intro</a>
+    <a href="#data">Data</a>
+    <a href="#accuracy">OEM Accuracy</a>
+    <a href="#hidden-phone">Hidden Phone</a>
+    <a href="#benign">Benign Actions</a>
+    <a href="#benchmark">OS Benchmark</a>
+    <span class="slide-counter" id="slideCounter">1 / 6</span>
+  </nav>
+
+  <!-- ==================== 1. TITLE ==================== -->
+  <section class="slide title-slide" id="intro">
+    <span class="tag tag--accent">OEM Quality Audit</span>
+    <h1>Raqeeb Events</h1>
+    <div class="subtitle">Ground-truth verification of 526 Raqeeb event recordings against OEM predictions across 6
+      devices</div>
+    <div class="meta">April 2026 &middot; Mowasalat &middot; Driver Monitoring System</div>
+
+    <div class="flex gap-12 mt-auto" style="padding-top:20px">
+      <div class="event-badge"><span class="dot" style="background:var(--red)"></span> Phone Use</div>
+      <div class="event-badge"><span class="dot" style="background:var(--accent-3)"></span> Smoking</div>
+      <div class="event-badge"><span class="dot" style="background:var(--text-dim)"></span> Fatigue</div>
+      <div class="event-badge"><span class="dot" style="background:var(--teal)"></span> Seatbelt</div>
+      <div class="event-badge"><span class="dot" style="background:var(--purple)"></span> Distraction</div>
+      <div class="event-badge"><span class="dot" style="background:var(--accent)"></span> Safe Driving</div>
+    </div>
+  </section>
+
+  <!-- ==================== 2. DATA & PIPELINE ==================== -->
+  <section class="slide" id="data">
+    <span class="tag tag--blue">Data</span>
+    <h2>Data Pipeline & Dataset</h2>
+
+
+    <!-- Summary cards (full width) -->
+    <div class="summary-cards" style="margin-bottom:12px">
+      <div class="summary-card" style="background:var(--accent-2-dim)">
+        <div class="label">OEM DMS Videos</div>
+        <div class="value" style="color:var(--accent-2)">528</div>
+        <div class="detail">6 devices &middot; ~10s each &middot; 95 MB</div>
+      </div>
+      <div class="summary-card" style="background:var(--accent-dim)">
+        <div class="label">Quality</div>
+        <div class="value" style="color:var(--accent)">85.7%</div>
+        <div class="detail">451 good &middot; 59 poor &middot; 16 unusable</div>
+      </div>
+      <div class="summary-card" style="background:var(--accent-3-dim)">
+        <div class="label">OEM Event Types</div>
+        <div class="value" style="color:var(--accent-3)">7</div>
+        <div class="detail">call &middot; closed_eye &middot; distraction &middot; fatigue &middot; seat_belt &middot;
+          smoke &middot; yawn</div>
+      </div>
+      <div class="summary-card" style="background:var(--purple-dim)">
+        <div class="label">Ground Truth Classes</div>
+        <div class="value" style="color:var(--purple)">6</div>
+        <div class="detail">distracted &middot; safe &middot; phone &middot; fatigue &middot; seatbelt &middot; eating
+        </div>
+      </div>
+    </div>
+
+    <!-- GT distribution (full width) -->
+    <div class="card" style="margin-bottom:12px">
+      <h4>Ground Truth Distribution (526 events)</h4>
+      <div class="flex gap-16" style="margin-top:6px">
+        <div class="grow">
+          <div class="bar-row">
+            <div class="bar-label">distracted_driving</div>
+            <div class="bar-track">
+              <div class="bar-fill" style="width:40.7%;background:var(--purple)"></div>
+            </div>
+            <div class="bar-value">214 (40.7%)</div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label">safe_driving</div>
+            <div class="bar-track">
+              <div class="bar-fill" style="width:32.1%;background:var(--accent)"></div>
+            </div>
+            <div class="bar-value">169 (32.1%)</div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label">phone_usage</div>
+            <div class="bar-track">
+              <div class="bar-fill" style="width:15.0%;background:var(--red)"></div>
+            </div>
+            <div class="bar-value">79 (15.0%)</div>
+          </div>
+        </div>
+        <div class="grow">
+          <div class="bar-row">
+            <div class="bar-label">fatigue</div>
+            <div class="bar-track">
+              <div class="bar-fill" style="width:25.2%;background:var(--text-dim)"></div>
+            </div>
+            <div class="bar-value">54 (10.3%)</div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label">seatbelt</div>
+            <div class="bar-track">
+              <div class="bar-fill" style="width:2.3%;background:var(--teal)"></div>
+            </div>
+            <div class="bar-value">5 (1.0%)</div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label">drinking_eating</div>
+            <div class="bar-track">
+              <div class="bar-fill" style="width:2.3%;background:var(--accent-3)"></div>
+            </div>
+            <div class="bar-value">5 (1.0%)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pipeline rows + thumbnails (full width) -->
+    <div class="card" style="flex:1">
+      <div class="flex gap-20">
+        <!-- Pipeline descriptions -->
+        <div class="flex flex-col gap-10 grow">
+          <div class="pipe-row">
+            <img src="assets/pipeline/bbox.jpg" class="pipe-thumb excluded" alt="BBox">
+            <div class="pipe-body">
+              <h4 style="color:var(--accent-3)">352&times;288 / 15fps <span class="tag tag--blue"
+                  style="font-size:9px;padding:2px 6px;margin:0 0 0 4px">OEM EVALUATION</span></h4>
+              <div class="meta">183 videos &middot; KA3294 only &middot; Bounding boxes create data leakage</div>
+            </div>
+          </div>
+          <hr class="divider">
+          <div class="pipe-row">
+            <img src="assets/pipeline/dms_ir.jpg" class="pipe-thumb" style="border-color:var(--accent)" alt="DMS">
+            <div class="pipe-body">
+              <h4 style="color:var(--accent)">352&times;288 / 10fps <span class="tag tag--blue"
+                  style="font-size:9px;padding:2px 6px;margin:0 0 0 4px">OEM EVALUATION</span> <span
+                  class="tag tag--purple" style="font-size:9px;padding:2px 6px;margin:0 0 0 4px">OPEN SOURCE MODEL
+                  EVALUATION</span></h4>
+              <div class="meta">345 videos &middot; 5 devices &middot; 247 B&W + 97 RGB &middot; text overlays blurred
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Thumbnails -->
+        <div style="display:flex;gap:10px;align-items:center;flex-shrink:0">
+          <div style="text-align:center"><img src="assets/pipeline/dms_ir.jpg"
+              style="width:80px;border-radius:4px;border:1px solid var(--border)">
+            <div style="font-size:10px;font-family:var(--mono);color:var(--purple);margin-top:2px">B&W (247)</div>
+          </div>
+          <div style="text-align:center"><img src="assets/pipeline/dms_rgb.jpg"
+              style="width:80px;border-radius:4px;border:1px solid var(--border)">
+            <div style="font-size:10px;font-family:var(--mono);color:var(--accent-2);margin-top:2px">RGB (97)</div>
+          </div>
+          <div style="text-align:center"><img src="assets/7April26/sample_ir2_before.png"
+              style="width:80px;border-radius:4px;border:1px solid var(--red);opacity:0.7">
+            <div style="font-size:10px;font-family:var(--mono);color:var(--red);margin-top:2px">Before blur</div>
+          </div>
+          <div style="text-align:center"><img src="assets/7April26/sample_ir2_after.png"
+              style="width:80px;border-radius:4px;border:1px solid var(--accent)">
+            <div style="font-size:10px;font-family:var(--mono);color:var(--accent);margin-top:2px">After blur</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 3. OEM ACCURACY ==================== -->
+  <section class="slide" id="accuracy">
+    <span class="tag tag--red">OEM Performance</span>
+    <h2>OEM Accuracy Overview</h2>
+    <h3>Overall prediction performance across 525 manually reviewed videos</h3>
+
+    <!-- Summary cards row -->
+    <div class="summary-cards" style="margin-bottom:12px">
+      <div class="summary-card" style="background:var(--accent-2-dim)">
+        <div class="label">Total Videos</div>
+        <div class="value" style="color:var(--accent-2)">525</div>
+        <div class="detail">across 6 vehicles &middot; 2 camera angles</div>
+      </div>
+      <div class="summary-card" style="background:var(--accent-3-dim)">
+        <div class="label">OEM Accuracy</div>
+        <div class="value" style="color:var(--accent-3)">35%</div>
+        <div class="detail">185 of 525 correct</div>
+      </div>
+      <div class="summary-card" style="background:var(--red-dim)">
+        <div class="label">False Alarms</div>
+        <div class="value" style="color:var(--red)">32%</div>
+        <div class="detail">167 of 525 alerts were safe driving</div>
+      </div>
+      <div class="summary-card" style="background:var(--purple-dim)">
+        <div class="label">Obvious Errors</div>
+        <div class="value" style="color:var(--purple)">76%</div>
+        <div class="detail">257 of 340 errors decided in &le;25s</div>
+      </div>
+    </div>
+
+    <div class="flex gap-16" style="flex:1">
+      <!-- LEFT: Accuracy bars + Modality/Camera (JS-rendered) -->
+      <div class="flex flex-col gap-12 grow">
+        <div class="card" id="accuracy-bars-container"></div>
+        <div class="card" id="accuracy-hw-container"></div>
+      </div>
+
+      <!-- RIGHT: Top confusions + modality -->
+      <div class="flex flex-col gap-10" style="width:380px;flex-shrink:0">
+        <div class="card">
+          <h4>Top Misclassifications</h4>
+          <div class="flex flex-col gap-8" style="margin-top:6px">
+            <div class="action-bar red">
+              <div class="action-text"><strong>109:</strong> distraction_driving &rarr; actually
+                <strong>safe_driving</strong>
+              </div>
+            </div>
+            <div class="action-bar red">
+              <div class="action-text"><strong>101:</strong> closed_eye &rarr; actually
+                <strong>distracted_driving</strong>
+              </div>
+            </div>
+            <div class="action-bar amber">
+              <div class="action-text"><strong>35:</strong> closed_eye &rarr; actually <strong>phone_usage</strong>
+              </div>
+            </div>
+            <div class="action-bar amber">
+              <div class="action-text"><strong>31:</strong> closed_eye &rarr; actually <strong>safe_driving</strong>
+              </div>
+            </div>
+            <div class="action-bar blue">
+              <div class="action-text"><strong>22:</strong> seat_belt &rarr; actually <strong>safe_driving</strong>
+              </div>
+            </div>
+            <div class="action-bar blue">
+              <div class="action-text"><strong>16:</strong> seat_belt &rarr; actually
+                <strong>distracted_driving</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h4>closed_eye &mdash; The Worst Offender</h4>
+          <p style="margin-top:4px">
+            202 predictions at <strong style="color:var(--red)">13.9% accuracy</strong>. The OEM fires this trigger on
+            everything: distracted driving (101), phone usage (35), safe driving (31). It accounts for 38% of all
+            predictions but only 5% of actual events.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 4. HIDDEN PHONE ==================== -->
+  <section class="slide" id="hidden-phone">
+    <span class="tag tag--red">Blind Spot</span>
+    <h2>The Hidden Phone Problem</h2>
+    <h3>The OEM's biggest blind spot: drivers texting with the phone below the camera's view</h3>
+    <div id="hidden-phone-container" style="flex:1"></div>
+  </section>
+
+  <!-- ==================== 5. BENIGN ACTIONS ==================== -->
+  <section class="slide" id="benign">
+    <span class="tag tag--amber">False Alarms</span>
+    <h2>Benign Actions &mdash; OEM Prediction vs Actual Ground Truth</h2>
+    <h3>When the OEM flags a benign action, what did it predict and what was actually happening?</h3>
+    <div id="benign-container" style="flex:1"></div>
+  </section>
+
+  <!-- Video Modal (from raqeeb_audit.html) -->
+  <div id="video-modal"
+    style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:9999;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);cursor:pointer"
+    onclick="closeVideoModal()">
+    <div
+      style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);max-width:640px;width:90%;cursor:default"
+      onclick="event.stopPropagation()">
+      <video id="video-player" controls autoplay loop style="width:100%;border-radius:8px;background:#000"></video>
+      <div id="video-caption"
+        style="color:#ccc;font-family:'JetBrains Mono',monospace;font-size:12px;margin-top:12px;text-align:center">
+      </div>
+      <div style="display:flex;gap:12px;justify-content:center;margin-top:12px">
+        <button id="video-next-btn"
+          style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff;padding:6px 16px;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer"
+          onmouseover="this.style.background='rgba(255,255,255,0.2)'"
+          onmouseout="this.style.background='rgba(255,255,255,0.1)'">Next example</button>
+        <button
+          style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff;padding:6px 16px;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer"
+          onclick="closeVideoModal()" onmouseover="this.style.background='rgba(255,255,255,0.2)'"
+          onmouseout="this.style.background='rgba(255,255,255,0.1)'">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== 6. OPEN SOURCE BENCHMARK ==================== -->
+  <section class="slide" id="benchmark">
+    <span class="tag tag--purple">Open-Source Benchmark</span>
+    <h2>Evaluation of Open Source models on OEM Alert data with and without Fine tuning</h2>
+    <h3>5 pretrained models evaluated on our 345-video OEM Raqeeb dataset &mdash; as-is and after fine-tuning on our
+      data</h3>
+
+    <div class="flex gap-16" style="flex:1">
+      <div class="card grow" style="overflow:auto">
+        <style>
+          .bench {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px
+          }
+
+          .bench th {
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            padding: 8px 10px;
+            border-bottom: 2px solid var(--border);
+            font-weight: 600;
+            text-align: center;
+            white-space: nowrap
+          }
+
+          .bench th.l {
+            text-align: left
+          }
+
+          .bench td {
+            padding: 7px 10px;
+            border-bottom: 1px solid var(--border);
+            text-align: center;
+            font-family: var(--mono);
+            font-size: 11px;
+            vertical-align: middle
+          }
+
+          .bench td.l {
+            text-align: left;
+            font-family: var(--font)
+          }
+
+          .bench .group-header td {
+            background: var(--bg-elevated);
+            font-family: var(--font);
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            padding: 10px 10px 5px;
+            border-bottom: none
+          }
+
+          .bench .row-asis td {
+            color: var(--text)
+          }
+
+          .bench .row-ft td {
+            color: var(--text-dim);
+            background: rgba(139, 92, 196, 0.03)
+          }
+
+          .bench .row-ft td:first-child {
+            padding-left: 20px
+          }
+
+          .bench .delta {
+            font-size: 9px;
+            font-weight: 600;
+            padding: 1px 5px;
+            border-radius: 3px;
+            margin-left: 3px;
+            white-space: nowrap
+          }
+
+          .bench .delta.pos {
+            background: var(--accent-dim);
+            color: var(--accent)
+          }
+
+          .bench .delta.neg {
+            background: var(--red-dim);
+            color: var(--red)
+          }
+
+          .bench .fair-note {
+            font-family: var(--font);
+            font-size: 9px;
+            color: var(--text-muted);
+            font-weight: 400;
+            text-transform: none;
+            letter-spacing: 0
+          }
+
+          .bench .sep td {
+            border-bottom: 2px solid var(--border);
+            padding: 0;
+            height: 0
+          }
+
+          .bench .tbd {
+            color: var(--text-muted);
+            font-style: italic;
+            font-family: var(--font);
+            font-size: 10px
+          }
+
+          .bench .perf {
+            font-family: var(--mono);
+            font-size: 12px;
+            font-weight: 600
+          }
+
+          .bench .perf.high {
+            color: var(--accent)
+          }
+
+          .bench .perf.mid {
+            color: var(--accent-3)
+          }
+
+          .bench .perf.low {
+            color: var(--red)
+          }
+
+          .bench .model-link {
+            font-family: var(--mono);
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text);
+            text-decoration: none;
+            border-bottom: 1px solid var(--border);
+            transition: color 0.15s, border-color 0.15s
+          }
+
+          .bench .model-link:hover {
+            color: var(--accent-2);
+            border-color: var(--accent-2)
+          }
+
+          .bench .model-sub {
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-top: 1px
+          }
+
+          .bench .src-icon {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            vertical-align: middle;
+            margin-right: 3px;
+            flex-shrink: 0
+          }
+
+          .bench .src-icon svg {
+            width: 14px;
+            height: 14px;
+            display: block
+          }
+
+          .bench .event-chip {
+            font-size: 9px;
+            padding: 1px 5px;
+            border-radius: 3px;
+            background: var(--bg-elevated);
+            color: var(--text-dim);
+            white-space: nowrap
+          }
+
+          .bench .event-chip.target {
+            background: rgba(14, 154, 126, 0.10);
+            color: #0A7D66;
+            font-weight: 500
+          }
+
+          .bench .coverage {
+            font-family: var(--mono);
+            font-size: 9px;
+            color: var(--text-muted);
+            margin-left: 4px
+          }
+
+          .bench .events-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3px;
+            align-items: center
+          }
+
+          .bench .compat {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            font-size: 11px
+          }
+
+          .bench .compat.yes {
+            background: rgba(14, 154, 126, 0.10);
+            color: #0E9A7E
+          }
+
+          .bench .compat.no {
+            background: rgba(217, 69, 62, 0.08);
+            color: #D9453E
+          }
+
+          .bench .ft-tag {
+            font-size: 8px;
+            font-family: var(--mono);
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            padding: 2px 5px;
+            border-radius: 3px;
+            background: var(--purple-dim);
+            color: var(--purple);
+            margin-right: 4px
+          }
+
+          .bench .asis-tag {
+            font-size: 8px;
+            font-family: var(--mono);
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            padding: 2px 5px;
+            border-radius: 3px;
+            background: var(--bg-elevated);
+            color: var(--text-muted);
+            margin-right: 4px
+          }
+
+          .hw-col {
+            width: 50px
+          }
+
+          .hw-label {
+            font-size: 8px;
+            line-height: 1.2
+          }
+        </style>
+        <table class="bench">
+          <thead>
+            <tr>
+              <th class="l" style="min-width:180px">Model</th>
+              <th>Covered Events</th>
+              <th>Size</th>
+              <th>Dataset</th>
+              <th>Reported<br>Accuracy</th>
+              <th style="border-left:2px solid var(--border)">Our Data<br><span class="fair-note">all 6 classes</span>
+              </th>
+              <th style="border-left:2px solid var(--border)">Our Data<br><span class="fair-note">fair subset</span>
+              </th>
+              <th class="hw-col">
+                <div class="hw-label">Pi 5 +<br>Hailo 8</div>
+              </th>
+              <th class="hw-col">
+                <div class="hw-label">Jetson<br>Orin</div>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- ── DROWSINESS GROUP ── -->
+            <tr class="group-header">
+              <td colspan="9">Drowsiness Models <span class="fair-note">&mdash; fair subset: fatigue + safe_driving (161
+                  videos, 2 classes)</span></td>
+            </tr>
+
+            <!-- Teen-Different MobileNetV2 — As-is -->
+            <tr class="row-asis">
+              <td class="l" rowspan="2">
+                <span class="src-icon" title="Hugging Face"><svg viewBox="0 0 16 16">
+                    <rect width="16" height="16" rx="3" fill="#FFD21E" /><text x="8" y="12.5" text-anchor="middle"
+                      font-size="10">&#x1F917;</text>
+                  </svg></span><a class="model-link"
+                  href="https://huggingface.co/Teen-Different/Driver-Drowsiness-Detection"
+                  target="_blank">MobileNetV2</a>
+                <div class="model-sub">Teen-Different</div>
+              </td>
+              <td rowspan="2">
+                <div class="events-list"><span class="event-chip target">Fatigue</span><span
+                    class="event-chip target">Drowsiness</span><span class="coverage">1/5</span></div>
+              </td>
+              <td rowspan="2"><span style="font-size:10px;color:var(--text-muted)">~14 MB</span></td>
+              <td rowspan="2"><a href="https://www.kaggle.com/datasets/ismailnasri20/driver-drowsiness-dataset-ddd"
+                  target="_blank"
+                  style="color:var(--accent-2);text-decoration:none;border-bottom:1px solid var(--border);font-size:10px">Kaggle
+                  DDD</a></td>
+              <td rowspan="2"><span class="perf high">98.99%</span></td>
+              <td style="border-left:2px solid var(--border)"><span class="asis-tag">as-is</span><span
+                  class="perf low">26.7%</span></td>
+              <td style="border-left:2px solid var(--border)"><span class="asis-tag">as-is</span><span
+                  class="perf mid">57.1%</span></td>
+              <td rowspan="2" style="text-align:center"><span class="compat yes">&#x2713;</span></td>
+              <td rowspan="2" style="text-align:center"><span class="compat yes">&#x2713;</span></td>
+            </tr>
+            <tr class="row-ft">
+              <td style="border-left:2px solid var(--border)"><span class="ft-tag">tuned</span><span
+                  class="perf mid">39.0%</span> <span class="delta pos">+12.3</span></td>
+              <td style="border-left:2px solid var(--border)"><span class="ft-tag">tuned</span><span
+                  class="perf mid">65.2%</span> <span class="delta pos">+8.1</span></td>
+            </tr>
+
+            <!-- chbh7051 ViT -->
+            <tr class="row-asis">
+              <td class="l" rowspan="2">
+                <span class="src-icon" title="Hugging Face"><svg viewBox="0 0 16 16">
+                    <rect width="16" height="16" rx="3" fill="#FFD21E" /><text x="8" y="12.5" text-anchor="middle"
+                      font-size="10">&#x1F917;</text>
+                  </svg></span><a class="model-link"
+                  href="https://huggingface.co/chbh7051/vit-driver-drowsiness-detection"
+                  target="_blank">ViT-base-patch16</a>
+                <div class="model-sub">chbh7051</div>
+              </td>
+              <td rowspan="2">
+                <div class="events-list"><span class="event-chip target">Fatigue</span><span
+                    class="event-chip target">Drowsiness</span><span class="coverage">1/5</span></div>
+              </td>
+              <td rowspan="2"><span style="font-size:10px;color:var(--text-muted)">~343 MB</span></td>
+              <td rowspan="2"><a href="https://www.kaggle.com/datasets/ismailnasri20/driver-drowsiness-dataset-ddd"
+                  target="_blank"
+                  style="color:var(--accent-2);text-decoration:none;border-bottom:1px solid var(--border);font-size:10px">Kaggle
+                  DDD</a>
+              </td>
+              <td rowspan="2"><span class="perf high">~99%</span></td>
+              <td style="border-left:2px solid var(--border)"><span class="asis-tag">as-is</span><span
+                  class="perf mid">33.3%</span></td>
+              <td style="border-left:2px solid var(--border)"><span class="asis-tag">as-is</span><span
+                  class="perf mid">71.4%</span></td>
+              <td rowspan="2" style="text-align:center"><span class="compat no">&#x2717;</span></td>
+              <td rowspan="2" style="text-align:center"><span class="compat yes">&#x2713;</span></td>
+            </tr>
+            <tr class="row-ft">
+              <td style="border-left:2px solid var(--border)"><span class="ft-tag">tuned</span><span
+                  class="perf mid">39.7%</span> <span class="delta pos">+6.4</span></td>
+              <td style="border-left:2px solid var(--border)"><span class="ft-tag">tuned</span><span
+                  class="perf mid">70.8%</span> <span class="delta neg">&minus;0.6</span></td>
+            </tr>
+
+            <tr class="sep">
+              <td colspan="9"></td>
+            </tr>
+
+            <!-- ── DISTRACTION GROUP ── -->
+            <tr class="group-header">
+              <td colspan="9">Distraction Models <span class="fair-note">&mdash; fair subset: 4 mappable classes
+                  (distracted, phone, drinking, safe)</span></td>
+            </tr>
+
+            <!-- Malek-Messaoudi YOLOv8n-cls -->
+            <tr class="row-asis">
+              <td class="l" rowspan="2">
+                <span class="src-icon" title="Hugging Face"><svg viewBox="0 0 16 16">
+                    <rect width="16" height="16" rx="3" fill="#FFD21E" /><text x="8" y="12.5" text-anchor="middle"
+                      font-size="10">&#x1F917;</text>
+                  </svg></span><a class="model-link"
+                  href="https://huggingface.co/Malek-Messaoudi/State-Farm-Driver-Detection"
+                  target="_blank">YOLOv8n-cls</a>
+                <div class="model-sub">Malek-Messaoudi</div>
+              </td>
+              <td rowspan="2">
+                <div class="events-list"><span class="event-chip target">Distracted</span><span
+                    class="event-chip target">Phone</span><span class="event-chip">Eating</span><span
+                    class="coverage">2/5</span></div>
+              </td>
+              <td rowspan="2"><span style="font-size:10px;color:var(--text-muted)">~6 MB</span></td>
+              <td rowspan="2"><a href="https://www.kaggle.com/c/state-farm-distracted-driver-detection" target="_blank"
+                  style="color:var(--accent-2);text-decoration:none;border-bottom:1px solid var(--border);font-size:10px">StateFarm</a>
+              </td>
+              <td rowspan="2"><span class="perf high">99.55%</span></td>
+              <td style="border-left:2px solid var(--border)"><span class="asis-tag">as-is</span><span
+                  class="perf low">24.3%</span></td>
+              <td style="border-left:2px solid var(--border)"><span class="asis-tag">as-is</span><span
+                  class="perf low">28.7%</span></td>
+              <td rowspan="2" style="text-align:center"><span class="compat yes">&#x2713;</span></td>
+              <td rowspan="2" style="text-align:center"><span class="compat yes">&#x2713;</span></td>
+            </tr>
+            <tr class="row-ft">
+              <td style="border-left:2px solid var(--border)"><span class="ft-tag">tuned</span><span
+                  class="perf mid">46.7%</span> <span class="delta pos">+22.4</span></td>
+              <td style="border-left:2px solid var(--border)"><span class="ft-tag">tuned</span><span
+                  class="perf mid">48.5%</span> <span class="delta pos">+19.8</span></td>
+            </tr>
+
+            <!-- Followb1ind1y EfficientNet-B0 -->
+            <tr class="row-asis">
+              <td class="l" rowspan="2">
+                <span class="src-icon" title="GitHub"><svg viewBox="0 0 16 16">
+                    <rect width="16" height="16" rx="3" fill="#1A1D26" fill-opacity="0.08" />
+                    <path
+                      d="M8 2C4.7 2 2 4.7 2 8c0 2.6 1.7 4.9 4 5.6.3.1.4-.1.4-.3v-1c-1.6.4-2-.8-2-.8-.3-.7-.7-.9-.7-.9-.5-.4 0-.4 0-.4.6 0 .9.6.9.6.5.9 1.4.6 1.7.5.1-.4.2-.6.4-.8-1.3-.1-2.6-.6-2.6-2.8 0-.6.2-1.1.6-1.5-.1-.1-.3-.7.1-1.5 0 0 .5-.2 1.5.6.4-.1.9-.2 1.4-.2s1 .1 1.4.2c1-.8 1.5-.6 1.5-.6.3.8.1 1.4.1 1.5.4.4.6.9.6 1.5 0 2.2-1.3 2.7-2.6 2.8.2.2.4.5.4 1.1v1.6c0 .2.1.4.4.3 2.3-.7 4-2.9 4-5.6C14 4.7 11.3 2 8 2z"
+                      fill="#1A1D26" />
+                  </svg></span><a class="model-link"
+                  href="https://github.com/Followb1ind1y/Distracted-Driver-Detection-Project"
+                  target="_blank">EfficientNet-B0</a>
+                <div class="model-sub">Followb1ind1y</div>
+              </td>
+              <td rowspan="2">
+                <div class="events-list"><span class="event-chip target">Distracted</span><span
+                    class="event-chip target">Phone</span><span class="event-chip">Eating</span><span
+                    class="coverage">2/5</span></div>
+              </td>
+              <td rowspan="2"><span style="font-size:10px;color:var(--text-muted)">~21 MB</span></td>
+              <td rowspan="2"><a href="https://www.kaggle.com/c/state-farm-distracted-driver-detection" target="_blank"
+                  style="color:var(--accent-2);text-decoration:none;border-bottom:1px solid var(--border);font-size:10px">StateFarm</a>
+              </td>
+              <td rowspan="2"><span class="perf high">97.43%</span></td>
+              <td style="border-left:2px solid var(--border)"><span class="asis-tag">as-is</span><span
+                  class="perf low">26.7%</span></td>
+              <td style="border-left:2px solid var(--border)"><span class="asis-tag">as-is</span><span
+                  class="perf mid">31.4%</span></td>
+              <td rowspan="2" style="text-align:center"><span class="compat yes">&#x2713;</span></td>
+              <td rowspan="2" style="text-align:center"><span class="compat yes">&#x2713;</span></td>
+            </tr>
+            <tr class="row-ft">
+              <td style="border-left:2px solid var(--border)"><span class="ft-tag">tuned</span><span
+                  class="perf mid">47.0%</span> <span class="delta pos">+20.3</span></td>
+              <td style="border-left:2px solid var(--border)"><span class="ft-tag">tuned</span><span
+                  class="perf mid">47.8%</span> <span class="delta pos">+16.4</span></td>
+            </tr>
+
+            <!-- Followb1ind1y MobileNetV3-Large -->
+            <tr class="row-asis">
+              <td class="l" rowspan="2">
+                <span class="src-icon" title="GitHub"><svg viewBox="0 0 16 16">
+                    <rect width="16" height="16" rx="3" fill="#1A1D26" fill-opacity="0.08" />
+                    <path
+                      d="M8 2C4.7 2 2 4.7 2 8c0 2.6 1.7 4.9 4 5.6.3.1.4-.1.4-.3v-1c-1.6.4-2-.8-2-.8-.3-.7-.7-.9-.7-.9-.5-.4 0-.4 0-.4.6 0 .9.6.9.6.5.9 1.4.6 1.7.5.1-.4.2-.6.4-.8-1.3-.1-2.6-.6-2.6-2.8 0-.6.2-1.1.6-1.5-.1-.1-.3-.7.1-1.5 0 0 .5-.2 1.5.6.4-.1.9-.2 1.4-.2s1 .1 1.4.2c1-.8 1.5-.6 1.5-.6.3.8.1 1.4.1 1.5.4.4.6.9.6 1.5 0 2.2-1.3 2.7-2.6 2.8.2.2.4.5.4 1.1v1.6c0 .2.1.4.4.3 2.3-.7 4-2.9 4-5.6C14 4.7 11.3 2 8 2z"
+                      fill="#1A1D26" />
+                  </svg></span><a class="model-link"
+                  href="https://github.com/Followb1ind1y/Distracted-Driver-Detection-Project"
+                  target="_blank">MobileNetV3-Large</a>
+                <div class="model-sub">Followb1ind1y</div>
+              </td>
+              <td rowspan="2">
+                <div class="events-list"><span class="event-chip target">Distracted</span><span
+                    class="event-chip target">Phone</span><span class="event-chip">Eating</span><span
+                    class="coverage">2/5</span></div>
+              </td>
+              <td rowspan="2"><span style="font-size:10px;color:var(--text-muted)">~22 MB</span></td>
+              <td rowspan="2"><a href="https://www.kaggle.com/c/state-farm-distracted-driver-detection" target="_blank"
+                  style="color:var(--accent-2);text-decoration:none;border-bottom:1px solid var(--border);font-size:10px">StateFarm</a>
+              </td>
+              <td rowspan="2"><span class="perf high">95.03%</span></td>
+              <td style="border-left:2px solid var(--border)"><span class="asis-tag">as-is</span><span
+                  class="perf mid">31.0%</span></td>
+              <td style="border-left:2px solid var(--border)"><span class="asis-tag">as-is</span><span
+                  class="perf mid">36.5%</span></td>
+              <td rowspan="2" style="text-align:center"><span class="compat yes">&#x2713;</span></td>
+              <td rowspan="2" style="text-align:center"><span class="compat yes">&#x2713;</span></td>
+            </tr>
+            <tr class="row-ft">
+              <td style="border-left:2px solid var(--border)"><span class="ft-tag">tuned</span><span
+                  class="perf high">55.7%</span> <span class="delta pos">+24.7</span></td>
+              <td style="border-left:2px solid var(--border)"><span class="ft-tag">tuned</span><span
+                  class="perf high">57.3%</span> <span class="delta pos">+20.8</span></td>
+            </tr>
+
+            <tr class="sep">
+              <td colspan="9"></td>
+            </tr>
+
+            <!-- ── REFERENCE ── -->
+            <tr class="group-header">
+              <td colspan="9">Reference Baselines</td>
+            </tr>
+            <tr style="color:var(--text-muted)">
+              <td class="l" style="font-weight:500;color:var(--text-dim)">Random guess</td>
+              <td>&mdash;</td>
+              <td>&mdash;</td>
+              <td style="font-size:10px">n/a</td>
+              <td>&mdash;</td>
+              <td style="border-left:2px solid var(--border)">16.7%</td>
+              <td style="border-left:2px solid var(--border)">&mdash;</td>
+              <td colspan="2"></td>
+            </tr>
+            <tr style="color:var(--text-muted)">
+              <td class="l" style="font-weight:500;color:var(--text-dim)">OEM (current vendor)</td>
+              <td>&mdash;</td>
+              <td>&mdash;</td>
+              <td style="font-size:10px">Proprietary</td>
+              <td>&mdash;</td>
+              <td style="border-left:2px solid var(--border)"><span class="perf mid">35.2%</span></td>
+              <td style="border-left:2px solid var(--border)">&mdash;</td>
+              <td colspan="2"></td>
+            </tr>
+            <tr style="background:rgba(14,154,126,0.04)">
+              <td class="l" style="font-weight:600;color:var(--accent)">Production target</td>
+              <td>&mdash;</td>
+              <td>&mdash;</td>
+              <td>&mdash;</td>
+              <td>&mdash;</td>
+              <td style="border-left:2px solid var(--border)"><span class="perf high">97%</span></td>
+              <td style="border-left:2px solid var(--border)">&mdash;</td>
+              <td colspan="2"></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div
+          style="display:flex;gap:14px;margin-top:10px;font-size:10px;color:var(--text-muted);align-items:center;flex-wrap:wrap">
+          <span style="display:inline-flex;align-items:center;gap:4px"><span class="asis-tag"
+              style="margin:0">as-is</span> Zero-shot (no retraining)</span>
+          <span style="display:inline-flex;align-items:center;gap:4px"><span class="ft-tag"
+              style="margin:0">tuned</span> Backbone frozen, head retrained on our data</span>
+          <span style="margin-left:8px">Acc color:</span>
+          <span style="color:var(--red);font-weight:600">&lt;30%</span>
+          <span style="color:var(--accent-3);font-weight:600">30&ndash;70%</span>
+          <span style="color:var(--accent);font-weight:600">&gt;70%</span>
+          <span style="margin-left:8px"><span class="compat yes"
+              style="width:14px;height:14px;font-size:9px;border-radius:3px">&#x2713;</span> HW compatible</span>
+          <span><span class="compat no" style="width:14px;height:14px;font-size:9px;border-radius:3px">&#x2717;</span>
+            Incompatible</span>
+        </div>
+
+        <div
+          style="margin-top:10px;padding:10px 14px;background:var(--bg-elevated);border-radius:6px;border-left:3px solid var(--purple);font-size:10px;color:var(--text-dim);line-height:1.55">
+          <strong style="color:var(--text)">Fair subset methodology:</strong> Each model only covers a subset of the 6
+          OEM classes (e.g., drowsiness models output "drowsy" or "alert", not "phone_usage"). The <em>fair subset</em>
+          column evaluates only on videos whose ground truth matches classes the model can produce. For drowsiness
+          models: fatigue + safe_driving (161 of 345 videos). For distraction models: the StateFarm 10-class scheme maps
+          to 4 OEM classes (distracted_driving, phone_usage, drinking_eating, safe_driving) via label remapping &mdash;
+          e.g., c1&ndash;c4 &rarr; phone_usage, c5/c7/c8/c9 &rarr; distracted_driving. Videos labeled fatigue or
+          seatbelt are excluded since no StateFarm class maps to them.
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <script src="raqeeb_data.js"></script>
+  <script>
+    // ===== Data processing (same as raqeeb_audit.html) =====
+    const GROUND_TRUTH_LABELS = ["distracted_driving", "safe_driving", "phone_usage", "fatigue", "seatbelt", "drinking_eating"];
+    const OEM_TO_GROUND_TRUTH = { "distraction_driving": "distracted_driving", "seat_belt": "seatbelt", "call": "phone_usage", "closed_eye": "fatigue", "yawn": "fatigue", "fatigue": "fatigue", "smoke": "smoking" };
+    const TAG_MERGE = { "itching_or_touching_face": "benign_actions", "picking_nose": "benign_actions", "sneezing": "benign_actions", "talking_with_customer": "benign_actions", "adjusting_seat": "benign_actions" };
+    const DISPLAY_NAMES = { "distracted_driving": "Distracted Driving", "safe_driving": "Safe Driving", "phone_usage": "Phone Usage", "fatigue": "Fatigue", "seatbelt": "Seatbelt", "drinking_eating": "Drinking/Eating", "smoking": "Smoking", "distraction_driving": "Distraction Driving", "seat_belt": "Seat Belt", "closed_eye": "Closed Eye", "call": "Call", "yawn": "Yawn", "smoke": "Smoke", "phone_possibly_hidden_texting": "Hidden Phone (Texting)", "benign_actions": "Benign Actions", "ir": "B&W", "rgb": "RGB", "driver_right_top": "Driver Right Top", "driver_left_mid": "Driver Left Mid", "maps": "Maps", "neither_hands_on_wheel": "Neither Hands on Wheel", "adjusting_seat": "Adjusting Seat", "talking_on_call_but_safe": "Talking on Call (Safe)", "mask_to_hide_talking": "Mask to Hide Talking", "talking_with_customer": "Talking with Customer", "picking_nose": "Picking Nose", "sneezing": "Sneezing", "itching_or_touching_face": "Itching/Touching Face" };
+    const VIDEO_ASSETS_PATH = 'assets/7April26/videos/';
+    const VIDEO_EXAMPLES = { "accuracy_incorrect_smoke": "352x288/10fps/KA3253_Smoke_34885258.mp4", "accuracy_correct_seat_belt": "352x288/10fps/KA3292_Seat_Belt_34884379.mp4", "accuracy_correct_closed_eye": "352x288/10fps/KA3301_Closed_Eye_34885469.mp4", "accuracy_incorrect_closed_eye": "352x288/10fps/KA3253_Closed_Eye_34885580.mp4", "accuracy_correct_fatigue": "352x288/10fps/KA3253_Fatigue_34885653.mp4", "accuracy_incorrect_fatigue": "352x288/15fps/KA3294_Fatigue_34884464.mp4", "accuracy_correct_distraction_driving": "352x288/15fps/KA3294_Distraction_Driving_34884923.mp4", "accuracy_incorrect_distraction_driving": "352x288/10fps/KA3253_Distraction_Driving_34884966.mp4", "accuracy_correct_yawn": "352x288/15fps/KA3294_Yawn_34884553.mp4", "accuracy_incorrect_yawn": "352x288/10fps/KA3253_Yawn_34884977.mp4", "accuracy_correct_call": "352x288/10fps/KA3293_Call_34884336.mp4", "accuracy_incorrect_call": "352x288/10fps/KA3277_Call_34885269.mp4", "hidden_phone_closed_eye": "352x288/10fps/KA3293_Closed_Eye_34885428.mp4", "hidden_phone_distraction_driving": "352x288/10fps/KA3293_Distraction_Driving_34884452.mp4", "hidden_phone_seat_belt": "352x288/15fps/KA3294_Seat_Belt_34884951.mp4", "hidden_phone_yawn": "352x288/15fps/KA3294_Yawn_34884459.mp4", "hidden_phone_fatigue": "352x288/15fps/KA3294_Fatigue_34884762.mp4", "benign_distraction_driving": "352x288/10fps/KA3293_Distraction_Driving_34885459.mp4", "benign_seat_belt": "352x288/10fps/KA3293_Seat_Belt_34884374.mp4", "benign_call": "352x288/10fps/KA3277_Call_34884954.mp4" };
+
+    function displayName(k) { return DISPLAY_NAMES[k] || k.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) }
+    function groupBy(a, k) { const g = {}; for (const i of a) { const key = typeof k === 'string' ? i[k] : k(i); (g[key] = g[key] || []).push(i) } return g }
+    function countBy(a, k) { const c = {}; for (const i of a) { const key = typeof k === 'string' ? i[k] : k(i); c[key] = (c[key] || 0) + 1 } return c }
+    function pctNum(n, t) { return t === 0 ? 0 : Math.round(n / t * 100) }
+    function getMergedTags(r) { const m = new Set(); for (const t of r.tags) m.add(TAG_MERGE[t] || t); return [...m] }
+
+    function processData(raw) { return raw.filter(r => !r.skipped).map(r => { const ml = r.manual_labels || []; const tags = ml.filter(l => !GROUND_TRUTH_LABELS.includes(l)); const gt = ml.filter(l => GROUND_TRUTH_LABELS.includes(l)); return { ...r, tags, groundTruthLabels: gt, oemPrediction: r.oem_prediction, oemCorrect: r.oem_correct } }) }
+    const DATA = processData(RAW_DATA);
+
+    // ===== Video modal =====
+    let _currentVideoFilter = null, _currentVideoContext = null;
+    function getVideoExample(ctx, filtered) { if (VIDEO_EXAMPLES[ctx]) { const m = DATA.find(d => d.relative_path === VIDEO_EXAMPLES[ctx]); if (m) return m } return filtered.length ? filtered[Math.floor(Math.random() * filtered.length)] : null }
+    function getVideoSrc(r) { return VIDEO_ASSETS_PATH + r.filename }
+    function openVideoModal(ctx, filtered) { _currentVideoFilter = filtered; _currentVideoContext = ctx; const r = getVideoExample(ctx, filtered); if (!r) return; const modal = document.getElementById('video-modal'), player = document.getElementById('video-player'), caption = document.getElementById('video-caption'); player.src = getVideoSrc(r); caption.innerHTML = '<strong>' + r.filename + '</strong><br>OEM: ' + displayName(r.oemPrediction) + ' · Actual: ' + r.groundTruthLabels.map(l => displayName(l)).join(', ') + ' · ' + (r.oemCorrect ? '✓ Correct' : '✗ Incorrect'); modal.style.display = 'block'; document.getElementById('video-next-btn').onclick = function (e) { e.stopPropagation(); const n = filtered[Math.floor(Math.random() * filtered.length)]; if (!n) return; player.src = getVideoSrc(n); caption.innerHTML = '<strong>' + n.filename + '</strong><br>OEM: ' + displayName(n.oemPrediction) + ' · Actual: ' + n.groundTruthLabels.map(l => displayName(l)).join(', ') + ' · ' + (n.oemCorrect ? '✓ Correct' : '✗ Incorrect') } }
+    function closeVideoModal() { const m = document.getElementById('video-modal'), p = document.getElementById('video-player'); p.pause(); p.src = ''; m.style.display = 'none' }
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeVideoModal() });
+    function createPlayBtn(ctx, filtered) { const b = document.createElement('button'); b.textContent = '▶'; b.title = 'Watch example video'; b.style.cssText = 'background:none;border:1px solid var(--border);color:var(--text-muted);padding:2px 8px;border-radius:4px;font-size:11px;cursor:pointer;margin-left:6px;vertical-align:middle;transition:all 0.15s'; b.onmouseover = function () { this.style.borderColor = 'var(--accent-2)'; this.style.color = 'var(--accent-2)' }; b.onmouseout = function () { this.style.borderColor = 'var(--border)'; this.style.color = 'var(--text-muted)' }; b.onclick = function (e) { e.stopPropagation(); openVideoModal(ctx, filtered) }; return b }
+
+    // ===== Render Block 2: OEM Accuracy by Event Type (same as raqeeb_audit.html) =====
+    (function () {
+      const container = document.getElementById('accuracy-bars-container');
+      const groups = groupBy(DATA, 'oemPrediction');
+      const stats = Object.entries(groups).map(([label, items]) => {
+        const correct = items.filter(d => d.oemCorrect).length;
+        return { label, total: items.length, correct, incorrect: items.length - correct, accuracy: pctNum(correct, items.length) };
+      });
+      stats.sort((a, b) => a.accuracy - b.accuracy);
+      const maxTotal = Math.max(...stats.map(s => s.total));
+
+      container.innerHTML = '<h4>OEM Accuracy by Event Type</h4><p style="margin-bottom:8px;font-size:12.5px;color:var(--text-dim)">Per-class accuracy using the OEM\'s own prediction categories, sorted worst-first</p>';
+
+      for (const s of stats) {
+        const row = document.createElement('div');
+        row.className = 'bar-row';
+        if (s.total < 5) row.style.opacity = '0.4';
+        const barWidth = (s.total / maxTotal * 100);
+        const correctWidth = s.total > 0 ? (s.correct / s.total * barWidth) : 0;
+        const incorrectWidth = barWidth - correctWidth;
+        const correctVideos = groups[s.label].filter(d => d.oemCorrect);
+        const incorrectVideos = groups[s.label].filter(d => !d.oemCorrect);
+        row.innerHTML = `
+          <div class="play-btns" style="display:flex;gap:4px;width:50px;flex-shrink:0;justify-content:flex-end"></div>
+          <div class="bar-label">${displayName(s.label)}</div>
+          <div class="bar-track">
+            <div class="bar-fill correct" style="width: ${correctWidth}%"></div>
+            <div class="bar-fill incorrect" style="width: ${incorrectWidth}%"></div>
+          </div>
+          <div class="bar-value">${s.accuracy}% <span style="color:var(--text-muted)">(${s.total})</span></div>
+        `;
+        const btnsSpan = row.querySelector('.play-btns');
+        btnsSpan.innerHTML = '';
+        if (correctVideos.length > 0) {
+          const greenBtn = createPlayBtn('accuracy_correct_' + s.label, correctVideos);
+          greenBtn.textContent = '▶';
+          greenBtn.style.color = 'var(--accent)';
+          greenBtn.style.borderColor = 'var(--accent)';
+          greenBtn.title = 'Watch correct example';
+          greenBtn.onmouseover = function () { this.style.background = 'var(--accent-dim)'; };
+          greenBtn.onmouseout = function () { this.style.background = 'none'; };
+          btnsSpan.appendChild(greenBtn);
+        }
+        if (incorrectVideos.length > 0) {
+          const redBtn = createPlayBtn('accuracy_incorrect_' + s.label, incorrectVideos);
+          redBtn.textContent = '▶';
+          redBtn.style.color = 'var(--red)';
+          redBtn.style.borderColor = 'var(--red)';
+          redBtn.title = 'Watch incorrect example';
+          redBtn.onmouseover = function () { this.style.background = 'var(--red-dim)'; };
+          redBtn.onmouseout = function () { this.style.background = 'none'; };
+          btnsSpan.appendChild(redBtn);
+        }
+        container.appendChild(row);
+      }
+
+      const legend = document.createElement('div');
+      legend.style.cssText = 'display:flex;gap:14px;margin-top:10px;font-size:10px;color:var(--text-muted)';
+      legend.innerHTML = '<span><span style="display:inline-block;width:8px;height:8px;background:var(--accent);border-radius:2px;margin-right:3px;vertical-align:middle"></span>Correct</span><span><span style="display:inline-block;width:8px;height:8px;background:var(--red);border-radius:2px;margin-right:3px;vertical-align:middle"></span>Incorrect</span>';
+      container.appendChild(legend);
+    })();
+
+    // ===== Render Block 4: OEM Accuracy by Modality & Camera (same as raqeeb_audit.html) =====
+    (function () {
+      const container = document.getElementById('accuracy-hw-container');
+
+      const row = document.createElement('div');
+      row.style.cssText = 'display:flex;gap:40px';
+
+      function buildPairedCardsWithDelta(title, groupKey) {
+        const col = document.createElement('div');
+        col.style.flex = '1';
+        col.innerHTML = `<div class="group-label">${title}</div>`;
+        const cardsDiv = document.createElement('div');
+        cardsDiv.className = 'paired-cards';
+        cardsDiv.style.alignItems = 'center';
+
+        const groups = groupBy(DATA, groupKey);
+        const entries = Object.entries(groups);
+        const accuracies = [];
+
+        for (let i = 0; i < entries.length; i++) {
+          const [key, items] = entries[i];
+          const correct = items.filter(d => d.oemCorrect).length;
+          const accuracy = pctNum(correct, items.length);
+          accuracies.push(accuracy);
+          const accentColor = accuracy >= 40 ? 'var(--accent)' : accuracy >= 25 ? 'var(--amber)' : 'var(--red)';
+
+          const tintBg = accuracy >= 40 ? 'rgba(14,154,126,0.04)' : accuracy >= 25 ? 'rgba(200,138,26,0.04)' : 'rgba(217,69,62,0.04)';
+          const borderCol = accuracy >= 40 ? 'var(--accent)' : accuracy >= 25 ? 'var(--amber,var(--accent-3))' : 'var(--red)';
+          const pc = document.createElement('div');
+          pc.className = 'paired-card';
+          pc.style.borderLeftColor = borderCol;
+          pc.style.background = tintBg;
+          pc.innerHTML = `
+            <div style="font-size:11px;color:var(--text-dim);margin-bottom:3px;font-family:var(--mono)">${displayName(key)}</div>
+            <div style="font-size:24px;font-weight:700;color:${accentColor};font-family:var(--mono)">${accuracy}%</div>
+            <div style="font-size:10px;color:var(--text-muted);margin-top:3px">${items.length} videos \u00B7 ${correct}\u2713 ${items.length - correct}\u2717</div>
+          `;
+          cardsDiv.appendChild(pc);
+
+          if (i === 0 && entries.length > 1) {
+            const deltaPlaceholder = document.createElement('div');
+            deltaPlaceholder.className = 'delta-placeholder';
+            deltaPlaceholder.dataset.idx = '0';
+            cardsDiv.appendChild(deltaPlaceholder);
+          }
+        }
+
+        if (accuracies.length >= 2) {
+          const delta = Math.abs(accuracies[0] - accuracies[1]);
+          const deltaColor = delta > 15 ? 'var(--red)' : delta > 5 ? 'var(--amber)' : 'var(--text-muted)';
+          const placeholder = cardsDiv.querySelector('.delta-placeholder');
+          if (placeholder) {
+            const chipBg = delta > 15 ? 'var(--red-dim)' : delta > 5 ? 'var(--accent-3-dim)' : 'var(--bg-elevated)';
+            const chip = document.createElement('div');
+            chip.style.cssText = `display:flex;flex-direction:column;align-items:center;padding:6px 12px;font-family:var(--mono);background:${chipBg};border-radius:8px`;
+            chip.innerHTML = `
+              <div style="font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em">\u0394</div>
+              <div style="font-size:16px;font-weight:700;color:${deltaColor}">${delta}pp</div>
+            `;
+            placeholder.replaceWith(chip);
+          }
+        }
+
+        col.appendChild(cardsDiv);
+        return col;
+      }
+
+      row.appendChild(buildPairedCardsWithDelta('By Modality', 'modality'));
+      row.appendChild(buildPairedCardsWithDelta('By Camera Position', 'camera_facing'));
+      container.appendChild(row);
+    })();
+
+    // ===== Render Block 11: Hidden Phone =====
+    (function () {
+      const container = document.getElementById('hidden-phone-container');
+      const hiddenPhoneVideos = DATA.filter(d => d.tags.includes('phone_possibly_hidden_texting'));
+      const hpTotal = hiddenPhoneVideos.length;
+      const hpCorrect = hiddenPhoneVideos.filter(d => d.oemCorrect).length;
+      const hpAccuracy = pctNum(hpCorrect, hpTotal);
+      const visiblePhoneVideos = DATA.filter(d => d.groundTruthLabels.includes('phone_usage') && !d.tags.includes('phone_possibly_hidden_texting'));
+      const vpTotal = visiblePhoneVideos.length;
+      const vpCorrect = visiblePhoneVideos.filter(d => d.oemCorrect).length;
+      const vpAccuracy = vpTotal > 0 ? pctNum(vpCorrect, vpTotal) : 0;
+      const deltaVal = hpAccuracy - vpAccuracy;
+
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.style.flex = '1';
+
+      // Summary cards
+      card.innerHTML = `
+    <div style="display:flex;gap:12px;margin-bottom:20px">
+      <div class="summary-card" style="flex:1;background:var(--red-dim);padding:14px;border-radius:8px;text-align:center">
+        <div class="label">Hidden Phone (Below Camera)</div>
+        <div class="value" style="color:var(--red)">${hpAccuracy}%</div>
+        <div class="detail">${hpCorrect} of ${hpTotal} correctly detected</div>
+      </div>
+      <div class="summary-card" style="flex:1;background:var(--accent-dim);padding:14px;border-radius:8px;text-align:center">
+        <div class="label">Visible Phone (In Hand)</div>
+        <div class="value" style="color:var(--accent)">${vpAccuracy}%</div>
+        <div class="detail">${vpCorrect} of ${vpTotal} correctly detected</div>
+      </div>
+      <div class="summary-card" style="flex:0.6;background:var(--bg-elevated);padding:14px;border-radius:8px;text-align:center">
+        <div class="label">Detection Gap</div>
+        <div class="value" style="color:var(--red)">${deltaVal > 0 ? '+' : ''}${deltaVal}pp</div>
+        <div class="detail">hidden vs visible</div>
+      </div>
+    </div>
+    <div class="group-label" style="font-size:11px;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid var(--border)">What does the OEM call hidden phone usage?</div>
+  `;
+
+      const oemCounts = countBy(hiddenPhoneVideos, 'oemPrediction');
+      const oemSorted = Object.entries(oemCounts).sort((a, b) => b[1] - a[1]);
+
+      for (const [oem, count] of oemSorted) {
+        const row = document.createElement('div');
+        row.className = 'bar-row';
+        const widthPct = (count / hpTotal) * 100;
+        const hpFiltered = hiddenPhoneVideos.filter(d => d.oemPrediction === oem);
+        const correctForOem = hiddenPhoneVideos.filter(d => d.oemPrediction === oem && d.oemCorrect).length;
+        const barColor = pctNum(correctForOem, count) >= 50 ? 'var(--accent)' : 'var(--red)';
+        row.innerHTML = `
+      <div class="play-btns" style="display:flex;gap:4px;width:40px;flex-shrink:0;justify-content:flex-end"></div>
+      <div class="bar-label">${displayName(oem)}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${widthPct}%;background:${barColor}"></div></div>
+      <div class="bar-value">${count} <span style="color:var(--text-muted)">(${Math.round(widthPct)}%)</span></div>
+    `;
+        const btn = createPlayBtn('hidden_phone_' + oem, hpFiltered);
+        btn.style.color = barColor; btn.style.borderColor = barColor;
+        row.querySelector('.play-btns').appendChild(btn);
+        card.appendChild(row);
+      }
+
+      const note = document.createElement('p');
+      note.style.cssText = 'font-size:11px;color:var(--text-muted);margin-top:14px;font-style:italic';
+      note.textContent = `${hpTotal} videos tagged as suspected hidden phone usage. Comparison with visible phone usage (${vpTotal} videos) tests whether the OEM relies on seeing the phone itself vs detecting distracted behavior patterns.`;
+      card.appendChild(note);
+      container.appendChild(card);
+    })();
+
+    // ===== Render Block 12: Benign Actions =====
+    (function () {
+      const container = document.getElementById('benign-container');
+      const benignVideos = DATA.filter(d => getMergedTags(d).includes('benign_actions'));
+      const totalBenign = benignVideos.length;
+      if (totalBenign === 0) { container.textContent = 'No benign action videos found.'; return; }
+
+      const nonBenignVideos = DATA.filter(d => !getMergedTags(d).includes('benign_actions'));
+      const benignCorrect = benignVideos.filter(d => d.oemCorrect).length;
+      const benignAcc = pctNum(benignCorrect, totalBenign);
+      const nonBenignCorrect = nonBenignVideos.filter(d => d.oemCorrect).length;
+      const nonBenignAcc = pctNum(nonBenignCorrect, nonBenignVideos.length);
+      const bDelta = benignAcc - nonBenignAcc;
+      const dColor = bDelta < -10 ? 'var(--red)' : bDelta < 0 ? 'var(--amber)' : 'var(--accent)';
+
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.style.flex = '1';
+
+      card.innerHTML = `
+    <div style="display:flex;gap:12px;margin-bottom:20px">
+      <div class="summary-card" style="flex:1;background:var(--red-dim);padding:14px;border-radius:8px;text-align:center">
+        <div class="label">With Benign Actions</div>
+        <div class="value" style="color:var(--red)">${benignAcc}%</div>
+        <div class="detail">${benignCorrect} of ${totalBenign} correct</div>
+      </div>
+      <div class="summary-card" style="flex:1;background:var(--accent-dim);padding:14px;border-radius:8px;text-align:center">
+        <div class="label">Without Benign Actions</div>
+        <div class="value" style="color:var(--accent)">${nonBenignAcc}%</div>
+        <div class="detail">${nonBenignCorrect} of ${nonBenignVideos.length} correct</div>
+      </div>
+      <div class="summary-card" style="flex:0.6;background:var(--bg-elevated);padding:14px;border-radius:8px;text-align:center">
+        <div class="label">&Delta; Impact</div>
+        <div class="value" style="color:${dColor}">${bDelta > 0 ? '+' : ''}${bDelta}pp</div>
+        <div class="detail">percentage points</div>
+      </div>
+    </div>
+  `;
+
+      const incorrectShades = ['#D9453E', '#E07A75', '#C4514B', '#B33A34', '#E8A09C'];
+      const oemGroups = groupBy(benignVideos, 'oemPrediction');
+      const oemStats = Object.entries(oemGroups).map(([oemLabel, items]) => {
+        const gtCounts = {};
+        for (const d of items) for (const gt of d.groundTruthLabels) gtCounts[gt] = (gtCounts[gt] || 0) + 1;
+        const oemAsGt = OEM_TO_GROUND_TRUTH[oemLabel] || 'other';
+        const gtBreakdown = Object.entries(gtCounts).sort((a, b) => { if (a[0] === oemAsGt) return -1; if (b[0] === oemAsGt) return 1; return b[1] - a[1]; });
+        const gtTotal = gtBreakdown.reduce((s, [, c]) => s + c, 0);
+        return { oemLabel, total: items.length, gtBreakdown, oemAsGt, gtTotal };
+      });
+      oemStats.sort((a, b) => b.total - a.total);
+      const maxTotal = Math.max(...oemStats.map(s => s.gtTotal));
+
+      for (const s of oemStats) {
+        const row = document.createElement('div');
+        row.className = 'bar-row';
+        const bItems = oemGroups[s.oemLabel];
+        const correctGtCount = s.gtBreakdown.find(([gt]) => gt === s.oemAsGt)?.[1] || 0;
+        const btnColor = correctGtCount > s.gtTotal / 2 ? '#0E9A7E' : '#D9453E';
+        row.innerHTML = `<div class="play-btns" style="display:flex;gap:4px;width:40px;flex-shrink:0;justify-content:flex-end"></div><div class="bar-label">${displayName(s.oemLabel)} <span style="color:var(--text-muted)">(${s.total})</span></div>`;
+        const btn = createPlayBtn('benign_' + s.oemLabel, bItems);
+        btn.style.color = btnColor; btn.style.borderColor = btnColor;
+        row.querySelector('.play-btns').appendChild(btn);
+
+        const trackWrapper = document.createElement('div');
+        trackWrapper.style.flex = '1';
+        const track = document.createElement('div');
+        track.className = 'bar-track';
+        track.style.width = (s.gtTotal / maxTotal * 100) + '%';
+        let iIdx = 0;
+        for (const [gt, count] of s.gtBreakdown) {
+          const seg = document.createElement('div');
+          const isCorrect = gt === s.oemAsGt;
+          seg.style.cssText = `width:${(count / s.gtTotal * 100)}%;height:100%;background:${isCorrect ? '#0E9A7E' : incorrectShades[iIdx++ % incorrectShades.length]}`;
+          seg.title = `${displayName(gt)}: ${count}${isCorrect ? ' (correct)' : ' (wrong)'}`;
+          track.appendChild(seg);
+        }
+        trackWrapper.appendChild(track);
+        row.appendChild(trackWrapper);
+
+        const valueDiv = document.createElement('div');
+        valueDiv.className = 'bar-value';
+        valueDiv.style.minWidth = '180px';
+        iIdx = 0;
+        valueDiv.innerHTML = s.gtBreakdown.map(([gt, count]) => {
+          const isC = gt === s.oemAsGt;
+          return `<span style="color:${isC ? '#0E9A7E' : incorrectShades[iIdx++ % incorrectShades.length]}">${displayName(gt)}</span> ${count}`;
+        }).join(' · ');
+        row.appendChild(valueDiv);
+        card.appendChild(row);
+      }
+
+      const legend = document.createElement('div');
+      legend.style.cssText = 'display:flex;gap:14px;margin-top:12px;font-size:10px;color:var(--text-muted)';
+      legend.innerHTML = '<span><span style="display:inline-block;width:8px;height:8px;background:#0E9A7E;border-radius:2px;margin-right:3px;vertical-align:middle"></span>OEM correct (GT matches)</span><span><span style="display:inline-block;width:8px;height:8px;background:#D9453E;border-radius:2px;margin-right:3px;vertical-align:middle"></span>OEM wrong (actual GT)</span>';
+      card.appendChild(legend);
+
+      const note = document.createElement('p');
+      note.style.cssText = 'font-size:11px;color:var(--text-muted);margin-top:10px;font-style:italic';
+      note.textContent = `${totalBenign} videos with benign actions (scratching face, adjusting seat, sneezing, etc). Each bar shows what the OEM predicted, stacked by what was actually happening.`;
+      card.appendChild(note);
+      container.appendChild(card);
+    })();
+
+    // ===== Slide navigation =====
+    const slides = document.querySelectorAll('.slide'), navLinks = document.querySelectorAll('nav a:not([href="index.html"])'), counter = document.getElementById('slideCounter');
+    const observer = new IntersectionObserver(entries => { entries.forEach(entry => { if (entry.isIntersecting) { const id = entry.target.id; navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + id)); counter.textContent = (Array.from(slides).indexOf(entry.target) + 1) + ' / ' + slides.length } }) }, { threshold: 0.5 });
+    slides.forEach(s => observer.observe(s));
+    document.addEventListener('keydown', e => { const c = Array.from(slides).findIndex(s => { const r = s.getBoundingClientRect(); return r.top >= -100 && r.top <= window.innerHeight / 2 }); if (e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); if (c < slides.length - 1) slides[c + 1].scrollIntoView({ behavior: 'smooth' }) } else if (e.key === 'ArrowUp') { e.preventDefault(); if (c > 0) slides[c - 1].scrollIntoView({ behavior: 'smooth' }) } });
+  </script>
+
+</body>
+
+</html>

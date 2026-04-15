@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1920">
+<title>DMS ML Pipeline — Technical Presentation</title>
+<style>
+/* ========== Reset & Base ========== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+body {
+  background: #181A20;
+  color: #E0E0E0;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+
+/* ========== Scroll-snap slides ========== */
+.slide {
+  min-height: 100vh;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 70px 60px 40px;
+  position: relative;
+}
+
+/* ========== Navigation ========== */
+nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: rgba(24, 26, 32, 0.92);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid #2a2d35;
+  display: flex;
+  align-items: center;
+  padding: 0 30px;
+  height: 50px;
+  gap: 6px;
+}
+nav a {
+  color: #888;
+  text-decoration: none;
+  font-size: 13px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+nav a:hover, nav a.active { color: #fff; background: #2a2d35; }
+nav .brand {
+  color: #64B5F6;
+  font-weight: 700;
+  font-size: 14px;
+  margin-right: 16px;
+  letter-spacing: 0.5px;
+}
+nav .sep { color: #333; margin: 0 2px; }
+nav .keys {
+  margin-left: auto;
+  color: #555;
+  font-size: 11px;
+}
+nav .keys kbd {
+  background: #2a2d35;
+  border: 1px solid #444;
+  border-radius: 3px;
+  padding: 1px 6px;
+  font-family: inherit;
+  font-size: 11px;
+  color: #888;
+}
+
+/* ========== Typography ========== */
+h1 { font-size: 2.2rem; font-weight: 700; margin-bottom: 10px; }
+h2 { font-size: 1.5rem; font-weight: 600; color: #64B5F6; margin-bottom: 16px; }
+h3 { font-size: 1.1rem; font-weight: 500; color: #aaa; margin-bottom: 10px; }
+.step-label {
+  display: inline-block;
+  background: #64B5F6;
+  color: #181A20;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+  letter-spacing: 0.5px;
+}
+.caption {
+  color: #888;
+  font-size: 0.95rem;
+  text-align: center;
+  max-width: 900px;
+  margin-top: 10px;
+}
+
+/* ========== TSM Prediction Grid ========== */
+.pred-grid {
+  display: grid;
+  grid-template-columns: 160px 1fr 1fr;
+  gap: 6px 12px;
+  max-width: 1500px;
+  width: 100%;
+  align-items: center;
+}
+.pred-header {
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #333;
+}
+.pred-label {
+  font-size: 13px;
+  font-weight: 600;
+  text-align: right;
+  padding-right: 10px;
+}
+.pred-cell {
+  position: relative;
+  border-radius: 6px;
+  overflow: hidden;
+  cursor: pointer;
+  border: 1px solid #333;
+  background: #1E2028;
+  transition: border-color 0.2s, transform 0.15s;
+}
+.pred-cell:hover {
+  border-color: #888;
+  transform: scale(1.02);
+}
+.pred-cell video {
+  width: 100%;
+  display: block;
+  pointer-events: none;
+}
+.pred-cell .pred-badge {
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 3px;
+  background: rgba(0,0,0,0.7);
+}
+.pred-cell .pred-misclass {
+  position: absolute;
+  bottom: 4px;
+  left: 6px;
+  font-size: 11px;
+  padding: 1px 6px;
+  border-radius: 3px;
+  background: rgba(0,0,0,0.7);
+  color: #EF5350;
+}
+.pred-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 80px;
+  border-radius: 6px;
+  border: 1px dashed #333;
+  color: #4CAF50;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* ========== Video Overlay ========== */
+.video-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(0,0,0,0.85);
+  backdrop-filter: blur(8px);
+  align-items: center;
+  justify-content: center;
+}
+.video-overlay.active { display: flex; }
+.overlay-content {
+  position: relative;
+  max-width: 800px;
+  width: 90vw;
+}
+.overlay-content video {
+  width: 100%;
+  border-radius: 8px;
+  border: 2px solid #555;
+}
+.overlay-title {
+  color: #fff;
+  font-size: 18px;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 10px;
+}
+.overlay-sub {
+  color: #aaa;
+  font-size: 14px;
+  text-align: center;
+  margin-top: 8px;
+}
+.overlay-close {
+  position: absolute;
+  top: -40px;
+  right: 0;
+  background: none;
+  border: none;
+  color: #aaa;
+  font-size: 32px;
+  cursor: pointer;
+  line-height: 1;
+}
+.overlay-close:hover { color: #fff; }
+
+/* ========== Images ========== */
+.slide img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+.slide img.full {
+  max-height: calc(100vh - 180px);
+  width: auto;
+}
+.slide img.wide {
+  width: min(1600px, 90vw);
+}
+
+/* ========== Video grid ========== */
+.video-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  max-width: 1500px;
+  width: 100%;
+}
+.video-card {
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid #333;
+  background: #1E2028;
+}
+.video-card video {
+  width: 100%;
+  display: block;
+}
+.video-card .label {
+  padding: 6px 10px;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* ========== Table ========== */
+.model-table {
+  border-collapse: collapse;
+  font-size: 14px;
+  margin-bottom: 24px;
+  background: #1E2028;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.model-table th {
+  background: #252830;
+  padding: 10px 18px;
+  font-weight: 600;
+  text-align: left;
+  color: #aaa;
+  border-bottom: 1px solid #333;
+}
+.model-table td {
+  padding: 8px 18px;
+  border-bottom: 1px solid #2a2d35;
+}
+.model-table .delta-pos { color: #4CAF50; font-weight: 600; }
+.model-table .delta-zero { color: #888; }
+
+/* ========== Side-by-side layout ========== */
+.side-by-side {
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
+  max-width: 1600px;
+  width: 100%;
+}
+.side-by-side > * { flex: 1; }
+
+/* ========== Title slide ========== */
+.title-slide h1 { font-size: 3rem; color: #fff; }
+.title-slide h2 { font-size: 1.3rem; color: #64B5F6; font-weight: 400; }
+</style>
+</head>
+<body>
+
+<!-- ==================== NAVIGATION ==================== -->
+<nav id="nav">
+  <span class="brand">DMS Pipeline</span>
+  <span class="sep">|</span>
+  <a href="#title">Intro</a>
+  <a href="#pipeline">Pipeline</a>
+  <a href="#datasets">Datasets</a>
+  <a href="#statefarm">StateFarm</a>
+  <a href="#driveact">Drive&Act</a>
+  <a href="#remap">Remap</a>
+  <a href="#replication">Replication</a>
+  <a href="#predictions">Predictions</a>
+  <a href="#tsm-metrics">Results</a>
+  <a href="#tsm-preds">TSM Preds</a>
+  <a href="#tsm1">TSM 1/4</a>
+  <a href="#tsm2">TSM 2/4</a>
+  <a href="#tsm3">TSM 3/4</a>
+  <a href="#tsm4">TSM 4/4</a>
+  <a href="#architecture">Architecture</a>
+  <a href="#decisions">Decisions</a>
+  <a href="#distribution">Distribution</a>
+  <a href="#roadmap">Roadmap</a>
+  <span class="keys"><kbd>&uarr;</kbd> <kbd>&darr;</kbd> to navigate</span>
+</nav>
+
+<!-- ==================== TITLE ==================== -->
+<section class="slide title-slide" id="title">
+  <h1>Driver Monitoring System</h1>
+  <h2>ML Pipeline &mdash; Architecture, Datasets &amp; TSM</h2>
+  <p class="caption" style="margin-top:30px;color:#555;">
+    Validated on 3 published benchmarks &bull; Applied to Drive&Act NIR video &bull; TSM temporal modeling
+  </p>
+</section>
+
+<!-- ==================== SECTION 1: PIPELINE ==================== -->
+<section class="slide" id="pipeline">
+  <h2>Pipeline Overview</h2>
+  <img class="wide" src="assets/pipeline_overview.png" alt="Pipeline Overview">
+  <p class="caption">
+    End-to-end flow from raw datasets through adapter normalization, unified manifests,
+    temporal clip sampling, NIR preprocessing, and TSM-based classification.
+  </p>
+</section>
+
+<!-- ==================== SECTION 2: DATASETS ==================== -->
+<section class="slide" id="datasets">
+  <h2>Dataset: Drowsy Detection</h2>
+  <h3>48&times;48 face crops &bull; 2 classes &bull; 7,342 images &bull; Kaggle (yasharjebraeily)</h3>
+  <img class="wide" src="assets/drowsy_grid.png" alt="Drowsy Detection Samples"
+       style="max-height:calc(100vh - 230px);">
+  <p class="caption">Used to validate TEEN-D model replications (MobileNetV2, ResNet18, VGG16).</p>
+</section>
+
+<section class="slide" id="statefarm">
+  <h2>Dataset: StateFarm Distracted Driver</h2>
+  <h3>Dashboard camera &bull; 10 classes &bull; 22,424 images &bull; Kaggle competition</h3>
+  <img class="wide" src="assets/statefarm_grid.png" alt="StateFarm Samples"
+       style="max-height:calc(100vh - 230px);">
+  <p class="caption">Used to validate Followb1ind1y replications (EfficientNet-B0, MobileNetV3-Large).</p>
+</section>
+
+<section class="slide" id="driveact">
+  <h2>Dataset: Drive&Act (NIR, Inner Mirror)</h2>
+  <h3>8 DMS classes after remapping &bull; 11,895 clips of 8 frames &bull; 640&times;480 NIR</h3>
+  <div class="video-grid">
+    <div class="video-card" style="border-color:#4CAF50">
+      <video src="assets/driveact_safe_driving.mp4" autoplay loop muted playsinline></video>
+      <div class="label" style="color:#4CAF50">Safe Driving</div>
+    </div>
+    <div class="video-card" style="border-color:#FF9800">
+      <video src="assets/driveact_eating_drinking.mp4" autoplay loop muted playsinline></video>
+      <div class="label" style="color:#FF9800">Eating / Drinking</div>
+    </div>
+    <div class="video-card" style="border-color:#F44336">
+      <video src="assets/driveact_phone_use.mp4" autoplay loop muted playsinline></video>
+      <div class="label" style="color:#F44336">Phone Use</div>
+    </div>
+    <div class="video-card" style="border-color:#9C27B0">
+      <video src="assets/driveact_visual_distraction.mp4" autoplay loop muted playsinline></video>
+      <div class="label" style="color:#9C27B0">Visual Distraction</div>
+    </div>
+    <div class="video-card" style="border-color:#2196F3">
+      <video src="assets/driveact_manual_distraction.mp4" autoplay loop muted playsinline></video>
+      <div class="label" style="color:#2196F3">Manual Distraction</div>
+    </div>
+    <div class="video-card" style="border-color:#FFEB3B">
+      <video src="assets/driveact_looking_around.mp4" autoplay loop muted playsinline></video>
+      <div class="label" style="color:#FFEB3B">Looking Around</div>
+    </div>
+    <div class="video-card" style="border-color:#00BCD4">
+      <video src="assets/driveact_seatbelt_interaction.mp4" autoplay loop muted playsinline></video>
+      <div class="label" style="color:#00BCD4">Seatbelt Interaction</div>
+    </div>
+    <div class="video-card" style="border-color:#795548">
+      <video src="assets/driveact_vehicle_entry_exit.mp4" autoplay loop muted playsinline></video>
+      <div class="label" style="color:#795548">Vehicle Entry / Exit</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="remap">
+  <h2>Label Remapping: 34 Activities &rarr; 8 DMS Classes</h2>
+  <h3>Drive&Act mid-level activities grouped by safety-relevant driver behavior</h3>
+  <img class="full" src="assets/label_remap.png" alt="Label Remapping">
+  <p class="caption">
+    Drive&Act defines 34 fine-grained activities. We collapse them into 8 DMS-relevant categories
+    based on the type of driver distraction or behavior they represent.
+  </p>
+</section>
+
+<!-- ==================== SECTION 3: REPLICATION ==================== -->
+<section class="slide" id="replication">
+  <h2>Pretrained Model Replication</h2>
+  <h3>5 models, 2 datasets &mdash; all published results matched or exceeded</h3>
+  <div class="side-by-side" style="align-items:center;">
+    <table class="model-table">
+      <thead>
+        <tr><th>Model</th><th>Dataset</th><th>Published</th><th>Ours</th><th>Delta</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>TEEN-D MobileNetV2</td><td>Drowsy Det.</td><td>98.99%</td><td>98.99%</td><td class="delta-zero">0.00%</td></tr>
+        <tr><td>TEEN-D ResNet18</td><td>Drowsy Det.</td><td>95.28%</td><td>95.28%</td><td class="delta-zero">0.00%</td></tr>
+        <tr><td>TEEN-D VGG16</td><td>Drowsy Det.</td><td>97.51%</td><td>97.51%</td><td class="delta-zero">0.00%</td></tr>
+        <tr><td>Followb1ind1y EffNet-B0</td><td>StateFarm</td><td>96.85%</td><td>97.43%</td><td class="delta-pos">+0.58%</td></tr>
+        <tr><td>Followb1ind1y MobNetV3-L</td><td>StateFarm</td><td>94.67%</td><td>95.03%</td><td class="delta-pos">+0.36%</td></tr>
+      </tbody>
+    </table>
+    <img src="assets/model_comparison.png" alt="Model Comparison" style="max-height:400px;">
+  </div>
+  <p class="caption">
+    Exact match on drowsy detection. Slight improvement on StateFarm due to minor preprocessing differences.
+    All models evaluated on held-out test splits not seen during training.
+  </p>
+</section>
+
+<section class="slide" id="predictions">
+  <h2>Sample Predictions</h2>
+  <h3>Green = correct, Red = incorrect &mdash; mix of successes and failures</h3>
+  <div style="display:flex;flex-direction:column;gap:16px;align-items:center;max-height:calc(100vh - 200px);overflow-y:auto;">
+    <img src="assets/predictions_sf_efficientnet_b0.png" alt="EfficientNet-B0 Predictions" style="width:min(1400px, 85vw);">
+    <img src="assets/predictions_teen_d_mobilenetv2.png" alt="TEEN-D MobileNetV2 Predictions" style="width:min(1000px, 65vw);">
+  </div>
+</section>
+
+<section class="slide" id="tsm-metrics">
+  <h2>TSM Results on Drive&Act</h2>
+  <h3>Per-class Precision, Recall, and F1 on the test set</h3>
+  <img class="full" src="assets/tsm_metrics.png" alt="TSM Per-Class Metrics">
+  <p class="caption">
+    Strong performance on visual_distraction (F1 78.1%) and safe_driving (F1 72.9%).
+    Minority classes (looking_around, seatbelt_interaction) suffer from low support.
+  </p>
+</section>
+
+<section class="slide" id="tsm-preds" style="justify-content:flex-start;padding-top:60px;">
+  <h2 style="margin-top:10px;">TSM Predictions on Drive&Act</h2>
+  <h3>Click any clip to expand. Left = most confident correct, Right = most confident wrong.</h3>
+  <div class="pred-grid" id="predGrid">
+    <!-- Header row -->
+    <div class="pred-header"></div>
+    <div class="pred-header" style="color:#4CAF50;">Most Confident Correct</div>
+    <div class="pred-header" style="color:#EF5350;">Most Confident Wrong</div>
+  </div>
+  <p class="caption" style="margin-top:6px;">Each row = one DMS class. Confidence = softmax probability for the predicted label.</p>
+</section>
+
+<!-- Video overlay modal -->
+<div id="videoOverlay" class="video-overlay" onclick="closeOverlay(event)">
+  <div class="overlay-content" onclick="event.stopPropagation()">
+    <div class="overlay-title" id="overlayTitle"></div>
+    <video id="overlayVideo" controls autoplay loop muted></video>
+    <div class="overlay-sub" id="overlaySub"></div>
+    <button class="overlay-close" onclick="closeOverlay()">&times;</button>
+  </div>
+</div>
+
+<!-- ==================== SECTION 4: TSM ARCHITECTURE ==================== -->
+<section class="slide" id="tsm1">
+  <span class="step-label">STEP 1 OF 4</span>
+  <h2>The Expensive Solution: 3D CNNs</h2>
+  <img class="full" src="assets/2d_vs_3d_conv.png" alt="2D vs 3D Convolution">
+  <p class="caption">
+    2D convolution operates on spatial dimensions only (H&times;W). 3D convolution adds the temporal axis (H&times;W&times;T),
+    requiring 3&ndash;10&times; more computation. Too expensive for edge deployment.
+  </p>
+</section>
+
+<section class="slide" id="tsm2">
+  <span class="step-label">STEP 2 OF 4</span>
+  <h2>The TSM Trick: Channel Shifting</h2>
+  <img class="full" src="assets/channel_shift.png" alt="Channel Shift Diagram">
+  <p class="caption">
+    Instead of 3D convolution, TSM shifts a fraction of channels along the temporal axis before each 2D conv layer.
+    Each frame receives features from its neighbors &mdash; zero extra FLOPs.
+  </p>
+</section>
+
+<section class="slide" id="tsm3">
+  <span class="step-label">STEP 3 OF 4</span>
+  <h2>Residual Shift: Preserving Spatial Info</h2>
+  <img class="full" src="assets/residual_shift.png" alt="Residual Shift Diagram">
+  <p class="caption">
+    In-place shifting overwrites original channel values. Residual shift places the temporal shift inside
+    the residual branch while the identity shortcut preserves the original spatial features.
+  </p>
+</section>
+
+<section class="slide" id="tsm4">
+  <span class="step-label">STEP 4 OF 4</span>
+  <h2>Our Preprocessing Pipeline</h2>
+  <img class="wide" src="assets/preprocessing_pipeline.png" alt="Preprocessing Pipeline">
+  <p class="caption">
+    NIR frames are extremely dark (88% of pixels below 50/255). CLAHE redistributes contrast,
+    then frames are normalized with ImageNet statistics at full 640&times;480 resolution.
+  </p>
+</section>
+
+<section class="slide" id="architecture">
+  <h2>Complete Architecture</h2>
+  <h3>TSM-ResNet50 for 8-class DMS action recognition on Drive&Act NIR video</h3>
+  <img class="full" src="assets/architecture_flow.png" alt="Architecture Flow">
+  <p class="caption">
+    8 NIR frames at full 640&times;480 are preprocessed with CLAHE and ImageNet-normalized. TSM inserts temporal shifts
+    in every ResNet-50 residual block. Frame features are mean-pooled, then classified into 8 DMS actions.
+  </p>
+</section>
+
+<section class="slide" id="decisions">
+  <h2>Design Decisions</h2>
+  <h3>Key choices and their rationale</h3>
+  <img class="wide" src="assets/design_decisions.png" alt="Design Decisions"
+       style="max-height:calc(100vh - 220px);">
+</section>
+
+<section class="slide" id="distribution">
+  <h2>Class Distribution</h2>
+  <h3>Drive&Act 8 DMS classes &mdash; significant imbalance addressed with sqrt-inverse-freq weighting</h3>
+  <img class="full" src="assets/class_distribution.png" alt="Class Distribution">
+  <p class="caption">
+    safe_driving dominates at 3,707 clips while looking_around has only 107 (35x imbalance).
+    We use sqrt-inverse-frequency class weighting in the loss function to prevent the model from ignoring minority classes.
+  </p>
+</section>
+
+<!-- ==================== SECTION 5: ROADMAP ==================== -->
+<section class="slide" id="roadmap">
+  <h2>Roadmap</h2>
+  <h3>Two parallel workstreams converging on our dataset</h3>
+  <img class="wide" src="assets/roadmap.png" alt="Roadmap">
+</section>
+
+<!-- ==================== SCRIPTS ==================== -->
+<script>
+// Keyboard navigation
+const slides = document.querySelectorAll('.slide');
+const navLinks = document.querySelectorAll('nav a');
+let currentSlide = 0;
+
+function goToSlide(index) {
+  index = Math.max(0, Math.min(index, slides.length - 1));
+  slides[index].scrollIntoView({ behavior: 'smooth' });
+  currentSlide = index;
+  updateNav();
+}
+
+function updateNav() {
+  navLinks.forEach((link, i) => {
+    link.classList.toggle('active', i === currentSlide);
+  });
+}
+
+// Track scroll position
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const index = Array.from(slides).indexOf(entry.target);
+      if (index !== -1) {
+        currentSlide = index;
+        updateNav();
+      }
+    }
+  });
+}, { threshold: 0.5 });
+
+slides.forEach(slide => observer.observe(slide));
+
+// Arrow key navigation
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === ' ') {
+    e.preventDefault();
+    goToSlide(currentSlide + 1);
+  } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+    e.preventDefault();
+    goToSlide(currentSlide - 1);
+  } else if (e.key === 'Home') {
+    e.preventDefault();
+    goToSlide(0);
+  } else if (e.key === 'End') {
+    e.preventDefault();
+    goToSlide(slides.length - 1);
+  }
+});
+
+// Nav click handlers
+navLinks.forEach((link, i) => {
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    goToSlide(i);
+  });
+});
+
+// Initialize
+updateNav();
+
+// ==================== TSM Predictions Grid ====================
+const CLASS_DISPLAY = {
+  eating_drinking: 'Eating / Drinking',
+  looking_around: 'Looking Around',
+  manual_distraction: 'Manual Distraction',
+  phone_use: 'Phone Use',
+  safe_driving: 'Safe Driving',
+  seatbelt_interaction: 'Seatbelt Interaction',
+  vehicle_entry_exit: 'Vehicle Entry / Exit',
+  visual_distraction: 'Visual Distraction',
+};
+const CLASS_COLORS = {
+  eating_drinking: '#FF9800', looking_around: '#FFEB3B',
+  manual_distraction: '#2196F3', phone_use: '#F44336',
+  safe_driving: '#4CAF50', seatbelt_interaction: '#00BCD4',
+  vehicle_entry_exit: '#795548', visual_distraction: '#9C27B0',
+};
+
+const TSM_PRED_DATA = [
+  {"class":"eating_drinking","correct":{"video":"tsm_pred_eating_drinking_correct.mp4","confidence":99.7},"wrong":{"video":"tsm_pred_eating_drinking_wrong.mp4","confidence":99.1,"predicted_as":"visual_distraction"}},
+  {"class":"looking_around","correct":{"video":"tsm_pred_looking_around_correct.mp4","confidence":71.3},"wrong":{"video":"tsm_pred_looking_around_wrong.mp4","confidence":94.4,"predicted_as":"safe_driving"}},
+  {"class":"manual_distraction","correct":{"video":"tsm_pred_manual_distraction_correct.mp4","confidence":97.3},"wrong":{"video":"tsm_pred_manual_distraction_wrong.mp4","confidence":97.4,"predicted_as":"eating_drinking"}},
+  {"class":"phone_use","correct":{"video":"tsm_pred_phone_use_correct.mp4","confidence":95.7},"wrong":{"video":"tsm_pred_phone_use_wrong.mp4","confidence":99.6,"predicted_as":"eating_drinking"}},
+  {"class":"safe_driving","correct":{"video":"tsm_pred_safe_driving_correct.mp4","confidence":99.2},"wrong":{"video":"tsm_pred_safe_driving_wrong.mp4","confidence":99.2,"predicted_as":"visual_distraction"}},
+  {"class":"seatbelt_interaction","correct":{"video":"tsm_pred_seatbelt_interaction_correct.mp4","confidence":98.6},"wrong":{"video":"tsm_pred_seatbelt_interaction_wrong.mp4","confidence":53.5,"predicted_as":"looking_around"}},
+  {"class":"vehicle_entry_exit","correct":{"video":"tsm_pred_vehicle_entry_exit_correct.mp4","confidence":100.0},"wrong":null},
+  {"class":"visual_distraction","correct":{"video":"tsm_pred_visual_distraction_correct.mp4","confidence":99.7},"wrong":{"video":"tsm_pred_visual_distraction_wrong.mp4","confidence":99.3,"predicted_as":"eating_drinking"}}
+];
+
+{
+    const data = TSM_PRED_DATA;
+    const grid = document.getElementById('predGrid');
+    data.forEach(row => {
+      const color = CLASS_COLORS[row.class] || '#888';
+      // Row label
+      const label = document.createElement('div');
+      label.className = 'pred-label';
+      label.style.color = color;
+      label.textContent = CLASS_DISPLAY[row.class] || row.class;
+      grid.appendChild(label);
+
+      // Correct cell
+      if (row.correct) {
+        grid.appendChild(makePredCell(
+          row.correct.video, row.correct.confidence + '%',
+          '#4CAF50', CLASS_DISPLAY[row.class], 'Correct', null
+        ));
+      } else {
+        const empty = document.createElement('div');
+        empty.className = 'pred-empty';
+        empty.textContent = 'No correct';
+        grid.appendChild(empty);
+      }
+
+      // Wrong cell
+      if (row.wrong) {
+        const predAs = CLASS_DISPLAY[row.wrong.predicted_as] || row.wrong.predicted_as;
+        grid.appendChild(makePredCell(
+          row.wrong.video, row.wrong.confidence + '%',
+          '#EF5350', CLASS_DISPLAY[row.class],
+          'Wrong', 'Predicted: ' + predAs
+        ));
+      } else {
+        const empty = document.createElement('div');
+        empty.className = 'pred-empty';
+        empty.textContent = 'No errors';
+        grid.appendChild(empty);
+      }
+    });
+}
+
+function makePredCell(videoFile, badge, badgeColor, className, outcome, misclass) {
+  const cell = document.createElement('div');
+  cell.className = 'pred-cell';
+  cell.onclick = () => openOverlay(videoFile, className, outcome, badge, misclass);
+
+  const vid = document.createElement('video');
+  vid.src = 'assets/' + videoFile;
+  vid.muted = true;
+  vid.loop = true;
+  vid.autoplay = true;
+  vid.playsInline = true;
+  cell.appendChild(vid);
+
+  const b = document.createElement('div');
+  b.className = 'pred-badge';
+  b.style.color = badgeColor;
+  b.textContent = badge;
+  cell.appendChild(b);
+
+  if (misclass) {
+    const m = document.createElement('div');
+    m.className = 'pred-misclass';
+    m.textContent = misclass;
+    cell.appendChild(m);
+  }
+  return cell;
+}
+
+// Overlay
+function openOverlay(videoFile, className, outcome, confidence, misclass) {
+  const overlay = document.getElementById('videoOverlay');
+  const video = document.getElementById('overlayVideo');
+  const title = document.getElementById('overlayTitle');
+  const sub = document.getElementById('overlaySub');
+
+  title.textContent = className + ' — ' + outcome + ' (' + confidence + ')';
+  sub.textContent = misclass || '';
+  video.src = 'assets/' + videoFile;
+  video.play();
+  overlay.classList.add('active');
+}
+
+function closeOverlay(e) {
+  if (e && e.target !== document.getElementById('videoOverlay')) return;
+  const overlay = document.getElementById('videoOverlay');
+  const video = document.getElementById('overlayVideo');
+  video.pause();
+  video.src = '';
+  overlay.classList.remove('active');
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeOverlay();
+});
+</script>
+</body>
+</html>

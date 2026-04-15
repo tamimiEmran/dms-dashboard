@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1920">
+  <title>Raqeeb Events &mdash; Preprocessing Pipeline</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #F8F9FB; --bg-card: #FFFFFF; --bg-elevated: #F0F1F4; --border: #E0E2E8;
+      --text: #1A1D26; --text-dim: #5A5E6E; --text-muted: #8E92A0;
+      --accent: #0E9A7E; --accent-dim: rgba(14,154,126,0.08);
+      --red: #D9453E; --red-dim: rgba(217,69,62,0.07);
+      --blue: #3B6FD6; --blue-dim: rgba(59,111,214,0.08);
+      --purple: #8B5CC4; --purple-dim: rgba(139,92,196,0.08);
+      --amber: #C88A1A; --amber-dim: rgba(200,138,26,0.08);
+      --font: 'DM Sans', system-ui, sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+      --radius: 10px; --radius-sm: 6px;
+    }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font); line-height: 1.55; -webkit-font-smoothing: antialiased; max-width: 1400px; margin: 0 auto; padding: 48px 64px; }
+
+    .page-header { margin-bottom: 40px; }
+    .page-header h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 6px; }
+    .page-header p { font-size: 14px; color: var(--text-dim); }
+
+    .summary-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 40px; }
+    .summary-card { border-radius: 8px; padding: 20px; text-align: center; }
+    .summary-card .label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; font-family: var(--mono); color: var(--text-dim); }
+    .summary-card .value { font-size: 36px; font-weight: 700; font-family: var(--mono); }
+    .summary-card .detail { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+
+    .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.03); }
+
+    /* Pipeline rows */
+    .pipeline { display: flex; flex-direction: column; gap: 20px; }
+    .pipe-row { display: grid; grid-template-columns: 160px 1fr; gap: 24px; align-items: start; }
+    .pipe-thumb { width: 160px; border-radius: 6px; border: 2px solid var(--border); }
+    .pipe-thumb.excluded { opacity: 0.5; }
+    .pipe-body h3 { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
+    .pipe-body .meta { font-family: var(--mono); font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
+    .pipe-body .desc { font-size: 13.5px; color: var(--text-dim); line-height: 1.55; }
+    .tag { display: inline-block; font-size: 10px; font-family: var(--mono); padding: 2px 8px; border-radius: 3px; font-weight: 600; vertical-align: middle; margin-left: 6px; }
+
+    .divider { border: none; border-top: 1px solid var(--border); margin: 0; }
+
+    /* Heatmap */
+    .heatmap { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 13px; }
+    .heatmap th { font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); padding: 8px 10px; border-bottom: 2px solid var(--border); font-weight: 600; }
+    .heatmap td { padding: 8px 10px; text-align: center; border-bottom: 1px solid var(--border); }
+    .heatmap td.rl { text-align: left; color: var(--text); font-weight: 500; }
+    .heatmap td.z { color: var(--text-muted); }
+    .heatmap td.t { font-weight: 600; color: var(--text); }
+
+    .mini-bar { display: inline-flex; height: 12px; border-radius: 3px; overflow: hidden; width: 64px; vertical-align: middle; }
+
+    .section-label { font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; color: var(--text-dim); margin-bottom: 12px; }
+  </style>
+</head>
+<body>
+  <a href="index.html" style="display:inline-flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#8E92A0;text-decoration:none;margin-bottom:20px;padding:5px 10px;border-radius:6px;border:1px solid #E0E2E8;transition:color 0.15s,border-color 0.15s;" onmouseover="this.style.color='#1A1D26';this.style.borderColor='#C8CBD4'" onmouseout="this.style.color='#8E92A0';this.style.borderColor='#E0E2E8'"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>All Presentations</a>
+  <div class="page-header">
+    <h1>Raqeeb Events &mdash; Preprocessing Pipeline</h1>
+    <p>Source: EventEvidenceVideos-01-03-2026 &middot; 588 raw OEM alert videos &middot; 155 MB</p>
+  </div>
+
+  <div class="summary-cards">
+    <div class="summary-card" style="background:var(--blue-dim)">
+      <div class="label">Raw Videos</div>
+      <div class="value" style="color:var(--blue)">588</div>
+      <div class="detail">155 MB &middot; 6 devices</div>
+    </div>
+    <div class="summary-card" style="background:var(--red-dim)">
+      <div class="label">ADAS Excluded</div>
+      <div class="value" style="color:var(--red)">60</div>
+      <div class="detail">Over Speed only</div>
+    </div>
+    <div class="summary-card" style="background:var(--amber-dim)">
+      <div class="label">BBox Set Aside</div>
+      <div class="value" style="color:var(--amber)">183</div>
+      <div class="detail">1 device &middot; 15fps</div>
+    </div>
+    <div class="summary-card" style="background:var(--accent-dim)">
+      <div class="label">DMS Eligible</div>
+      <div class="value" style="color:var(--accent)">345</div>
+      <div class="detail">71.6% IR &middot; 5 devices</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="pipeline">
+
+      <!-- ADAS -->
+      <div class="pipe-row">
+        <img src="assets/pipeline/adas.jpg" class="pipe-thumb excluded" alt="ADAS sample">
+        <div class="pipe-body">
+          <h3 style="color:var(--red)">704&times;576 / 20fps <span class="tag" style="background:var(--red-dim);color:var(--red)">EXCLUDED</span></h3>
+          <div class="meta">60 videos &middot; 60 MB &middot; KA3253, KA3293 &middot; Over_Speed only</div>
+          <div class="desc">
+            ADAS events (vehicle speed violations), not driver behavior. Higher resolution and frame rate from a separate camera pipeline. Irrelevant for DMS benchmarking.
+          </div>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <!-- Bounding Box -->
+      <div class="pipe-row">
+        <img src="assets/pipeline/bbox.jpg" class="pipe-thumb excluded" alt="BBox sample">
+        <div class="pipe-body">
+          <h3 style="color:var(--amber)">352&times;288 / 15fps <span class="tag" style="background:var(--amber-dim);color:var(--amber)">SET ASIDE</span></h3>
+          <div class="meta">183 videos &middot; 30 MB &middot; KA3294 only &middot; 6 event types</div>
+          <div class="desc">
+            Bounding boxes burned into frames make the detection problem artificially simpler &mdash; a model could learn the overlays rather than driver behavior. Single-device data offers no device diversity. Reserved for separate tasks where bounding-box inputs are acceptable.
+          </div>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <!-- DMS Eligible: IR -->
+      <div class="pipe-row">
+        <img src="assets/pipeline/dms_ir.jpg" class="pipe-thumb" style="border-color:var(--accent)" alt="DMS IR sample">
+        <div class="pipe-body">
+          <h3 style="color:var(--accent)">352&times;288 / 10fps <span class="tag" style="background:var(--accent-dim);color:var(--accent)">DMS ELIGIBLE</span></h3>
+          <div class="meta">345 videos &middot; 66 MB &middot; 5 devices &middot; 7 event types &middot; 247 IR + 97 RGB</div>
+          <div class="desc">
+            Clean driver-facing recordings with no visual overlays. IR modality dominates (71.6%), especially for Closed Eye (92% IR). RGB is more common for Call events (86% RGB). 80.2% rated good quality, all from driver_right_top camera position.
+          </div>
+        </div>
+      </div>
+
+      <!-- IR + RGB side by side thumbnails -->
+      <div style="display:flex;gap:12px;margin-left:184px;margin-top:-8px">
+        <div style="text-align:center">
+          <img src="assets/pipeline/dms_ir.jpg" style="width:120px;border-radius:4px;border:1px solid var(--border)">
+          <div style="font-size:11px;font-family:var(--mono);color:var(--purple);margin-top:4px">IR (247)</div>
+        </div>
+        <div style="text-align:center">
+          <img src="assets/pipeline/dms_rgb.jpg" style="width:120px;border-radius:4px;border:1px solid var(--border)">
+          <div style="font-size:11px;font-family:var(--mono);color:var(--blue);margin-top:4px">RGB (97)</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Text Overlay Blurring -->
+  <div class="card" style="margin-top:24px">
+    <div class="section-label">Step 3 &mdash; Text Overlay Blurring (Data Leakage)</div>
+    <div style="display:grid;grid-template-columns:160px 160px 1fr;gap:20px;align-items:start">
+      <div style="text-align:center">
+        <img src="assets/7April26/sample_ir2_before.png" style="width:160px;border-radius:6px;border:2px solid var(--red);opacity:0.7">
+        <div style="font-size:11px;font-family:var(--mono);color:var(--red);margin-top:4px">Before</div>
+      </div>
+      <div style="text-align:center">
+        <img src="assets/7April26/sample_ir2_after.png" style="width:160px;border-radius:6px;border:2px solid var(--accent)">
+        <div style="font-size:11px;font-family:var(--mono);color:var(--accent);margin-top:4px">After</div>
+      </div>
+      <div style="font-size:13.5px;color:var(--text-dim);line-height:1.6">
+        Every frame contains burned-in text overlays &mdash; GPS coordinates, speed, device ID, and timestamps &mdash; that a model could exploit as shortcuts instead of learning actual driver behavior.
+      </div>
+    </div>
+  </div>
+
+  <!-- Train / Val / Test Split -->
+  <div class="card" style="margin-top:24px">
+    <div class="section-label">Train / Val / Test Split — By Device (No Data Leakage)</div>
+    <table class="heatmap" style="margin-top:12px">
+      <thead>
+        <tr>
+          <th style="text-align:left">Split</th>
+          <th style="text-align:left">Devices</th>
+          <th style="text-align:center">Videos</th>
+          <th style="text-align:center">IR / RGB</th>
+          <th style="text-align:left">Rationale</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="rl"><span class="tag" style="background:var(--accent-dim);color:var(--accent)">TRAIN</span></td>
+          <td class="rl">KA3253 (126) + KA3292 (99)</td>
+          <td style="text-align:center"><strong>225</strong> <span style="color:var(--text-muted)">(65%)</span></td>
+          <td style="text-align:center">170 / 55</td>
+          <td class="rl" style="color:var(--text-dim)">Largest devices, good IR/RGB mix</td>
+        </tr>
+        <tr>
+          <td class="rl"><span class="tag" style="background:var(--amber-dim);color:var(--amber)">VAL</span></td>
+          <td class="rl">KA3293 (71)</td>
+          <td style="text-align:center"><strong>71</strong> <span style="color:var(--text-muted)">(21%)</span></td>
+          <td style="text-align:center">43 / 28</td>
+          <td class="rl" style="color:var(--text-dim)">Mid-size, mixed modality</td>
+        </tr>
+        <tr>
+          <td class="rl"><span class="tag" style="background:var(--blue-dim);color:var(--blue)">TEST</span></td>
+          <td class="rl">KA3277 (27) + KA3301 (22)</td>
+          <td style="text-align:center"><strong>49</strong> <span style="color:var(--text-muted)">(14%)</span></td>
+          <td style="text-align:center">35 / 14</td>
+          <td class="rl" style="color:var(--text-dim)">Smallest, held out completely</td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="font-size:12px;color:var(--text-muted);margin-top:12px;font-style:italic">Split by device to prevent the same driver appearing in multiple sets. Both IR and RGB retained per split.</p>
+  </div>
+
+</body>
+</html>

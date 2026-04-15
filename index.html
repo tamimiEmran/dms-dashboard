@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DMS Presentations</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    /* === Tokens (matched from raqeeb_audit / index2) === */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #F8F9FB;
+      --bg-card: #FFFFFF;
+      --bg-elevated: #F0F1F4;
+      --border: #E0E2E8;
+      --text: #1A1D26;
+      --text-dim: #5A5E6E;
+      --text-muted: #8E92A0;
+      --accent: #0E9A7E;
+      --accent-dim: rgba(14, 154, 126, 0.08);
+      --red: #D9453E;
+      --red-dim: rgba(217, 69, 62, 0.07);
+      --blue: #3B6FD6;
+      --blue-dim: rgba(59, 111, 214, 0.08);
+      --purple: #8B5CC4;
+      --purple-dim: rgba(139, 92, 196, 0.08);
+      --amber: #C88A1A;
+      --amber-dim: rgba(200, 138, 26, 0.08);
+      --font: 'DM Sans', system-ui, sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+      --radius: 10px;
+      --radius-sm: 6px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 48px 64px;
+    }
+
+    /* === Page Header === */
+    .page-header { margin-bottom: 48px; }
+    .page-header h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 6px; }
+    .page-header p { font-size: 14px; color: var(--text-dim); }
+
+    /* === Sections === */
+    .section { margin-bottom: 48px; }
+    .section-title { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 6px; }
+    .section-subtitle { font-size: 14px; color: var(--text-dim); margin-bottom: 24px; }
+
+    /* === Cards grid === */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+      gap: 20px;
+    }
+
+    /* === Base card === */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.03);
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      transition: box-shadow 0.25s ease, border-color 0.25s ease;
+    }
+
+    .card:hover {
+      border-color: #C8CBD4;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.07), 0 1px 3px rgba(0,0,0,0.04);
+    }
+
+    /* Accent strip */
+    .card-strip { height: 4px; }
+
+    .card.past .card-strip { background: var(--bg-elevated); }
+
+    .card-body {
+      padding: 24px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top row */
+    .card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .badge {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      font-weight: 500;
+    }
+
+    .badge.past { background: var(--bg-elevated); color: var(--text-muted); }
+
+    .card-date {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Title + description */
+    .card-title { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 6px; }
+    .card.past .card-title { color: var(--text-dim); }
+
+    .card-subtitle { font-size: 13.5px; color: var(--text-dim); line-height: 1.5; margin-bottom: 18px; }
+
+    /* Tags */
+    .card-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
+
+    .tag {
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-weight: 500;
+    }
+
+    .tag[data-color="teal"]   { color: var(--accent); background: var(--accent-dim); }
+    .tag[data-color="amber"]  { color: var(--amber);  background: var(--amber-dim); }
+    .tag[data-color="blue"]   { color: var(--blue);   background: var(--blue-dim); }
+    .tag[data-color="purple"] { color: var(--purple);  background: var(--purple-dim); }
+    .tag[data-color="red"]    { color: var(--red);    background: var(--red-dim); }
+
+    /* Stats row */
+    .card-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      margin-top: auto;
+      border-top: 1px solid var(--border);
+      padding-top: 16px;
+    }
+
+    .stat { text-align: center; position: relative; }
+
+    .stat + .stat::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 2px; bottom: 2px;
+      width: 1px;
+      background: var(--border);
+    }
+
+    .stat-value { font-family: var(--mono); font-size: 22px; font-weight: 700; color: var(--text); line-height: 1; }
+    .card.past .stat-value { color: var(--text-dim); }
+    .stat-label { font-family: var(--mono); font-size: 9px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); margin-top: 5px; }
+
+    /* ============================================
+       SCHEDULED — ready-to-present card
+       ============================================ */
+    .card.scheduled {
+      position: relative;
+      border-color: rgba(14, 154, 126, 0.25);
+    }
+
+    .card.scheduled:hover {
+      border-color: var(--accent);
+      box-shadow: 0 6px 20px rgba(14, 154, 126, 0.12), 0 2px 6px rgba(0,0,0,0.04);
+      transform: translateY(-1px);
+    }
+
+    .card.scheduled .card-strip {
+      background: linear-gradient(90deg, var(--accent), rgba(14, 154, 126, 0.4));
+      height: 4px;
+    }
+
+    .card.scheduled .card-title { color: var(--text); }
+    .card.scheduled .card-subtitle { color: var(--text-dim); }
+
+    .badge.scheduled {
+      background: var(--accent-dim);
+      color: var(--accent);
+    }
+
+    .detail-links {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    .detail-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 11px;
+      font-family: var(--font);
+      padding: 4px 10px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+
+    .detail-link:hover {
+      color: var(--accent-2);
+      border-color: var(--accent-2);
+      background: rgba(59, 111, 214, 0.04);
+    }
+
+    /* Arrow connector */
+    .arrow-connector {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0 24px;
+      flex-shrink: 0;
+    }
+
+    .arrow-connector .arrow-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      white-space: nowrap;
+    }
+
+    .arrow-connector .arrow-line {
+      display: flex;
+      align-items: center;
+      color: var(--border);
+    }
+
+    .arrow-connector .arrow-line .line {
+      width: 40px;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .arrow-connector .arrow-line .head {
+      width: 0; height: 0;
+      border-top: 5px solid transparent;
+      border-bottom: 5px solid transparent;
+      border-left: 8px solid var(--border);
+    }
+
+    /* ============================================
+       SUPPORTING MATERIAL CARDS
+       ============================================ */
+    .materials-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .card.material {
+      border-style: dashed;
+      background: linear-gradient(135deg, #FCFCFD 0%, #F4F5F8 100%);
+      box-shadow: none;
+    }
+
+    .card.material:hover {
+      border-color: rgba(59, 111, 214, 0.4);
+      border-style: dashed;
+      box-shadow: 0 2px 12px rgba(59, 111, 214, 0.06);
+      background: linear-gradient(135deg, #FEFEFE 0%, #F6F7FA 100%);
+    }
+
+    .card.material .card-strip {
+      height: 3px;
+      background: linear-gradient(90deg, var(--blue), var(--purple));
+      opacity: 0.5;
+    }
+
+    .card.material .card-body {
+      padding: 16px 20px;
+      flex-direction: row;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .material-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 18px;
+    }
+
+    .material-icon.report { background: var(--blue-dim); color: var(--blue); }
+    .material-icon.diagram { background: var(--purple-dim); color: var(--purple); }
+
+    .material-info { flex: 1; min-width: 0; }
+    .material-title { font-size: 14px; font-weight: 600; letter-spacing: -0.01em; margin-bottom: 2px; }
+    .material-desc { font-size: 12px; color: var(--text-dim); line-height: 1.4; }
+
+    .material-badge {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: var(--blue-dim);
+      color: var(--blue);
+      flex-shrink: 0;
+      font-weight: 500;
+    }
+
+    .material-badge.diagram {
+      background: var(--purple-dim);
+      color: var(--purple);
+    }
+
+    /* ============================================
+       SVG LIGHTBOX
+       ============================================ */
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: rgba(26, 29, 38, 0.85);
+      backdrop-filter: blur(8px);
+      cursor: pointer;
+      padding: 40px;
+    }
+
+    .lightbox.active { display: flex; align-items: center; justify-content: center; }
+
+    .lightbox-inner {
+      background: var(--bg-card);
+      border-radius: 12px;
+      padding: 24px;
+      max-width: 95vw;
+      max-height: 90vh;
+      overflow: auto;
+      cursor: default;
+      position: relative;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.3);
+    }
+
+    .lightbox-inner img,
+    .lightbox-inner object {
+      display: block;
+      width: 100%;
+      height: auto;
+      min-width: 900px;
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      color: var(--text-dim);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .lightbox-close:hover { background: var(--bg-elevated); color: var(--text); }
+
+    .lightbox-open {
+      position: absolute;
+      top: 12px;
+      right: 52px;
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      color: var(--text-dim);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .lightbox-open:hover { background: var(--bg-elevated); color: var(--text); }
+
+    /* === Responsive === */
+    @media (max-width: 960px) {
+      body { padding: 32px 24px; }
+      .upcoming-row { flex-direction: column; gap: 20px; }
+      .card.wip { flex: none; }
+      .arrow-connector { flex-direction: row; padding: 8px 0; }
+      .arrow-connector .arrow-line .line { width: 24px; }
+      .cards-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-header">
+    <h1>DMS Presentations</h1>
+    <p>Mowasalat &middot; Driver Monitoring System</p>
+  </div>
+
+  <div id="app"></div>
+
+  <!-- SVG Lightbox -->
+  <div class="lightbox" id="svgLightbox" onclick="closeLightbox()">
+    <div class="lightbox-inner" onclick="event.stopPropagation()">
+      <a class="lightbox-open" href="dms_iot_architecture.svg" target="_blank" title="Open in new tab"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
+      <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
+      <object data="dms_iot_architecture.svg" type="image/svg+xml" style="width:100%;min-width:900px;aspect-ratio:1760/1100;">DMS IoT Architecture</object>
+    </div>
+  </div>
+
+  <script>
+    // ===== PRESENTATION REGISTRY =====
+    const PRESENTATIONS = [
+      {
+        id: 'raqeeb_audit_pres',
+        title: 'Raqeeb Events \u2014 OEM vs Ground Truth',
+        subtitle: 'OEM accuracy audit across 528 event videos from 6 devices, false-alarm analysis, and open-source model benchmarking.',
+        file: 'raqeeb_audit_pres.html',
+        assetsDir: '7April26',
+        status: 'scheduled',
+        tags: [
+          { label: 'OEM Accuracy',   color: 'red' },
+          { label: 'Data Pipeline',  color: 'blue' },
+          { label: 'False Alarms',   color: 'amber' },
+          { label: 'OS Benchmark',   color: 'purple' },
+          { label: 'Blind Spots',    color: 'teal' },
+        ],
+        stats: [
+          { value: '528',  label: 'Videos' },
+          { value: '6',    label: 'Devices' },
+          { value: '5',    label: 'Slides' },
+          { value: '5',    label: 'Models' },
+        ],
+        materials: [
+          {
+            title: 'OEM Quality Audit',
+            desc: 'Interactive dashboard with accuracy breakdowns, confusion matrices, and video examples',
+            file: 'raqeeb_audit.html',
+            type: 'report',
+          },
+          {
+            title: 'Preprocessing Pipeline',
+            desc: 'Data flow from raw Raqeeb events through cleaning, labeling, and verification',
+            file: 'preprocessing_pipeline.html',
+            type: 'report',
+          },
+          {
+            title: 'DMS IoT Architecture',
+            desc: 'System architecture diagram showing device-to-cloud data flow',
+            file: null,
+            type: 'diagram',
+            action: 'lightbox',
+          },
+        ],
+      },
+      {
+        id: 'dms_strategy',
+        title: 'DMS R&D \u2014 Strategy & Roadmap',
+        subtitle: 'End-to-end DMS pipeline: datasets, model architectures, edge deployment targets, and prediction demos.',
+        file: 'index2.html',
+        assetsDir: '31March26',
+        status: 'past',
+        tags: [
+          { label: 'Pipeline',  color: 'teal' },
+          { label: 'Models',    color: 'blue' },
+          { label: 'Edge HW',   color: 'amber' },
+          { label: 'Datasets',  color: 'purple' },
+        ],
+        stats: [
+          { value: '11',  label: 'Slides' },
+          { value: '3',   label: 'Datasets' },
+          { value: '5',   label: 'Models' },
+          { value: '8',   label: 'Classes' },
+        ],
+      },
+    ];
+
+    // ===== DATE PARSING =====
+    function parseDateFromDir(dirName) {
+      const months = {
+        january: 0, february: 1, march: 2, april: 3, may: 4, june: 5,
+        july: 6, august: 7, september: 8, october: 9, november: 10, december: 11
+      };
+      const match = dirName.match(/^(\d{1,2})([A-Za-z]+)(\d{2,4})$/);
+      if (!match) return null;
+      const day = parseInt(match[1]);
+      const month = months[match[2].toLowerCase()];
+      if (month === undefined) return null;
+      const year = match[3].length === 2 ? 2000 + parseInt(match[3]) : parseInt(match[3]);
+      return new Date(year, month, day);
+    }
+
+    function formatDate(date) {
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`;
+    }
+
+    // ===== LIGHTBOX =====
+    function openLightbox() {
+      document.getElementById('svgLightbox').classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeLightbox() {
+      document.getElementById('svgLightbox').classList.remove('active');
+      document.body.style.overflow = '';
+    }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+
+    // ===== RENDERING =====
+    function render() {
+      const app = document.getElementById('app');
+      const enriched = PRESENTATIONS.map(p => ({
+        ...p,
+        date: parseDateFromDir(p.assetsDir),
+      })).sort((a, b) => b.date - a.date);
+
+      const scheduled = enriched.filter(p => p.status === 'scheduled');
+      const wip = enriched.filter(p => p.status === 'wip');
+      const past = enriched.filter(p => p.status === 'past');
+
+      let html = '';
+      if (scheduled.length) html += renderScheduledSection(scheduled);
+      if (wip.length) html += renderUpcomingSection(wip);
+      if (past.length) html += renderPastSection(past);
+      app.innerHTML = html;
+    }
+
+    function renderScheduledSection(items) {
+      let html = `<div class="section">
+        <div class="section-title">Upcoming</div>
+        <div class="section-subtitle">Scheduled for presentation</div>
+        <div class="cards-grid">`;
+
+      items.forEach(p => {
+        const dateStr = p.date ? formatDate(p.date) : 'Date TBD';
+        const tagsHtml = (p.tags || []).map(t =>
+          `<span class="tag" data-color="${t.color}">${t.label}</span>`
+        ).join('');
+        const statsHtml = (p.stats || []).map(s => `
+          <div class="stat">
+            <div class="stat-value">${s.value}</div>
+            <div class="stat-label">${s.label}</div>
+          </div>`).join('');
+        const detailLinks = (p.materials || []).map(m => {
+          if (m.action === 'lightbox') {
+            return `<a href="#" class="detail-link" onclick="event.preventDefault();event.stopPropagation();openLightbox();">${m.title}</a>`;
+          }
+          return `<a href="${m.file}" class="detail-link" onclick="event.stopPropagation();">${m.title}</a>`;
+        }).join('');
+
+        html += `
+          <div class="card scheduled" style="cursor:pointer" onclick="if(event.target.closest('.detail-link'))return;window.location.href='${p.file}'">
+            <div class="card-strip"></div>
+            <div class="card-body">
+              <div class="card-top">
+                <span class="badge scheduled">Scheduled</span>
+                <span class="card-date">${dateStr}</span>
+              </div>
+              <div class="card-title">${p.title}</div>
+              <div class="card-subtitle">${p.subtitle}</div>
+              <div class="card-tags">${tagsHtml}</div>
+              <div class="card-stats">${statsHtml}</div>
+              ${detailLinks ? `<div class="detail-links">${detailLinks}</div>` : ''}
+            </div>
+          </div>`;
+      });
+
+      html += `</div></div>`;
+      return html;
+    }
+
+    function renderUpcomingSection(items) {
+      let html = `<div class="section">
+        <div class="section-title">Upcoming</div>
+        <div class="section-subtitle">Scheduled for presentation</div>`;
+
+      items.forEach(p => {
+        const dateStr = p.date ? formatDate(p.date) : 'Date unknown';
+
+        const tagsHtml = (p.tags || []).map(t =>
+          `<span class="tag" data-color="${t.color}">${t.label}</span>`
+        ).join('');
+
+        const statsHtml = (p.stats || []).map(s => `
+          <div class="stat">
+            <div class="stat-value">${s.value}</div>
+            <div class="stat-label">${s.label}</div>
+          </div>`).join('');
+
+        // Material cards
+        const materialsHtml = (p.materials || []).map(m => {
+          const iconClass = m.type === 'diagram' ? 'diagram' : 'report';
+          const icon = m.type === 'diagram'
+            ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="8" y="14" width="7" height="7" rx="1"/><line x1="6.5" y1="10" x2="6.5" y2="14"/><line x1="17.5" y1="10" x2="17.5" y2="14"/><line x1="6.5" y1="14" x2="11.5" y2="14"/><line x1="17.5" y1="14" x2="11.5" y2="14"/></svg>`
+            : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>`;
+          const badgeClass = m.type === 'diagram' ? 'material-badge diagram' : 'material-badge';
+          const badgeText = m.type === 'diagram' ? 'Diagram' : 'Report';
+          if (m.action === 'lightbox') {
+            return `<div class="card material" style="cursor:pointer" onclick="openLightbox()"><div class="card-strip"></div><div class="card-body"><div class="material-icon ${iconClass}">${icon}</div><div class="material-info"><div class="material-title">${m.title}</div><div class="material-desc">${m.desc}</div></div><span class="${badgeClass}">${badgeText}</span></div></div>`;
+          }
+          return `<a class="card material" href="${m.file}"><div class="card-strip"></div><div class="card-body"><div class="material-icon ${iconClass}">${icon}</div><div class="material-info"><div class="material-title">${m.title}</div><div class="material-desc">${m.desc}</div></div><span class="${badgeClass}">${badgeText}</span></div></a>`;
+        }).join('');
+
+        html += `
+          <div class="upcoming-row">
+            <div class="card wip">
+              <div class="card-strip"></div>
+              <div class="card-body">
+                <div class="card-top">
+                  <span class="badge wip">In Progress</span>
+                  <span class="card-date">${dateStr}</span>
+                </div>
+                <div class="card-title">${p.title}</div>
+                <div class="card-subtitle">${p.subtitle}</div>
+                <div class="card-tags">${tagsHtml}</div>
+                <div class="card-stats">${statsHtml}</div>
+              </div>
+            </div>
+            <div class="arrow-connector">
+              <span class="arrow-label">will include</span>
+              <div class="arrow-line"><div class="line"></div><div class="head"></div></div>
+            </div>
+            <div class="materials-grid">${materialsHtml}</div>
+          </div>`;
+      });
+
+      html += `</div>`;
+      return html;
+    }
+
+    function renderPastSection(items) {
+      return `
+        <div class="section">
+          <div class="section-title">Past Presentations</div>
+          <div class="section-subtitle">Previously presented</div>
+          <div class="cards-grid">${items.map(p => renderCard(p)).join('')}</div>
+        </div>`;
+    }
+
+    function renderCard(p) {
+      const dateStr = p.date ? formatDate(p.date) : 'Date unknown';
+
+      const tagsHtml = (p.tags || []).map(t =>
+        `<span class="tag" data-color="${t.color}">${t.label}</span>`
+      ).join('');
+
+      const statsHtml = (p.stats || []).map(s => `
+        <div class="stat">
+          <div class="stat-value">${s.value}</div>
+          <div class="stat-label">${s.label}</div>
+        </div>`).join('');
+
+      return `
+        <a class="card past" href="${p.file}">
+          <div class="card-strip"></div>
+          <div class="card-body">
+            <div class="card-top">
+              <span class="badge past">Presented</span>
+              <span class="card-date">${dateStr}</span>
+            </div>
+            <div class="card-title">${p.title}</div>
+            <div class="card-subtitle">${p.subtitle}</div>
+            <div class="card-tags">${tagsHtml}</div>
+            <div class="card-stats">${statsHtml}</div>
+          </div>
+        </a>`;
+    }
+
+    render();
+  </script>
+</body>
+</html>

@@ -1,0 +1,1598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1920">
+<title>DMS R&D — Strategy & Roadmap</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ========== Reset & Tokens ========== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #F8F9FB;
+  --bg-card: #FFFFFF;
+  --bg-elevated: #F0F1F4;
+  --border: #E0E2E8;
+  --text: #1A1D26;
+  --text-dim: #5A5E6E;
+  --text-muted: #8E92A0;
+  --accent: #0E9A7E;
+  --accent-dim: rgba(14,154,126,0.08);
+  --accent-2: #3B6FD6;
+  --accent-2-dim: rgba(59,111,214,0.08);
+  --accent-3: #C88A1A;
+  --accent-3-dim: rgba(200,138,26,0.08);
+  --red: #D9453E;
+  --red-dim: rgba(217,69,62,0.07);
+  --font: 'DM Sans', system-ui, sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+  --radius: 10px;
+  --radius-sm: 6px;
+}
+html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  line-height: 1.55;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ========== Slides ========== */
+.slide {
+  min-height: 100vh;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  padding: 56px 80px 48px;
+  position: relative;
+}
+.slide::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, var(--border) 20%, var(--border) 80%, transparent 100%);
+}
+
+/* ========== Nav ========== */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  background: rgba(248,249,251,0.90);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 40px;
+  height: 48px;
+  gap: 4px;
+}
+nav a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  padding: 6px 14px;
+  border-radius: 20px;
+  transition: all 0.2s;
+}
+nav a:hover, nav a.active { color: var(--text); background: var(--bg-elevated); }
+nav .slide-counter {
+  margin-left: auto;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-family: var(--mono);
+}
+
+/* ========== Typography ========== */
+h1 {
+  font-size: 52px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+h2 {
+  font-size: 32px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-bottom: 6px;
+}
+h3 {
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--text-dim);
+  margin-bottom: 28px;
+}
+.tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: var(--mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+}
+.tag--accent { background: var(--accent-dim); color: var(--accent); }
+.tag--blue { background: var(--accent-2-dim); color: var(--accent-2); }
+.tag--amber { background: var(--accent-3-dim); color: var(--accent-3); }
+.tag--red { background: var(--red-dim); color: var(--red); }
+
+/* ========== Layout helpers ========== */
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.gap-12 { gap: 12px; }
+.gap-16 { gap: 16px; }
+.gap-20 { gap: 20px; }
+.gap-24 { gap: 24px; }
+.gap-32 { gap: 32px; }
+.grow { flex: 1; }
+.items-center { align-items: center; }
+.justify-center { justify-content: center; }
+.mt-auto { margin-top: auto; }
+
+/* ========== Cards ========== */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.03);
+}
+.card--flush { padding: 0; overflow: hidden; }
+.card h4 {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.card p, .card li {
+  font-size: 14px;
+  color: var(--text-dim);
+  line-height: 1.6;
+}
+.card ul { list-style: none; padding: 0; }
+.card ul li { padding-left: 16px; position: relative; }
+.card ul li::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 9px;
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--text-muted);
+}
+
+/* ========== Action Points ========== */
+.action-bar {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px 18px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  font-size: 13.5px;
+}
+.action-bar.blue { border-left-color: var(--accent-2); }
+.action-bar.amber { border-left-color: var(--accent-3); }
+.action-bar .action-icon {
+  flex-shrink: 0;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: var(--accent-dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1px;
+}
+.action-bar.blue .action-icon { background: var(--accent-2-dim); }
+.action-bar.amber .action-icon { background: var(--accent-3-dim); }
+.action-bar .action-icon svg { width: 11px; height: 11px; }
+.action-bar .action-text { color: var(--text); flex: 1; }
+.action-bar .action-text strong { font-weight: 600; }
+.action-bar .assignee {
+  flex-shrink: 0;
+  font-size: 11.5px;
+  font-family: var(--mono);
+  color: var(--text-muted);
+  background: var(--bg-card);
+  padding: 3px 10px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+/* ========== Tables ========== */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+.data-table th {
+  text-align: left;
+  font-weight: 600;
+  font-size: 11.5px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+}
+.data-table td {
+  padding: 10px 14px;
+  color: var(--text-dim);
+  border-bottom: 1px solid rgba(42,45,56,0.5);
+}
+.data-table tr:last-child td { border-bottom: none; }
+.data-table .num { font-family: var(--mono); font-size: 13px; }
+.data-table .pos { color: var(--accent); }
+.data-table .zero { color: var(--text-muted); }
+
+/* ========== Images ========== */
+.img-card {
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.img-card img {
+  width: 100%;
+  display: block;
+}
+.img-card .img-caption {
+  padding: 10px 14px;
+  font-size: 12px;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border);
+}
+
+/* ========== Flowchart SVG ========== */
+.flowchart-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin: 10px 0;
+}
+.flowchart-container svg text {
+  font-family: 'DM Sans', system-ui, sans-serif;
+}
+
+/* ========== Event badges ========== */
+.event-grid {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.event-badge {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 14px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+}
+.event-badge .dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+}
+.event-badge .dot.c1 { background: var(--accent); }
+.event-badge .dot.c2 { background: var(--accent-2); }
+.event-badge .dot.c3 { background: var(--accent-3); }
+.event-badge .dot.c4 { background: var(--red); }
+.event-badge .dot.c5 { background: #B07FE8; }
+
+/* ========== Slide-specific ========== */
+.title-slide {
+  justify-content: center;
+  align-items: flex-start;
+  padding-left: 120px;
+}
+.title-slide .subtitle {
+  font-size: 20px;
+  color: var(--text-dim);
+  font-weight: 400;
+  margin-top: 10px;
+  max-width: 600px;
+}
+.title-slide .meta {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 32px;
+  font-family: var(--mono);
+}
+
+/* Glow decoration */
+.title-slide::after {
+  content: '';
+  position: absolute;
+  top: -120px; right: -80px;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(14,154,126,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* ========== Roadmap timeline ========== */
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  position: relative;
+  padding-left: 28px;
+}
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 8px; top: 8px; bottom: 8px;
+  width: 2px;
+  background: var(--border);
+}
+.timeline-item {
+  position: relative;
+  padding: 12px 0 20px 24px;
+}
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -24px; top: 16px;
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  border: 2px solid var(--accent);
+}
+.timeline-item.phase-2::before { border-color: var(--accent-2); }
+.timeline-item.phase-3::before { border-color: var(--accent-3); }
+.timeline-item.phase-done::before { background: var(--accent); border-color: var(--accent); }
+.timeline-item h4 {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.timeline-item .tl-sub {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  font-family: var(--mono);
+  margin-bottom: 6px;
+}
+.timeline-item p {
+  font-size: 13.5px;
+  color: var(--text-dim);
+  max-width: 700px;
+}
+
+/* ========== Status chips ========== */
+.status {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-family: var(--mono);
+  letter-spacing: 0.03em;
+}
+.status--done { background: rgba(62,207,180,0.15); color: var(--accent); }
+.status--wip { background: rgba(232,168,56,0.15); color: var(--accent-3); }
+.status--next { background: rgba(91,141,239,0.15); color: var(--accent-2); }
+
+/* ========== Approach compare ========== */
+.approach-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.approach-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px 24px;
+}
+.approach-card h4 {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.approach-card .pros { color: var(--accent); font-size: 13px; margin-bottom: 4px; }
+.approach-card .cons { color: var(--red); font-size: 13px; }
+.approach-card p { font-size: 13.5px; color: var(--text-dim); margin-bottom: 8px; }
+
+/* ========== Keyboard hint ========== */
+.keys {
+  position: fixed;
+  bottom: 16px; right: 24px;
+  font-size: 11px;
+  color: var(--text-muted);
+  z-index: 1000;
+}
+.keys kbd {
+  display: inline-block;
+  padding: 1px 6px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  font-family: var(--mono);
+  font-size: 11px;
+}
+
+/* ========== HW spec bar ========== */
+.spec-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+.spec-item {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 18px 20px;
+  text-align: center;
+}
+.spec-item .spec-val {
+  font-size: 28px;
+  font-weight: 700;
+  font-family: var(--mono);
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.spec-item .spec-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ========== Tradeoff bar ========== */
+.tradeoff-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(42,45,56,0.4);
+}
+.tradeoff-row:last-child { border-bottom: none; }
+.tradeoff-label {
+  font-size: 13px;
+  font-weight: 500;
+  width: 140px;
+  flex-shrink: 0;
+}
+.tradeoff-bar-wrap {
+  flex: 1;
+  height: 6px;
+  background: var(--bg-elevated);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.tradeoff-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.6s ease;
+}
+
+@media print {
+  html { scroll-snap-type: none; }
+  .slide { min-height: auto; page-break-after: always; }
+  nav, .keys { display: none; }
+}
+/* ========== Original content slide styles (light theme) ========== */
+.slide img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+.slide img.full {
+  max-height: calc(100vh - 200px);
+  width: auto;
+}
+.slide img.wide {
+  width: min(1600px, 90vw);
+}
+.caption {
+  color: var(--text-muted);
+  font-size: 14px;
+  text-align: center;
+  max-width: 900px;
+  margin-top: 10px;
+}
+.step-label {
+  display: inline-block;
+  background: var(--accent-2);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: var(--mono);
+  padding: 3px 10px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+  letter-spacing: 0.05em;
+}
+.video-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  max-width: 1500px;
+  width: 100%;
+}
+.video-card {
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid var(--border);
+  background: var(--bg-card);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.video-card video {
+  width: 100%;
+  display: block;
+}
+.video-card .label {
+  padding: 6px 10px;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+}
+.model-table {
+  border-collapse: collapse;
+  font-size: 14px;
+  margin-bottom: 24px;
+  background: var(--bg-card);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  border: 1px solid var(--border);
+}
+.model-table th {
+  background: var(--bg-elevated);
+  padding: 10px 18px;
+  font-weight: 600;
+  text-align: left;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.model-table td {
+  padding: 8px 18px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-dim);
+}
+.model-table .delta-pos { color: var(--accent); font-weight: 600; }
+.model-table .delta-zero { color: var(--text-muted); }
+.side-by-side {
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
+  max-width: 1600px;
+  width: 100%;
+}
+.side-by-side > * { flex: 1; }
+.pred-grid {
+  display: grid;
+  grid-template-columns: 160px 1fr 1fr;
+  gap: 6px 12px;
+  max-width: 1500px;
+  width: 100%;
+  align-items: center;
+}
+.pred-header {
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--border);
+}
+.pred-label {
+  font-size: 13px;
+  font-weight: 600;
+  text-align: right;
+  padding-right: 10px;
+}
+.pred-cell {
+  position: relative;
+  border-radius: 6px;
+  overflow: hidden;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  transition: border-color 0.2s, transform 0.15s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.pred-cell:hover {
+  border-color: var(--text-muted);
+  transform: scale(1.02);
+}
+.pred-cell video {
+  width: 100%;
+  display: block;
+  pointer-events: none;
+}
+.pred-cell .pred-badge {
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  font-family: var(--mono);
+  padding: 1px 6px;
+  border-radius: 3px;
+  background: rgba(0,0,0,0.7);
+}
+.pred-cell .pred-misclass {
+  position: absolute;
+  bottom: 4px;
+  left: 6px;
+  font-size: 11px;
+  padding: 1px 6px;
+  border-radius: 3px;
+  background: rgba(0,0,0,0.7);
+  color: #EF5350;
+}
+.pred-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 80px;
+  border-radius: 6px;
+  border: 1px dashed var(--border);
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 600;
+}
+.video-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(8px);
+  align-items: center;
+  justify-content: center;
+}
+.video-overlay.active { display: flex; }
+.overlay-content {
+  position: relative;
+  max-width: 800px;
+  width: 90vw;
+}
+.overlay-content video {
+  width: 100%;
+  border-radius: 8px;
+  border: 2px solid var(--border);
+}
+.overlay-title {
+  color: var(--text);
+  font-size: 18px;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 10px;
+}
+.overlay-sub {
+  color: var(--text-dim);
+  font-size: 14px;
+  text-align: center;
+  margin-top: 8px;
+}
+.overlay-close {
+  position: absolute;
+  top: -40px;
+  right: 0;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 32px;
+  cursor: pointer;
+  line-height: 1;
+}
+.overlay-close:hover { color: var(--text); }
+
+/* Content slides centered layout */
+.slide.content-slide {
+  align-items: center;
+  justify-content: center;
+}
+.slide.content-slide h2 {
+  text-align: center;
+}
+.slide.content-slide h3 {
+  text-align: center;
+  max-width: 800px;
+}
+</style>
+</head>
+<body>
+
+<!-- ========== NAV ========== -->
+<nav id="nav">
+  <a href="#title">Intro</a>
+  <a href="#overview">Architecture</a>
+  <a href="#pipeline">Pipeline</a>
+  <a href="#datasets">Datasets</a>
+  <a href="#statefarm">StateFarm</a>
+  <a href="#driveact">Drive&Act</a>
+  <a href="#remap">Remap</a>
+  <a href="#replication">Replication</a>
+  <a href="#predictions">Predictions</a>
+  <a href="#tsm-metrics">Results</a>
+  <a href="#tsm-preds">TSM Preds</a>
+  <a href="#distribution">Distribution</a>
+  <a href="#tsm4">TSM 4/4</a>
+  <a href="#hw">Hardware</a>
+  <a href="#roadmap">Roadmap</a>
+  <span class="slide-counter" id="slideCounter">1 / 15</span>
+</nav>
+<div class="keys"><kbd>↑</kbd> <kbd>↓</kbd> navigate</div>
+
+<!-- ========== 1. TITLE ========== -->
+<section class="slide title-slide" id="title">
+  <span class="tag tag--accent">R&D Strategy</span>
+  <h1>Driver Monitoring<br>System</h1>
+  <p class="subtitle">
+    End-to-end ML pipeline for real-time driver behaviour classification — from data acquisition to edge deployment.
+  </p>
+  <div class="event-grid" style="margin-top:32px;">
+    <div class="event-badge"><span class="dot c1"></span> Phone Use</div>
+    <div class="event-badge"><span class="dot c2"></span> Smoking</div>
+    <div class="event-badge"><span class="dot c3"></span> Fatigue / Drowsiness</div>
+    <div class="event-badge"><span class="dot c4"></span> Seatbelt</div>
+    <div class="event-badge"><span class="dot c5"></span> Distracted Driving</div>
+  </div>
+  <p class="meta">Mowasalat · DMS R&D · 2025</p>
+</section>
+
+<!-- ========== 2. ARCHITECTURE OVERVIEW ========== -->
+<section class="slide" id="overview">
+  <span class="tag tag--accent">Architecture</span>
+  <h2>Parallel Workstreams</h2>
+  <h3>Three teams, one converging pipeline — from raw data to deployed models</h3>
+
+  <div class="flowchart-container grow" style="align-items:center;">
+    <svg viewBox="0 0 1100 520" xmlns="http://www.w3.org/2000/svg" width="1060">
+      <!-- Defs -->
+      <defs>
+        <marker id="arrow-g" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+          <path d="M0,0 L8,3 L0,6" fill="none" stroke="#0E9A7E" stroke-width="1.2"/>
+        </marker>
+        <marker id="arrow-b" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+          <path d="M0,0 L8,3 L0,6" fill="none" stroke="#3B6FD6" stroke-width="1.2"/>
+        </marker>
+        <marker id="arrow-a" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+          <path d="M0,0 L8,3 L0,6" fill="none" stroke="#C88A1A" stroke-width="1.2"/>
+        </marker>
+        <marker id="arrow-w" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+          <path d="M0,0 L8,3 L0,6" fill="none" stroke="#8E92A0" stroke-width="1.2"/>
+        </marker>
+      </defs>
+
+      <!-- DATA WORKSTREAM (Row 1) -->
+      <text x="20" y="46" fill="#0E9A7E" font-size="11" font-weight="600" letter-spacing="0.08em" text-transform="uppercase">DATA TEAM</text>
+
+      <!-- Open Source -->
+      <rect x="20" y="60" width="140" height="52" rx="6" fill="#FFFFFF" stroke="#E0E2E8"/>
+      <text x="90" y="82" fill="#1A1D26" font-size="12.5" font-weight="500" text-anchor="middle">Open-Source</text>
+      <text x="90" y="97" fill="#8E92A0" font-size="10.5" text-anchor="middle">DDD, StateFarm, YawDD</text>
+
+      <!-- Howen Alert Data -->
+      <rect x="20" y="124" width="140" height="52" rx="6" fill="#FFFFFF" stroke="#E0E2E8"/>
+      <text x="90" y="146" fill="#1A1D26" font-size="12.5" font-weight="500" text-anchor="middle">Howen Alert Data</text>
+      <text x="90" y="161" fill="#8E92A0" font-size="10.5" text-anchor="middle">Fleet camera footage</text>
+
+      <!-- Arrow: sources → annotation -->
+      <line x1="160" y1="86" x2="200" y2="120" stroke="#0E9A7E" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#arrow-g)"/>
+      <line x1="160" y1="150" x2="200" y2="130" stroke="#0E9A7E" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#arrow-g)"/>
+
+      <!-- Annotation -->
+      <rect x="210" y="98" width="150" height="56" rx="6" fill="#FFFFFF" stroke="#0E9A7E" stroke-opacity="0.4"/>
+      <text x="285" y="120" fill="#1A1D26" font-size="12.5" font-weight="500" text-anchor="middle">Annotation</text>
+      <text x="285" y="136" fill="#0E9A7E" font-size="10" text-anchor="middle">Model-assisted + Human</text>
+
+      <!-- Arrow: annotation → augmentation -->
+      <line x1="360" y1="126" x2="400" y2="126" stroke="#0E9A7E" stroke-width="1.2" marker-end="url(#arrow-g)"/>
+
+      <!-- Augmentation -->
+      <rect x="410" y="98" width="140" height="56" rx="6" fill="#FFFFFF" stroke="#0E9A7E" stroke-opacity="0.4"/>
+      <text x="480" y="120" fill="#1A1D26" font-size="12.5" font-weight="500" text-anchor="middle">Augmentation</text>
+      <text x="480" y="136" fill="#0E9A7E" font-size="10" text-anchor="middle">Preprocessing pipeline</text>
+
+      <!-- Arrow: augmentation → consolidated -->
+      <line x1="550" y1="126" x2="600" y2="126" stroke="#0E9A7E" stroke-width="1.2" marker-end="url(#arrow-g)"/>
+
+      <!-- CONSOLIDATED DATASET (convergence) -->
+      <rect x="610" y="82" width="170" height="88" rx="8" fill="#E8F5F1" stroke="#0E9A7E" stroke-width="1.5"/>
+      <text x="695" y="115" fill="#0E9A7E" font-size="13" font-weight="600" text-anchor="middle">Consolidated</text>
+      <text x="695" y="132" fill="#0E9A7E" font-size="13" font-weight="600" text-anchor="middle">Dataset</text>
+      <text x="695" y="155" fill="#8E92A0" font-size="10" text-anchor="middle">Open + Howen + Labelled</text>
+
+      <!-- MODEL WORKSTREAM (Row 2) -->
+      <text x="20" y="236" fill="#3B6FD6" font-size="11" font-weight="600" letter-spacing="0.08em">MODEL TEAM</text>
+
+      <!-- Research -->
+      <rect x="20" y="250" width="140" height="52" rx="6" fill="#FFFFFF" stroke="#E0E2E8"/>
+      <text x="90" y="272" fill="#1A1D26" font-size="12.5" font-weight="500" text-anchor="middle">Architecture</text>
+      <text x="90" y="287" fill="#8E92A0" font-size="10.5" text-anchor="middle">Research & selection</text>
+
+      <!-- Arrow: research → eval -->
+      <line x1="160" y1="276" x2="210" y2="276" stroke="#3B6FD6" stroke-width="1.2" marker-end="url(#arrow-b)"/>
+
+      <!-- Pretrained Eval -->
+      <rect x="220" y="250" width="150" height="52" rx="6" fill="#FFFFFF" stroke="#3B6FD6" stroke-opacity="0.4"/>
+      <text x="295" y="272" fill="#1A1D26" font-size="12.5" font-weight="500" text-anchor="middle">Pretrained Eval</text>
+      <text x="295" y="287" fill="#3B6FD6" font-size="10" text-anchor="middle">On open + Howen subset</text>
+
+      <!-- Arrow: eval → fine-tuning -->
+      <line x1="370" y1="276" x2="600" y2="276" stroke="#3B6FD6" stroke-width="1.2" stroke-dasharray="6,4" marker-end="url(#arrow-b)"/>
+      <text x="486" y="268" fill="#3B6FD6" font-size="9.5" font-style="italic" text-anchor="middle">awaits consolidated data</text>
+
+      <!-- Fine-tuning (after convergence) -->
+      <rect x="610" y="250" width="170" height="52" rx="6" fill="#FFFFFF" stroke="#3B6FD6" stroke-opacity="0.4"/>
+      <text x="695" y="270" fill="#1A1D26" font-size="12.5" font-weight="500" text-anchor="middle">Fine-tuning</text>
+      <text x="695" y="286" fill="#3B6FD6" font-size="10" text-anchor="middle">Edge + Centralized models</text>
+
+      <!-- Arrow: consolidated → fine-tuning (vertical connection) -->
+      <line x1="695" y1="170" x2="695" y2="250" stroke="#8E92A0" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#arrow-w)"/>
+
+      <!-- Arrow: fine-tuning → benchmark -->
+      <line x1="780" y1="276" x2="830" y2="276" stroke="#3B6FD6" stroke-width="1.2" marker-end="url(#arrow-b)"/>
+
+      <!-- Benchmark -->
+      <rect x="840" y="250" width="140" height="52" rx="6" fill="#FFFFFF" stroke="#3B6FD6" stroke-opacity="0.4"/>
+      <text x="910" y="272" fill="#1A1D26" font-size="12.5" font-weight="500" text-anchor="middle">Benchmarks</text>
+      <text x="910" y="287" fill="#3B6FD6" font-size="10" text-anchor="middle">Accuracy / latency / size</text>
+
+      <!-- HW WORKSTREAM (Row 3) -->
+      <text x="20" y="376" fill="#C88A1A" font-size="11" font-weight="600" letter-spacing="0.08em">HW TEAM</text>
+
+      <!-- HW Assessment -->
+      <rect x="20" y="390" width="160" height="52" rx="6" fill="#FFFFFF" stroke="#E0E2E8"/>
+      <text x="100" y="412" fill="#1A1D26" font-size="12.5" font-weight="500" text-anchor="middle">HW Assessment</text>
+      <text x="100" y="427" fill="#8E92A0" font-size="10.5" text-anchor="middle">TOPs, memory, NPU specs</text>
+
+      <!-- Arrow -->
+      <line x1="180" y1="416" x2="400" y2="416" stroke="#C88A1A" stroke-width="1.2" stroke-dasharray="6,4" marker-end="url(#arrow-a)"/>
+      <text x="290" y="408" fill="#C88A1A" font-size="9.5" font-style="italic" text-anchor="middle">constrains model selection</text>
+
+      <!-- Compatibility -->
+      <rect x="410" y="390" width="140" height="52" rx="6" fill="#FFFFFF" stroke="#C88A1A" stroke-opacity="0.4"/>
+      <text x="480" y="412" fill="#1A1D26" font-size="12.5" font-weight="500" text-anchor="middle">Compatibility</text>
+      <text x="480" y="427" fill="#C88A1A" font-size="10" text-anchor="middle">Model ↔ Device fit</text>
+
+      <!-- Arrow: compatibility → deployment -->
+      <line x1="550" y1="416" x2="830" y2="416" stroke="#C88A1A" stroke-width="1.2" stroke-dasharray="6,4" marker-end="url(#arrow-a)"/>
+
+      <!-- HW constraint → model selection (upward arrow) -->
+      <line x1="480" y1="390" x2="480" y2="302" stroke="#8E92A0" stroke-width="1" stroke-dasharray="3,3"/>
+      <line x1="910" y1="390" x2="910" y2="302" stroke="#8E92A0" stroke-width="1" stroke-dasharray="3,3"/>
+
+      <!-- DEPLOYMENT (final) -->
+      <rect x="840" y="390" width="160" height="52" rx="6" fill="#E8F5F1" stroke="#0E9A7E" stroke-width="1.5"/>
+      <text x="920" y="412" fill="#0E9A7E" font-size="13" font-weight="600" text-anchor="middle">Edge Deployment</text>
+      <text x="920" y="427" fill="#8E92A0" font-size="10" text-anchor="middle">On-device inference</text>
+
+      <!-- Arrow: benchmark → deployment -->
+      <line x1="910" y1="302" x2="910" y2="390" stroke="#3B6FD6" stroke-width="1.2" stroke-dasharray="4,3"/>
+
+      <!-- Legend -->
+      <rect x="20" y="480" width="10" height="10" rx="2" fill="#0E9A7E" opacity="0.6"/>
+      <text x="36" y="489" fill="#8E92A0" font-size="10.5">Data team</text>
+      <rect x="120" y="480" width="10" height="10" rx="2" fill="#3B6FD6" opacity="0.6"/>
+      <text x="136" y="489" fill="#8E92A0" font-size="10.5">Model team</text>
+      <rect x="230" y="480" width="10" height="10" rx="2" fill="#C88A1A" opacity="0.6"/>
+      <text x="246" y="489" fill="#8E92A0" font-size="10.5">HW team</text>
+      <circle cx="345" cy="485" r="4" fill="none" stroke="#8E92A0" stroke-dasharray="2,2"/>
+      <text x="355" y="489" fill="#8E92A0" font-size="10.5">Dependency / handoff</text>
+    </svg>
+  </div>
+</section>
+
+<!-- ========== 3. TRAINING PIPELINE ========== -->
+<section class="slide" id="pipeline">
+  <span class="tag tag--accent">Training Pipeline</span>
+  <h2>End-to-End Pipeline</h2>
+  <h3>Four-stage flow from raw data to validated models — with action points per stage</h3>
+
+  <!-- Pipeline SVG diagram -->
+  <div class="flowchart-container" style="margin:4px 0 20px;">
+    <svg viewBox="0 0 1140 340" xmlns="http://www.w3.org/2000/svg" width="1100">
+      <defs>
+        <marker id="pa" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto">
+          <path d="M0,0 L7,2.5 L0,5" fill="none" stroke="#8E92A0" stroke-width="1"/>
+        </marker>
+        <linearGradient id="stg1" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#0E9A7E" stop-opacity="0.06"/>
+          <stop offset="100%" stop-color="#0E9A7E" stop-opacity="0.02"/>
+        </linearGradient>
+        <linearGradient id="stg2" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#0E9A7E" stop-opacity="0.06"/>
+          <stop offset="100%" stop-color="#3B6FD6" stop-opacity="0.02"/>
+        </linearGradient>
+        <linearGradient id="stg3" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#3B6FD6" stop-opacity="0.06"/>
+          <stop offset="100%" stop-color="#3B6FD6" stop-opacity="0.02"/>
+        </linearGradient>
+        <linearGradient id="stg4" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#3B6FD6" stop-opacity="0.06"/>
+          <stop offset="100%" stop-color="#C88A1A" stop-opacity="0.02"/>
+        </linearGradient>
+      </defs>
+
+      <!-- ===== STAGE 1: Dataset Consolidation ===== -->
+      <rect x="0" y="0" width="260" height="340" rx="10" fill="url(#stg1)" stroke="#E0E2E8" stroke-width="0.5"/>
+      <text x="130" y="28" fill="#8E92A0" font-size="10" font-weight="600" letter-spacing="0.08em" text-anchor="middle">STAGE 1</text>
+      <rect x="18" y="42" width="224" height="64" rx="7" fill="#FFFFFF" stroke="#0E9A7E" stroke-width="1.2"/>
+      <text x="130" y="68" fill="#1A1D26" font-size="14" font-weight="600" text-anchor="middle">Dataset Consolidation</text>
+      <text x="130" y="86" fill="#0E9A7E" font-size="10.5" text-anchor="middle">Unified format · Centralized storage</text>
+
+      <rect x="22" y="120" width="100" height="34" rx="5" fill="#FFFFFF" stroke="#E0E2E8"/>
+      <text x="72" y="141" fill="#5A5E6E" font-size="10" text-anchor="middle">Open-Source ×5</text>
+      <rect x="138" y="120" width="100" height="34" rx="5" fill="#FFFFFF" stroke="#E0E2E8"/>
+      <text x="188" y="141" fill="#5A5E6E" font-size="10" text-anchor="middle">Howen Alerts</text>
+
+      <line x1="72" y1="154" x2="110" y2="172" stroke="#8E92A0" stroke-width="0.8"/>
+      <line x1="188" y1="154" x2="150" y2="172" stroke="#8E92A0" stroke-width="0.8"/>
+
+      <rect x="50" y="172" width="160" height="34" rx="5" fill="#FFFFFF" stroke="#0E9A7E" stroke-opacity="0.5"/>
+      <text x="130" y="193" fill="#0E9A7E" font-size="10.5" font-weight="500" text-anchor="middle">Label remap · Manifests</text>
+
+      <rect x="30" y="218" width="200" height="28" rx="4" fill="#FFFFFF" stroke="#E0E2E8" stroke-dasharray="3,2"/>
+      <text x="130" y="236" fill="#8E92A0" font-size="9.5" font-style="italic" text-anchor="middle">⚠ Class imbalance: 35× spread</text>
+
+      <line x1="260" y1="74" x2="284" y2="74" stroke="#8E92A0" stroke-width="1.2" marker-end="url(#pa)"/>
+
+      <!-- ===== STAGE 2: Preprocessing ===== -->
+      <rect x="292" y="0" width="260" height="340" rx="10" fill="url(#stg2)" stroke="#E0E2E8" stroke-width="0.5"/>
+      <text x="422" y="28" fill="#8E92A0" font-size="10" font-weight="600" letter-spacing="0.08em" text-anchor="middle">STAGE 2</text>
+      <rect x="310" y="42" width="224" height="64" rx="7" fill="#FFFFFF" stroke="#0E9A7E" stroke-width="1.2"/>
+      <text x="422" y="68" fill="#1A1D26" font-size="14" font-weight="600" text-anchor="middle">Preprocessing</text>
+      <text x="422" y="86" fill="#0E9A7E" font-size="10.5" text-anchor="middle">Annotation · Augmentation · Balancing</text>
+
+      <rect x="314" y="120" width="216" height="34" rx="5" fill="#FFFFFF" stroke="#0E9A7E" stroke-opacity="0.4"/>
+      <text x="336" y="141" fill="#1A1D26" font-size="10.5" font-weight="500">Annotation</text>
+      <text x="525" y="141" fill="#0E9A7E" font-size="9.5" text-anchor="end">Model-assisted → Human</text>
+
+      <rect x="314" y="162" width="216" height="34" rx="5" fill="#FFFFFF" stroke="#0E9A7E" stroke-opacity="0.4"/>
+      <text x="336" y="183" fill="#1A1D26" font-size="10.5" font-weight="500">Augmentation</text>
+      <text x="525" y="183" fill="#0E9A7E" font-size="9.5" text-anchor="end">Geometric + Photometric</text>
+
+      <rect x="314" y="204" width="216" height="34" rx="5" fill="#FFFFFF" stroke="#0E9A7E" stroke-opacity="0.4"/>
+      <text x="336" y="225" fill="#1A1D26" font-size="10.5" font-weight="500">Balancing</text>
+      <text x="525" y="225" fill="#0E9A7E" font-size="9.5" text-anchor="end">√ Inverse-freq weighting</text>
+
+      <rect x="338" y="252" width="168" height="34" rx="5" fill="#E8F5F1" stroke="#0E9A7E" stroke-width="1"/>
+      <text x="422" y="273" fill="#0E9A7E" font-size="11" font-weight="600" text-anchor="middle">Consolidated Dataset</text>
+
+      <line x1="552" y1="74" x2="576" y2="74" stroke="#8E92A0" stroke-width="1.2" marker-end="url(#pa)"/>
+
+      <!-- ===== STAGE 3: Fine-tuning ===== -->
+      <rect x="584" y="0" width="260" height="340" rx="10" fill="url(#stg3)" stroke="#E0E2E8" stroke-width="0.5"/>
+      <text x="714" y="28" fill="#8E92A0" font-size="10" font-weight="600" letter-spacing="0.08em" text-anchor="middle">STAGE 3</text>
+      <rect x="602" y="42" width="224" height="64" rx="7" fill="#FFFFFF" stroke="#3B6FD6" stroke-width="1.2"/>
+      <text x="714" y="68" fill="#1A1D26" font-size="14" font-weight="600" text-anchor="middle">Model Fine-tuning</text>
+      <text x="714" y="86" fill="#3B6FD6" font-size="10.5" text-anchor="middle">Edge · Centralized · Distillation</text>
+
+      <rect x="602" y="120" width="106" height="68" rx="5" fill="#FFFFFF" stroke="#3B6FD6" stroke-opacity="0.4"/>
+      <text x="655" y="140" fill="#1A1D26" font-size="10.5" font-weight="600" text-anchor="middle">Edge</text>
+      <text x="655" y="155" fill="#5A5E6E" font-size="9" text-anchor="middle">MobileNetV3</text>
+      <text x="655" y="168" fill="#5A5E6E" font-size="9" text-anchor="middle">EfficientNet</text>
+      <text x="655" y="181" fill="#C88A1A" font-size="8.5" text-anchor="middle">INT8 quantized</text>
+
+      <rect x="720" y="120" width="106" height="68" rx="5" fill="#FFFFFF" stroke="#3B6FD6" stroke-opacity="0.4"/>
+      <text x="773" y="140" fill="#1A1D26" font-size="10.5" font-weight="600" text-anchor="middle">Centralized</text>
+      <text x="773" y="155" fill="#5A5E6E" font-size="9" text-anchor="middle">ResNet50</text>
+      <text x="773" y="168" fill="#5A5E6E" font-size="9" text-anchor="middle">TSM-ResNet50</text>
+      <text x="773" y="181" fill="#3B6FD6" font-size="8.5" text-anchor="middle">Full precision</text>
+
+      <line x1="720" y1="160" x2="708" y2="160" stroke="#3B6FD6" stroke-width="0.8" stroke-dasharray="3,2" marker-end="url(#pa)"/>
+      <text x="714" y="206" fill="#3B6FD6" font-size="9" font-style="italic" text-anchor="middle">Distillation: centralized → edge</text>
+
+      <rect x="618" y="220" width="192" height="36" rx="5" fill="#FFFFFF" stroke="#C88A1A" stroke-dasharray="4,2"/>
+      <text x="714" y="237" fill="#C88A1A" font-size="10" text-anchor="middle">⟁ Specialized vs. General</text>
+      <text x="714" y="249" fill="#8E92A0" font-size="8.5" text-anchor="middle">Open decision — benchmark-driven</text>
+
+      <rect x="618" y="270" width="192" height="30" rx="4" fill="#FFFFFF" stroke="#C88A1A" stroke-opacity="0.4"/>
+      <text x="714" y="289" fill="#C88A1A" font-size="9.5" text-anchor="middle">↑ HW constraints gate model selection</text>
+
+      <line x1="844" y1="74" x2="868" y2="74" stroke="#8E92A0" stroke-width="1.2" marker-end="url(#pa)"/>
+
+      <!-- ===== STAGE 4: Evaluation ===== -->
+      <rect x="876" y="0" width="260" height="340" rx="10" fill="url(#stg4)" stroke="#E0E2E8" stroke-width="0.5"/>
+      <text x="1006" y="28" fill="#8E92A0" font-size="10" font-weight="600" letter-spacing="0.08em" text-anchor="middle">STAGE 4</text>
+      <rect x="894" y="42" width="224" height="64" rx="7" fill="#FFFFFF" stroke="#3B6FD6" stroke-width="1.2"/>
+      <text x="1006" y="68" fill="#1A1D26" font-size="14" font-weight="600" text-anchor="middle">Evaluation</text>
+      <text x="1006" y="86" fill="#3B6FD6" font-size="10.5" text-anchor="middle">Accuracy · Latency · Deployment</text>
+
+      <rect x="898" y="120" width="216" height="34" rx="5" fill="#FFFFFF" stroke="#3B6FD6" stroke-opacity="0.4"/>
+      <text x="920" y="141" fill="#1A1D26" font-size="10.5" font-weight="500">Accuracy</text>
+      <text x="1109" y="141" fill="#3B6FD6" font-size="9.5" text-anchor="end">Per-class F1 on Howen data</text>
+
+      <rect x="898" y="162" width="216" height="34" rx="5" fill="#FFFFFF" stroke="#C88A1A" stroke-opacity="0.4"/>
+      <text x="920" y="183" fill="#1A1D26" font-size="10.5" font-weight="500">Latency</text>
+      <text x="1109" y="183" fill="#C88A1A" font-size="9.5" text-anchor="end">On-device inference &lt; 50ms</text>
+
+      <rect x="898" y="204" width="216" height="34" rx="5" fill="#FFFFFF" stroke="#C88A1A" stroke-opacity="0.4"/>
+      <text x="920" y="225" fill="#1A1D26" font-size="10.5" font-weight="500">Model size</text>
+      <text x="1109" y="225" fill="#C88A1A" font-size="9.5" text-anchor="end">Edge ≤ 5MB · INT8 viable</text>
+
+      <rect x="898" y="246" width="216" height="34" rx="5" fill="#FFFFFF" stroke="#3B6FD6" stroke-opacity="0.4"/>
+      <text x="920" y="267" fill="#1A1D26" font-size="10.5" font-weight="500">Production</text>
+      <text x="1109" y="267" fill="#3B6FD6" font-size="9.5" text-anchor="end">Edge vs Centralized routing</text>
+
+      <path d="M 1006 295 L 1006 325 L 714 325 L 714 310" fill="none" stroke="#8E92A0" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#pa)"/>
+      <text x="860" y="318" fill="#8E92A0" font-size="9" font-style="italic" text-anchor="middle">Feedback loop → retrain</text>
+    </svg>
+  </div>
+
+  <!-- Action points per stage -->
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;">
+    <div class="flex flex-col gap-10">
+      <div style="font-size:11px;font-weight:600;color:var(--accent);letter-spacing:0.05em;text-transform:uppercase;margin-bottom:2px;">Consolidation</div>
+      <div class="action-bar" style="padding:10px 14px;">
+        <span class="action-text" style="font-size:12.5px;"><strong>Unify datasets</strong> into common format with adapter normalization</span>
+        <span class="assignee" style="font-size:10px;">[ Data ]</span>
+      </div>
+      <div class="action-bar" style="padding:10px 14px;">
+        <span class="action-text" style="font-size:12.5px;"><strong>Label remapping</strong> — align class taxonomies across sources (34→8 for Drive&Act)</span>
+        <span class="assignee" style="font-size:10px;">[ Data ]</span>
+      </div>
+      <div class="action-bar" style="padding:10px 14px;">
+        <span class="action-text" style="font-size:12.5px;"><strong>Centralized storage</strong> — secure data store setup</span>
+        <span class="assignee" style="font-size:10px;">[ Data ]</span>
+      </div>
+      <div class="action-bar" style="padding:10px 14px;">
+        <span class="action-text" style="font-size:12.5px;"><strong>Howen ingestion</strong> — download & validate fleet alert data</span>
+        <span class="assignee" style="font-size:10px;">[ Data ]</span>
+      </div>
+    </div>
+    <div class="flex flex-col gap-10">
+      <div style="font-size:11px;font-weight:600;color:var(--accent);letter-spacing:0.05em;text-transform:uppercase;margin-bottom:2px;">Preprocessing</div>
+      <div class="action-bar" style="padding:10px 14px;">
+        <span class="action-text" style="font-size:12.5px;"><strong>Annotation pipeline</strong> — deploy auto-label model + human review loop</span>
+        <span class="assignee" style="font-size:10px;">[ Data ]</span>
+      </div>
+      <div class="action-bar" style="padding:10px 14px;">
+        <span class="action-text" style="font-size:12.5px;"><strong>Augmentation transforms</strong> — geometric, photometric, class-aware</span>
+        <span class="assignee" style="font-size:10px;">[ Data ]</span>
+      </div>
+      <div class="action-bar blue" style="padding:10px 14px;">
+        <span class="action-text" style="font-size:12.5px;"><strong>Class balancing strategy</strong> — validate sqrt-inverse weighting on combined data</span>
+        <span class="assignee" style="font-size:10px;">[ Model ]</span>
+      </div>
+    </div>
+    <div class="flex flex-col gap-10">
+      <div style="font-size:11px;font-weight:600;color:var(--accent-2);letter-spacing:0.05em;text-transform:uppercase;margin-bottom:2px;">Fine-tuning</div>
+      <div class="action-bar blue" style="padding:10px 14px;">
+        <span class="action-text" style="font-size:12.5px;"><strong>Edge model training</strong> — MobileNetV3 / EfficientNet on consolidated data</span>
+        <span class="assignee" style="font-size:10px;">[ Model ]</span>
+      </div>
+      <div class="action-bar blue" style="padding:10px 14px;">
+        <span class="action-text" style="font-size:12.5px;"><strong>Centralized model training</strong> — ResNet50 + TSM video models</span>
+        <span class="assignee" style="font-size:10px;">[ Model ]</span>
+      </div>
+      <div class="action-bar blue" style="padding:10px 14px;">
+        <span class="action-text" style="font-size:12.5px;"><strong>INT8 quantization</strong> — compress edge candidates, measure accuracy drop</span>
+        <span class="assignee" style="font-size:10px;">[ Model ]</span>
+      </div>
+      <div class="action-bar amber" style="padding:10px 14px;">
+        <span class="action-text" style="font-size:12.5px;"><strong>HW compatibility check</strong> — validate model fits NPU constraints</span>
+        <span class="assignee" style="font-size:10px;">[ HW ]</span>
+      </div>
+    </div>
+    <div class="flex flex-col gap-10">
+      <div style="font-size:11px;font-weight:600;color:var(--accent-2);letter-spacing:0.05em;text-transform:uppercase;margin-bottom:2px;">Evaluation</div>
+      <div class="action-bar blue" style="padding:10px 14px;">
+        <span class="action-text" style="font-size:12.5px;"><strong>Benchmark on Howen data</strong> — per-class F1, confusion matrices</span>
+        <span class="assignee" style="font-size:10px;">[ Model ]</span>
+      </div>
+      <div class="action-bar amber" style="padding:10px 14px;">
+        <span class="action-text" style="font-size:12.5px;"><strong>Latency profiling</strong> — on-device inference timing per model</span>
+        <span class="assignee" style="font-size:10px;">[ HW ]</span>
+      </div>
+      <div class="action-bar blue" style="padding:10px 14px;">
+        <span class="action-text" style="font-size:12.5px;"><strong>Edge vs Centralized routing</strong> — decide which events run where</span>
+        <span class="assignee" style="font-size:10px;">[ Model ]</span>
+      </div>
+      <div class="action-bar blue" style="padding:10px 14px;">
+        <span class="action-text" style="font-size:12.5px;"><strong>Monitoring setup</strong> — centralized model tracks edge drift</span>
+        <span class="assignee" style="font-size:10px;">[ Model ]</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 4. DATASET: DROWSY DETECTION ========== -->
+<section class="slide content-slide" id="datasets">
+  <span class="tag tag--accent">Datasets</span>
+  <h2>Dataset: Drowsy Detection</h2>
+  <h3>48&times;48 face crops &bull; 2 classes &bull; 7,342 images &bull; Kaggle (yasharjebraeily)</h3>
+  <img class="wide" src="assets/drowsy_grid.png" alt="Drowsy Detection Samples"
+       style="max-height:calc(100vh - 260px);">
+  <p class="caption">Used to validate TEEN-D model replications (MobileNetV2, ResNet18, VGG16).</p>
+</section>
+
+<!-- ========== 4. DATASET: STATEFARM ========== -->
+<section class="slide content-slide" id="statefarm">
+  <span class="tag tag--accent">Datasets</span>
+  <h2>Dataset: StateFarm Distracted Driver</h2>
+  <h3>Dashboard camera &bull; 10 classes &bull; 22,424 images &bull; Kaggle competition</h3>
+  <img class="wide" src="assets/statefarm_grid.png" alt="StateFarm Samples"
+       style="max-height:calc(100vh - 260px);">
+  <p class="caption">Used to validate Followb1ind1y replications (EfficientNet-B0, MobileNetV3-Large).</p>
+</section>
+
+<!-- ========== 5. DATASET: DRIVE&ACT ========== -->
+<section class="slide content-slide" id="driveact">
+  <span class="tag tag--accent">Datasets</span>
+  <h2>Dataset: Drive&amp;Act (NIR, Inner Mirror)</h2>
+  <h3>8 DMS classes after remapping &bull; 11,895 clips of 8 frames &bull; 640&times;480 NIR</h3>
+  <div class="video-grid">
+    <div class="video-card" style="border-color:#0E9A7E">
+      <video src="assets/driveact_safe_driving.mp4" autoplay loop muted playsinline></video>
+      <div class="label" style="color:#0E9A7E">Safe Driving</div>
+    </div>
+    <div class="video-card" style="border-color:#C88A1A">
+      <video src="assets/driveact_eating_drinking.mp4" autoplay loop muted playsinline></video>
+      <div class="label" style="color:#C88A1A">Eating / Drinking</div>
+    </div>
+    <div class="video-card" style="border-color:#D9453E">
+      <video src="assets/driveact_phone_use.mp4" autoplay loop muted playsinline></video>
+      <div class="label" style="color:#D9453E">Phone Use</div>
+    </div>
+    <div class="video-card" style="border-color:#8B5CC4">
+      <video src="assets/driveact_visual_distraction.mp4" autoplay loop muted playsinline></video>
+      <div class="label" style="color:#8B5CC4">Visual Distraction</div>
+    </div>
+    <div class="video-card" style="border-color:#3B6FD6">
+      <video src="assets/driveact_manual_distraction.mp4" autoplay loop muted playsinline></video>
+      <div class="label" style="color:#3B6FD6">Manual Distraction</div>
+    </div>
+    <div class="video-card" style="border-color:#B8960A">
+      <video src="assets/driveact_looking_around.mp4" autoplay loop muted playsinline></video>
+      <div class="label" style="color:#B8960A">Looking Around</div>
+    </div>
+    <div class="video-card" style="border-color:#0E8A9A">
+      <video src="assets/driveact_seatbelt_interaction.mp4" autoplay loop muted playsinline></video>
+      <div class="label" style="color:#0E8A9A">Seatbelt Interaction</div>
+    </div>
+    <div class="video-card" style="border-color:#7A6050">
+      <video src="assets/driveact_vehicle_entry_exit.mp4" autoplay loop muted playsinline></video>
+      <div class="label" style="color:#7A6050">Vehicle Entry / Exit</div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 6. LABEL REMAPPING ========== -->
+<section class="slide content-slide" id="remap">
+  <span class="tag tag--accent">Datasets</span>
+  <h2>Label Remapping: 34 Activities &rarr; 8 DMS Classes</h2>
+  <h3>Drive&amp;Act mid-level activities grouped by safety-relevant driver behavior</h3>
+  <img class="full" src="assets/label_remap.png" alt="Label Remapping">
+  <p class="caption">
+    Drive&amp;Act defines 34 fine-grained activities. We collapse them into 8 DMS-relevant categories
+    based on the type of driver distraction or behavior they represent.
+  </p>
+</section>
+
+<!-- ========== 7. PRETRAINED REPLICATION ========== -->
+<section class="slide content-slide" id="replication">
+  <span class="tag tag--blue">Models</span>
+  <h2>Pretrained Model Replication</h2>
+  <h3>5 models, 2 datasets &mdash; all published results matched or exceeded</h3>
+  <div class="side-by-side" style="align-items:center;">
+    <table class="model-table">
+      <thead>
+        <tr><th>Model</th><th>Dataset</th><th>Published</th><th>Ours</th><th>Delta</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>TEEN-D MobileNetV2</td><td>Drowsy Det.</td><td>98.99%</td><td>98.99%</td><td class="delta-zero">0.00%</td></tr>
+        <tr><td>TEEN-D ResNet18</td><td>Drowsy Det.</td><td>95.28%</td><td>95.28%</td><td class="delta-zero">0.00%</td></tr>
+        <tr><td>TEEN-D VGG16</td><td>Drowsy Det.</td><td>97.51%</td><td>97.51%</td><td class="delta-zero">0.00%</td></tr>
+        <tr><td>Followb1ind1y EffNet-B0</td><td>StateFarm</td><td>96.85%</td><td>97.43%</td><td class="delta-pos">+0.58%</td></tr>
+        <tr><td>Followb1ind1y MobNetV3-L</td><td>StateFarm</td><td>94.67%</td><td>95.03%</td><td class="delta-pos">+0.36%</td></tr>
+      </tbody>
+    </table>
+    <img src="assets/model_comparison.png" alt="Model Comparison" style="max-height:400px;">
+  </div>
+  <p class="caption">
+    Exact match on drowsy detection. Slight improvement on StateFarm due to minor preprocessing differences.
+    All models evaluated on held-out test splits not seen during training.
+  </p>
+</section>
+
+<!-- ========== 8. PREDICTIONS ========== -->
+<section class="slide content-slide" id="predictions">
+  <span class="tag tag--blue">Models</span>
+  <h2>Sample Predictions</h2>
+  <h3>Green = correct, Red = incorrect &mdash; mix of successes and failures</h3>
+  <div style="display:flex;flex-direction:column;gap:16px;align-items:center;max-height:calc(100vh - 230px);overflow-y:auto;">
+    <img src="assets/predictions_sf_efficientnet_b0.png" alt="EfficientNet-B0 Predictions" style="width:min(1400px, 85vw);">
+    <img src="assets/predictions_teen_d_mobilenetv2.png" alt="TEEN-D MobileNetV2 Predictions" style="width:min(1000px, 65vw);">
+  </div>
+</section>
+
+<!-- ========== 9. TSM RESULTS ========== -->
+<section class="slide content-slide" id="tsm-metrics">
+  <span class="tag tag--blue">Results</span>
+  <h2>TSM Results on Drive&amp;Act</h2>
+  <h3>Per-class Precision, Recall, and F1 on the test set</h3>
+  <img class="full" src="assets/tsm_metrics.png" alt="TSM Per-Class Metrics">
+  <p class="caption">
+    Strong performance on visual_distraction (F1 78.1%) and safe_driving (F1 72.9%).
+    Minority classes (looking_around, seatbelt_interaction) suffer from low support.
+  </p>
+</section>
+
+<!-- ========== 10. TSM PREDICTIONS ========== -->
+<section class="slide content-slide" id="tsm-preds" style="justify-content:flex-start;padding-top:68px;">
+  <span class="tag tag--blue">Results</span>
+  <h2 style="margin-top:6px;">TSM Predictions on Drive&amp;Act</h2>
+  <h3>Click any clip to expand. Left = most confident correct, Right = most confident wrong.</h3>
+  <div class="pred-grid" id="predGrid">
+    <div class="pred-header"></div>
+    <div class="pred-header" style="color:#0E9A7E;">Most Confident Correct</div>
+    <div class="pred-header" style="color:#D9453E;">Most Confident Wrong</div>
+  </div>
+  <p class="caption" style="margin-top:6px;">Each row = one DMS class. Confidence = softmax probability for the predicted label.</p>
+</section>
+
+<!-- Video overlay modal -->
+<div id="videoOverlay" class="video-overlay" onclick="closeOverlay(event)">
+  <div class="overlay-content" onclick="event.stopPropagation()">
+    <div class="overlay-title" id="overlayTitle"></div>
+    <video id="overlayVideo" controls autoplay loop muted></video>
+    <div class="overlay-sub" id="overlaySub"></div>
+    <button class="overlay-close" onclick="closeOverlay()">&times;</button>
+  </div>
+</div>
+
+<!-- ========== 11. CLASS DISTRIBUTION ========== -->
+<section class="slide content-slide" id="distribution">
+  <span class="tag tag--accent">Datasets</span>
+  <h2>Class Distribution</h2>
+  <h3>Drive&amp;Act 8 DMS classes &mdash; significant imbalance addressed with sqrt-inverse-freq weighting</h3>
+  <img class="full" src="assets/class_distribution.png" alt="Class Distribution">
+  <p class="caption">
+    safe_driving dominates at 3,707 clips while looking_around has only 107 (35x imbalance).
+    We use sqrt-inverse-frequency class weighting in the loss function to prevent the model from ignoring minority classes.
+  </p>
+</section>
+
+<!-- ========== 12. TSM PREPROCESSING PIPELINE ========== -->
+<section class="slide content-slide" id="tsm4">
+  <span class="tag tag--blue">TSM Architecture</span>
+  <h2>Our Preprocessing Pipeline</h2>
+  <h3>NIR-specific preprocessing before temporal shift module classification</h3>
+  <img class="wide" src="assets/preprocessing_pipeline.png" alt="Preprocessing Pipeline">
+  <p class="caption">
+    NIR frames are extremely dark (88% of pixels below 50/255). CLAHE redistributes contrast,
+    then frames are normalized with ImageNet statistics at full 640&times;480 resolution.
+  </p>
+</section>
+
+<!-- ========== 5. HW CONSTRAINTS ========== -->
+<section class="slide" id="hw">
+  <span class="tag tag--amber">Hardware</span>
+  <h2>Edge Deployment Constraints</h2>
+  <h3>Device specifications that bound model selection and optimization strategy</h3>
+
+  <div class="flex gap-24" style="margin-top:8px;">
+    <div class="flex flex-col gap-20" style="flex:1;">
+
+      <div class="spec-grid">
+        <div class="spec-item">
+          <div class="spec-val">1.5–4</div>
+          <div class="spec-label">TOPs (NPU)</div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-val">INT8</div>
+          <div class="spec-label">Quantization</div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-val">≤ 5MB</div>
+          <div class="spec-label">Target Model Size</div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-val">< 50ms</div>
+          <div class="spec-label">Inference Latency</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h4>Implications for Model Design</h4>
+        <ul class="flex flex-col gap-12" style="margin-top:8px;">
+          <li>NPU budget of 1.5–4 TOPs rules out most video models at full resolution — <strong style="color:var(--text);">TSM with a lightweight backbone</strong> (MobileNetV3) remains viable</li>
+          <li>INT8 quantization is mandatory — all candidate models must be <strong style="color:var(--text);">quantization-friendly</strong> (no significant accuracy drop at INT8)</li>
+          <li>Image-based classifiers are the pragmatic default for edge; video-based models shift to the centralized path unless edge TOPs increase</li>
+          <li>Complex events (multi-step distraction sequences) are candidates for <strong style="color:var(--text);">centralized inference</strong> via streamed or batched frames</li>
+        </ul>
+      </div>
+
+      <div class="action-bar amber">
+        <div class="action-icon"><svg viewBox="0 0 10 10"><circle cx="5" cy="5" r="3" fill="#C88A1A"/></svg></div>
+        <span class="action-text"><strong>Complete HW compatibility matrix:</strong> Map each candidate model to device NPU/memory constraints</span>
+        <span class="assignee">[ HW Lead ]</span>
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-14" style="flex:0.7;">
+      <div class="card">
+        <h4>Edge vs. Centralized Decision Matrix</h4>
+        <table class="data-table" style="margin-top:8px;">
+          <thead><tr><th>Factor</th><th>Edge</th><th>Centralized</th></tr></thead>
+          <tbody>
+            <tr><td>Latency</td><td style="color:var(--accent);">Real-time</td><td style="color:var(--text-dim);">Seconds</td></tr>
+            <tr><td>Compute</td><td style="color:var(--text-dim);">Constrained</td><td style="color:var(--accent);">Flexible</td></tr>
+            <tr><td>Model size</td><td style="color:var(--text-dim);">≤ 5MB</td><td style="color:var(--accent);">Uncapped</td></tr>
+            <tr><td>Video input</td><td style="color:var(--text-dim);">Difficult</td><td style="color:var(--accent);">Native</td></tr>
+            <tr><td>Privacy</td><td style="color:var(--accent);">On-device</td><td style="color:var(--text-dim);">Requires policy</td></tr>
+            <tr><td>Connectivity</td><td style="color:var(--accent);">Independent</td><td style="color:var(--text-dim);">Required</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card" style="border-color:var(--accent-3);border-opacity:0.3;">
+        <h4 style="color:var(--accent-3);">Open Decision</h4>
+        <p>Which events are edge-viable vs. centralized-only? This depends on the HW compatibility assessment and benchmark results from the Model team.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 6. ROADMAP ========== -->
+<section class="slide" id="roadmap">
+  <span class="tag tag--accent">Roadmap</span>
+  <h2>Timeline & Milestones</h2>
+  <h3>Phased convergence — parallel workstreams meeting at defined checkpoints</h3>
+
+  <div class="flex gap-32 grow">
+    <div class="flex flex-col" style="flex:1.2;">
+      <div class="timeline">
+
+        <div class="timeline-item phase-done">
+          <h4>Phase 0 — Research & Baseline <span class="status status--done">DONE</span></h4>
+          <div class="tl-sub">Completed</div>
+          <p>Open-source dataset evaluation, pretrained model replication (5 models, 3 datasets matched/exceeded), TSM temporal modeling on Drive&Act, pipeline architecture designed.</p>
+        </div>
+
+        <div class="timeline-item">
+          <h4>Phase 1 — Data & Assessment <span class="status status--wip">IN PROGRESS</span></h4>
+          <div class="tl-sub">Current phase</div>
+          <p><strong style="color:var(--accent);">Data:</strong> Consolidate open-source + Howen data, set up storage, implement augmentation pipeline.<br>
+          <strong style="color:var(--accent-2);">Models:</strong> Evaluate pretrained models on Howen subset, assess HW compatibility.<br>
+          <strong style="color:var(--accent-3);">HW:</strong> Complete device specifications and NPU constraint documentation.</p>
+        </div>
+
+        <div class="timeline-item phase-2">
+          <h4>Phase 2 — Annotation & Fine-tuning <span class="status status--next">NEXT</span></h4>
+          <div class="tl-sub">After consolidated dataset</div>
+          <p><strong style="color:var(--accent);">Data:</strong> Model-assisted annotation → human validation loop, quality assurance.<br>
+          <strong style="color:var(--accent-2);">Models:</strong> Fine-tune edge + centralized models on consolidated data, INT8 quantization experiments.<br>
+          <strong style="color:var(--accent-3);">HW:</strong> On-device inference testing.</p>
+        </div>
+
+        <div class="timeline-item phase-3">
+          <h4>Phase 3 — Benchmarking & Integration <span class="status status--next">NEXT</span></h4>
+          <div class="tl-sub">Production readiness</div>
+          <p>End-to-end benchmarks (accuracy, latency, size), edge deployment validation, centralized pipeline for complex events, production monitoring setup.</p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Right: summary of all action points -->
+    <div class="flex flex-col gap-14" style="flex:0.8;">
+      <div class="card" style="border-color:var(--accent);border-width:1.5px;">
+        <h4 style="color:var(--accent);margin-bottom:12px;">Key Dependencies</h4>
+        <ul class="flex flex-col gap-12">
+          <li><strong style="color:var(--text);">Consolidated dataset</strong> gates fine-tuning — both data sources must be merged before Phase 2 begins</li>
+          <li><strong style="color:var(--text);">HW specs</strong> constrain model selection — compatibility matrix needed before fine-tuning targets are locked</li>
+          <li><strong style="color:var(--text);">Annotation quality</strong> gates production training — human validation must hit target coverage before full fine-tuning</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h4 style="margin-bottom:12px;">All Action Points</h4>
+        <div class="flex flex-col gap-10">
+          <div style="display:flex;gap:8px;align-items:flex-start;">
+            <span style="width:8px;height:8px;border-radius:2px;background:var(--accent);flex-shrink:0;margin-top:5px;"></span>
+            <span style="font-size:13px;color:var(--text-dim);">Consolidate raw data into unified format</span>
+          </div>
+          <div style="display:flex;gap:8px;align-items:flex-start;">
+            <span style="width:8px;height:8px;border-radius:2px;background:var(--accent);flex-shrink:0;margin-top:5px;"></span>
+            <span style="font-size:13px;color:var(--text-dim);">Image augmentation pipeline</span>
+          </div>
+          <div style="display:flex;gap:8px;align-items:flex-start;">
+            <span style="width:8px;height:8px;border-radius:2px;background:var(--accent);flex-shrink:0;margin-top:5px;"></span>
+            <span style="font-size:13px;color:var(--text-dim);">Centralized storage setup</span>
+          </div>
+          <div style="display:flex;gap:8px;align-items:flex-start;">
+            <span style="width:8px;height:8px;border-radius:2px;background:var(--accent-2);flex-shrink:0;margin-top:5px;"></span>
+            <span style="font-size:13px;color:var(--text-dim);">Evaluate pretrained on Howen subset</span>
+          </div>
+          <div style="display:flex;gap:8px;align-items:flex-start;">
+            <span style="width:8px;height:8px;border-radius:2px;background:var(--accent-2);flex-shrink:0;margin-top:5px;"></span>
+            <span style="font-size:13px;color:var(--text-dim);">HW compatibility assessment</span>
+          </div>
+          <div style="display:flex;gap:8px;align-items:flex-start;">
+            <span style="width:8px;height:8px;border-radius:2px;background:var(--accent-2);flex-shrink:0;margin-top:5px;"></span>
+            <span style="font-size:13px;color:var(--text-dim);">Benchmark results across architectures</span>
+          </div>
+          <div style="display:flex;gap:8px;align-items:flex-start;">
+            <span style="width:8px;height:8px;border-radius:2px;background:var(--accent-3);flex-shrink:0;margin-top:5px;"></span>
+            <span style="font-size:13px;color:var(--text-dim);">Complete HW compatibility matrix</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== SCRIPTS ========== -->
+<script>
+const slides = document.querySelectorAll('.slide');
+const navLinks = document.querySelectorAll('nav a');
+const counter = document.getElementById('slideCounter');
+let currentSlide = 0;
+
+function goToSlide(i) {
+  i = Math.max(0, Math.min(i, slides.length - 1));
+  slides[i].scrollIntoView({ behavior: 'smooth' });
+  currentSlide = i;
+  updateNav();
+}
+function updateNav() {
+  navLinks.forEach((a, i) => a.classList.toggle('active', i === currentSlide));
+  counter.textContent = `${currentSlide + 1} / ${slides.length}`;
+}
+
+// Scroll-based tracking
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      currentSlide = [...slides].indexOf(e.target);
+      updateNav();
+    }
+  });
+}, { threshold: 0.5 });
+slides.forEach(s => obs.observe(s));
+
+// Keyboard nav
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); goToSlide(currentSlide + 1); }
+  if (e.key === 'ArrowUp') { e.preventDefault(); goToSlide(currentSlide - 1); }
+});
+
+// Nav click
+navLinks.forEach((a, i) => a.addEventListener('click', e => { e.preventDefault(); goToSlide(i); }));
+
+updateNav();
+
+// ==================== TSM Predictions Grid ====================
+const CLASS_DISPLAY = {
+  eating_drinking: 'Eating / Drinking',
+  looking_around: 'Looking Around',
+  manual_distraction: 'Manual Distraction',
+  phone_use: 'Phone Use',
+  safe_driving: 'Safe Driving',
+  seatbelt_interaction: 'Seatbelt Interaction',
+  vehicle_entry_exit: 'Vehicle Entry / Exit',
+  visual_distraction: 'Visual Distraction',
+};
+const CLASS_COLORS = {
+  eating_drinking: '#C88A1A', looking_around: '#B8960A',
+  manual_distraction: '#3B6FD6', phone_use: '#D9453E',
+  safe_driving: '#0E9A7E', seatbelt_interaction: '#0E8A9A',
+  vehicle_entry_exit: '#7A6050', visual_distraction: '#8B5CC4',
+};
+
+const TSM_PRED_DATA = [
+  {"class":"eating_drinking","correct":{"video":"tsm_pred_eating_drinking_correct.mp4","confidence":99.7},"wrong":{"video":"tsm_pred_eating_drinking_wrong.mp4","confidence":99.1,"predicted_as":"visual_distraction"}},
+  {"class":"looking_around","correct":{"video":"tsm_pred_looking_around_correct.mp4","confidence":71.3},"wrong":{"video":"tsm_pred_looking_around_wrong.mp4","confidence":94.4,"predicted_as":"safe_driving"}},
+  {"class":"manual_distraction","correct":{"video":"tsm_pred_manual_distraction_correct.mp4","confidence":97.3},"wrong":{"video":"tsm_pred_manual_distraction_wrong.mp4","confidence":97.4,"predicted_as":"eating_drinking"}},
+  {"class":"phone_use","correct":{"video":"tsm_pred_phone_use_correct.mp4","confidence":95.7},"wrong":{"video":"tsm_pred_phone_use_wrong.mp4","confidence":99.6,"predicted_as":"eating_drinking"}},
+  {"class":"safe_driving","correct":{"video":"tsm_pred_safe_driving_correct.mp4","confidence":99.2},"wrong":{"video":"tsm_pred_safe_driving_wrong.mp4","confidence":99.2,"predicted_as":"visual_distraction"}},
+  {"class":"seatbelt_interaction","correct":{"video":"tsm_pred_seatbelt_interaction_correct.mp4","confidence":98.6},"wrong":{"video":"tsm_pred_seatbelt_interaction_wrong.mp4","confidence":53.5,"predicted_as":"looking_around"}},
+  {"class":"vehicle_entry_exit","correct":{"video":"tsm_pred_vehicle_entry_exit_correct.mp4","confidence":100.0},"wrong":null},
+  {"class":"visual_distraction","correct":{"video":"tsm_pred_visual_distraction_correct.mp4","confidence":99.7},"wrong":{"video":"tsm_pred_visual_distraction_wrong.mp4","confidence":99.3,"predicted_as":"eating_drinking"}}
+];
+
+{
+  const data = TSM_PRED_DATA;
+  const grid = document.getElementById('predGrid');
+  if (grid) {
+    data.forEach(row => {
+      const color = CLASS_COLORS[row.class] || '#888';
+      const label = document.createElement('div');
+      label.className = 'pred-label';
+      label.style.color = color;
+      label.textContent = CLASS_DISPLAY[row.class] || row.class;
+      grid.appendChild(label);
+
+      if (row.correct) {
+        grid.appendChild(makePredCell(
+          row.correct.video, row.correct.confidence + '%',
+          '#0E9A7E', CLASS_DISPLAY[row.class], 'Correct', null
+        ));
+      } else {
+        const empty = document.createElement('div');
+        empty.className = 'pred-empty';
+        empty.textContent = 'No correct';
+        grid.appendChild(empty);
+      }
+
+      if (row.wrong) {
+        const predAs = CLASS_DISPLAY[row.wrong.predicted_as] || row.wrong.predicted_as;
+        grid.appendChild(makePredCell(
+          row.wrong.video, row.wrong.confidence + '%',
+          '#D9453E', CLASS_DISPLAY[row.class],
+          'Wrong', 'Predicted: ' + predAs
+        ));
+      } else {
+        const empty = document.createElement('div');
+        empty.className = 'pred-empty';
+        empty.textContent = 'No errors';
+        grid.appendChild(empty);
+      }
+    });
+  }
+}
+
+function makePredCell(videoFile, badge, badgeColor, className, outcome, misclass) {
+  const cell = document.createElement('div');
+  cell.className = 'pred-cell';
+  cell.onclick = () => openOverlay(videoFile, className, outcome, badge, misclass);
+
+  const vid = document.createElement('video');
+  vid.src = 'assets/' + videoFile;
+  vid.muted = true;
+  vid.loop = true;
+  vid.autoplay = true;
+  vid.playsInline = true;
+  cell.appendChild(vid);
+
+  const b = document.createElement('div');
+  b.className = 'pred-badge';
+  b.style.color = badgeColor;
+  b.textContent = badge;
+  cell.appendChild(b);
+
+  if (misclass) {
+    const m = document.createElement('div');
+    m.className = 'pred-misclass';
+    m.textContent = misclass;
+    cell.appendChild(m);
+  }
+  return cell;
+}
+
+function openOverlay(videoFile, className, outcome, confidence, misclass) {
+  const overlay = document.getElementById('videoOverlay');
+  const video = document.getElementById('overlayVideo');
+  const title = document.getElementById('overlayTitle');
+  const sub = document.getElementById('overlaySub');
+  title.textContent = className + ' — ' + outcome + ' (' + confidence + ')';
+  sub.textContent = misclass || '';
+  video.src = 'assets/' + videoFile;
+  video.play();
+  overlay.classList.add('active');
+}
+
+function closeOverlay(e) {
+  if (e && e.target !== document.getElementById('videoOverlay')) return;
+  const overlay = document.getElementById('videoOverlay');
+  const video = document.getElementById('overlayVideo');
+  video.pause();
+  video.src = '';
+  overlay.classList.remove('active');
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeOverlay();
+});
+</script>
+</body>
+</html>
