@@ -440,12 +440,32 @@
     // ===== PRESENTATION REGISTRY =====
     const PRESENTATIONS = [
       {
+        id: 'efficientnet_eval',
+        title: 'EfficientNet-B0 \u2014 Test Set Evaluation',
+        subtitle: 'Fine-tuned EfficientNet-B0 vs OEM on 48 test videos across 2 devices, per-event accuracy breakdown, and 9-step preprocessing pipeline.',
+        file: '14_Apr.html',
+        assetsDir: '14April26',
+        status: 'past',
+        tags: [
+          { label: 'Model Eval',    color: 'teal' },
+          { label: 'Fine-Tuning',   color: 'blue' },
+          { label: 'Preprocessing', color: 'purple' },
+          { label: 'OEM vs OS',     color: 'red' },
+        ],
+        stats: [
+          { value: '48',    label: 'Videos' },
+          { value: '4,865', label: 'Frames' },
+          { value: '4',     label: 'Slides' },
+          { value: '56.2%', label: 'Accuracy' },
+        ],
+      },
+      {
         id: 'raqeeb_audit_pres',
         title: 'Raqeeb Events \u2014 OEM vs Ground Truth',
         subtitle: 'OEM accuracy audit across 528 event videos from 6 devices, false-alarm analysis, and open-source model benchmarking.',
         file: 'raqeeb_audit_pres.html',
         assetsDir: '7April26',
-        status: 'scheduled',
+        status: 'past',
         tags: [
           { label: 'OEM Accuracy',   color: 'red' },
           { label: 'Data Pipeline',  color: 'blue' },
@@ -458,27 +478,6 @@
           { value: '6',    label: 'Devices' },
           { value: '5',    label: 'Slides' },
           { value: '5',    label: 'Models' },
-        ],
-        materials: [
-          {
-            title: 'OEM Quality Audit',
-            desc: 'Interactive dashboard with accuracy breakdowns, confusion matrices, and video examples',
-            file: 'raqeeb_audit.html',
-            type: 'report',
-          },
-          {
-            title: 'Preprocessing Pipeline',
-            desc: 'Data flow from raw Raqeeb events through cleaning, labeling, and verification',
-            file: 'preprocessing_pipeline.html',
-            type: 'report',
-          },
-          {
-            title: 'DMS IoT Architecture',
-            desc: 'System architecture diagram showing device-to-cloud data flow',
-            file: null,
-            type: 'diagram',
-            action: 'lightbox',
-          },
         ],
       },
       {
