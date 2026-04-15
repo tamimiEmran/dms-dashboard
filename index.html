@@ -437,6 +437,23 @@
   </div>
 
   <script>
+    // ===== RESOURCES REGISTRY =====
+    const RESOURCES = [
+      {
+        title: 'DMS Work Flow',
+        desc: 'Three-team workflow: Data, Model, and HW — from raw footage to edge deployment',
+        file: 'workflow.html',
+        type: 'diagram',
+      },
+      {
+        title: 'DMS IoT Architecture',
+        desc: 'System architecture diagram showing device-to-cloud data flow',
+        file: null,
+        type: 'diagram',
+        action: 'lightbox',
+      },
+    ];
+
     // ===== PRESENTATION REGISTRY =====
     const PRESENTATIONS = [
       {
@@ -549,6 +566,7 @@
       if (scheduled.length) html += renderScheduledSection(scheduled);
       if (wip.length) html += renderUpcomingSection(wip);
       if (past.length) html += renderPastSection(past);
+      if (RESOURCES.length) html += renderResourcesSection(RESOURCES);
       app.innerHTML = html;
     }
 
@@ -691,6 +709,28 @@
             <div class="card-stats">${statsHtml}</div>
           </div>
         </a>`;
+    }
+
+    function renderResourcesSection(items) {
+      const cardsHtml = items.map(m => {
+        const iconClass = m.type === 'diagram' ? 'diagram' : 'report';
+        const icon = m.type === 'diagram'
+          ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="8" y="14" width="7" height="7" rx="1"/><line x1="6.5" y1="10" x2="6.5" y2="14"/><line x1="17.5" y1="10" x2="17.5" y2="14"/><line x1="6.5" y1="14" x2="11.5" y2="14"/><line x1="17.5" y1="14" x2="11.5" y2="14"/></svg>`
+          : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>`;
+        const badgeClass = m.type === 'diagram' ? 'material-badge diagram' : 'material-badge';
+        const badgeText = m.type === 'diagram' ? 'Diagram' : 'Report';
+        if (m.action === 'lightbox') {
+          return `<div class="card material" style="cursor:pointer" onclick="openLightbox()"><div class="card-strip"></div><div class="card-body"><div class="material-icon ${iconClass}">${icon}</div><div class="material-info"><div class="material-title">${m.title}</div><div class="material-desc">${m.desc}</div></div><span class="${badgeClass}">${badgeText}</span></div></div>`;
+        }
+        return `<a class="card material" href="${m.file}"><div class="card-strip"></div><div class="card-body"><div class="material-icon ${iconClass}">${icon}</div><div class="material-info"><div class="material-title">${m.title}</div><div class="material-desc">${m.desc}</div></div><span class="${badgeClass}">${badgeText}</span></div></a>`;
+      }).join('');
+
+      return `
+        <div class="section">
+          <div class="section-title">Resources</div>
+          <div class="section-subtitle">Supporting materials and reference diagrams</div>
+          <div class="materials-grid">${cardsHtml}</div>
+        </div>`;
     }
 
     render();
