@@ -162,7 +162,7 @@ function countBy(a,k){const c={};for(const i of a){const key=typeof k==='string'
 function pct(n,t){return t===0?'0%':Math.round(n/t*100)+'%'}
 function pn(n,t){return t===0?0:Math.round(n/t*100)}
 
-const FRAMES_PATH='../../data/processed/hikvision/frames/';
+const FRAMES_PATH='assets/general/hikvisionAssets/';
 
 function mkSec(id,title,sub){const s=document.createElement('div');s.className='section';s.id=id;s.innerHTML=`<h2 class="section-title">${title}</h2><p class="section-subtitle">${sub}</p>`;return s}
 
