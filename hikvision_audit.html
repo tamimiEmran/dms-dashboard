@@ -232,35 +232,6 @@ function renderBlock5(C){
   S.appendChild(card);C.appendChild(S);
 }
 
-// ===== BLOCK 6: Prediction Bias =====
-function renderBlock6(C){
-  const S=mkSec('bias','OEM Prediction Bias','How much does Hikvision over- or under-predict each class compared to actual occurrence?');
-  const card=mkCard();
-  const mC={},oC={};
-  DATA.forEach(d=>{oC[d.oem_prediction]=(oC[d.oem_prediction]||0)+1;d.manual_labels.filter(l=>GROUND_TRUTH_LABELS.includes(l)).forEach(gt=>{mC[gt]=(mC[gt]||0)+1})});
-  const excl=['safe_driving'];
-  const labels=[...new Set([...Object.keys(mC),...Object.keys(oC)])].filter(l=>!excl.includes(l));
-  const stats=labels.map(l=>{const o=oC[l]||0,m=mC[l]||0,r=m>0?o/m:(o>0?Infinity:0);return{label:l,oemVal:o,manualVal:m,ratio:r,diff:o-m}}).sort((a,b)=>b.manualVal-a.manualVal);
-  const maxAbs=Math.max(...stats.map(s=>Math.abs(s.diff)),1);
-
-  const t=document.createElement('table');t.className='data-table';
-  t.innerHTML='<thead><tr><th>Class</th><th style="text-align:center">OEM Predicts</th><th style="text-align:center">Actually Occurs</th><th style="text-align:center">Ratio</th><th style="text-align:center">Bias</th></tr></thead>';
-  const tb=document.createElement('tbody');
-  stats.forEach(s=>{
-    const rStr=s.ratio===Infinity?'\u221E':s.ratio.toFixed(1)+'x';
-    const rCo=s.ratio>2?'var(--red)':s.ratio>1.2?'var(--amber)':s.ratio<0.5?'var(--blue)':'var(--accent)';
-    const bL=s.diff>0?`+${s.diff} over`:s.diff<0?`${s.diff} under`:'exact';
-    const bCo=s.diff>=0?'var(--red)':'var(--blue)';
-    const bP=Math.abs(s.diff)/maxAbs*50;
-    const bLeft=s.diff>=0?'50%':(50-bP)+'%';
-    tb.innerHTML+=`<tr><td style="font-weight:500">${dn(s.label)}</td><td class="num" style="text-align:center">${s.oemVal}</td><td class="num" style="text-align:center">${s.manualVal}</td><td class="num" style="text-align:center;color:${rCo};font-weight:600">${rStr}</td><td style="text-align:center"><div style="position:relative;height:16px;background:var(--bg-elevated);border-radius:3px;overflow:hidden"><div style="position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--border)"></div><div style="position:absolute;left:${bLeft};top:2px;bottom:2px;width:${bP}%;background:${bCo};border-radius:2px"></div></div><div class="num" style="font-size:11px;color:${bCo};margin-top:2px">${bL}</div></td></tr>`
-  });
-  t.appendChild(tb);card.appendChild(t);
-  const note=document.createElement('p');note.style.cssText='font-size:12px;color:var(--text-muted);margin-top:16px;font-style:italic';
-  note.textContent='Ratio = OEM count \u00F7 actual count. >1x = over-predicts. <1x = under-predicts. Fatigue is massively over-predicted (3.5x) because the OEM triggers on head-down posture which often indicates phone use or distraction instead.';
-  card.appendChild(note);S.appendChild(card);C.appendChild(S);
-}
-
 // ===== BLOCK 7: Error Obviousness =====
 function renderBlock7(C){
   const S=mkSec('obviousness','How Obvious Are OEM Mistakes?','What % of errors were spotted quickly (\u226410s) vs needed extended review?');
@@ -338,53 +309,12 @@ function renderBlock9(C){
   S.appendChild(card);C.appendChild(S);
 }
 
-// ===== BLOCK 10: Labels by Device =====
-function renderBlock10(C){
-  const S=mkSec('labels-device','OEM Labels by Device','What does each device trigger and how accurate is it per event type?');
-  const card=mkCard();
-  const groups=groupBy(DATA,'device_id');
-  Object.entries(groups).sort((a,b)=>a[0].localeCompare(b[0])).forEach(([dev,items])=>{
-    const gd=document.createElement('div');gd.style.marginBottom='28px';
-    const wO=items.filter(d=>d.oem_correct!==null),c=wO.filter(d=>d.oem_correct).length,acc=pn(c,wO.length);
-    const co=acc>=70?'var(--accent)':acc>=50?'var(--amber)':'var(--red)';
-    gd.innerHTML=`<div class="group-label" style="color:var(--blue)">Device ${dev} <span style="color:var(--text-muted);font-weight:400">(${items.length} frames \u00B7 <span style="color:${co};font-weight:600">${acc}%</span> overall)</span></div>`;
-    const og=groupBy(items,'oem_prediction');
-    Object.entries(og).map(([l,oi])=>{const w=oi.filter(d=>d.oem_correct!==null),cc=w.filter(d=>d.oem_correct).length;return{label:l,total:oi.length,correct:cc,accuracy:pn(cc,w.length)}}).sort((a,b)=>b.total-a.total).forEach(s=>{
-      const r=document.createElement('div');r.className='bar-row';
-      const bw=s.total/items.length*100,cw=s.correct/s.total*bw,iw=bw-cw;
-      const aco=s.accuracy>=70?'var(--accent)':s.accuracy>=50?'var(--amber)':'var(--red)';
-      r.innerHTML=`<div class="bar-label">${dn(s.label)}</div><div class="bar-track"><div class="bar-fill correct" style="width:${cw}%"></div><div class="bar-fill incorrect" style="width:${iw}%"></div></div><div class="bar-value" style="color:${aco}">${s.accuracy}% <span style="color:var(--text-muted)">(${s.total})</span></div>`;
-      gd.appendChild(r)});
-    card.appendChild(gd)});
-  const leg=document.createElement('div');leg.style.cssText='display:flex;gap:16px;font-size:11px;color:var(--text-muted)';
-  leg.innerHTML='<span><span style="display:inline-block;width:10px;height:10px;background:var(--accent);border-radius:2px;margin-right:4px;vertical-align:middle"></span>Correct</span><span><span style="display:inline-block;width:10px;height:10px;background:var(--red);border-radius:2px;margin-right:4px;vertical-align:middle"></span>Incorrect</span>';
-  card.appendChild(leg);S.appendChild(card);C.appendChild(S);
-}
-
-// ===== BLOCK 11: Tag Summary =====
-function renderBlock11(C){
-  const S=mkSec('tags','Observational Tags Summary','Additional observations recorded during review \u2014 contextual factors beyond ground truth labels');
-  const card=mkCard();const tc={};
-  DATA.forEach(d=>{d.manual_labels.filter(l=>!GROUND_TRUTH_LABELS.includes(l)).forEach(t=>{tc[t]=(tc[t]||0)+1})});
-  const sorted=Object.entries(tc).sort((a,b)=>b[1]-a[1]);if(!sorted.length)return;
-  const mx=sorted[0][1];
-  sorted.forEach(([tag,count])=>{
-    const r=document.createElement('div');r.className='bar-row';const w=count/mx*100;
-    const tagged=DATA.filter(d=>d.manual_labels.includes(tag));
-    const tW=tagged.filter(d=>d.oem_correct!==null),tC=tW.filter(d=>d.oem_correct).length;
-    const tA=tW.length?pn(tC,tW.length):'-';
-    const accStr=tA==='-'?'':`\u00B7 ${tA}% OEM acc`;
-    r.innerHTML=`<div class="bar-label">${dn(tag)}</div><div class="bar-track"><div class="bar-fill" style="width:${w}%;background:var(--purple)"></div></div><div class="bar-value">${count} <span style="color:var(--text-muted)">(${pct(count,DATA.length)} ${accStr})</span></div>`;
-    card.appendChild(r)});
-  S.appendChild(card);C.appendChild(S);
-}
-
 // ===== RENDER =====
 function render(){
   const D=document.getElementById('dashboard');D.innerHTML='';
   renderBlock1(D);renderBlock2(D);renderBlock3(D);renderBlock4(D);
-  renderBlock5(D);renderBlock6(D);renderBlock7(D);renderBlock8(D);
-  renderBlock9(D);renderBlock10(D);renderBlock11(D);
+  renderBlock5(D);renderBlock7(D);renderBlock8(D);
+  renderBlock9(D);
 }
 render();
 const footer=document.createElement('div');
