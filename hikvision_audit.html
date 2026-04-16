@@ -232,30 +232,23 @@ function renderBlock5(C){
 function renderBlock8(C){
   const parked=DATA.filter(d=>d.manual_labels.includes('vehicle_parked'));if(!parked.length)return;
   const moving=DATA.filter(d=>!d.manual_labels.includes('vehicle_parked'));
-  const S=mkSec('parked','Vehicle Parked \u2014 OEM Behavior When Stationary','How does Hikvision perform when the vehicle is parked? Are these valid alerts?');
+  const parkedPct=pn(parked.length,DATA.length);
+  const S=mkSec('parked','Alert Volume While Parked',`${parkedPct}% of all OEM alerts fired while the vehicle was stationary \u2014 ${parked.length} of ${DATA.length} total events`);
   const card=mkCard();
-  const pW=parked.filter(d=>d.oem_correct!==null),pC=pW.filter(d=>d.oem_correct).length,pA=pn(pC,pW.length);
-  const mW=moving.filter(d=>d.oem_correct!==null),mC=mW.filter(d=>d.oem_correct).length,mA=pn(mC,mW.length);
-  const delta=Math.abs(pA-mA);
 
   const cr=document.createElement('div');cr.style.cssText='display:flex;gap:16px;margin-bottom:32px';
-  const pCo=pA>=70?'var(--accent)':'var(--amber)';
-  cr.innerHTML=`<div class="summary-card" style="flex:1;background:var(--accent-dim);border-radius:8px;padding:20px;text-align:center"><div class="label">Parked</div><div class="value" style="color:${pCo}">${pA}%</div><div class="detail">${pC} of ${pW.length} correct \u00B7 ${parked.length} frames</div></div>`;
-  const mCo=mA>=70?'var(--accent)':mA>=50?'var(--amber)':'var(--red)';
-  cr.innerHTML+=`<div class="summary-card" style="flex:1;background:var(--amber-dim);border-radius:8px;padding:20px;text-align:center"><div class="label">Moving / Unknown</div><div class="value" style="color:${mCo}">${mA}%</div><div class="detail">${mC} of ${mW.length} correct \u00B7 ${moving.length} frames</div></div>`;
-  cr.innerHTML+=`<div class="summary-card" style="flex:0.6;background:var(--bg-elevated);border-radius:8px;padding:20px;text-align:center"><div class="label">Gap</div><div class="value" style="color:var(--purple)">${delta}pp</div><div class="detail">parked vs moving</div></div>`;
+  cr.innerHTML=`<div class="summary-card" style="flex:1;background:var(--amber-dim);border-radius:8px;padding:20px;text-align:center"><div class="label">Alerts While Parked</div><div class="value" style="color:var(--amber)">${parked.length}</div><div class="detail">${parkedPct}% of all ${DATA.length} alerts</div></div>`;
+  cr.innerHTML+=`<div class="summary-card" style="flex:1;background:var(--blue-dim);border-radius:8px;padding:20px;text-align:center"><div class="label">Alerts While Moving</div><div class="value" style="color:var(--blue)">${moving.length}</div><div class="detail">${pn(moving.length,DATA.length)}% of all ${DATA.length} alerts</div></div>`;
   card.appendChild(cr);
 
   const gl=document.createElement('div');gl.className='group-label';gl.textContent='What does Hikvision flag when parked?';card.appendChild(gl);
   const oc=countBy(parked,'oem_prediction');
   Object.entries(oc).sort((a,b)=>b[1]-a[1]).forEach(([oem,count])=>{
     const r=document.createElement('div');r.className='bar-row';const w=count/parked.length*100;
-    const items=parked.filter(d=>d.oem_prediction===oem);const corr=items.filter(d=>d.oem_correct).length;const acc=pn(corr,items.length);
-    const bCo=acc>=70?'var(--accent)':acc>=50?'var(--amber)':'var(--red)';
-    r.innerHTML=`<div class="bar-label">${dn(oem)}</div><div class="bar-track"><div class="bar-fill" style="width:${w}%;background:${bCo}"></div></div><div class="bar-value">${count} <span style="color:var(--text-muted)">(${Math.round(w)}% \u00B7 ${acc}% acc)</span></div>`;
+    r.innerHTML=`<div class="bar-label">${dn(oem)}</div><div class="bar-track"><div class="bar-fill" style="width:${w}%;background:var(--amber)"></div></div><div class="bar-value">${count} <span style="color:var(--text-muted)">(${Math.round(w)}%)</span></div>`;
     card.appendChild(r)});
 
-  addInsight(card,`<strong>Parked vehicles are a strength:</strong> ${pA}% accuracy when parked vs ${mA}% when moving. The ${delta}pp gap suggests motion context may actually introduce more confusion for the OEM.`);
+  addInsight(card,`<strong>Nearly 1 in 3 alerts fires while the vehicle is parked.</strong> Whether correct or not, this volume of stationary alerts creates noise for fleet operators and may erode trust in the system. Consider suppressing or deprioritizing alerts when speed is 0 km/h.`);
   S.appendChild(card);C.appendChild(S);
 }
 
