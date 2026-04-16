@@ -127,15 +127,11 @@ function renderBlock1(C){
   const total=DATA.length,wO=DATA.filter(d=>d.oem_correct!==null),correct=wO.filter(d=>d.oem_correct).length;
   const acc=pn(correct,wO.length);
   const safeCount=DATA.filter(d=>d.manual_labels.includes('safe_driving')).length;
-  const incorr=wO.length-correct;
-  const obvErr=DATA.filter(d=>d.oem_correct===false&&d.time_to_decision_s<=20).length;
-  const obvPct=pn(obvErr,incorr);
   const nDev=new Set(DATA.map(d=>d.device_id)).size;
-  const cards=document.createElement('div');cards.className='summary-cards';
+  const cards=document.createElement('div');cards.className='summary-cards';cards.style.gridTemplateColumns='repeat(3,1fr)';
   [{l:'Total Frames',v:total,d:`across ${nDev} devices`,co:'var(--blue)',bg:'var(--blue-dim)'},
    {l:'OEM Accuracy',v:acc+'%',d:`${correct} of ${wO.length} correct`,co:acc>=70?'var(--accent)':'var(--amber)',bg:acc>=70?'var(--accent-dim)':'var(--amber-dim)'},
-   {l:'False Alarms',v:pct(safeCount,total),d:`${safeCount} of ${total} flagged frames were safe driving`,co:'var(--red)',bg:'var(--red-dim)'},
-   {l:'Obvious Errors',v:obvPct+'%',d:`${obvErr} of ${incorr} errors decided in \u226420s`,co:'var(--purple)',bg:'var(--purple-dim)'}
+   {l:'False Alarms',v:pct(safeCount,total),d:`${safeCount} of ${total} flagged frames were safe driving`,co:'var(--red)',bg:'var(--red-dim)'}
   ].forEach(c=>{const cd=document.createElement('div');cd.className='summary-card';cd.style.background=c.bg;cd.innerHTML=`<div class="label">${c.l}</div><div class="value" style="color:${c.co}">${c.v}</div><div class="detail">${c.d}</div>`;cards.appendChild(cd)});
   S.appendChild(cards);C.appendChild(S);
 }
@@ -232,26 +228,6 @@ function renderBlock5(C){
   S.appendChild(card);C.appendChild(S);
 }
 
-// ===== BLOCK 7: Error Obviousness =====
-function renderBlock7(C){
-  const S=mkSec('obviousness','How Obvious Are OEM Mistakes?','What % of errors were spotted quickly (\u226420s) vs needed extended review?');
-  const card=mkCard();card.style.overflowX='auto';
-  const groups=groupBy(DATA,'oem_prediction');
-  const stats=Object.entries(groups).map(([l,items])=>{const inc=items.filter(d=>d.oem_correct===false);if(!inc.length)return null;const ob=inc.filter(d=>d.time_to_decision_s<=20).length;return{label:l,total:items.length,errors:inc.length,obvious:ob,ambiguous:inc.length-ob,obviousPct:pn(ob,inc.length)}}).filter(Boolean).sort((a,b)=>b.errors-a.errors);
-
-  const t=document.createElement('table');t.className='data-table';
-  t.innerHTML='<thead><tr><th>OEM Prediction</th><th style="text-align:center">Total</th><th style="text-align:center">Errors</th><th style="text-align:center">Obvious (\u226420s)</th><th style="text-align:center">Ambiguous (>20s)</th><th style="text-align:center">% Obvious</th></tr></thead>';
-  const tb=document.createElement('tbody');let tE=0,tO=0,tA=0;
-  stats.forEach(s=>{tE+=s.errors;tO+=s.obvious;tA+=s.ambiguous;const oC=s.obviousPct>=70?'var(--red)':s.obviousPct>=50?'var(--amber)':'var(--accent)';
-    tb.innerHTML+=`<tr><td style="font-weight:500">${dn(s.label)}</td><td class="num" style="text-align:center">${s.total}</td><td class="num" style="text-align:center;color:var(--red)">${s.errors}</td><td class="num" style="text-align:center">${s.obvious}</td><td class="num" style="text-align:center">${s.ambiguous}</td><td style="text-align:center"><div style="display:flex;align-items:center;gap:8px;justify-content:center"><div style="width:80px;height:14px;border-radius:3px;overflow:hidden;background:var(--bg-elevated);display:flex"><div style="width:${s.obviousPct}%;height:100%;background:${oC}"></div></div><span class="num" style="color:${oC};font-weight:600">${s.obviousPct}%</span></div></td></tr>`});
-  const tOP=pn(tO,tE);
-  tb.innerHTML+=`<tr style="border-top:2px solid var(--border)"><td style="font-weight:700">Overall</td><td class="num" style="text-align:center;font-weight:600">${stats.reduce((s,r)=>s+r.total,0)}</td><td class="num" style="text-align:center;color:var(--red);font-weight:600">${tE}</td><td class="num" style="text-align:center;font-weight:600">${tO}</td><td class="num" style="text-align:center;font-weight:600">${tA}</td><td style="text-align:center"><div style="display:flex;align-items:center;gap:8px;justify-content:center"><div style="width:80px;height:14px;border-radius:3px;overflow:hidden;background:var(--bg-elevated);display:flex"><div style="width:${tOP}%;height:100%;background:var(--red)"></div></div><span class="num" style="color:var(--red);font-weight:700">${tOP}%</span></div></td></tr>`;
-  t.appendChild(tb);card.appendChild(t);
-  const note=document.createElement('p');note.style.cssText='font-size:12px;color:var(--text-muted);margin-top:16px;font-style:italic';
-  note.textContent='Obvious errors (\u226420s) = the reviewer knew the OEM was wrong quickly. High % obvious means clear-cut mistakes, not borderline calls.';
-  card.appendChild(note);S.appendChild(card);C.appendChild(S);
-}
-
 // ===== BLOCK 8: Vehicle Parked =====
 function renderBlock8(C){
   const parked=DATA.filter(d=>d.manual_labels.includes('vehicle_parked'));if(!parked.length)return;
@@ -313,7 +289,7 @@ function renderBlock9(C){
 function render(){
   const D=document.getElementById('dashboard');D.innerHTML='';
   renderBlock1(D);renderBlock2(D);renderBlock3(D);renderBlock4(D);
-  renderBlock5(D);renderBlock7(D);renderBlock8(D);
+  renderBlock5(D);renderBlock8(D);
   renderBlock9(D);
 }
 render();
