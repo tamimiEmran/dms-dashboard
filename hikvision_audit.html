@@ -258,27 +258,24 @@ function renderBlock9(C){
   const card=mkCard();
 
   // Adjusted accuracy: distracted_driving counts as correct (driver IS distracted),
-  // seatbelt could also be correct (co-occurring violation)
+  // seatbelt is correct only if seatbelt is also in manual_labels (actual violation)
   const ACCEPTABLE_FOR_HIDDEN = ['phone_usage','distracted_driving'];
-  const PLAUSIBLE_FOR_HIDDEN = ['seatbelt'];
   function hpAdjustedCorrect(d) {
     if (d.oem_correct) return 'correct';
     if (ACCEPTABLE_FOR_HIDDEN.includes(d.oem_prediction)) return 'correct';
-    if (PLAUSIBLE_FOR_HIDDEN.includes(d.oem_prediction)) return 'plausible';
+    if (d.oem_prediction==='seatbelt' && d.manual_labels.includes('seatbelt')) return 'correct';
     return 'wrong';
   }
   const hpCorrect=hp.filter(d=>hpAdjustedCorrect(d)==='correct').length;
-  const hpPlausible=hp.filter(d=>hpAdjustedCorrect(d)==='plausible').length;
-  const hpWrong=hp.length-hpCorrect-hpPlausible;
-  const hpAccStrict=pn(hpCorrect,hp.length);
-  const hpAccLenient=pn(hpCorrect+hpPlausible,hp.length);
+  const hpWrong=hp.length-hpCorrect;
+  const hpAcc=pn(hpCorrect,hp.length);
 
   const vp=DATA.filter(d=>d.manual_labels.includes('phone_usage')&&!d.manual_labels.includes('phone_possibly_hidden_texting'));
   const vpW=vp.filter(d=>d.oem_correct!==null),vpC=vpW.filter(d=>d.oem_correct).length,vpA=vpW.length?pn(vpC,vpW.length):0;
 
   const cr=document.createElement('div');cr.style.cssText='display:flex;gap:16px;margin-bottom:32px';
-  const hpCo=hpAccStrict>=70?'var(--accent)':hpAccStrict>=50?'var(--amber)':'var(--red)';
-  cr.innerHTML=`<div class="summary-card" style="flex:1;background:var(--amber-dim);border-radius:8px;padding:20px;text-align:center"><div class="label">Hidden Phone (adjusted)</div><div class="value" style="color:${hpCo}">${hpAccStrict}%</div><div class="detail">${hpCorrect} correct + ${hpPlausible} plausible + ${hpWrong} wrong out of ${hp.length}</div></div>`;
+  const hpCo=hpAcc>=70?'var(--accent)':hpAcc>=50?'var(--amber)':'var(--red)';
+  cr.innerHTML=`<div class="summary-card" style="flex:1;background:var(--amber-dim);border-radius:8px;padding:20px;text-align:center"><div class="label">Hidden Phone (adjusted)</div><div class="value" style="color:${hpCo}">${hpAcc}%</div><div class="detail">${hpCorrect} correct \u00B7 ${hpWrong} wrong out of ${hp.length}</div></div>`;
   const vpCo=vpA>=70?'var(--accent)':vpA>=50?'var(--amber)':'var(--red)';
   cr.innerHTML+=`<div class="summary-card" style="flex:1;background:var(--accent-dim);border-radius:8px;padding:20px;text-align:center"><div class="label">Visible Phone</div><div class="value" style="color:${vpCo}">${vpA}%</div><div class="detail">${vpC} of ${vpW.length} correctly detected</div></div>`;
   card.appendChild(cr);
@@ -287,12 +284,19 @@ function renderBlock9(C){
   const oc=countBy(hp,'oem_prediction');
   Object.entries(oc).sort((a,b)=>b[1]-a[1]).forEach(([oem,count])=>{
     const r=document.createElement('div');r.className='bar-row';const w=count/hp.length*100;
-    const verdict=ACCEPTABLE_FOR_HIDDEN.includes(oem)?'var(--accent)':PLAUSIBLE_FOR_HIDDEN.includes(oem)?'var(--amber)':'var(--red)';
-    const tag=ACCEPTABLE_FOR_HIDDEN.includes(oem)?'\u2713 correct':PLAUSIBLE_FOR_HIDDEN.includes(oem)?'\u2248 plausible':'\u2717 wrong';
+    let verdict,tag;
+    if(ACCEPTABLE_FOR_HIDDEN.includes(oem)){verdict='var(--accent)';tag='\u2713 correct'}
+    else if(oem==='seatbelt'){
+      const sbItems=hp.filter(d=>d.oem_prediction==='seatbelt');
+      const sbCorrect=sbItems.filter(d=>d.manual_labels.includes('seatbelt')).length;
+      const sbWrong=sbItems.length-sbCorrect;
+      verdict=sbCorrect===sbItems.length?'var(--accent)':sbWrong===sbItems.length?'var(--red)':'var(--amber)';
+      tag=`${sbCorrect}\u2713 ${sbWrong}\u2717`;
+    } else {verdict='var(--red)';tag='\u2717 wrong'}
     r.innerHTML=`<div class="bar-label">${dn(oem)}</div><div class="bar-track"><div class="bar-fill" style="width:${w}%;background:${verdict}"></div></div><div class="bar-value">${count} <span style="color:var(--text-muted)">(${Math.round(w)}%)</span> <span style="color:${verdict};font-weight:600;font-size:11px">${tag}</span></div>`;
     card.appendChild(r)});
 
-  addInsight(card,'<strong>Adjusted scoring:</strong> "Distracted driving" is counted as correct when the driver has a hidden phone \u2014 the driver <em>is</em> distracted. "Seatbelt" is marked plausible since a hidden phone doesn\'t rule out a co-occurring seatbelt violation. Only predictions like fatigue or safe_driving are truly wrong here.');
+  addInsight(card,'<strong>Adjusted scoring:</strong> "Distracted driving" is counted as correct \u2014 the driver <em>is</em> distracted by the hidden phone. "Seatbelt" is checked per-frame: correct only when the seatbelt is actually unfastened. Only predictions like fatigue are truly wrong here.');
   S.appendChild(card);C.appendChild(S);
 }
 
