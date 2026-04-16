@@ -1,13 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DMS Presentations</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
   <style>
     /* === Tokens (matched from raqeeb_audit / index2) === */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     :root {
       --bg: #F8F9FB;
@@ -33,7 +42,9 @@
       --radius-sm: 6px;
     }
 
-    html { scroll-behavior: smooth; }
+    html {
+      scroll-behavior: smooth;
+    }
 
     body {
       background: var(--bg);
@@ -47,14 +58,39 @@
     }
 
     /* === Page Header === */
-    .page-header { margin-bottom: 48px; }
-    .page-header h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 6px; }
-    .page-header p { font-size: 14px; color: var(--text-dim); }
+    .page-header {
+      margin-bottom: 48px;
+    }
+
+    .page-header h1 {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin-bottom: 6px;
+    }
+
+    .page-header p {
+      font-size: 14px;
+      color: var(--text-dim);
+    }
 
     /* === Sections === */
-    .section { margin-bottom: 48px; }
-    .section-title { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 6px; }
-    .section-subtitle { font-size: 14px; color: var(--text-dim); margin-bottom: 24px; }
+    .section {
+      margin-bottom: 48px;
+    }
+
+    .section-title {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
+
+    .section-subtitle {
+      font-size: 14px;
+      color: var(--text-dim);
+      margin-bottom: 24px;
+    }
 
     /* === Cards grid === */
     .cards-grid {
@@ -68,7 +104,7 @@
       background: var(--bg-card);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.03);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.03);
       overflow: hidden;
       text-decoration: none;
       color: inherit;
@@ -79,13 +115,17 @@
 
     .card:hover {
       border-color: #C8CBD4;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.07), 0 1px 3px rgba(0,0,0,0.04);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.07), 0 1px 3px rgba(0, 0, 0, 0.04);
     }
 
     /* Accent strip */
-    .card-strip { height: 4px; }
+    .card-strip {
+      height: 4px;
+    }
 
-    .card.past .card-strip { background: var(--bg-elevated); }
+    .card.past .card-strip {
+      background: var(--bg-elevated);
+    }
 
     .card-body {
       padding: 24px;
@@ -112,7 +152,10 @@
       font-weight: 500;
     }
 
-    .badge.past { background: var(--bg-elevated); color: var(--text-muted); }
+    .badge.past {
+      background: var(--bg-elevated);
+      color: var(--text-muted);
+    }
 
     .card-date {
       font-family: var(--mono);
@@ -121,13 +164,31 @@
     }
 
     /* Title + description */
-    .card-title { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 6px; }
-    .card.past .card-title { color: var(--text-dim); }
+    .card-title {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
 
-    .card-subtitle { font-size: 13.5px; color: var(--text-dim); line-height: 1.5; margin-bottom: 18px; }
+    .card.past .card-title {
+      color: var(--text-dim);
+    }
+
+    .card-subtitle {
+      font-size: 13.5px;
+      color: var(--text-dim);
+      line-height: 1.5;
+      margin-bottom: 18px;
+    }
 
     /* Tags */
-    .card-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
+    .card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 20px;
+    }
 
     .tag {
       font-family: var(--mono);
@@ -137,11 +198,30 @@
       font-weight: 500;
     }
 
-    .tag[data-color="teal"]   { color: var(--accent); background: var(--accent-dim); }
-    .tag[data-color="amber"]  { color: var(--amber);  background: var(--amber-dim); }
-    .tag[data-color="blue"]   { color: var(--blue);   background: var(--blue-dim); }
-    .tag[data-color="purple"] { color: var(--purple);  background: var(--purple-dim); }
-    .tag[data-color="red"]    { color: var(--red);    background: var(--red-dim); }
+    .tag[data-color="teal"] {
+      color: var(--accent);
+      background: var(--accent-dim);
+    }
+
+    .tag[data-color="amber"] {
+      color: var(--amber);
+      background: var(--amber-dim);
+    }
+
+    .tag[data-color="blue"] {
+      color: var(--blue);
+      background: var(--blue-dim);
+    }
+
+    .tag[data-color="purple"] {
+      color: var(--purple);
+      background: var(--purple-dim);
+    }
+
+    .tag[data-color="red"] {
+      color: var(--red);
+      background: var(--red-dim);
+    }
 
     /* Stats row */
     .card-stats {
@@ -153,19 +233,41 @@
       padding-top: 16px;
     }
 
-    .stat { text-align: center; position: relative; }
+    .stat {
+      text-align: center;
+      position: relative;
+    }
 
-    .stat + .stat::before {
+    .stat+.stat::before {
       content: '';
       position: absolute;
-      left: 0; top: 2px; bottom: 2px;
+      left: 0;
+      top: 2px;
+      bottom: 2px;
       width: 1px;
       background: var(--border);
     }
 
-    .stat-value { font-family: var(--mono); font-size: 22px; font-weight: 700; color: var(--text); line-height: 1; }
-    .card.past .stat-value { color: var(--text-dim); }
-    .stat-label { font-family: var(--mono); font-size: 9px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); margin-top: 5px; }
+    .stat-value {
+      font-family: var(--mono);
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    .card.past .stat-value {
+      color: var(--text-dim);
+    }
+
+    .stat-label {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-top: 5px;
+    }
 
     /* ============================================
        SCHEDULED — ready-to-present card
@@ -177,7 +279,7 @@
 
     .card.scheduled:hover {
       border-color: var(--accent);
-      box-shadow: 0 6px 20px rgba(14, 154, 126, 0.12), 0 2px 6px rgba(0,0,0,0.04);
+      box-shadow: 0 6px 20px rgba(14, 154, 126, 0.12), 0 2px 6px rgba(0, 0, 0, 0.04);
       transform: translateY(-1px);
     }
 
@@ -186,8 +288,13 @@
       height: 4px;
     }
 
-    .card.scheduled .card-title { color: var(--text); }
-    .card.scheduled .card-subtitle { color: var(--text-dim); }
+    .card.scheduled .card-title {
+      color: var(--text);
+    }
+
+    .card.scheduled .card-subtitle {
+      color: var(--text-dim);
+    }
 
     .badge.scheduled {
       background: var(--accent-dim);
@@ -254,7 +361,8 @@
     }
 
     .arrow-connector .arrow-line .head {
-      width: 0; height: 0;
+      width: 0;
+      height: 0;
       border-top: 5px solid transparent;
       border-bottom: 5px solid transparent;
       border-left: 8px solid var(--border);
@@ -308,12 +416,33 @@
       font-size: 18px;
     }
 
-    .material-icon.report { background: var(--blue-dim); color: var(--blue); }
-    .material-icon.diagram { background: var(--purple-dim); color: var(--purple); }
+    .material-icon.report {
+      background: var(--blue-dim);
+      color: var(--blue);
+    }
 
-    .material-info { flex: 1; min-width: 0; }
-    .material-title { font-size: 14px; font-weight: 600; letter-spacing: -0.01em; margin-bottom: 2px; }
-    .material-desc { font-size: 12px; color: var(--text-dim); line-height: 1.4; }
+    .material-icon.diagram {
+      background: var(--purple-dim);
+      color: var(--purple);
+    }
+
+    .material-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .material-title {
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      margin-bottom: 2px;
+    }
+
+    .material-desc {
+      font-size: 12px;
+      color: var(--text-dim);
+      line-height: 1.4;
+    }
 
     .material-badge {
       font-family: var(--mono);
@@ -347,7 +476,11 @@
       padding: 40px;
     }
 
-    .lightbox.active { display: flex; align-items: center; justify-content: center; }
+    .lightbox.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
     .lightbox-inner {
       background: var(--bg-card);
@@ -358,7 +491,7 @@
       overflow: auto;
       cursor: default;
       position: relative;
-      box-shadow: 0 24px 80px rgba(0,0,0,0.3);
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.3);
     }
 
     .lightbox-inner img,
@@ -387,7 +520,10 @@
       transition: background 0.15s, color 0.15s;
     }
 
-    .lightbox-close:hover { background: var(--bg-elevated); color: var(--text); }
+    .lightbox-close:hover {
+      background: var(--bg-elevated);
+      color: var(--text);
+    }
 
     .lightbox-open {
       position: absolute;
@@ -406,7 +542,10 @@
       transition: background 0.15s, color 0.15s;
     }
 
-    .lightbox-open:hover { background: var(--bg-elevated); color: var(--text); }
+    .lightbox-open:hover {
+      background: var(--bg-elevated);
+      color: var(--text);
+    }
 
     /* ============================================
        HERO OVERVIEW SECTION
@@ -419,7 +558,7 @@
       background: var(--bg-card);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.03);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.03);
       overflow: hidden;
     }
 
@@ -461,7 +600,7 @@
 
     .hero-image-wrapper:hover {
       border-color: rgba(14, 154, 126, 0.3);
-      box-shadow: 0 4px 16px rgba(0,0,0,0.07);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.07);
     }
 
     .hero-image-wrapper img {
@@ -496,15 +635,35 @@
 
     /* === Responsive === */
     @media (max-width: 960px) {
-      body { padding: 32px 24px; }
-      .upcoming-row { flex-direction: column; gap: 20px; }
-      .card.wip { flex: none; }
-      .arrow-connector { flex-direction: row; padding: 8px 0; }
-      .arrow-connector .arrow-line .line { width: 24px; }
-      .cards-grid { grid-template-columns: 1fr; }
+      body {
+        padding: 32px 24px;
+      }
+
+      .upcoming-row {
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .card.wip {
+        flex: none;
+      }
+
+      .arrow-connector {
+        flex-direction: row;
+        padding: 8px 0;
+      }
+
+      .arrow-connector .arrow-line .line {
+        width: 24px;
+      }
+
+      .cards-grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
+
 <body>
   <div class="page-header">
     <h1>DMS Presentations</h1>
@@ -519,14 +678,22 @@
         <div class="hero-top">
           <div>
             <div class="hero-title">AI Brain Architecture — for Taxis</div>
-            <div class="hero-subtitle">End-to-end system: DMS Camera &rarr; Edge Device &rarr; Raqeeb Server &rarr; Portal &rarr; Frontend</div>
+            <div class="hero-subtitle">End-to-end system: DMS Camera &rarr; Edge Device &rarr; Raqeeb Server &rarr;
+              Portal &rarr; Frontend</div>
           </div>
           <span class="badge" style="background:var(--accent-dim);color:var(--accent);">Overview</span>
         </div>
         <div class="hero-image-wrapper" onclick="openArchLightbox()">
-          <img src="assets/general/Slide1.jpg" alt="AI Brain Architecture — DMS Camera to Edge Device to Raqeeb Server to Portal to Frontend" loading="eager">
+          <img src="assets/general/Slide1.jpg"
+            alt="AI Brain Architecture — DMS Camera to Edge Device to Raqeeb Server to Portal to Frontend"
+            loading="eager">
           <div class="hero-expand-hint">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="15 3 21 3 21 9" />
+              <polyline points="9 21 3 21 3 15" />
+              <line x1="21" y1="3" x2="14" y2="10" />
+              <line x1="3" y1="21" x2="10" y2="14" />
+            </svg>
             Click to expand
           </div>
         </div>
@@ -539,7 +706,12 @@
   <!-- Architecture Image Lightbox -->
   <div class="lightbox" id="archLightbox" onclick="closeArchLightbox()">
     <div class="lightbox-inner" onclick="event.stopPropagation()">
-      <a class="lightbox-open" href="assets/general/Slide1.jpg" target="_blank" title="Open in new tab"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
+      <a class="lightbox-open" href="assets/general/Slide1.jpg" target="_blank" title="Open in new tab"><svg width="14"
+          height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+          <polyline points="15 3 21 3 21 9" />
+          <line x1="10" y1="14" x2="21" y2="3" />
+        </svg></a>
       <button class="lightbox-close" onclick="closeArchLightbox()">&times;</button>
       <img src="assets/general/Slide1.jpg" alt="AI Brain Architecture" style="width:100%;min-width:900px;">
     </div>
@@ -548,9 +720,15 @@
   <!-- SVG Lightbox -->
   <div class="lightbox" id="svgLightbox" onclick="closeLightbox()">
     <div class="lightbox-inner" onclick="event.stopPropagation()">
-      <a class="lightbox-open" href="dms_iot_architecture.svg" target="_blank" title="Open in new tab"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
+      <a class="lightbox-open" href="dms_iot_architecture.svg" target="_blank" title="Open in new tab"><svg width="14"
+          height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+          <polyline points="15 3 21 3 21 9" />
+          <line x1="10" y1="14" x2="21" y2="3" />
+        </svg></a>
       <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
-      <object data="dms_iot_architecture.svg" type="image/svg+xml" style="width:100%;min-width:900px;aspect-ratio:1760/1100;">DMS IoT Architecture</object>
+      <object data="dms_iot_architecture.svg" type="image/svg+xml"
+        style="width:100%;min-width:900px;aspect-ratio:1760/1100;">DMS IoT Architecture</object>
     </div>
   </div>
 
@@ -564,7 +742,7 @@
         type: 'report',
       },
       {
-        title: 'Raqeeb Events \u2014 OEM Quality Audit',
+        title: 'Howen Events \u2014 OEM Quality Audit',
         desc: '525 event videos reviewed across 6 devices \u2014 OEM accuracy, confusion matrix, hidden phone analysis',
         file: 'raqeeb_audit.html',
         type: 'report',
@@ -594,37 +772,37 @@
         assetsDir: '14April26',
         status: 'past',
         tags: [
-          { label: 'Model Eval',    color: 'teal' },
-          { label: 'Fine-Tuning',   color: 'blue' },
+          { label: 'Model Eval', color: 'teal' },
+          { label: 'Fine-Tuning', color: 'blue' },
           { label: 'Preprocessing', color: 'purple' },
-          { label: 'OEM vs OS',     color: 'red' },
+          { label: 'OEM vs OS', color: 'red' },
         ],
         stats: [
-          { value: '48',    label: 'Videos' },
+          { value: '48', label: 'Videos' },
           { value: '4,865', label: 'Frames' },
-          { value: '4',     label: 'Slides' },
+          { value: '4', label: 'Slides' },
           { value: '56.2%', label: 'Accuracy' },
         ],
       },
       {
         id: 'raqeeb_audit_pres',
-        title: 'Raqeeb Events \u2014 OEM vs Ground Truth',
+        title: 'Howen Events \u2014 OEM vs Ground Truth vs OS implementations',
         subtitle: 'OEM accuracy audit across 528 event videos from 6 devices, false-alarm analysis, and open-source model benchmarking.',
         file: 'raqeeb_audit_pres.html',
         assetsDir: '7April26',
         status: 'past',
         tags: [
-          { label: 'OEM Accuracy',   color: 'red' },
-          { label: 'Data Pipeline',  color: 'blue' },
-          { label: 'False Alarms',   color: 'amber' },
-          { label: 'OS Benchmark',   color: 'purple' },
-          { label: 'Blind Spots',    color: 'teal' },
+          { label: 'OEM Accuracy', color: 'red' },
+          { label: 'Data Pipeline', color: 'blue' },
+          { label: 'False Alarms', color: 'amber' },
+          { label: 'OS Benchmark', color: 'purple' },
+          { label: 'Blind Spots', color: 'teal' },
         ],
         stats: [
-          { value: '528',  label: 'Videos' },
-          { value: '6',    label: 'Devices' },
-          { value: '5',    label: 'Slides' },
-          { value: '5',    label: 'Models' },
+          { value: '528', label: 'Videos' },
+          { value: '6', label: 'Devices' },
+          { value: '5', label: 'Slides' },
+          { value: '5', label: 'Models' },
         ],
       },
       {
@@ -635,16 +813,16 @@
         assetsDir: '31March26',
         status: 'past',
         tags: [
-          { label: 'Pipeline',  color: 'teal' },
-          { label: 'Models',    color: 'blue' },
-          { label: 'Edge HW',   color: 'amber' },
-          { label: 'Datasets',  color: 'purple' },
+          { label: 'Pipeline', color: 'teal' },
+          { label: 'Models', color: 'blue' },
+          { label: 'Edge HW', color: 'amber' },
+          { label: 'Datasets', color: 'purple' },
         ],
         stats: [
-          { value: '11',  label: 'Slides' },
-          { value: '3',   label: 'Datasets' },
-          { value: '5',   label: 'Models' },
-          { value: '8',   label: 'Classes' },
+          { value: '11', label: 'Slides' },
+          { value: '3', label: 'Datasets' },
+          { value: '5', label: 'Models' },
+          { value: '8', label: 'Classes' },
         ],
       },
     ];
@@ -876,4 +1054,5 @@
     render();
   </script>
 </body>
+
 </html>
