@@ -238,7 +238,6 @@ function renderBlock8(C){
 
   const cr=document.createElement('div');cr.style.cssText='display:flex;gap:16px;margin-bottom:32px';
   cr.innerHTML=`<div class="summary-card" style="flex:1;background:var(--amber-dim);border-radius:8px;padding:20px;text-align:center"><div class="label">Alerts While Parked</div><div class="value" style="color:var(--amber)">${parked.length}</div><div class="detail">${parkedPct}% of all ${DATA.length} alerts</div></div>`;
-  cr.innerHTML+=`<div class="summary-card" style="flex:1;background:var(--blue-dim);border-radius:8px;padding:20px;text-align:center"><div class="label">Alerts While Moving</div><div class="value" style="color:var(--blue)">${moving.length}</div><div class="detail">${pn(moving.length,DATA.length)}% of all ${DATA.length} alerts</div></div>`;
   card.appendChild(cr);
 
   const gl=document.createElement('div');gl.className='group-label';gl.textContent='What does Hikvision flag when parked?';card.appendChild(gl);
