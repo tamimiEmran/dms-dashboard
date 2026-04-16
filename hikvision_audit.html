@@ -289,7 +289,7 @@ function renderBlock5(C){
   }).sort((a,b)=>a.acc-b.acc);
 
   const t=document.createElement('table');t.className='data-table';
-  t.innerHTML='<thead><tr><th>Device</th><th style="text-align:center">Frames</th><th style="text-align:center">Correct</th><th style="text-align:center">Errors</th><th style="text-align:center">Accuracy</th><th style="text-align:center">IR / RGB</th><th style="text-align:center">Avg Decision</th><th style="text-align:center">Bar</th></tr></thead>';
+  t.innerHTML='<thead><tr><th>Device</th><th style="text-align:center">Frames</th><th style="text-align:center">Correct</th><th style="text-align:center">Errors</th><th style="text-align:center">Accuracy</th><th style="text-align:center">IR / RGB</th><th style="text-align:center">Bar</th></tr></thead>';
   const tb=document.createElement('tbody');
   stats.forEach(s=>{
     const co=s.acc>=70?'var(--accent)':s.acc>=50?'var(--amber)':'var(--red)';
@@ -298,7 +298,7 @@ function renderBlock5(C){
     const rowHover=isOutlier?' onmouseover="this.style.background=\'var(--red-dim)\'" onmouseout="this.style.background=\'\'"':'';
     const rowClick=isOutlier?` onclick="openDeviceModal('${s.dev}')"`:''
     const devCell=isOutlier?`<td style="font-weight:600;font-family:var(--mono)"><span style="border-bottom:2px dashed var(--red);padding-bottom:1px">${s.dev}</span> <span style="font-size:10px;color:var(--red);vertical-align:middle">view frames</span></td>`:`<td style="font-weight:600;font-family:var(--mono)">${s.dev}</td>`;
-    tb.innerHTML+=`<tr style="${rowStyle}"${rowHover}${rowClick}>${devCell}<td class="num" style="text-align:center">${s.total}</td><td class="num" style="text-align:center;color:var(--accent)">${s.correct}</td><td class="num" style="text-align:center;color:var(--red)">${s.errors}</td><td style="text-align:center"><span class="num" style="color:${co};font-weight:700">${s.acc}%</span></td><td class="num" style="text-align:center">${s.mc['ir']||0} / ${s.mc['rgb']||0}</td><td class="num" style="text-align:center">${s.avg}s</td><td style="text-align:center"><div style="display:inline-flex;height:14px;width:80px;border-radius:3px;overflow:hidden;background:var(--bg-elevated)"><div style="width:${s.acc}%;background:${co}"></div></div></td></tr>`
+    tb.innerHTML+=`<tr style="${rowStyle}"${rowHover}${rowClick}>${devCell}<td class="num" style="text-align:center">${s.total}</td><td class="num" style="text-align:center;color:var(--accent)">${s.correct}</td><td class="num" style="text-align:center;color:var(--red)">${s.errors}</td><td style="text-align:center"><span class="num" style="color:${co};font-weight:700">${s.acc}%</span></td><td class="num" style="text-align:center">${s.mc['ir']||0} / ${s.mc['rgb']||0}</td><td style="text-align:center"><div style="display:inline-flex;height:14px;width:80px;border-radius:3px;overflow:hidden;background:var(--bg-elevated)"><div style="width:${s.acc}%;background:${co}"></div></div></td></tr>`
   });
   t.appendChild(tb);card.appendChild(t);
   addInsight(card,'<strong>Device 981832 is a significant outlier</strong> at 39% accuracy (vs 75\u201381% for others). This single device contributes disproportionate errors and may have a hardware or mounting issue worth investigating.');
