@@ -496,28 +496,22 @@
           <span class="title">Hikvision DMS</span>
           <span class="pill">No alert</span>
         </div>
-        <div class="cmp-img-wrap" style="background:var(--bg-elevated);color:var(--text-muted);font-family:var(--mono);font-size:13px;text-align:center;padding:24px">
-          <div>
-            <div style="font-size:32px;margin-bottom:12px">&#x26A0;</div>
-            <div style="color:var(--text);font-weight:600;font-family:var(--font);font-size:15px;margin-bottom:6px">No seatbelt alert captured</div>
-            <div style="max-width:320px;margin:0 auto;line-height:1.5">Hikvision does not display on-screen seatbelt status and did not raise an in-vehicle alert during this event.</div>
-          </div>
-        </div>
-        <div class="cmp-foot">No on-screen seatbelt indicator</div>
+        <div class="cmp-img-wrap"><img src="assets/21April26/doesnt%20raise%20seatbelt%20error%20(hikvision.jpeg" alt="Hikvision seatbelt"></div>
+        <div class="cmp-foot">Frame recorded; no seatbelt status overlay or in-vehicle alert.</div>
       </div>
       <div class="cmp-card ours">
         <div class="cmp-head">
           <span class="title">Custom Pipeline</span>
-          <span class="pill">Real-time alert</span>
+          <span class="pill">On-screen alert</span>
         </div>
         <div class="cmp-img-wrap"><img src="assets/21April26/Seat%20Belt%20Custom%20Model.png" alt="Custom seatbelt"></div>
-        <div class="cmp-foot">NO SEATBELT + "FASTEN YOUR SEATBELT!" on-screen alert</div>
+        <div class="cmp-foot">NO SEATBELT status + "FASTEN YOUR SEATBELT!" overlay.</div>
       </div>
     </div>
 
     <div class="action-bar" style="margin-top:14px">
-      <div class="action-text"><strong>Result:</strong> Both systems captured the violation. The custom pipeline
-        additionally surfaces an on-screen status indicator and alert.</div>
+      <div class="action-text"><strong>Result:</strong> Custom pipeline flagged the unbelted driver and rendered an
+        overlay alert. Hikvision recorded the same frame without raising a seatbelt alert.</div>
     </div>
   </section>
 
