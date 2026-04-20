@@ -490,6 +490,127 @@
       color: var(--text-muted);
       font-size: 16px
     }
+
+    /* Lab-notebook grid -- very faint background dots */
+    body {
+      background-image:
+        radial-gradient(circle, rgba(26,29,38,0.035) 1px, transparent 1px);
+      background-size: 22px 22px;
+      background-position: 0 0;
+    }
+
+    /* Field-log stamp in corner of every slide */
+    .slide-stamp {
+      position: absolute;
+      top: 20px; right: 56px;
+      font-family: var(--mono);
+      font-size: 9.5px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      opacity: 0.75;
+    }
+    .slide-stamp .stamp-sep {
+      width: 24px; height: 1px; background: var(--border);
+    }
+    .slide-stamp .stamp-idx {
+      color: var(--text-dim);
+      font-weight: 500;
+    }
+
+    /* Title slide hero: a single muted ratio numeral in the corner */
+    .title-slide .hero-ratio {
+      position: absolute;
+      right: 56px;
+      bottom: 40px;
+      font-family: var(--mono);
+      font-weight: 400;
+      line-height: 0.9;
+      letter-spacing: -0.055em;
+      pointer-events: none;
+      user-select: none;
+      text-align: right;
+    }
+    .title-slide .hero-ratio .r-num {
+      font-size: 220px;
+      color: color-mix(in srgb, var(--accent-2) 22%, var(--border));
+    }
+    .title-slide .hero-ratio .r-unit {
+      font-size: 120px;
+      color: var(--border);
+    }
+    .title-slide .hero-ratio .r-caption {
+      display: block;
+      font-size: 10px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-top: -6px;
+      font-weight: 500;
+    }
+    .title-slide h1,
+    .title-slide .subtitle,
+    .title-slide .meta,
+    .title-slide > .flex {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Encoder cards: verdict chip, tighter padding */
+    .encoder-card { padding: 18px 18px 16px }
+    .encoder-card .enc-verdict {
+      position: absolute;
+      top: 12px; right: 14px;
+      font-family: var(--mono);
+      font-size: 9.5px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 3px;
+      font-weight: 600;
+    }
+    .encoder-card .enc-verdict.pass {
+      color: var(--accent);
+      background: color-mix(in srgb, var(--accent) 15%, var(--bg-card));
+      border: 1px solid color-mix(in srgb, var(--accent) 32%, transparent);
+    }
+    .encoder-card .enc-verdict.fail {
+      color: var(--text-muted);
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+    }
+    .encoder-card.chosen::after { display: none }
+
+    /* Summary cards: restrained with a single accent strip */
+    .summary-card {
+      background: var(--bg-card) !important;
+      position: relative;
+      overflow: hidden;
+      text-align: left;
+      padding: 16px 18px 14px;
+    }
+    .summary-card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+    }
+    .summary-card[data-accent="red"]::before    { background: var(--red) }
+    .summary-card[data-accent="green"]::before  { background: var(--accent) }
+    .summary-card[data-accent="blue"]::before   { background: var(--accent-2) }
+    .summary-card[data-accent="purple"]::before { background: var(--purple) }
+    .summary-card .label { text-align: left; color: var(--text-muted); font-weight: 700 }
+    .summary-card .value { text-align: left; font-size: 32px; font-weight: 500; margin-top: 6px; letter-spacing: -0.02em }
+    .summary-card .detail { text-align: left; color: var(--text-dim); margin-top: 6px; font-size: 11px }
+
+    hr.rule {
+      border: 0;
+      border-top: 1px dashed var(--border);
+      margin: 14px 0;
+    }
   </style>
 </head>
 
@@ -505,58 +626,76 @@
 
   <!-- ==================== 1. TITLE ==================== -->
   <section class="slide title-slide" id="intro">
+    <div class="slide-stamp">
+      <span>compression / fleet / 2026-04</span>
+      <span class="stamp-sep"></span>
+      <span class="stamp-idx">01 / 03</span>
+    </div>
     <span class="tag tag--blue">Data Pipeline</span>
-    <h1>Fleet Video Compression Pipeline</h1>
-    <div class="subtitle">Raw bus camera footage re-encoded for cloud storage and downstream inference: 674 GB of
-      H.264 1080p to ~24 GB of SVT-AV1 480p, a 28&times; reduction at inference-relevant quality.</div>
-    <div class="meta">April 2026 &middot; Mowasalat &middot; SVT-AV1 480p / 2fps</div>
+    <h1>Fleet Video Compression</h1>
+    <div class="subtitle">Raw fleet footage re-encoded to fit archive and inference budgets.
+      674&nbsp;GB of H.264 1080p, to ~24&nbsp;GB of SVT-AV1 480p at 2&nbsp;fps.</div>
+    <div class="meta">Mowasalat &middot; April 2026 &middot; SVT-AV1 480p / 2 fps</div>
 
     <div class="flex gap-12 mt-auto" style="padding-top:20px">
       <div class="event-badge"><span class="dot" style="background:var(--red)"></span> 674 GB raw</div>
-      <div class="event-badge"><span class="dot" style="background:var(--accent)"></span> ~24 GB compressed</div>
-      <div class="event-badge"><span class="dot" style="background:var(--accent-2)"></span> 28&times; / 96%</div>
-      <div class="event-badge"><span class="dot" style="background:var(--accent-3)"></span> ~440 hours</div>
+      <div class="event-badge"><span class="dot" style="background:var(--accent)"></span> ~24 GB kept</div>
+      <div class="event-badge"><span class="dot" style="background:var(--accent-2)"></span> 28&times; / -96%</div>
+      <div class="event-badge"><span class="dot" style="background:var(--accent-3)"></span> ~440 h</div>
       <div class="event-badge"><span class="dot" style="background:var(--purple)"></span> 11 vehicles</div>
+    </div>
+
+    <div class="hero-ratio">
+      <span class="r-num">28</span><span class="r-unit">&times;</span>
+      <span class="r-caption">Compression ratio</span>
     </div>
   </section>
 
   <!-- ==================== 2. APPROACH ==================== -->
   <section class="slide" id="approach">
+    <div class="slide-stamp">
+      <span>compression / fleet / 2026-04</span>
+      <span class="stamp-sep"></span>
+      <span class="stamp-idx">02 / 03</span>
+    </div>
     <span class="tag tag--purple">Approach</span>
-    <h2>Encoding Evaluation &amp; Final Pipeline</h2>
-    <h3>Three encoders evaluated on the same source footage; SVT-AV1 selected on the size/quality trade-off</h3>
+    <h2>Encoder selection</h2>
+    <h3>Three encoders on the same source clips. SVT-AV1 picked on size-at-quality.</h3>
 
     <div class="flex gap-8" style="margin-bottom:14px;flex-wrap:wrap">
       <div class="chip"><strong>Source:</strong> H.264 &middot; 1920&times;1080 &middot; 25 fps</div>
       <div class="chip"><strong>Target:</strong> SVT-AV1 &middot; 854&times;480 &middot; 2 fps &middot; no audio</div>
-      <div class="chip"><strong>Goal:</strong> cloud-storable, inference-ready footage</div>
+      <div class="chip"><strong>Constraint:</strong> archive + inference, same footage</div>
     </div>
 
     <div class="encoder-grid" style="margin-bottom:14px">
       <div class="encoder-card">
+        <span class="enc-verdict fail">Ruled out</span>
         <div class="enc-name">Apple VideoToolbox</div>
         <div class="enc-type">Hardware H.265</div>
-        <div class="enc-desc">Fast, low-CPU encoding on Apple Silicon. Good real-time throughput but coarser
-          rate-distortion at aggressive bitrates.</div>
+        <div class="enc-desc">Hardware HEVC on Apple Silicon. Fast, low CPU. Rate-distortion degrades at the
+          bitrates we wanted; quality falls off before hitting the target size.</div>
       </div>
       <div class="encoder-card">
+        <span class="enc-verdict fail">Not picked</span>
         <div class="enc-name">libx265</div>
         <div class="enc-type">Software H.265</div>
-        <div class="enc-desc">Mature software HEVC encoder. Competitive quality, but higher bitrate than AV1 at
-          matched visual quality for our footage.</div>
+        <div class="enc-desc">Software HEVC. Competitive on quality, but needs more bits than AV1 at matched
+          cabin fidelity on this footage.</div>
       </div>
       <div class="encoder-card chosen">
+        <span class="enc-verdict pass">Selected</span>
         <div class="enc-name">SVT-AV1</div>
         <div class="enc-type">Software AV1</div>
-        <div class="enc-desc">Highest compression efficiency at 480p / 2fps in this evaluation. Retains driver/cabin
-          detail at ~4% of the original bitrate &mdash; yields the 96% size reduction.</div>
+        <div class="enc-desc">Lowest bitrate at the quality threshold used. Cabin detail holds at ~4% of the
+          source bitrate; background texture softens.</div>
       </div>
     </div>
 
     <div class="card" style="margin-bottom:14px">
-      <h4>Final Pipeline</h4>
+      <h4>Pipeline</h4>
       <div class="flow-row" style="margin-top:8px">
-        <div class="flow-step"><strong>Raw</strong> H.264 &middot; 1080p &middot; 25fps</div>
+        <div class="flow-step"><strong>Raw</strong> H.264 &middot; 1080p &middot; 25 fps</div>
         <span class="flow-arrow">&rarr;</span>
         <div class="flow-step">Downscale to <strong>854&times;480</strong></div>
         <span class="flow-arrow">&rarr;</span>
@@ -569,37 +708,42 @@
     </div>
 
     <div class="action-bar blue">
-      <div class="action-text"><strong>Why SVT-AV1 at 2 fps:</strong> the DMS model operates on sparse sampled
-        frames &mdash; 2 fps retains every decision window at a fraction of the original bitrate. Audio is dropped
-        as an unused channel. Final footprint fits fleet-scale cloud archival.</div>
+      <div class="action-text"><strong>Note on 2&nbsp;fps.</strong> The DMS model samples frames sparsely, so
+        every decision window is kept. Audio carries no signal we use and is dropped. The resulting footprint is
+        small enough to archive the whole fleet.</div>
     </div>
   </section>
 
   <!-- ==================== 3. RESULTS ==================== -->
   <section class="slide" id="results">
+    <div class="slide-stamp">
+      <span>compression / fleet / 2026-04</span>
+      <span class="stamp-sep"></span>
+      <span class="stamp-idx">03 / 03</span>
+    </div>
     <span class="tag tag--accent">Results</span>
-    <h2>Compression Results &amp; Visual Comparison</h2>
-    <h3>Dataset totals + a single-clip original vs. compressed side-by-side</h3>
+    <h2>Results</h2>
+    <h3>Fleet totals. One clip shown side-by-side below.</h3>
 
     <!-- Summary cards row -->
     <div class="summary-cards" style="margin-bottom:14px">
-      <div class="summary-card" style="background:var(--red-dim)">
-        <div class="label">Original Size</div>
+      <div class="summary-card" data-accent="red">
+        <div class="label">Original</div>
         <div class="value" style="color:var(--red)">674 GB</div>
-        <div class="detail">468 + 210 GB across batches</div>
+        <div class="detail">468 + 210 GB, two batches</div>
       </div>
-      <div class="summary-card" style="background:var(--accent-dim)">
-        <div class="label">Compressed Size</div>
+      <div class="summary-card" data-accent="green">
+        <div class="label">Compressed</div>
         <div class="value" style="color:var(--accent)">~24 GB</div>
         <div class="detail">SVT-AV1 &middot; 480p &middot; 2 fps</div>
       </div>
-      <div class="summary-card" style="background:var(--accent-2-dim)">
-        <div class="label">Compression Ratio</div>
+      <div class="summary-card" data-accent="blue">
+        <div class="label">Ratio</div>
         <div class="value" style="color:var(--accent-2)">~28&times;</div>
-        <div class="detail">96% size reduction</div>
+        <div class="detail">96% reduction</div>
       </div>
-      <div class="summary-card" style="background:var(--purple-dim)">
-        <div class="label">Final Dataset</div>
+      <div class="summary-card" data-accent="purple">
+        <div class="label">Kept</div>
         <div class="value" style="color:var(--purple)">~440 h</div>
         <div class="detail">~10 school buses + 1 PT bus</div>
       </div>
@@ -609,7 +753,7 @@
     <div class="video-section">
       <div class="video-card">
         <div class="v-head">
-          <span class="title">Original vs. Compressed &mdash; Side-by-Side</span>
+          <span class="title">Original vs. compressed</span>
           <span class="pill">Sample clip</span>
         </div>
         <div class="video-wrap">
@@ -618,12 +762,12 @@
             Your browser does not support embedded video.
           </video>
         </div>
-        <div class="video-foot">Left: native 1920&times;1080, full quality &mdash; Right: 854&times;480 SVT-AV1. Driver and
-          cabin detail preserved; only fine background texture is softened.</div>
+        <div class="video-foot">Left: 1920&times;1080 H.264. Right: 854&times;480 SVT-AV1 at 2&nbsp;fps. Driver and
+          cabin detail hold; fine background texture softens.</div>
       </div>
 
       <div class="card">
-        <h4>Sample Clip Breakdown</h4>
+        <h4>Single clip</h4>
         <div class="size-chart" style="margin-top:12px">
           <div class="size-row">
             <div class="size-label">
@@ -631,7 +775,7 @@
               <span class="val">3.1 GB</span>
             </div>
             <div class="size-bar-track"><div class="size-bar-fill green" style="width:100%"></div></div>
-            <div style="font-size:11px;color:var(--text-muted);font-family:var(--mono)">native 1920&times;1080 &middot; H.264</div>
+            <div style="font-size:11px;color:var(--text-muted);font-family:var(--mono)">1920&times;1080 &middot; H.264</div>
           </div>
           <div class="size-row">
             <div class="size-label">
@@ -643,14 +787,14 @@
           </div>
         </div>
 
-        <hr style="border:none;border-top:1px solid var(--border);margin:14px 0">
+        <hr class="rule">
 
-        <h4>Key Points</h4>
+        <h4>Notes</h4>
         <ul>
-          <li>Raw 1080p / 25 fps H.264 footage was too large for efficient cloud storage and AI inference</li>
-          <li>Evaluated VideoToolbox (H.265), libx265 (H.265), and SVT-AV1 on the same clips</li>
-          <li>SVT-AV1 at 480p / 2fps / no audio delivered ~96% reduction while preserving visual fidelity</li>
-          <li>Final dataset covers ~440 hours across ~10 school buses + 1 PT bus</li>
+          <li>Source: 1080p / 25&nbsp;fps H.264. Too large for archive and inference.</li>
+          <li>Three encoders tested on the same clips.</li>
+          <li>SVT-AV1 at 480p / 2&nbsp;fps, no audio: 96% reduction.</li>
+          <li>~440&nbsp;h kept across ~10 school buses + 1 PT bus.</li>
         </ul>
       </div>
     </div>
