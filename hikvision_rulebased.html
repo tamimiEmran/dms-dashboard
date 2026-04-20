@@ -130,29 +130,29 @@
 
   <!-- ==================== SLIDE 1: OVERVIEW ==================== -->
   <section class="slide" id="overview">
-    <span class="tag tag--purple">Head-to-Head Evaluation</span>
-    <h1>Hikvision vs YOLOv8n + YOLO11n + MediaPipe</h1>
+    <span class="tag tag--blue">Overview</span>
+    <h1>Rule-based pipeline vs Hikvision</h1>
     <h3>
-      619 manually-reviewed alerts across 5 devices.
-      Ground truth = human review of each evidence image. Both systems are scored against the same manual labels.
-      Canonical alert classes: distracted_driving, eating_drinking, fatigue, phone_usage, seatbelt, smoking.
-      Rule-based pipeline: MediaPipe (eye closure &middot; yawning &middot; head pose) + YOLOv8n (phone &middot; cigarette &middot; seatbelt) + YOLO11n (phone &middot; smoking &middot; seatbelt).
+      619 alerts manually reviewed across 5 devices. Ground truth is the human label on each evidence image; both
+      systems are scored against the same labels. Canonical classes: distracted_driving, eating_drinking, fatigue,
+      phone_usage, seatbelt, smoking. Rule-based stack: MediaPipe (eye closure &middot; yawning &middot; head pose)
+      + YOLOv8n (phone &middot; cigarette &middot; seatbelt) + YOLO11n (phone &middot; smoking &middot; seatbelt).
     </h3>
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
       <div class="system-card" style="background:linear-gradient(135deg, rgba(200,138,26,0.10) 0%, rgba(200,138,26,0.03) 100%);border:1px solid rgba(200,138,26,0.25)">
-        <div class="sys-label" style="color:var(--hik-color)"><span class="legend-dot" style="background:var(--hik-color)"></span>Hikvision (commercial DMS)</div>
+        <div class="sys-label" style="color:var(--hik-color)"><span class="legend-dot" style="background:var(--hik-color)"></span>Hikvision (reference)</div>
         <div class="sys-value" style="color:var(--hik-color)" id="sys-value-hik">68.8%</div>
-        <div class="sys-ratio">426 of 619 alerts flagged a class the reviewer confirmed</div>
+        <div class="sys-ratio">426 / 619 alerts matched the reviewer label</div>
         <div class="sys-fa">
           <span style="color:var(--text-muted)">False alarms</span>
           <span style="color:var(--hik-color);font-family:var(--mono);font-weight:600">193 (31.2%)</span>
         </div>
       </div>
       <div class="system-card" style="background:linear-gradient(135deg, rgba(59,111,214,0.10) 0%, rgba(59,111,214,0.03) 100%);border:1px solid rgba(59,111,214,0.25)">
-        <div class="sys-label" style="color:var(--yolo-color)"><span class="legend-dot" style="background:var(--yolo-color)"></span>YOLOv8n + YOLO11n + MediaPipe</div>
+        <div class="sys-label" style="color:var(--yolo-color)"><span class="legend-dot" style="background:var(--yolo-color)"></span>Rule-based (YOLOv8n + YOLO11n + MediaPipe)</div>
         <div class="sys-value" style="color:var(--yolo-color)" id="sys-value-yolo">28.6%</div>
-        <div class="sys-ratio">177 of 619 alerts flagged a class the reviewer confirmed</div>
+        <div class="sys-ratio">177 / 619 alerts matched the reviewer label</div>
         <div class="sys-fa">
           <span style="color:var(--text-muted)">False alarms</span>
           <span style="color:var(--yolo-color);font-family:var(--mono);font-weight:600">410 (66.2%)</span>
@@ -163,23 +163,23 @@
     <div class="flex gap-16" style="flex:1;margin-top:20px">
       <div class="card grow">
         <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px">
-          <h4>Accuracy by Alert Class</h4>
+          <h4>Accuracy by class</h4>
           <div style="font-size:11px;color:var(--text-muted)">
             <span class="legend-dot" style="background:var(--hik-color)"></span>Hikvision
-            <span class="legend-dot" style="background:var(--yolo-color);margin-left:12px"></span>YOLOv8n + YOLO11n + MediaPipe
+            <span class="legend-dot" style="background:var(--yolo-color);margin-left:12px"></span>Rule-based
           </div>
         </div>
         <p style="font-size:12px;color:var(--text-muted);margin-bottom:14px">
-          <strong>Accuracy</strong> here is balanced per class: the mean of recall on confirmed events
-          and specificity on events the reviewer ruled out. 50% is no skill, 100% is perfect.
+          Balanced accuracy per class: mean of recall on positives and specificity on negatives. 50% = no skill,
+          100% = perfect.
         </p>
         <div id="recall-bars"></div>
       </div>
 
       <div class="card" style="width:320px;flex-shrink:0">
-        <h4>Ground Truth Breakdown</h4>
+        <h4>Ground-truth breakdown</h4>
         <p style="font-size:12px;color:var(--text-muted);margin-bottom:10px">
-          After the human review. Each event can have multiple canonical classes.
+          Reviewer labels after audit. An event can carry multiple canonical classes.
         </p>
         <div id="gt-breakdown"></div>
       </div>
@@ -188,12 +188,11 @@
 
   <!-- ==================== SLIDE 2: PER-CLASS ==================== -->
   <section class="slide" id="perclass">
-    <span class="tag tag--blue">Per-Class Detail</span>
-    <h2>Which System Wins Each Alert Class?</h2>
+    <span class="tag tag--accent">1. Per-class</span>
+    <h2>Per-class accuracy and false alarms</h2>
     <h3>
-      For every alert class: how many events the reviewer confirmed, how many each system correctly flagged,
-      the resulting balanced accuracy, and how many false alarms each system raised.
-      Winner label on the right marks the better system per class.
+      Per class: confirmed events, correct flags by each system, balanced accuracy, and false-alarm count.
+      Right-most column marks the higher-scoring system per class.
     </h3>
 
     <div class="card" style="margin-bottom:16px">
@@ -201,39 +200,37 @@
         <thead>
           <tr>
             <th style="padding-left:8px">Alert Class</th>
-            <th style="text-align:right">True Events</th>
-            <th style="text-align:right;color:var(--hik-color)">Hik Correctly Flagged</th>
-            <th style="text-align:right;color:var(--hik-color)">Hik Accuracy</th>
-            <th style="text-align:right;color:var(--hik-color)">Hik False Alarms</th>
-            <th style="text-align:right;color:var(--yolo-color)">YOLO+MP Correctly Flagged</th>
-            <th style="text-align:right;color:var(--yolo-color)">YOLO+MP Accuracy</th>
-            <th style="text-align:right;color:var(--yolo-color)">YOLO+MP False Alarms</th>
-            <th style="text-align:right">Winner</th>
+            <th style="text-align:right">True events</th>
+            <th style="text-align:right;color:var(--hik-color)">Hik correct</th>
+            <th style="text-align:right;color:var(--hik-color)">Hik accuracy</th>
+            <th style="text-align:right;color:var(--hik-color)">Hik FA</th>
+            <th style="text-align:right;color:var(--yolo-color)">Rule correct</th>
+            <th style="text-align:right;color:var(--yolo-color)">Rule accuracy</th>
+            <th style="text-align:right;color:var(--yolo-color)">Rule FA</th>
+            <th style="text-align:right">Better</th>
           </tr>
         </thead>
         <tbody id="scorecard-tbody"></tbody>
       </table>
       <p style="font-size:11px;color:var(--text-muted);margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">
-        <strong>Accuracy</strong> = mean of recall on confirmed events and specificity on ruled-out events
-        for this class (50% = no skill, 100% = perfect).
-        <strong>False alarms</strong> = times the system flagged this class but the reviewer said otherwise (lower is better).
+        Accuracy = mean of recall on positives and specificity on negatives for the class
+        (50% = no skill, 100% = perfect). FA = false alarms, i.e. flags the reviewer rejected.
       </p>
     </div>
 
     <div class="flex gap-16" style="flex:1">
       <div class="card grow">
-        <h4>False Alarms per Class</h4>
+        <h4>False alarms per class</h4>
         <p style="font-size:12px;color:var(--text-muted);margin-bottom:14px">
-          Events where the system predicted this class but the reviewer said otherwise.
-          Lower is better. The class's true support is shown for context.
+          Events flagged for the class but rejected on review. True support shown for context.
         </p>
         <div id="fa-bars"></div>
       </div>
 
       <div class="card" style="width:320px;flex-shrink:0">
-        <h4>By Device</h4>
+        <h4>By device</h4>
         <p style="font-size:12px;color:var(--text-muted);margin-bottom:10px">
-          Accuracy per device for each system.
+          Accuracy per device, both systems.
         </p>
         <div id="subject-card"></div>
       </div>
@@ -242,11 +239,10 @@
 
   <!-- ==================== SLIDE 3: PER-IMAGE TABLE ==================== -->
   <section class="slide" id="images">
-    <span class="tag tag--accent">Per-Image Detail</span>
-    <h2>Every Reviewed Alert</h2>
+    <span class="tag tag--amber">2. Per-event audit</span>
+    <h2>Per-event audit</h2>
     <h3>
-      All 619 manually-reviewed events with both systems' predictions and correctness.
-      Filter to see where the systems disagree or both fail.
+      All 619 reviewed events with both systems' predictions and per-event correctness. Filterable.
     </h3>
 
     <div class="filter-row" id="filters"></div>
@@ -258,11 +254,11 @@
             <tr>
               <th style="padding-left:16px">Event</th>
               <th>Dev</th>
-              <th>Manual (ground truth)</th>
+              <th>Reviewer label</th>
               <th style="color:var(--hik-color)">Hikvision</th>
               <th style="color:var(--hik-color)">Hik ✓</th>
-              <th style="color:var(--yolo-color)">YOLO + MP</th>
-              <th style="color:var(--yolo-color)">YOLO + MP ✓</th>
+              <th style="color:var(--yolo-color)">Rule-based</th>
+              <th style="color:var(--yolo-color)">Rule ✓</th>
             </tr>
           </thead>
           <tbody id="image-tbody"></tbody>
@@ -415,7 +411,7 @@
         const winnerHtml = winner === 'hik'
           ? `<span class="winner-chip winner-hik">Hikvision</span>`
           : winner === 'yolo'
-          ? `<span class="winner-chip winner-yolo">YOLO + MP</span>`
+          ? `<span class="winner-chip winner-yolo">Rule-based</span>`
           : `<span class="winner-chip winner-tie">tie</span>`;
 
         html += `<tr>
@@ -512,10 +508,10 @@
       };
       const types = [
         ['all',        `All (${counts.all})`],
-        ['both_ok',    `Both OK (${counts.both_ok})`],
-        ['both_wrong', `Both Wrong (${counts.both_wrong})`],
+        ['both_ok',    `Both correct (${counts.both_ok})`],
+        ['both_wrong', `Both wrong (${counts.both_wrong})`],
         ['hik_only',   `Hikvision only (${counts.hik_only})`],
-        ['yolo_only',  `YOLO+MP only (${counts.yolo_only})`],
+        ['yolo_only',  `Rule-based only (${counts.yolo_only})`],
       ];
       let html = '';
       types.forEach(([t, label]) => {
