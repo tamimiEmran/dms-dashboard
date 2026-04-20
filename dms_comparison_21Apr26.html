@@ -418,6 +418,7 @@
   <nav>
     <a href="index.html" style="color:var(--text-muted);font-size:10px;margin-right:6px;opacity:0.7">&larr; Home</a>
     <a href="#intro">Intro</a>
+    <a href="#setup">Setup</a>
     <a href="#seatbelt">Seatbelt</a>
     <a href="#phone">Phone</a>
     <a href="#eyes">Eyes</a>
@@ -425,7 +426,7 @@
     <a href="#smoking">Smoking</a>
     <a href="#errors">Errors</a>
     <a href="#summary">Summary</a>
-    <span class="slide-counter" id="slideCounter">1 / 8</span>
+    <span class="slide-counter" id="slideCounter">1 / 9</span>
   </nav>
 
   <!-- ==================== 1. TITLE ==================== -->
@@ -445,7 +446,39 @@
     </div>
   </section>
 
-  <!-- ==================== 2. SEATBELT ==================== -->
+  <!-- ==================== 2. SETUP ==================== -->
+  <section class="slide" id="setup">
+    <span class="tag tag--blue">Setup</span>
+    <h2>In-Vehicle Setup</h2>
+    <h3>Both systems running simultaneously in the same vehicle during the field test</h3>
+
+    <div class="flex gap-16" style="flex:1;min-height:0">
+      <div class="cmp-card" style="flex:1">
+        <div class="cmp-head">
+          <span class="title">Vehicle Setup</span>
+          <span class="pill">April 16, 2026</span>
+        </div>
+        <div class="cmp-img-wrap"><img src="assets/21April26/setup%20in%20car.png" alt="In-vehicle setup"></div>
+        <div class="cmp-foot">Dual-camera setup: Hikvision DMS (factory) + our custom model on edge device &mdash; recording the same driver, same trip.</div>
+      </div>
+      <div class="flex flex-col gap-12" style="width:420px;flex-shrink:0">
+        <div class="card">
+          <h4 style="font-size:13px;font-weight:600;margin-bottom:6px">Custom Model Stack</h4>
+          <p style="font-size:12.5px;color:var(--text-dim);line-height:1.5">MediaPipe (EAR, MAR, head pose) &middot; YOLO object detection (phone, seatbelt, smoking) &middot; real-time on-screen alerts.</p>
+        </div>
+        <div class="card">
+          <h4 style="font-size:13px;font-weight:600;margin-bottom:6px">Hikvision DMS</h4>
+          <p style="font-size:12.5px;color:var(--text-dim);line-height:1.5">Factory-installed commercial DMS &middot; captures video evidence and in-vehicle audio alerts &middot; backend event logging.</p>
+        </div>
+        <div class="card">
+          <h4 style="font-size:13px;font-weight:600;margin-bottom:6px">Activities Tested</h4>
+          <p style="font-size:12.5px;color:var(--text-dim);line-height:1.5">Seatbelt &middot; Phone use &middot; Eyes closed / drowsiness &middot; Yawning / fatigue &middot; Smoking.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 3. SEATBELT ==================== -->
   <section class="slide" id="seatbelt">
     <span class="tag tag--teal">1. Seatbelt Detection</span>
     <h2>Seatbelt Detection</h2>
@@ -461,10 +494,16 @@
       <div class="cmp-card">
         <div class="cmp-head">
           <span class="title">Hikvision DMS</span>
-          <span class="pill">Video capture</span>
+          <span class="pill">No alert</span>
         </div>
-        <div class="cmp-img-wrap"><img src="assets/21April26/setup%20in%20car.png" alt="Hikvision seatbelt"></div>
-        <div class="cmp-foot">No seatbelt visible &mdash; no on-screen alert</div>
+        <div class="cmp-img-wrap" style="background:var(--bg-elevated);color:var(--text-muted);font-family:var(--mono);font-size:13px;text-align:center;padding:24px">
+          <div>
+            <div style="font-size:32px;margin-bottom:12px">&#x26A0;</div>
+            <div style="color:var(--text);font-weight:600;font-family:var(--font);font-size:15px;margin-bottom:6px">No seatbelt alert captured</div>
+            <div style="max-width:320px;margin:0 auto;line-height:1.5">Hikvision does not display on-screen seatbelt status and did not raise an in-vehicle alert during this event.</div>
+          </div>
+        </div>
+        <div class="cmp-foot">No on-screen seatbelt indicator</div>
       </div>
       <div class="cmp-card ours">
         <div class="cmp-head">
@@ -491,7 +530,7 @@
     <div class="method-strip">
       <div class="chip"><strong>Method:</strong> YOLO object detection</div>
       <div class="chip"><strong>Confidence:</strong> 0.53&ndash;0.72</div>
-      <div class="chip"><strong>Known issue:</strong> currently labelled "DRINKING"</div>
+      <div class="chip"><strong>Alert:</strong> PUT DOWN YOUR PHONE!</div>
     </div>
 
     <div class="compare">
@@ -513,10 +552,9 @@
       </div>
     </div>
 
-    <div class="action-bar amber" style="margin-top:14px">
-      <div class="action-text"><strong>Result:</strong> Both systems captured phone use. Our model detects with
-        confidence 0.53&ndash;0.72 but mislabels as "DRINKING" due to similar hand-to-face posture &mdash; label
-        refinement needed.</div>
+    <div class="action-bar" style="margin-top:14px">
+      <div class="action-text"><strong>Result:</strong> Both systems captured phone use. Our model detects it in
+        real time with confidence 0.53&ndash;0.72 and triggers an on-screen alert.</div>
     </div>
   </section>
 
@@ -602,7 +640,7 @@
 
     <div class="method-strip">
       <div class="chip"><strong>Method:</strong> YOLO object detection</div>
-      <div class="chip"><strong>Confidence:</strong> 0.47&ndash;0.56</div>
+      <div class="chip"><strong>Confidence:</strong> 0.77</div>
       <div class="chip"><strong>Alert:</strong> NO SMOKING!</div>
     </div>
 
@@ -621,13 +659,13 @@
           <span class="pill">Real-time alert</span>
         </div>
         <div class="cmp-img-wrap"><img src="assets/21April26/Smoking%20Custom%20Model.png" alt="Custom smoking"></div>
-        <div class="cmp-foot">SMOKING 0.56 + "NO SMOKING!" alert</div>
+        <div class="cmp-foot">SMOKING 0.77 + "NO SMOKING!" alert</div>
       </div>
     </div>
 
     <div class="action-bar purple" style="margin-top:14px">
       <div class="action-text"><strong>Result:</strong> Both systems captured smoking. Our model shows bounding box
-        with confidence score (0.47&ndash;0.56) and triggers a real-time "NO SMOKING!" alert.</div>
+        with confidence score 0.77 and triggers a real-time "NO SMOKING!" alert.</div>
     </div>
   </section>
 
@@ -683,7 +721,7 @@
           <tr><td class="activity">Phone Use</td><td class="ours">Detected (conf. 0.53&ndash;0.72)</td><td>Captured in video</td></tr>
           <tr><td class="activity">Eyes Closed</td><td class="ours">Detected (EAR &lt; 0.25) + Alert</td><td>Captured in video</td></tr>
           <tr><td class="activity">Yawning</td><td class="ours">Detected (MAR &gt; 0.6) + Alert</td><td>Captured in video</td></tr>
-          <tr><td class="activity">Smoking</td><td class="ours">Detected (conf. 0.47&ndash;0.56) + Alert</td><td>Captured in video</td></tr>
+          <tr><td class="activity">Smoking</td><td class="ours">Detected (conf. 0.77) + Alert</td><td>Captured in video</td></tr>
         </tbody>
       </table>
     </div>
