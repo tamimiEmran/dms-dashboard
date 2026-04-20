@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1920">
+  <title>Fleet Video Compression &mdash; SVT-AV1 Pipeline</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0 }
+
+    :root {
+      --bg: #F8F9FB;
+      --bg-card: #FFFFFF;
+      --bg-elevated: #F0F1F4;
+      --border: #E0E2E8;
+      --text: #1A1D26;
+      --text-dim: #5A5E6E;
+      --text-muted: #8E92A0;
+      --accent: #0E9A7E;
+      --accent-dim: rgba(14, 154, 126, 0.08);
+      --accent-2: #3B6FD6;
+      --accent-2-dim: rgba(59, 111, 214, 0.08);
+      --accent-3: #C88A1A;
+      --accent-3-dim: rgba(200, 138, 26, 0.08);
+      --red: #D9453E;
+      --red-dim: rgba(217, 69, 62, 0.07);
+      --purple: #8B5CC4;
+      --purple-dim: rgba(139, 92, 196, 0.08);
+      --teal: #0E8A9A;
+      --teal-dim: rgba(14, 138, 154, 0.08);
+      --font: 'DM Sans', system-ui, sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+      --radius: 10px;
+      --radius-sm: 6px
+    }
+
+    html { scroll-snap-type: y mandatory; scroll-behavior: smooth }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      line-height: 1.5;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased
+    }
+
+    .slide {
+      min-height: 100vh;
+      scroll-snap-align: start;
+      display: flex;
+      flex-direction: column;
+      padding: 64px 56px 28px;
+      position: relative
+    }
+
+    .slide::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, var(--border) 20%, var(--border) 80%, transparent 100%)
+    }
+
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      background: rgba(248, 249, 251, 0.90);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 40px;
+      height: 44px;
+      gap: 4px
+    }
+
+    nav a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      padding: 5px 12px;
+      border-radius: 20px;
+      transition: all 0.2s
+    }
+
+    nav a:hover, nav a.active { color: var(--text); background: var(--bg-elevated) }
+
+    nav .slide-counter {
+      margin-left: auto;
+      color: var(--text-muted);
+      font-size: 11px;
+      font-family: var(--mono)
+    }
+
+    h1 { font-size: 48px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.15 }
+    h2 { font-size: 24px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 4px }
+    h3 { font-size: 13px; font-weight: 400; color: var(--text-dim); margin-bottom: 16px }
+
+    .tag {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 600;
+      font-family: var(--mono);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin-bottom: 6px
+    }
+
+    .tag--accent { background: var(--accent-dim); color: var(--accent) }
+    .tag--blue   { background: var(--accent-2-dim); color: var(--accent-2) }
+    .tag--amber  { background: var(--accent-3-dim); color: var(--accent-3) }
+    .tag--red    { background: var(--red-dim); color: var(--red) }
+    .tag--purple { background: var(--purple-dim); color: var(--purple) }
+    .tag--teal   { background: var(--teal-dim); color: var(--teal) }
+
+    .flex { display: flex }
+    .flex-col { flex-direction: column }
+    .gap-8 { gap: 8px }
+    .gap-12 { gap: 12px }
+    .gap-16 { gap: 16px }
+    .gap-20 { gap: 20px }
+    .grow { flex: 1 }
+    .mt-auto { margin-top: auto }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04)
+    }
+
+    .card h4 {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px
+    }
+
+    .card p, .card li {
+      font-size: 12.5px;
+      color: var(--text-dim);
+      line-height: 1.55
+    }
+
+    .card ul { list-style: none; padding: 0 }
+
+    .card ul li {
+      padding-left: 14px;
+      position: relative;
+      margin-top: 4px
+    }
+
+    .card ul li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 8px;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--text-muted)
+    }
+
+    /* === Summary cards === */
+    .summary-cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px
+    }
+
+    .summary-card {
+      border-radius: 8px;
+      padding: 14px;
+      text-align: center;
+      border: 1px solid rgba(0, 0, 0, 0.04);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03)
+    }
+
+    .summary-card .label {
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-family: var(--mono);
+      color: var(--text-dim)
+    }
+
+    .summary-card .value {
+      font-size: 28px;
+      font-weight: 700;
+      font-family: var(--mono);
+      margin-top: 2px
+    }
+
+    .summary-card .detail {
+      font-size: 10.5px;
+      color: var(--text-muted);
+      margin-top: 3px
+    }
+
+    .action-bar {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 8px 12px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-size: 12.5px
+    }
+
+    .action-bar.red    { border-left-color: var(--red) }
+    .action-bar.amber  { border-left-color: var(--accent-3) }
+    .action-bar.blue   { border-left-color: var(--accent-2) }
+    .action-bar.purple { border-left-color: var(--purple) }
+
+    .action-bar .action-text { color: var(--text); flex: 1 }
+    .action-bar .action-text strong { font-weight: 600 }
+
+    /* === Encoder comparison === */
+    .encoder-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px
+    }
+
+    .encoder-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      position: relative
+    }
+
+    .encoder-card.chosen {
+      border-color: rgba(14, 154, 126, 0.4);
+      background: linear-gradient(180deg, var(--accent-dim) 0%, var(--bg-card) 50%)
+    }
+
+    .encoder-card .enc-name {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 4px
+    }
+
+    .encoder-card .enc-type {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 10px
+    }
+
+    .encoder-card .enc-desc {
+      font-size: 12px;
+      color: var(--text-dim);
+      line-height: 1.55
+    }
+
+    .encoder-card.chosen::after {
+      content: 'Chosen';
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      background: var(--accent);
+      color: #fff;
+      border-radius: 4px;
+      font-weight: 600
+    }
+
+    /* === Chip === */
+    .chip {
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 4px;
+      background: var(--bg-elevated);
+      color: var(--text-dim);
+      border: 1px solid var(--border)
+    }
+
+    .chip strong { color: var(--text); font-weight: 600 }
+
+    /* === Video comparison panel === */
+    .video-section {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 20px;
+      flex: 1;
+      min-height: 0
+    }
+
+    .video-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden
+    }
+
+    .video-card .v-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      background: var(--bg-elevated);
+      border-bottom: 1px solid var(--border)
+    }
+
+    .video-card .v-head .title { font-size: 13px; font-weight: 600 }
+    .video-card .v-head .pill {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+      text-transform: uppercase
+    }
+
+    .video-wrap {
+      flex: 1;
+      min-height: 0;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center
+    }
+
+    .video-wrap video {
+      width: 100%;
+      height: 100%;
+      max-height: 100%;
+      object-fit: contain
+    }
+
+    .video-foot {
+      padding: 10px 14px;
+      font-size: 12.5px;
+      color: var(--text-dim);
+      border-top: 1px solid var(--border);
+      background: var(--bg-card)
+    }
+
+    /* === Size bar chart === */
+    .size-chart {
+      display: flex;
+      flex-direction: column;
+      gap: 14px
+    }
+
+    .size-row {
+      display: flex;
+      flex-direction: column;
+      gap: 5px
+    }
+
+    .size-row .size-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px
+    }
+
+    .size-row .size-label .name {
+      font-weight: 600;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .size-row .size-label .name .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%
+    }
+
+    .size-row .size-label .val {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text-dim)
+    }
+
+    .size-bar-track {
+      width: 100%;
+      height: 22px;
+      background: var(--bg-elevated);
+      border-radius: 4px;
+      overflow: hidden;
+      position: relative
+    }
+
+    .size-bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.4s ease
+    }
+
+    .size-bar-fill.green { background: linear-gradient(90deg, var(--accent), rgba(14, 154, 126, 0.75)) }
+    .size-bar-fill.blue  { background: linear-gradient(90deg, var(--accent-2), rgba(59, 111, 214, 0.75)) }
+
+    /* === Title slide === */
+    .title-slide {
+      justify-content: center;
+      align-items: flex-start;
+      padding-left: 90px
+    }
+
+    .title-slide .subtitle {
+      font-size: 17px;
+      color: var(--text-dim);
+      font-weight: 400;
+      margin-top: 8px;
+      max-width: 780px
+    }
+
+    .title-slide .meta {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 20px;
+      font-family: var(--mono)
+    }
+
+    .title-slide::after {
+      content: '';
+      position: absolute;
+      top: -120px;
+      right: -80px;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(59, 111, 214, 0.06) 0%, transparent 70%);
+      pointer-events: none
+    }
+
+    .event-badge {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 10px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text)
+    }
+
+    .event-badge .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%
+    }
+
+    /* === Pipeline flow === */
+    .flow-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap
+    }
+
+    .flow-step {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text-dim)
+    }
+
+    .flow-step strong { color: var(--text); font-weight: 600 }
+
+    .flow-arrow {
+      color: var(--text-muted);
+      font-size: 16px
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <a href="index.html" style="color:var(--text-muted);font-size:10px;margin-right:6px;opacity:0.7">&larr; Home</a>
+    <a href="#intro">Intro</a>
+    <a href="#approach">Approach</a>
+    <a href="#results">Results</a>
+    <span class="slide-counter" id="slideCounter">1 / 3</span>
+  </nav>
+
+  <!-- ==================== 1. TITLE ==================== -->
+  <section class="slide title-slide" id="intro">
+    <span class="tag tag--blue">Data Pipeline</span>
+    <h1>Fleet Video Compression Pipeline</h1>
+    <div class="subtitle">Compressing raw bus camera footage for efficient cloud storage and AI inference &mdash;
+      from 674 GB of H.264 1080p down to ~24 GB of SVT-AV1 480p, a 28&times; reduction with strong visual fidelity.</div>
+    <div class="meta">April 2026 &middot; Mowasalat &middot; SVT-AV1 480p / 2fps</div>
+
+    <div class="flex gap-12 mt-auto" style="padding-top:20px">
+      <div class="event-badge"><span class="dot" style="background:var(--red)"></span> 674 GB raw</div>
+      <div class="event-badge"><span class="dot" style="background:var(--accent)"></span> ~24 GB compressed</div>
+      <div class="event-badge"><span class="dot" style="background:var(--accent-2)"></span> 28&times; / 96%</div>
+      <div class="event-badge"><span class="dot" style="background:var(--accent-3)"></span> ~440 hours</div>
+      <div class="event-badge"><span class="dot" style="background:var(--purple)"></span> 11 vehicles</div>
+    </div>
+  </section>
+
+  <!-- ==================== 2. APPROACH ==================== -->
+  <section class="slide" id="approach">
+    <span class="tag tag--purple">Approach</span>
+    <h2>Encoding Evaluation &amp; Final Pipeline</h2>
+    <h3>Three encoders evaluated on the same source footage &mdash; SVT-AV1 selected for best size/quality trade-off</h3>
+
+    <div class="flex gap-8" style="margin-bottom:14px;flex-wrap:wrap">
+      <div class="chip"><strong>Source:</strong> H.264 &middot; 1920&times;1080 &middot; 25 fps</div>
+      <div class="chip"><strong>Target:</strong> SVT-AV1 &middot; 854&times;480 &middot; 2 fps &middot; no audio</div>
+      <div class="chip"><strong>Goal:</strong> cloud-storable, inference-ready footage</div>
+    </div>
+
+    <div class="encoder-grid" style="margin-bottom:14px">
+      <div class="encoder-card">
+        <div class="enc-name">Apple VideoToolbox</div>
+        <div class="enc-type">Hardware H.265</div>
+        <div class="enc-desc">Fast, low-CPU encoding on Apple Silicon. Good real-time throughput but coarser
+          rate-distortion at aggressive bitrates.</div>
+      </div>
+      <div class="encoder-card">
+        <div class="enc-name">libx265</div>
+        <div class="enc-type">Software H.265</div>
+        <div class="enc-desc">Mature software HEVC encoder. Competitive quality, but higher bitrate than AV1 at
+          matched visual quality for our footage.</div>
+      </div>
+      <div class="encoder-card chosen">
+        <div class="enc-name">SVT-AV1</div>
+        <div class="enc-type">Software AV1</div>
+        <div class="enc-desc">Best compression efficiency at 480p / 2fps. Preserves driver/cabin detail at a
+          fraction of the bitrate &mdash; delivers the 96% size reduction.</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:14px">
+      <h4>Final Pipeline</h4>
+      <div class="flow-row" style="margin-top:8px">
+        <div class="flow-step"><strong>Raw</strong> H.264 &middot; 1080p &middot; 25fps</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step">Downscale to <strong>854&times;480</strong></div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step">Resample to <strong>2 fps</strong></div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step">Drop audio</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step"><strong>SVT-AV1</strong> encode</div>
+      </div>
+    </div>
+
+    <div class="action-bar blue">
+      <div class="action-text"><strong>Why SVT-AV1 at 2 fps:</strong> the DMS model operates on sparse sampled
+        frames &mdash; 2 fps retains every decision window while slashing bitrate. Dropping audio removes another
+        unused channel. Final footprint is small enough to archive an entire fleet in the cloud.</div>
+    </div>
+  </section>
+
+  <!-- ==================== 3. RESULTS ==================== -->
+  <section class="slide" id="results">
+    <span class="tag tag--accent">Results</span>
+    <h2>Compression Results &amp; Visual Comparison</h2>
+    <h3>Dataset totals + a single-clip original vs. compressed side-by-side</h3>
+
+    <!-- Summary cards row -->
+    <div class="summary-cards" style="margin-bottom:14px">
+      <div class="summary-card" style="background:var(--red-dim)">
+        <div class="label">Original Size</div>
+        <div class="value" style="color:var(--red)">674 GB</div>
+        <div class="detail">468 + 210 GB across batches</div>
+      </div>
+      <div class="summary-card" style="background:var(--accent-dim)">
+        <div class="label">Compressed Size</div>
+        <div class="value" style="color:var(--accent)">~24 GB</div>
+        <div class="detail">SVT-AV1 &middot; 480p &middot; 2 fps</div>
+      </div>
+      <div class="summary-card" style="background:var(--accent-2-dim)">
+        <div class="label">Compression Ratio</div>
+        <div class="value" style="color:var(--accent-2)">~28&times;</div>
+        <div class="detail">96% size reduction</div>
+      </div>
+      <div class="summary-card" style="background:var(--purple-dim)">
+        <div class="label">Final Dataset</div>
+        <div class="value" style="color:var(--purple)">~440 h</div>
+        <div class="detail">~10 school buses + 1 PT bus</div>
+      </div>
+    </div>
+
+    <!-- Video + right-side breakdown -->
+    <div class="video-section">
+      <div class="video-card">
+        <div class="v-head">
+          <span class="title">Original vs. Compressed &mdash; Side-by-Side</span>
+          <span class="pill">Sample clip</span>
+        </div>
+        <div class="video-wrap">
+          <video controls loop muted playsinline preload="metadata">
+            <source src="assets/21April26/comparison_original_vs_compressed%201.mp4" type="video/mp4">
+            Your browser does not support embedded video.
+          </video>
+        </div>
+        <div class="video-foot">Left: native 1920&times;1080, full quality &mdash; Right: 854&times;480 SVT-AV1. Driver and
+          cabin detail preserved; only fine background texture is softened.</div>
+      </div>
+
+      <div class="card">
+        <h4>Sample Clip Breakdown</h4>
+        <div class="size-chart" style="margin-top:12px">
+          <div class="size-row">
+            <div class="size-label">
+              <span class="name"><span class="dot" style="background:var(--accent)"></span>Original</span>
+              <span class="val">3.1 GB</span>
+            </div>
+            <div class="size-bar-track"><div class="size-bar-fill green" style="width:100%"></div></div>
+            <div style="font-size:11px;color:var(--text-muted);font-family:var(--mono)">native 1920&times;1080 &middot; H.264</div>
+          </div>
+          <div class="size-row">
+            <div class="size-label">
+              <span class="name"><span class="dot" style="background:var(--accent-2)"></span>Compressed</span>
+              <span class="val">103 MB</span>
+            </div>
+            <div class="size-bar-track"><div class="size-bar-fill blue" style="width:3.3%"></div></div>
+            <div style="font-size:11px;color:var(--text-muted);font-family:var(--mono)">854&times;480 &middot; SVT-AV1 &middot; 2 fps</div>
+          </div>
+        </div>
+
+        <hr style="border:none;border-top:1px solid var(--border);margin:14px 0">
+
+        <h4>Key Points</h4>
+        <ul>
+          <li>Raw 1080p / 25 fps H.264 footage was too large for efficient cloud storage and AI inference</li>
+          <li>Evaluated VideoToolbox (H.265), libx265 (H.265), and SVT-AV1 on the same clips</li>
+          <li>SVT-AV1 at 480p / 2fps / no audio delivered ~96% reduction while preserving visual fidelity</li>
+          <li>Final dataset covers ~440 hours across ~10 school buses + 1 PT bus</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const navLinks = document.querySelectorAll('nav a[href^="#"]');
+    const counter = document.getElementById('slideCounter');
+    const total = slides.length;
+
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          const idx = Array.from(slides).indexOf(e.target);
+          counter.textContent = (idx + 1) + ' / ' + total;
+          const id = e.target.id;
+          navLinks.forEach((a) => {
+            a.classList.toggle('active', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, { threshold: 0.5 });
+
+    slides.forEach((s) => io.observe(s));
+  </script>
+
+</body>
+</html>
