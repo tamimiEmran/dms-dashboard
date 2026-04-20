@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=1920">
-  <title>Hikvision vs EfficientNet-B0 + MediaPipe</title>
+  <title>Hikvision vs YOLOv8n + YOLO11n + MediaPipe</title>
   <link
     href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap"
     rel="stylesheet">
@@ -131,11 +131,12 @@
   <!-- ==================== SLIDE 1: OVERVIEW ==================== -->
   <section class="slide" id="overview">
     <span class="tag tag--purple">Head-to-Head Evaluation</span>
-    <h1>Hikvision vs EfficientNet-B0 + MediaPipe</h1>
+    <h1>Hikvision vs YOLOv8n + YOLO11n + MediaPipe</h1>
     <h3>
       619 manually-reviewed alerts across 5 devices.
       Ground truth = human review of each evidence image. Both systems are scored against the same manual labels.
       Canonical alert classes: distracted_driving, fatigue, phone_usage, seatbelt, smoking.
+      Rule-based pipeline: MediaPipe (eye closure &middot; yawning &middot; head pose) + YOLOv8n (phone &middot; cigarette &middot; seatbelt) + YOLO11n (phone &middot; smoking &middot; seatbelt).
     </h3>
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
@@ -149,7 +150,7 @@
         </div>
       </div>
       <div class="system-card" style="background:linear-gradient(135deg, rgba(59,111,214,0.10) 0%, rgba(59,111,214,0.03) 100%);border:1px solid rgba(59,111,214,0.25)">
-        <div class="sys-label" style="color:var(--yolo-color)"><span class="legend-dot" style="background:var(--yolo-color)"></span>EfficientNet-B0 + MediaPipe</div>
+        <div class="sys-label" style="color:var(--yolo-color)"><span class="legend-dot" style="background:var(--yolo-color)"></span>YOLOv8n + YOLO11n + MediaPipe</div>
         <div class="sys-value" style="color:var(--yolo-color)">28.6%</div>
         <div class="sys-ratio">177 of 619 alerts matched human review</div>
         <div class="sys-fa">
@@ -165,7 +166,7 @@
           <h4>Accuracy by Alert Class</h4>
           <div style="font-size:11px;color:var(--text-muted)">
             <span class="legend-dot" style="background:var(--hik-color)"></span>Hikvision
-            <span class="legend-dot" style="background:var(--yolo-color);margin-left:12px"></span>EfficientNet-B0 + MediaPipe
+            <span class="legend-dot" style="background:var(--yolo-color);margin-left:12px"></span>YOLOv8n + YOLO11n + MediaPipe
           </div>
         </div>
         <p style="font-size:12px;color:var(--text-muted);margin-bottom:14px">
@@ -204,9 +205,9 @@
             <th style="text-align:right;color:var(--hik-color)">Hik Correctly Flagged</th>
             <th style="text-align:right;color:var(--hik-color)">Hik Accuracy</th>
             <th style="text-align:right;color:var(--hik-color)">Hik False Alarms</th>
-            <th style="text-align:right;color:var(--yolo-color)">EffNet Correctly Flagged</th>
-            <th style="text-align:right;color:var(--yolo-color)">EffNet Accuracy</th>
-            <th style="text-align:right;color:var(--yolo-color)">EffNet False Alarms</th>
+            <th style="text-align:right;color:var(--yolo-color)">YOLO+MP Correctly Flagged</th>
+            <th style="text-align:right;color:var(--yolo-color)">YOLO+MP Accuracy</th>
+            <th style="text-align:right;color:var(--yolo-color)">YOLO+MP False Alarms</th>
             <th style="text-align:right">Winner</th>
           </tr>
         </thead>
@@ -259,8 +260,8 @@
               <th>Manual (ground truth)</th>
               <th style="color:var(--hik-color)">Hikvision</th>
               <th style="color:var(--hik-color)">Hik ✓</th>
-              <th style="color:var(--yolo-color)">EffNet + MP</th>
-              <th style="color:var(--yolo-color)">EffNet ✓</th>
+              <th style="color:var(--yolo-color)">YOLO + MP</th>
+              <th style="color:var(--yolo-color)">YOLO + MP ✓</th>
             </tr>
           </thead>
           <tbody id="image-tbody"></tbody>
@@ -355,7 +356,7 @@
         const winnerHtml = winner === 'hik'
           ? `<span class="winner-chip winner-hik">Hikvision</span>`
           : winner === 'yolo'
-          ? `<span class="winner-chip winner-yolo">EffNet + MP</span>`
+          ? `<span class="winner-chip winner-yolo">YOLO + MP</span>`
           : `<span class="winner-chip winner-tie">tie</span>`;
 
         html += `<tr>
@@ -455,7 +456,7 @@
         ['both_ok',    `Both OK (${counts.both_ok})`],
         ['both_wrong', `Both Wrong (${counts.both_wrong})`],
         ['hik_only',   `Hikvision only (${counts.hik_only})`],
-        ['yolo_only',  `EffNet only (${counts.yolo_only})`],
+        ['yolo_only',  `YOLO+MP only (${counts.yolo_only})`],
       ];
       let html = '';
       types.forEach(([t, label]) => {
