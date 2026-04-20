@@ -319,155 +319,165 @@
 
   <nav>
     <a href="index.html" style="color:var(--text-muted);font-size:10px;margin-right:6px;opacity:0.7">&larr; Home</a>
-    <a href="#intro" class="active">Intro</a>
+    <a href="#intro" class="active">Methodology</a>
     <a href="#specialists">Specialists</a>
-    <a href="#pareto">Pareto</a>
-    <a href="#methodology">Methodology</a>
     <a href="#table">Leaderboard</a>
     <span class="slide-counter" id="slideCounter">1 / 3</span>
   </nav>
 
-  <!-- ==================== 1. TITLE ==================== -->
-  <section class="slide title-slide" id="intro">
-    <span class="tag tag--accent">Leaderboard Benchmark</span>
-    <h1>Hikvision Leaderboard &mdash; Models vs. OEM Baseline</h1>
-    <div class="subtitle">Per-class <strong>balanced accuracy</strong> on the Hikvision human-reviewed manifest.
-      For each canonical DMS class, the cell shows <code>(recall + specificity) / 2</code> &mdash; the average of
-      &ldquo;how well we catch real events&rdquo; and &ldquo;how well we leave non-events alone&rdquo;. Balanced accuracy
-      doesn&rsquo;t get fooled by rare classes: a model that always says &ldquo;no&rdquo; scores exactly 0.500 regardless
-      of base rate. Hikvision is the OEM&rsquo;s own
-      <code style="font-family:var(--mono);font-size:15px">oem_prediction</code> judged against the same human GT.</div>
-    <div class="meta">April 2026 &middot; build_model_leaderboard.py &middot; 9 models &times; 6 classes</div>
+  <!-- ==================== 1. METHODOLOGY / LANDING ==================== -->
+  <section class="slide" id="intro">
+    <span class="tag tag--blue">Methodology</span>
+    <h2 style="font-size:32px;letter-spacing:-0.03em;line-height:1.15;margin-bottom:6px">Hikvision Leaderboard &mdash; Models vs. OEM Baseline</h2>
+    <h3 style="font-size:14px;max-width:900px">Per-class <strong>accuracy</strong> = <code>(recall + specificity) / 2</code>. Hikvision is the OEM&rsquo;s own <code>oem_prediction</code> judged against the same human GT. 0.500 = chance (always-no or always-yes); 1.000 = perfect.</h3>
 
-    <div class="flex gap-12 mt-auto" style="padding-top:20px">
-      <div class="event-badge"><span class="dot" style="background:var(--accent-2)"></span> MediaPipe (1)</div>
-      <div class="event-badge"><span class="dot" style="background:var(--accent-3)"></span> Detection (2)</div>
-      <div class="event-badge"><span class="dot" style="background:var(--purple)"></span> Classification (6)</div>
-      <div class="event-badge"><span class="dot" style="background:var(--accent)"></span> Hikvision OEM baseline</div>
+    <div class="stat-grid" style="margin-top:14px">
+      <div class="stat">
+        <div class="label">Dataset</div>
+        <div class="value">Hikvision</div>
+        <div class="sub">human-reviewed multi-label GT</div>
+      </div>
+      <div class="stat">
+        <div class="label">GT rows</div>
+        <div class="value">619</div>
+        <div class="sub">review-JSON entries</div>
+      </div>
+      <div class="stat">
+        <div class="label">Classes</div>
+        <div class="value">6</div>
+        <div class="sub">distracted, eating, fatigue, phone, seatbelt, smoking</div>
+      </div>
+      <div class="stat">
+        <div class="label">Metric</div>
+        <div class="value">(rec + spec) / 2</div>
+        <div class="sub">accuracy &middot; rare-class robust</div>
+      </div>
+    </div>
+
+    <div class="flex gap-16" style="flex:1;min-height:0">
+      <div class="card" style="flex:1">
+        <h4 style="color:var(--accent)">Hikvision baseline row</h4>
+        <p style="font-size:12.5px;color:var(--text-dim);line-height:1.6">
+          <code>oem_prediction</code> is synonym-expanded into the 6 canonical classes. Per class we count
+          TP / FP / FN / TN, derive recall = TP / (TP + FN) and specificity = TN / (TN + FP), and report their
+          average as accuracy. Classes with support = 0 are reported as <code>n/a</code>.
+        </p>
+      </div>
+      <div class="card" style="flex:1">
+        <h4 style="color:var(--accent-3)">Model rows</h4>
+        <p style="font-size:12.5px;color:var(--text-dim);line-height:1.6">
+          Each model runs as a <strong>single-detector</strong> pipeline (no fusion), except
+          <code>pipeline_max_f1</code> &mdash; a per-class fusion over 12 detectors. Models without a native
+          class-mapping for a canonical score 0.500 on that column (zero recall, perfect specificity).
+        </p>
+      </div>
+      <div class="card" style="flex:1">
+        <h4 style="color:var(--accent-2)">Scoring guide</h4>
+        <p style="font-size:12.5px;color:var(--text-dim);line-height:1.6">
+          <code>&gt; 0.90</code> excellent &middot; <code>0.75&ndash;0.90</code> useful &middot;
+          <code>0.60&ndash;0.75</code> meaningful &middot; <code>0.50&ndash;0.60</code> borderline &middot;
+          <code>= 0.50</code> no skill &middot; <code>&lt; 0.50</code> anti-predictive (flip output).
+        </p>
+      </div>
     </div>
   </section>
 
-  <!-- ==================== 1.5 SPECIALIST PIPELINE KPI ==================== -->
+  <!-- ==================== 1.5 SPECIALIST PIPELINE + PARETO ==================== -->
   <section class="slide" id="specialists">
     <span class="tag tag--accent">Specialist Pipeline</span>
     <h2>One best-in-class model per canonical class</h2>
-    <h3>No fusion, no overlap &mdash; each class routes to its single highest-balanced-accuracy specialist</h3>
+    <h3>No fusion, no overlap &mdash; each class routes to its single highest-accuracy specialist. Hover the points to see composition, size and compute cost.</h3>
 
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px;margin:40px 0 28px;max-width:900px">
-      <div class="card" style="padding:36px 28px;text-align:center;border:1.5px solid var(--accent);background:var(--accent-dim)">
-        <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:12px">Specialist Pipeline</div>
-        <div style="font-family:var(--mono);font-size:64px;font-weight:500;color:var(--accent);line-height:1">0.713</div>
-        <div style="font-size:12px;color:var(--text-dim);margin-top:14px">mean balanced accuracy</div>
+    <div style="display:grid;grid-template-columns:360px 1fr;gap:28px;flex:1;min-height:0;margin-top:8px">
+
+      <!-- Left column: KPI cards + routing -->
+      <div style="display:flex;flex-direction:column;gap:16px;min-height:0">
+        <div class="card" style="padding:22px 20px;text-align:center;border:1.5px solid var(--accent);background:var(--accent-dim)">
+          <div style="font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:8px">Specialist Pipeline</div>
+          <div style="font-family:var(--mono);font-size:44px;font-weight:500;color:var(--accent);line-height:1">71.3%</div>
+          <div style="font-size:11px;color:var(--text-dim);margin-top:8px">mean accuracy</div>
+        </div>
+        <div class="card" style="padding:22px 20px;text-align:center">
+          <div style="font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:600;margin-bottom:8px">Hikvision OEM</div>
+          <div style="font-family:var(--mono);font-size:44px;font-weight:500;color:var(--text);line-height:1">73.6%</div>
+          <div style="font-size:11px;color:var(--text-dim);margin-top:8px">mean accuracy</div>
+        </div>
+        <div class="card" style="padding:14px 18px;flex:1;overflow:auto">
+          <div style="font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:600;margin-bottom:10px">Routing</div>
+          <table style="width:100%;font-family:var(--mono);font-size:11.5px;border-collapse:collapse">
+            <tbody>
+              <tr style="border-bottom:1px solid var(--border)">
+                <td style="padding:7px 0;color:var(--text-muted)">distracted</td>
+                <td style="padding:7px 0;color:var(--text)">followb1ind1y_mnv3</td>
+                <td style="padding:7px 0;text-align:right;color:var(--accent);font-weight:600">60.2%</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border)">
+                <td style="padding:7px 0;color:var(--text-muted)">eating</td>
+                <td style="padding:7px 0;color:var(--text)">yolov8x</td>
+                <td style="padding:7px 0;text-align:right;color:var(--accent);font-weight:600">59.1%</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border)">
+                <td style="padding:7px 0;color:var(--text-muted)">fatigue</td>
+                <td style="padding:7px 0;color:var(--text)">mediapipe</td>
+                <td style="padding:7px 0;text-align:right;color:var(--accent);font-weight:600">79.2%</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border)">
+                <td style="padding:7px 0;color:var(--text-muted)">phone</td>
+                <td style="padding:7px 0;color:var(--text)">rtdetr_x</td>
+                <td style="padding:7px 0;text-align:right;color:var(--accent);font-weight:600">78.3%</td>
+              </tr>
+              <tr>
+                <td style="padding:7px 0;color:var(--text-muted)">seatbelt</td>
+                <td style="padding:7px 0;color:var(--text)">yolo_soham</td>
+                <td style="padding:7px 0;text-align:right;color:var(--accent);font-weight:600">79.6%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
-      <div class="card" style="padding:36px 28px;text-align:center">
-        <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:600;margin-bottom:12px">Hikvision OEM</div>
-        <div style="font-family:var(--mono);font-size:64px;font-weight:500;color:var(--text);line-height:1">0.736</div>
-        <div style="font-size:12px;color:var(--text-dim);margin-top:14px">mean balanced accuracy</div>
+
+      <!-- Right column: Pareto graph -->
+      <div class="card" style="padding:18px 20px;display:flex;flex-direction:column;min-height:0">
+        <div style="font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:600;margin-bottom:4px">Accuracy vs. number of models</div>
+        <div id="pareto-plot" style="flex:1;min-height:420px"></div>
       </div>
     </div>
-
-    <div class="card" style="padding:22px 28px;max-width:900px">
-      <table style="width:100%;font-family:var(--mono);font-size:13px;border-collapse:collapse">
-        <tbody>
-          <tr style="border-bottom:1px solid var(--border)">
-            <td style="padding:10px 0;color:var(--text-muted);width:180px">distracted_driving</td>
-            <td style="padding:10px 16px;color:var(--text-muted);width:20px">&rarr;</td>
-            <td style="padding:10px 0;color:var(--text)">classifier_followb1ind1y_mnv3</td>
-            <td style="padding:10px 0;text-align:right;color:var(--accent);font-weight:600">0.602</td>
-          </tr>
-          <tr style="border-bottom:1px solid var(--border)">
-            <td style="padding:10px 0;color:var(--text-muted)">eating_drinking</td>
-            <td style="padding:10px 16px;color:var(--text-muted)">&rarr;</td>
-            <td style="padding:10px 0;color:var(--text)">yolov8x_coco</td>
-            <td style="padding:10px 0;text-align:right;color:var(--accent);font-weight:600">0.591</td>
-          </tr>
-          <tr style="border-bottom:1px solid var(--border)">
-            <td style="padding:10px 0;color:var(--text-muted)">fatigue</td>
-            <td style="padding:10px 16px;color:var(--text-muted)">&rarr;</td>
-            <td style="padding:10px 0;color:var(--text)">mediapipe</td>
-            <td style="padding:10px 0;text-align:right;color:var(--accent);font-weight:600">0.792</td>
-          </tr>
-          <tr style="border-bottom:1px solid var(--border)">
-            <td style="padding:10px 0;color:var(--text-muted)">phone_usage</td>
-            <td style="padding:10px 16px;color:var(--text-muted)">&rarr;</td>
-            <td style="padding:10px 0;color:var(--text)">rtdetr_x_coco</td>
-            <td style="padding:10px 0;text-align:right;color:var(--accent);font-weight:600">0.783</td>
-          </tr>
-          <tr>
-            <td style="padding:10px 0;color:var(--text-muted)">seatbelt</td>
-            <td style="padding:10px 16px;color:var(--text-muted)">&rarr;</td>
-            <td style="padding:10px 0;color:var(--text)">yolo_soham</td>
-            <td style="padding:10px 0;text-align:right;color:var(--accent);font-weight:600">0.796</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  <!-- ==================== PARETO (N vs balanced accuracy) ==================== -->
-  <section class="slide" id="pareto">
-    <span class="tag tag--teal">Pareto</span>
-    <h2>Accuracy vs. number of models</h2>
-    <h3>Best combination of N models (each class routes to its best-of-set specialist) &mdash; hover for composition, size and GFLOPs</h3>
-
-    <div id="pareto-plot" style="flex:1;min-height:480px;margin-top:16px"></div>
 
     <script>
-      const PARETO_DATA = {"hikvision_mean_bal_acc": 0.7362, "hikvision_per_class": {"distracted_driving": 0.683, "eating_drinking": 0.5, "fatigue": 0.888, "phone_usage": 0.752, "seatbelt": 0.858}, "classes": ["distracted_driving", "eating_drinking", "fatigue", "phone_usage", "seatbelt"], "combos": [{"n": 1, "mean_bal_acc": 0.5743, "models": ["rtdetr_x_coco"], "routing": {"distracted_driving": "rtdetr_x_coco", "eating_drinking": "rtdetr_x_coco", "fatigue": "rtdetr_x_coco", "phone_usage": "rtdetr_x_coco", "seatbelt": "rtdetr_x_coco"}, "per_class_bal_acc": {"distracted_driving": 0.5, "eating_drinking": 0.588, "fatigue": 0.5, "phone_usage": 0.783, "seatbelt": 0.5}, "total_params_m": 65.5, "total_size_mb": 130, "total_gflops": 222.5}, {"n": 2, "mean_bal_acc": 0.6336, "models": ["rtdetr_x_coco", "yolo_soham"], "routing": {"distracted_driving": "rtdetr_x_coco", "eating_drinking": "rtdetr_x_coco", "fatigue": "rtdetr_x_coco", "phone_usage": "rtdetr_x_coco", "seatbelt": "yolo_soham"}, "per_class_bal_acc": {"distracted_driving": 0.5, "eating_drinking": 0.588, "fatigue": 0.5, "phone_usage": 0.783, "seatbelt": 0.796}, "total_params_m": 68.1, "total_size_mb": 136, "total_gflops": 229.0}, {"n": 3, "mean_bal_acc": 0.6919, "models": ["mediapipe", "rtdetr_x_coco", "yolo_soham"], "routing": {"distracted_driving": "rtdetr_x_coco", "eating_drinking": "rtdetr_x_coco", "fatigue": "mediapipe", "phone_usage": "rtdetr_x_coco", "seatbelt": "yolo_soham"}, "per_class_bal_acc": {"distracted_driving": 0.5, "eating_drinking": 0.588, "fatigue": 0.792, "phone_usage": 0.783, "seatbelt": 0.796}, "total_params_m": 69.1, "total_size_mb": 138, "total_gflops": 229.1}, {"n": 4, "mean_bal_acc": 0.7124, "models": ["classifier_followb1ind1y_mnv3", "mediapipe", "rtdetr_x_coco", "yolo_soham"], "routing": {"distracted_driving": "classifier_followb1ind1y_mnv3", "eating_drinking": "rtdetr_x_coco", "fatigue": "mediapipe", "phone_usage": "rtdetr_x_coco", "seatbelt": "yolo_soham"}, "per_class_bal_acc": {"distracted_driving": 0.602, "eating_drinking": 0.588, "fatigue": 0.792, "phone_usage": 0.783, "seatbelt": 0.796}, "total_params_m": 74.5, "total_size_mb": 160, "total_gflops": 229.3}, {"n": 5, "mean_bal_acc": 0.7129, "models": ["classifier_followb1ind1y_mnv3", "mediapipe", "rtdetr_x_coco", "yolo_soham", "yolov8x_coco"], "routing": {"distracted_driving": "classifier_followb1ind1y_mnv3", "eating_drinking": "yolov8x_coco", "fatigue": "mediapipe", "phone_usage": "rtdetr_x_coco", "seatbelt": "yolo_soham"}, "per_class_bal_acc": {"distracted_driving": 0.602, "eating_drinking": 0.591, "fatigue": 0.792, "phone_usage": 0.783, "seatbelt": 0.796}, "total_params_m": 142.7, "total_size_mb": 290, "total_gflops": 487.1}, {"n": 6, "mean_bal_acc": 0.7129, "models": ["classifier_chbh7051_v2", "classifier_followb1ind1y_mnv3", "mediapipe", "rtdetr_x_coco", "yolo_soham", "yolov8x_coco"], "routing": {"distracted_driving": "classifier_followb1ind1y_mnv3", "eating_drinking": "yolov8x_coco", "fatigue": "mediapipe", "phone_usage": "rtdetr_x_coco", "seatbelt": "yolo_soham"}, "per_class_bal_acc": {"distracted_driving": 0.602, "eating_drinking": 0.591, "fatigue": 0.792, "phone_usage": 0.783, "seatbelt": 0.796}, "total_params_m": 228.7, "total_size_mb": 634, "total_gflops": 504.7}]};
+      const PARETO_DATA = {"hikvision_mean_acc": 0.7362, "hikvision_per_class": {"distracted_driving": 0.683, "eating_drinking": 0.5, "fatigue": 0.888, "phone_usage": 0.752, "seatbelt": 0.858}, "classes": ["distracted_driving", "eating_drinking", "fatigue", "phone_usage", "seatbelt"], "combos": [{"n": 1, "mean_acc": 0.5743, "models": ["rtdetr_x"], "routing": {"distracted_driving": "rtdetr_x", "eating_drinking": "rtdetr_x", "fatigue": "rtdetr_x", "phone_usage": "rtdetr_x", "seatbelt": "rtdetr_x"}, "per_class_acc": {"distracted_driving": 0.5, "eating_drinking": 0.588, "fatigue": 0.5, "phone_usage": 0.783, "seatbelt": 0.5}, "total_params_m": 65.5, "total_size_mb": 130, "total_gflops": 222.5}, {"n": 2, "mean_acc": 0.6336, "models": ["rtdetr_x", "yolo_soham"], "routing": {"distracted_driving": "rtdetr_x", "eating_drinking": "rtdetr_x", "fatigue": "rtdetr_x", "phone_usage": "rtdetr_x", "seatbelt": "yolo_soham"}, "per_class_acc": {"distracted_driving": 0.5, "eating_drinking": 0.588, "fatigue": 0.5, "phone_usage": 0.783, "seatbelt": 0.796}, "total_params_m": 68.1, "total_size_mb": 136, "total_gflops": 229.0}, {"n": 3, "mean_acc": 0.6919, "models": ["mediapipe", "rtdetr_x", "yolo_soham"], "routing": {"distracted_driving": "rtdetr_x", "eating_drinking": "rtdetr_x", "fatigue": "mediapipe", "phone_usage": "rtdetr_x", "seatbelt": "yolo_soham"}, "per_class_acc": {"distracted_driving": 0.5, "eating_drinking": 0.588, "fatigue": 0.792, "phone_usage": 0.783, "seatbelt": 0.796}, "total_params_m": 69.1, "total_size_mb": 138, "total_gflops": 229.1}, {"n": 4, "mean_acc": 0.7124, "models": ["classifier_followb1ind1y_mnv3", "mediapipe", "rtdetr_x", "yolo_soham"], "routing": {"distracted_driving": "classifier_followb1ind1y_mnv3", "eating_drinking": "rtdetr_x", "fatigue": "mediapipe", "phone_usage": "rtdetr_x", "seatbelt": "yolo_soham"}, "per_class_acc": {"distracted_driving": 0.602, "eating_drinking": 0.588, "fatigue": 0.792, "phone_usage": 0.783, "seatbelt": 0.796}, "total_params_m": 74.5, "total_size_mb": 160, "total_gflops": 229.3}, {"n": 5, "mean_acc": 0.7129, "models": ["classifier_followb1ind1y_mnv3", "mediapipe", "rtdetr_x", "yolo_soham", "yolov8x"], "routing": {"distracted_driving": "classifier_followb1ind1y_mnv3", "eating_drinking": "yolov8x", "fatigue": "mediapipe", "phone_usage": "rtdetr_x", "seatbelt": "yolo_soham"}, "per_class_acc": {"distracted_driving": 0.602, "eating_drinking": 0.591, "fatigue": 0.792, "phone_usage": 0.783, "seatbelt": 0.796}, "total_params_m": 142.7, "total_size_mb": 290, "total_gflops": 487.1}, {"n": 6, "mean_acc": 0.7129, "models": ["classifier_chbh7051_v2", "classifier_followb1ind1y_mnv3", "mediapipe", "rtdetr_x", "yolo_soham", "yolov8x"], "routing": {"distracted_driving": "classifier_followb1ind1y_mnv3", "eating_drinking": "yolov8x", "fatigue": "mediapipe", "phone_usage": "rtdetr_x", "seatbelt": "yolo_soham"}, "per_class_acc": {"distracted_driving": 0.602, "eating_drinking": 0.591, "fatigue": 0.792, "phone_usage": 0.783, "seatbelt": 0.796}, "total_params_m": 228.7, "total_size_mb": 634, "total_gflops": 504.7}]};
 
       const xs = PARETO_DATA.combos.map(d => d.n);
-      // Display balanced accuracy on a 0-100 scale for readability
-      const ys = PARETO_DATA.combos.map(d => d.mean_bal_acc * 100);
+      const ys = PARETO_DATA.combos.map(d => d.mean_acc * 100);
       const hovers = PARETO_DATA.combos.map(d => {
         const rows = [];
-        // Plotly hover supports <b>/<br>/<span> but NOT named entities like &middot; / &rarr;;
-        // use literal Unicode characters instead.
-        rows.push('<b style="font-size:15px">' + d.n + ' model' + (d.n > 1 ? 's' : '') + '  •  ' + (d.mean_bal_acc * 100).toFixed(1) + '%</b>');
-        // Per-inference cost + throughput demand at 30 FPS.
-        // 30 FPS * GFLOPs/frame = GFLOPs/sec; /1000 for TFLOPs/sec.
-        // Demand is precision-agnostic — same FLOPs whether you run
-        // FP32 or FP16. Precision only affects what the hardware can
-        // deliver (e.g. Jetson Orin Nano: ~5 FP32, ~20 FP16 TFLOPs).
+        rows.push('<b style="font-size:15px">' + d.n + ' model' + (d.n > 1 ? 's' : '') + '  \u2022  ' + (d.mean_acc * 100).toFixed(1) + '%</b>');
         const tflops30 = (d.total_gflops * 30 / 1000);
-        rows.push('<span style="color:#A8ADBD">Params ' + d.total_params_m.toFixed(1) + ' M  ·  Size ' + d.total_size_mb.toFixed(0) + ' MB  ·  ' + tflops30.toFixed(1) + ' TFLOPs/sec @ 30 FPS</span>');
+        rows.push('<span style="color:#A8ADBD">Params ' + d.total_params_m.toFixed(1) + ' M  \u00b7  Size ' + d.total_size_mb.toFixed(0) + ' MB  \u00b7  ' + tflops30.toFixed(1) + ' TFLOPs/sec @ 30 FPS</span>');
         rows.push(' ');
         rows.push('<b>Routing</b>');
         for (const cls of PARETO_DATA.classes) {
           const m = d.routing[cls];
-          const v = d.per_class_bal_acc[cls] * 100;
+          const v = d.per_class_acc[cls] * 100;
           const pad = '                   '.substr(0, 20 - cls.length);
-          rows.push(cls + pad + '→  ' + m + '   <b style="color:#5FD2B5">' + v.toFixed(1) + '%</b>');
+          rows.push(cls + pad + '\u2192  ' + m + '   <b style="color:#5FD2B5">' + v.toFixed(1) + '%</b>');
         }
         return rows.join('<br>');
       });
 
-      const hikY = PARETO_DATA.hikvision_mean_bal_acc * 100;
+      const hikY = PARETO_DATA.hikvision_mean_acc * 100;
 
       const layout = {
         paper_bgcolor: 'rgba(0,0,0,0)',
         plot_bgcolor: 'rgba(240,241,244,0.4)',
-        margin: { l: 76, r: 32, t: 20, b: 60 },
-        font: { family: 'DM Sans, system-ui, sans-serif', size: 13, color: '#5A5E6E' },
+        margin: { l: 64, r: 24, t: 12, b: 52 },
+        font: { family: 'DM Sans, system-ui, sans-serif', size: 12, color: '#5A5E6E' },
         xaxis: {
-          title: { text: 'Number of models in the pipeline', font: { size: 13 } },
+          title: { text: 'Number of models', font: { size: 12 } },
           dtick: 1, range: [0.5, 6.5],
           gridcolor: '#E0E2E8', zerolinecolor: '#E0E2E8',
         },
         yaxis: {
-          title: { text: 'Mean balanced accuracy (%)', font: { size: 13 } },
+          title: { text: 'Mean accuracy (%)', font: { size: 12 } },
           range: [0, 100],
           ticksuffix: '%',
           gridcolor: '#E0E2E8', zerolinecolor: '#E0E2E8',
@@ -480,17 +490,13 @@
         }],
         annotations: [{
           x: 6.5, y: hikY, xanchor: 'right', yanchor: 'bottom',
-          text: 'Hikvision OEM · ' + hikY.toFixed(1) + '%',
-          showarrow: false, font: { color: '#0E9A7E', size: 12 },
+          text: 'Hikvision OEM \u00b7 ' + hikY.toFixed(1) + '%',
+          showarrow: false, font: { color: '#0E9A7E', size: 11 },
         }],
         hoverlabel: {
           bgcolor: '#1A1D26',
           bordercolor: '#0E9A7E',
-          font: {
-            family: 'JetBrains Mono, monospace',
-            size: 13,
-            color: '#FFFFFF',
-          },
+          font: { family: 'JetBrains Mono, monospace', size: 13, color: '#FFFFFF' },
           align: 'left',
           namelength: -1,
         },
@@ -500,113 +506,36 @@
         x: xs, y: ys,
         mode: 'lines+markers',
         line: { color: '#3B6FD6', width: 2 },
-        marker: { size: 16, color: '#3B6FD6', line: { color: 'white', width: 2 } },
+        marker: { size: 15, color: '#3B6FD6', line: { color: 'white', width: 2 } },
         text: hovers, hoverinfo: 'text',
       }], layout, { displayModeBar: false, responsive: true });
     </script>
   </section>
 
-  <!-- ==================== 2. METHODOLOGY ==================== -->
-  <section class="slide" id="methodology">
-    <span class="tag tag--blue">Methodology</span>
-    <h2>How the table is computed</h2>
-    <h3>Per-class <strong>balanced accuracy</strong> &mdash; average of catch rate (recall) and quiet rate (specificity)</h3>
 
-    <div class="stat-grid">
-      <div class="stat">
-        <div class="label">Dataset</div>
-        <div class="value">Hikvision</div>
-        <div class="sub">human-reviewed multi-label GT</div>
-      </div>
-      <div class="stat">
-        <div class="label">GT rows</div>
-        <div class="value">619</div>
-        <div class="sub">review-JSON entries; multi-label</div>
-      </div>
-      <div class="stat">
-        <div class="label">Classes</div>
-        <div class="value">6</div>
-        <div class="sub">distracted, eating, fatigue, phone, seatbelt, smoking</div>
-      </div>
-      <div class="stat">
-        <div class="label">Metric</div>
-        <div class="value">(rec + spec) / 2</div>
-        <div class="sub">balanced accuracy; 0.5 = chance, 1.0 = perfect</div>
-      </div>
-    </div>
 
-    <div class="flex gap-16" style="flex:1;min-height:0">
-      <div class="flex flex-col gap-12" style="flex:1">
-        <div class="card">
-          <h4 style="color:var(--accent)">Hikvision baseline row</h4>
-          <p style="font-size:12.5px;color:var(--text-dim);line-height:1.6">
-            <code style="font-family:var(--mono);font-size:11.5px;background:var(--bg-elevated);padding:1px 5px;border-radius:3px">oem_prediction</code>
-            is synonym-expanded into the 6 canonical classes (same <code style="font-family:var(--mono);font-size:11.5px;background:var(--bg-elevated);padding:1px 5px;border-radius:3px">_SYNONYMS</code>
-            dict as <code style="font-family:var(--mono);font-size:11.5px;background:var(--bg-elevated);padding:1px 5px;border-radius:3px">build_model_leaderboard.py</code>).
-            For each class we count TP / FP / FN / TN, derive recall = TP / (TP + FN) and specificity =
-            TN / (TN + FP), and report their average as balanced accuracy. Classes with support = 0 are reported
-            as <code style="font-family:var(--mono);font-size:11.5px;background:var(--bg-elevated);padding:1px 5px;border-radius:3px">n/a</code>
-            (no positives to evaluate against).
-          </p>
-        </div>
-        <div class="card">
-          <h4 style="color:var(--accent-3)">Model rows</h4>
-          <p style="font-size:12.5px;color:var(--text-dim);line-height:1.6">
-            Each model runs as a <strong>single-detector</strong> pipeline (no fusion), except
-            <code style="font-family:var(--mono);font-size:11.5px;background:var(--bg-elevated);padding:1px 5px;border-radius:3px">pipeline_max_f1</code>
-            which is a per-class fusion over 12 contributing detectors. Detectors without a native class-mapping
-            for a given canonical are forced to
-            <code style="font-family:var(--mono);font-size:11.5px;background:var(--bg-elevated);padding:1px 5px;border-radius:3px">fires=False</code>
-            &mdash; on balanced accuracy they score exactly 0.500 (perfect specificity, zero recall). The table
-            picks the latest run per (model, class) from
-            <code style="font-family:var(--mono);font-size:11.5px;background:var(--bg-elevated);padding:1px 5px;border-radius:3px">leaderboard.csv</code>.
-          </p>
-        </div>
-      </div>
 
-      <div class="flex flex-col gap-12" style="width:440px;flex-shrink:0">
-        <div class="card">
-          <h4 style="color:var(--text)">Cell format</h4>
-          <p style="font-size:12.5px;color:var(--text-dim);line-height:1.7">
-            <strong style="color:var(--text);font-family:var(--mono);font-size:13px">0.683</strong>
-            &nbsp;<strong class="cell-delta zero" style="font-size:11px">&plusmn;0.000</strong>&nbsp;
-            <span style="font-family:var(--mono);font-size:11px;color:var(--text-muted)">(24/27)</span><br>
-            &uarr; balanced accuracy &middot; &Delta; vs. Hikvision &middot; (TP / support)
-          </p>
-        </div>
-        <div class="card">
-          <h4 style="color:var(--accent-2)">Delta colour</h4>
-          <p style="font-size:12.5px;color:var(--text-dim);line-height:1.7">
-            <span class="cell-delta pos">+0.115</span>&nbsp; beats Hikvision<br>
-            <span class="cell-delta neg">&minus;0.609</span>&nbsp; loses to Hikvision<br>
-            <span class="cell-delta zero">&plusmn;0.000</span>&nbsp; matches Hikvision<br>
-            <span class="cell-delta na">n/a</span>&nbsp; no GT support for this class in the manifest
-          </p>
-        </div>
-        <div class="card">
-          <h4 style="color:var(--text)">Scoring guide</h4>
-          <p style="font-size:12.5px;color:var(--text-dim);line-height:1.6">
-            <code>&gt; 0.90</code> excellent &middot; <code>0.75&ndash;0.90</code> genuinely useful &middot;
-            <code>0.60&ndash;0.75</code> meaningful &middot; <code>0.50&ndash;0.60</code> borderline &middot;
-            <code>= 0.50</code> no skill (always-yes or always-no) &middot; <code>&lt; 0.50</code>
-            anti-predictive (flip output).
-          </p>
-        </div>
-      </div>
-    </div>
-  </section>
+
+
+
+
+
+
+
+
+
 
   <!-- ==================== 3. LEADERBOARD TABLE ==================== -->
   <section class="slide" id="table">
     <span class="tag tag--amber">Leaderboard</span>
-    <h2>Balanced accuracy per model &times; canonical class</h2>
+    <h2>Accuracy per model &times; canonical class</h2>
     <h3>Top row is Hikvision OEM baseline; every other row shows delta vs. Hikvision and raw (TP / support) counts</h3>
 
     <div class="legend">
       <div class="item"><span class="fam-dot mediapipe"></span> MediaPipe</div>
-      <div class="item"><span class="fam-dot detection"></span> Detection (YOLO)</div>
+      <div class="item"><span class="fam-dot detection"></span> Detection</div>
       <div class="item"><span class="fam-dot classifier"></span> Classification</div>
-      <div class="item"><code>0.683 (24/27)</code> balanced accuracy &middot; (TP / support)</div>
+      <div class="item"><code>0.683 (24/27)</code> accuracy &middot; (TP / support)</div>
       <div class="item"><code>&Delta;</code> vs. Hikvision baseline</div>
       <div class="item"><code>0.50</code> = no skill &middot; <code>1.00</code> = perfect</div>
       <div class="item"><code>n/a</code> no GT positives for this class in the 619-frame manifest</div>
@@ -752,10 +681,10 @@
             <td class="num"><div class="cell-acc na">n/a <span class="cell-delta na">n/a</span></div><div class="cell-counts">0 / 0</div></td>
           </tr>
 
-          <!-- yolo11n_coco -->
+          <!-- yolo11n -->
           <tr>
             <td class="model">
-              <div class="name"><span class="fam-dot detection"></span>yolo11n_coco</div>
+              <div class="name"><span class="fam-dot detection"></span>yolo11n</div>
               <div class="fam">detection - YOLO11n COCO base - 2.6M params</div>
             </td>
             <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.183</span></div><div class="cell-counts">0 / 279</div></td>
@@ -766,10 +695,10 @@
             <td class="num"><div class="cell-acc na">n/a <span class="cell-delta na">n/a</span></div><div class="cell-counts">0 / 0</div></td>
           </tr>
 
-          <!-- yolo11s_coco -->
+          <!-- yolo11s -->
           <tr>
             <td class="model">
-              <div class="name"><span class="fam-dot detection"></span>yolo11s_coco</div>
+              <div class="name"><span class="fam-dot detection"></span>yolo11s</div>
               <div class="fam">detection - YOLO11s COCO base - 9.4M params</div>
             </td>
             <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.183</span></div><div class="cell-counts">0 / 279</div></td>
@@ -780,10 +709,10 @@
             <td class="num"><div class="cell-acc na">n/a <span class="cell-delta na">n/a</span></div><div class="cell-counts">0 / 0</div></td>
           </tr>
 
-          <!-- yolo11m_coco -->
+          <!-- yolo11m -->
           <tr>
             <td class="model">
-              <div class="name"><span class="fam-dot detection"></span>yolo11m_coco</div>
+              <div class="name"><span class="fam-dot detection"></span>yolo11m</div>
               <div class="fam">detection - YOLO11m COCO base - 20M params</div>
             </td>
             <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.183</span></div><div class="cell-counts">0 / 279</div></td>
@@ -794,10 +723,10 @@
             <td class="num"><div class="cell-acc na">n/a <span class="cell-delta na">n/a</span></div><div class="cell-counts">0 / 0</div></td>
           </tr>
 
-          <!-- yolo11l_coco -->
+          <!-- yolo11l -->
           <tr>
             <td class="model">
-              <div class="name"><span class="fam-dot detection"></span>yolo11l_coco</div>
+              <div class="name"><span class="fam-dot detection"></span>yolo11l</div>
               <div class="fam">detection - YOLO11l COCO base - 25M params</div>
             </td>
             <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.183</span></div><div class="cell-counts">0 / 279</div></td>
@@ -808,10 +737,10 @@
             <td class="num"><div class="cell-acc na">n/a <span class="cell-delta na">n/a</span></div><div class="cell-counts">0 / 0</div></td>
           </tr>
 
-          <!-- yolo11x_coco -->
+          <!-- yolo11x -->
           <tr>
             <td class="model">
-              <div class="name"><span class="fam-dot detection"></span>yolo11x_coco</div>
+              <div class="name"><span class="fam-dot detection"></span>yolo11x</div>
               <div class="fam">detection - YOLO11x COCO base</div>
             </td>
             <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.183</span></div><div class="cell-counts">0 / 279</div></td>
@@ -822,10 +751,10 @@
             <td class="num"><div class="cell-acc na">n/a <span class="cell-delta na">n/a</span></div><div class="cell-counts">0 / 0</div></td>
           </tr>
 
-          <!-- yolov8s_coco -->
+          <!-- yolov8s -->
           <tr>
             <td class="model">
-              <div class="name"><span class="fam-dot detection"></span>yolov8s_coco</div>
+              <div class="name"><span class="fam-dot detection"></span>yolov8s</div>
               <div class="fam">detection - YOLOv8s COCO base - 11M params</div>
             </td>
             <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.183</span></div><div class="cell-counts">0 / 279</div></td>
@@ -836,10 +765,10 @@
             <td class="num"><div class="cell-acc na">n/a <span class="cell-delta na">n/a</span></div><div class="cell-counts">0 / 0</div></td>
           </tr>
 
-          <!-- yolov8m_coco -->
+          <!-- yolov8m -->
           <tr>
             <td class="model">
-              <div class="name"><span class="fam-dot detection"></span>yolov8m_coco</div>
+              <div class="name"><span class="fam-dot detection"></span>yolov8m</div>
               <div class="fam">detection - YOLOv8m COCO base - 26M params</div>
             </td>
             <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.183</span></div><div class="cell-counts">0 / 279</div></td>
@@ -850,10 +779,10 @@
             <td class="num"><div class="cell-acc na">n/a <span class="cell-delta na">n/a</span></div><div class="cell-counts">0 / 0</div></td>
           </tr>
 
-          <!-- yolov8l_coco -->
+          <!-- yolov8l -->
           <tr>
             <td class="model">
-              <div class="name"><span class="fam-dot detection"></span>yolov8l_coco</div>
+              <div class="name"><span class="fam-dot detection"></span>yolov8l</div>
               <div class="fam">detection - YOLOv8l COCO base - 43M params</div>
             </td>
             <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.183</span></div><div class="cell-counts">0 / 279</div></td>
@@ -864,10 +793,10 @@
             <td class="num"><div class="cell-acc na">n/a <span class="cell-delta na">n/a</span></div><div class="cell-counts">0 / 0</div></td>
           </tr>
 
-          <!-- yolov8x_coco -->
+          <!-- yolov8x -->
           <tr>
             <td class="model">
-              <div class="name"><span class="fam-dot detection"></span>yolov8x_coco</div>
+              <div class="name"><span class="fam-dot detection"></span>yolov8x</div>
               <div class="fam">detection - YOLOv8x COCO base - 68M params</div>
             </td>
             <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.183</span></div><div class="cell-counts">0 / 279</div></td>
@@ -878,10 +807,10 @@
             <td class="num"><div class="cell-acc na">n/a <span class="cell-delta na">n/a</span></div><div class="cell-counts">0 / 0</div></td>
           </tr>
 
-          <!-- yolov10n_coco -->
+          <!-- yolov10n -->
           <tr>
             <td class="model">
-              <div class="name"><span class="fam-dot detection"></span>yolov10n_coco</div>
+              <div class="name"><span class="fam-dot detection"></span>yolov10n</div>
               <div class="fam">detection - YOLOv10n COCO base - 2.3M params</div>
             </td>
             <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.183</span></div><div class="cell-counts">0 / 279</div></td>
@@ -892,10 +821,10 @@
             <td class="num"><div class="cell-acc na">n/a <span class="cell-delta na">n/a</span></div><div class="cell-counts">0 / 0</div></td>
           </tr>
 
-          <!-- yolov10s_coco -->
+          <!-- yolov10s -->
           <tr>
             <td class="model">
-              <div class="name"><span class="fam-dot detection"></span>yolov10s_coco</div>
+              <div class="name"><span class="fam-dot detection"></span>yolov10s</div>
               <div class="fam">detection - YOLOv10s COCO base - 7.2M params</div>
             </td>
             <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.183</span></div><div class="cell-counts">0 / 279</div></td>
@@ -906,10 +835,10 @@
             <td class="num"><div class="cell-acc na">n/a <span class="cell-delta na">n/a</span></div><div class="cell-counts">0 / 0</div></td>
           </tr>
 
-          <!-- yolov10m_coco -->
+          <!-- yolov10m -->
           <tr>
             <td class="model">
-              <div class="name"><span class="fam-dot detection"></span>yolov10m_coco</div>
+              <div class="name"><span class="fam-dot detection"></span>yolov10m</div>
               <div class="fam">detection - YOLOv10m COCO base - 15.4M params</div>
             </td>
             <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.183</span></div><div class="cell-counts">0 / 279</div></td>
@@ -920,10 +849,10 @@
             <td class="num"><div class="cell-acc na">n/a <span class="cell-delta na">n/a</span></div><div class="cell-counts">0 / 0</div></td>
           </tr>
 
-          <!-- yolov10l_coco -->
+          <!-- yolov10l -->
           <tr>
             <td class="model">
-              <div class="name"><span class="fam-dot detection"></span>yolov10l_coco</div>
+              <div class="name"><span class="fam-dot detection"></span>yolov10l</div>
               <div class="fam">detection - YOLOv10l COCO base - 24.4M params</div>
             </td>
             <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.183</span></div><div class="cell-counts">0 / 279</div></td>
@@ -934,10 +863,10 @@
             <td class="num"><div class="cell-acc na">n/a <span class="cell-delta na">n/a</span></div><div class="cell-counts">0 / 0</div></td>
           </tr>
 
-          <!-- yolov10x_coco -->
+          <!-- yolov10x -->
           <tr>
             <td class="model">
-              <div class="name"><span class="fam-dot detection"></span>yolov10x_coco</div>
+              <div class="name"><span class="fam-dot detection"></span>yolov10x</div>
               <div class="fam">detection - YOLOv10x COCO base</div>
             </td>
             <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.183</span></div><div class="cell-counts">0 / 279</div></td>
@@ -948,10 +877,10 @@
             <td class="num"><div class="cell-acc na">n/a <span class="cell-delta na">n/a</span></div><div class="cell-counts">0 / 0</div></td>
           </tr>
 
-          <!-- rtdetr_l_coco -->
+          <!-- rtdetr_l -->
           <tr>
             <td class="model">
-              <div class="name"><span class="fam-dot detection"></span>rtdetr_l_coco</div>
+              <div class="name"><span class="fam-dot detection"></span>rtdetr_l</div>
               <div class="fam">detection - RT-DETR-L COCO - Apache-2.0</div>
             </td>
             <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.183</span></div><div class="cell-counts">0 / 279</div></td>
@@ -962,10 +891,10 @@
             <td class="num"><div class="cell-acc na">n/a <span class="cell-delta na">n/a</span></div><div class="cell-counts">0 / 0</div></td>
           </tr>
 
-          <!-- rtdetr_x_coco -->
+          <!-- rtdetr_x -->
           <tr>
             <td class="model">
-              <div class="name"><span class="fam-dot detection"></span>rtdetr_x_coco</div>
+              <div class="name"><span class="fam-dot detection"></span>rtdetr_x</div>
               <div class="fam">detection - RT-DETR-X COCO - 76M params - Apache-2.0</div>
             </td>
             <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.183</span></div><div class="cell-counts">0 / 279</div></td>
