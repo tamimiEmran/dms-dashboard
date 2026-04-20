@@ -497,6 +497,73 @@
     function pct(n, t) { return t === 0 ? '0%' : Math.round(n / t * 100) + '%' }
     function pn(n, t) { return t === 0 ? 0 : Math.round(n / t * 100) }
 
+    // ===== Balanced-accuracy helpers (kept internal — labels in the UI still say "Accuracy") =====
+    // Mirrors the synonym expansion used by build_model_leaderboard.py so
+    // the numbers here match the leaderboard report.
+    const CANONICAL_CLASSES = ['distracted_driving', 'eating_drinking', 'fatigue', 'phone_usage', 'seatbelt', 'smoking'];
+    const BAL_SYNONYMS = {
+      distracted_driving: new Set(['distracted_driving', 'looking_away', 'neither_hands_on_wheel',
+        'drinking_eating', 'itching_or_touching_face', 'adjusting_mirror', 'adjusting_seat', 'laughung']),
+      fatigue: new Set(['fatigue', 'eyes_closed', 'yawning']),
+      phone_usage: new Set(['phone_usage', 'phone_possibly_hidden_texting']),
+      seatbelt: new Set(['seatbelt']),
+      smoking: new Set(),
+      eating_drinking: new Set(['drinking_eating', 'eating_drinking']),
+    };
+    function expandCanonical(labels) {
+      const out = new Set();
+      if (typeof labels === 'string') labels = [labels];
+      if (!labels) return out;
+      for (const raw of labels) {
+        for (const c of CANONICAL_CLASSES) {
+          if (BAL_SYNONYMS[c].has(raw)) out.add(c);
+        }
+      }
+      return out;
+    }
+    function perClassStats(items) {
+      const stats = {};
+      for (const c of CANONICAL_CLASSES) stats[c] = { tp: 0, fp: 0, fn: 0, tn: 0 };
+      for (const d of items) {
+        const gt = expandCanonical(d.manual_labels || []);
+        const pred = expandCanonical(d.oem_prediction || '');
+        for (const c of CANONICAL_CLASSES) {
+          const y = gt.has(c), p = pred.has(c);
+          if (y && p) stats[c].tp++;
+          else if (y && !p) stats[c].fn++;
+          else if (!y && p) stats[c].fp++;
+          else stats[c].tn++;
+        }
+      }
+      return stats;
+    }
+    // Returns balanced accuracy as an integer percentage (0-100).
+    // Averaged only over canonical classes with support > 0 on the given subset.
+    function balAcc(items) {
+      const stats = perClassStats(items);
+      const vals = [];
+      for (const c of CANONICAL_CLASSES) {
+        const s = stats[c];
+        const support = s.tp + s.fn;
+        if (support === 0) continue;
+        const rec = s.tp / support;
+        const spec = (s.tn + s.fp) > 0 ? s.tn / (s.tn + s.fp) : 0;
+        vals.push((rec + spec) / 2);
+      }
+      if (vals.length === 0) return 0;
+      return Math.round(vals.reduce((a, b) => a + b, 0) / vals.length * 100);
+    }
+    // Per-canonical-class balanced accuracy for a subset of frames.
+    function balAccForClass(items, canonical) {
+      const stats = perClassStats(items);
+      const s = stats[canonical];
+      const support = s.tp + s.fn;
+      if (support === 0) return null;
+      const rec = s.tp / support;
+      const spec = (s.tn + s.fp) > 0 ? s.tn / (s.tn + s.fp) : 0;
+      return Math.round((rec + spec) / 2 * 100);
+    }
+
     const FRAMES_PATH = 'assets/general/hikvisionAssets/';
 
     function mkSec(id, title, sub) { const s = document.createElement('div'); s.className = 'section'; s.id = id; s.innerHTML = `<h2 class="section-title">${title}</h2><p class="section-subtitle">${sub}</p>`; return s }
@@ -531,13 +598,13 @@
     // ===== BLOCK 1 =====
     function renderBlock1(C) {
       const S = mkSec('summary', 'OEM Accuracy Overview', `Overall Hikvision prediction performance across ${DATA.length} manually reviewed frame images`);
-      const total = DATA.length, wO = DATA.filter(d => d.oem_correct !== null), correct = wO.filter(d => d.oem_correct).length;
-      const acc = pn(correct, wO.length);
+      const total = DATA.length, wO = DATA.filter(d => d.oem_correct !== null);
+      const acc = balAcc(wO);
       const safeCount = DATA.filter(d => d.manual_labels.includes('safe_driving')).length;
       const nDev = new Set(DATA.map(d => d.device_id)).size;
       const cards = document.createElement('div'); cards.className = 'summary-cards'; cards.style.gridTemplateColumns = 'repeat(3,1fr)';
       [{ l: 'Total Frames', v: total, d: `across ${nDev} devices`, co: 'var(--blue)', bg: 'var(--blue-dim)' },
-      { l: 'OEM Accuracy', v: acc + '%', d: `${correct} of ${wO.length} correct`, co: acc >= 70 ? 'var(--accent)' : 'var(--amber)', bg: acc >= 70 ? 'var(--accent-dim)' : 'var(--amber-dim)' },
+      { l: 'OEM Accuracy', v: acc + '%', d: `across ${wO.length} reviewed frames`, co: acc >= 70 ? 'var(--accent)' : 'var(--amber)', bg: acc >= 70 ? 'var(--accent-dim)' : 'var(--amber-dim)' },
       { l: 'False Alarms', v: pct(safeCount, total), d: `${safeCount} of ${total} flagged frames were safe driving`, co: 'var(--red)', bg: 'var(--red-dim)' }
       ].forEach(c => { const cd = document.createElement('div'); cd.className = 'summary-card'; cd.style.background = c.bg; cd.innerHTML = `<div class="label">${c.l}</div><div class="value" style="color:${c.co}">${c.v}</div><div class="detail">${c.d}</div>`; cards.appendChild(cd) });
       S.appendChild(cards); C.appendChild(S);
@@ -548,7 +615,16 @@
       const S = mkSec('acc-event', 'OEM Accuracy by Event Type', 'Per-class accuracy using Hikvision prediction categories, sorted worst-first');
       const card = mkCard();
       const groups = groupBy(DATA, 'oem_prediction');
-      const stats = Object.entries(groups).map(([l, items]) => { const wO = items.filter(d => d.oem_correct !== null); const c = wO.filter(d => d.oem_correct).length; return { label: l, total: items.length, correct: c, accuracy: pn(c, wO.length) } }).sort((a, b) => a.accuracy - b.accuracy);
+      const stats = Object.entries(groups).map(([l, items]) => {
+        const wO = items.filter(d => d.oem_correct !== null);
+        // Balanced accuracy over canonical classes, computed on the subset of
+        // frames whose OEM prediction was of label `l`. The bar width is
+        // proportional to group size; `correct` here is used only for
+        // split-bar rendering (kept as raw-count so the bar still conveys
+        // how many of this group hit the legacy oem_correct flag).
+        const c = wO.filter(d => d.oem_correct).length;
+        return { label: l, total: items.length, correct: c, accuracy: balAcc(wO) };
+      }).sort((a, b) => a.accuracy - b.accuracy);
       const mx = Math.max(...stats.map(s => s.total));
       stats.forEach(s => { const r = document.createElement('div'); r.className = 'bar-row'; if (s.total < 5) r.style.opacity = '0.4'; const bw = s.total / mx * 100, cw = s.correct / s.total * bw, iw = bw - cw; r.innerHTML = `<div class="bar-label">${dn(s.label)}</div><div class="bar-track"><div class="bar-fill correct" style="width:${cw}%"></div><div class="bar-fill incorrect" style="width:${iw}%"></div></div><div class="bar-value">${s.accuracy}% <span style="color:var(--text-muted)">(${s.total})</span></div>`; card.appendChild(r) });
       const leg = document.createElement('div'); leg.style.cssText = 'display:flex;gap:16px;margin-top:16px;font-size:11px;color:var(--text-muted)'; leg.innerHTML = '<span><span style="display:inline-block;width:10px;height:10px;background:var(--accent);border-radius:2px;margin-right:4px;vertical-align:middle"></span>Correct</span><span><span style="display:inline-block;width:10px;height:10px;background:var(--red);border-radius:2px;margin-right:4px;vertical-align:middle"></span>Incorrect</span>';
@@ -601,7 +677,9 @@
       const card = mkCard(); const row = document.createElement('div'); row.style.cssText = 'display:flex;gap:48px;justify-content:center';
       const groups = groupBy(DATA, 'modality'); const entries = Object.entries(groups); const accs = [];
       entries.forEach(([key, items], i) => {
-        const wO = items.filter(d => d.oem_correct !== null), c = wO.filter(d => d.oem_correct).length, acc = pn(c, wO.length); accs.push(acc);
+        const wO = items.filter(d => d.oem_correct !== null), c = wO.filter(d => d.oem_correct).length;
+        const acc = balAcc(wO);
+        accs.push(acc);
         const co = acc >= 70 ? 'var(--accent)' : acc >= 50 ? 'var(--amber)' : 'var(--red)';
         const pc = document.createElement('div'); pc.className = 'paired-card';
         pc.innerHTML = `<div style="font-size:12px;color:var(--text-dim);margin-bottom:4px;font-family:var(--mono)">${dn(key)}</div><div style="font-size:28px;font-weight:700;color:${co};font-family:var(--mono)">${acc}%</div><div style="font-size:11px;color:var(--text-muted);margin-top:4px">${items.length} frames \u00B7 ${c}\u2713 ${wO.length - c}\u2717</div>`;
@@ -617,7 +695,8 @@
       const S = mkSec('per-device', 'Per-Device OEM Accuracy', 'How does prediction accuracy vary across Hikvision devices?');
       const card = mkCard(); const groups = groupBy(DATA, 'device_id');
       const stats = Object.entries(groups).map(([dev, items]) => {
-        const wO = items.filter(d => d.oem_correct !== null), c = wO.filter(d => d.oem_correct).length, acc = pn(c, wO.length);
+        const wO = items.filter(d => d.oem_correct !== null), c = wO.filter(d => d.oem_correct).length;
+        const acc = balAcc(wO);
         const mc = countBy(items, 'modality');
         const times = items.filter(d => d.time_to_decision_s).map(d => d.time_to_decision_s);
         const avg = times.length > 0 ? (times.reduce((a, b) => a + b, 0) / times.length).toFixed(1) : '-';
@@ -637,7 +716,15 @@
         tb.innerHTML += `<tr style="${rowStyle}"${rowHover}${rowClick}>${devCell}<td class="num" style="text-align:center">${s.total}</td><td class="num" style="text-align:center;color:var(--accent)">${s.correct}</td><td class="num" style="text-align:center;color:var(--red)">${s.errors}</td><td style="text-align:center"><span class="num" style="color:${co};font-weight:700">${s.acc}%</span></td><td class="num" style="text-align:center">${s.mc['ir'] || 0} / ${s.mc['rgb'] || 0}</td><td style="text-align:center"><div style="display:inline-flex;height:14px;width:80px;border-radius:3px;overflow:hidden;background:var(--bg-elevated)"><div style="width:${s.acc}%;background:${co}"></div></div></td></tr>`
       });
       t.appendChild(tb); card.appendChild(t);
-      addInsight(card, '<strong>Device 981832 is a significant outlier</strong> at 39% accuracy (vs 75\u201381% for others). This single device contributes disproportionate errors and may have a hardware or mounting issue worth investigating.');
+      // Dynamic insight: reports the worst-accuracy device vs the median of the rest.
+      if (stats.length >= 2) {
+        const sorted = stats.slice().sort((a, b) => a.acc - b.acc);
+        const worst = sorted[0];
+        const rest = sorted.slice(1);
+        const restMin = Math.min(...rest.map(r => r.acc));
+        const restMax = Math.max(...rest.map(r => r.acc));
+        addInsight(card, `<strong>Device ${worst.dev} is a significant outlier</strong> at ${worst.acc}% accuracy (vs ${restMin}\u2013${restMax}% for other devices). This single device contributes disproportionate errors and may have a hardware or mounting issue worth investigating.`);
+      }
       S.appendChild(card); C.appendChild(S);
     }
 

@@ -410,6 +410,90 @@
     }
 
     .err-card .cap strong { color: var(--text); font-weight: 600 }
+
+    /* === Paired error rows === */
+    .err-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      flex: 1;
+      min-height: 0
+    }
+
+    .err-row {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 14px;
+      align-items: stretch
+    }
+
+    .err-row-label {
+      display: flex;
+      gap: 12px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--red);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px
+    }
+
+    .err-row-num {
+      font-family: var(--mono);
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--red);
+      line-height: 1;
+      min-width: 22px
+    }
+
+    .err-row-title {
+      font-size: 13.5px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      letter-spacing: -0.005em
+    }
+
+    .err-row-desc {
+      font-size: 12px;
+      color: var(--text-dim);
+      line-height: 1.45
+    }
+
+    .err-pair-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px
+    }
+
+    .err-pair-grid .cmp-card { min-height: 0 }
+    .err-pair-grid .cmp-img-wrap { padding: 8px }
+    .err-pair-grid .cmp-img-wrap img { max-height: 220px }
+
+    .err-footer-strip {
+      display: grid;
+      grid-template-columns: 260px 1fr 1fr 1fr;
+      gap: 12px;
+      align-items: stretch
+    }
+
+    .err-footer-strip .err-row-label { border-left-color: var(--accent-3) }
+    .err-footer-strip .err-row-num { color: var(--accent-3) }
+    .err-footer-strip .thumb {
+      background: #0B0C10;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      padding: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 0
+    }
+    .err-footer-strip .thumb img {
+      max-width: 100%;
+      max-height: 160px;
+      object-fit: contain;
+      border-radius: 4px
+    }
   </style>
 </head>
 
@@ -542,13 +626,13 @@
           <span class="pill">Detected</span>
         </div>
         <div class="cmp-img-wrap"><img src="assets/21April26/Phone%20Custom%20Model.png" alt="Custom phone"></div>
-        <div class="cmp-foot">phone Detected &mdash; bounding box with confidence score</div>
+        <div class="cmp-foot">Phone bounding box with per-frame confidence.</div>
       </div>
     </div>
 
     <div class="action-bar" style="margin-top:14px">
-      <div class="action-text"><strong>Result:</strong> Both systems captured phone use. The custom pipeline reports
-        per-frame confidence (0.53&ndash;0.72) and surfaces an on-screen alert.</div>
+      <div class="action-text"><strong>Result:</strong> Both systems flagged the event. Custom pipeline reports
+        per-frame confidence (0.53&ndash;0.72) and an on-screen alert; Hikvision logs the frame.</div>
     </div>
   </section>
 
@@ -584,8 +668,8 @@
     </div>
 
     <div class="action-bar blue" style="margin-top:14px">
-      <div class="action-text"><strong>Result:</strong> The custom pipeline reports EAR-based drowsiness detection
-        with an on-screen alert. Hikvision relies on backend processing for event logging.</div>
+      <div class="action-text"><strong>Result:</strong> Custom pipeline reports EAR-based eye-closure with an on-screen
+        alert. Hikvision recorded the same frame; no on-screen drowsiness indicator was visible.</div>
     </div>
   </section>
 
@@ -664,33 +748,102 @@
   </section>
 
   <!-- ==================== 7. ERRORS ==================== -->
-  <section class="slide" id="errors">
-    <span class="tag tag--red">6. Known Errors</span>
-    <h2>Custom Model &mdash; Current Error Modes</h2>
-    <h3>Observed misclassifications that require label refinement or threshold tuning</h3>
+  <section class="slide" id="errors" style="min-height:auto;padding-bottom:48px">
+    <span class="tag tag--red">6. Failure Modes</span>
+    <h2>Custom Pipeline &mdash; Failure Modes vs. Hikvision</h2>
+    <h3>Frames where one system mis-fires or misses an event the other resolves correctly</h3>
 
-    <div class="err-grid">
-      <div class="err-card">
-        <div class="img-wrap"><img src="assets/21April26/Errors%20Custom%20Model.png" alt="Error example 1"></div>
-        <div class="cap"><strong>Drinking vs. Phone:</strong> hand-to-face posture triggers "DRINKING 0.53" when the
-          driver is actually using a phone. Stacked alerts fire simultaneously (YAWNING, DISTRACTED, STOP
-          DRINKING!).</div>
+    <div class="err-stack">
+      <!-- Pair A: phone misread as smoking -->
+      <div class="err-row">
+        <div class="err-row-label">
+          <span class="err-row-num">A</span>
+          <div>
+            <div class="err-row-title">Phone use mis-classified as smoking</div>
+            <div class="err-row-desc">YOLO labels a phone-to-ear pose as <strong>SMOKING (0.78)</strong>; "NO SMOKING!" alert fires on a phone-use frame.</div>
+          </div>
+        </div>
+        <div class="err-pair-grid">
+          <div class="cmp-card ours">
+            <div class="cmp-head"><span class="title">Custom Pipeline</span><span class="pill" style="color:var(--red)">Mis-classified</span></div>
+            <div class="cmp-img-wrap"><img src="assets/21April26/error_says%20no%20phone_phone%20there%20(ours).png" alt="Phone read as smoking"></div>
+            <div class="cmp-foot">SMOKING 0.78 &middot; "NO SMOKING!" overlay on phone-to-ear frame.</div>
+          </div>
+          <div class="cmp-card">
+            <div class="cmp-head"><span class="title">Hikvision DMS</span><span class="pill">Captured as phone</span></div>
+            <div class="cmp-img-wrap"><img src="assets/21April26/phone%20detected%20by%20hikvision.jpeg" alt="Hikvision phone"></div>
+            <div class="cmp-foot">Same scenario recorded; logged as phone use.</div>
+          </div>
+        </div>
       </div>
-      <div class="err-card">
-        <div class="img-wrap"><img src="assets/21April26/Errors%20Custom%20Model%202.png" alt="Error example 2"></div>
-        <div class="cap"><strong>Drinking + Smoking overlap:</strong> YOLO fires both "DRINKING 0.72" and "SMOKING
-          0.47" on the same frame alongside EYES CLOSED and DISTRACTED &mdash; multi-label arbitration needed.</div>
+
+      <!-- Pair B: distraction missed -->
+      <div class="err-row">
+        <div class="err-row-label">
+          <span class="err-row-num">B</span>
+          <div>
+            <div class="err-row-title">Distraction missed</div>
+            <div class="err-row-desc">Pipeline reports <strong>SAFE DRIVING</strong> while driver is looking down/away from the road.</div>
+          </div>
+        </div>
+        <div class="err-pair-grid">
+          <div class="cmp-card ours">
+            <div class="cmp-head"><span class="title">Custom Pipeline</span><span class="pill" style="color:var(--red)">False negative</span></div>
+            <div class="cmp-img-wrap"><img src="assets/21April26/Error_%20actual_Distracted%20.png" alt="Distraction missed"></div>
+            <div class="cmp-foot">"SAFE DRIVING" / "Forward OK" while driver is off-road.</div>
+          </div>
+          <div class="cmp-card">
+            <div class="cmp-head"><span class="title">Hikvision DMS</span><span class="pill">Captured</span></div>
+            <div class="cmp-img-wrap"><img src="assets/21April26/distracted%20detected%20by%20hikvision.jpeg" alt="Hikvision distraction"></div>
+            <div class="cmp-foot">Same scenario recorded; flagged as inattention.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pair C: spurious seatbelt alert -->
+      <div class="err-row">
+        <div class="err-row-label">
+          <span class="err-row-num">C</span>
+          <div>
+            <div class="err-row-title">Spurious seatbelt alert during phone use</div>
+            <div class="err-row-desc">"FASTEN YOUR SEATBELT!" fires while the driver is belted; phone-to-ear posture occludes the seatbelt classifier.</div>
+          </div>
+        </div>
+        <div class="err-pair-grid">
+          <div class="cmp-card ours">
+            <div class="cmp-head"><span class="title">Custom Pipeline</span><span class="pill" style="color:var(--red)">False positive</span></div>
+            <div class="cmp-img-wrap"><img src="assets/21April26/Fasten%20SB%20ERror.png" alt="False seatbelt alert"></div>
+            <div class="cmp-foot">"NO SEATBELT" + "FASTEN YOUR SEATBELT!" while seatbelt is on.</div>
+          </div>
+          <div class="cmp-card">
+            <div class="cmp-head"><span class="title">Hikvision DMS</span><span class="pill">No false alert</span></div>
+            <div class="cmp-img-wrap"><img src="assets/21April26/Phone%20Hik.jpg" alt="Hikvision phone, no false seatbelt alert"></div>
+            <div class="cmp-foot">Same trip; no spurious seatbelt alert raised.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer: alert stacking -->
+      <div class="err-footer-strip">
+        <div class="err-row-label">
+          <span class="err-row-num">D</span>
+          <div>
+            <div class="err-row-title">Alert stacking</div>
+            <div class="err-row-desc">Overlapping hand-near-face triggers and duplicated seatbelt boxes produce simultaneous alerts on a single frame.</div>
+          </div>
+        </div>
+        <div class="thumb"><img src="assets/21April26/Errors%20Custom%20Model.png" alt="Stacked alerts 1"></div>
+        <div class="thumb"><img src="assets/21April26/Errors%20Custom%20Model%202.png" alt="Stacked alerts 2"></div>
+        <div class="thumb"><img src="assets/21April26/Error%20phone%20and%20eyes.png" alt="Duplicated seatbelt boxes"></div>
       </div>
     </div>
 
     <div class="flex gap-8" style="margin-top:14px">
       <div class="action-bar red grow">
-        <div class="action-text"><strong>Label refinement:</strong> phone is mislabeled as DRINKING &mdash;
-          retrain YOLO head with clean phone-only class.</div>
+        <div class="action-text"><strong>Label refinement:</strong> retrain YOLO head with clean phone / smoking / drinking classes; confusion is concentrated at the hand-near-face pose.</div>
       </div>
       <div class="action-bar amber grow">
-        <div class="action-text"><strong>Alert arbitration:</strong> deduplicate overlapping hand-near-face triggers
-          (phone / drinking / smoking).</div>
+        <div class="action-text"><strong>Alert arbitration:</strong> deduplicate overlapping hand-near-face triggers and seatbelt-box detections before the alert stage.</div>
       </div>
     </div>
   </section>
