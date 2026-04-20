@@ -617,13 +617,14 @@
       const groups = groupBy(DATA, 'oem_prediction');
       const stats = Object.entries(groups).map(([l, items]) => {
         const wO = items.filter(d => d.oem_correct !== null);
-        // Balanced accuracy over canonical classes, computed on the subset of
-        // frames whose OEM prediction was of label `l`. The bar width is
-        // proportional to group size; `correct` here is used only for
-        // split-bar rendering (kept as raw-count so the bar still conveys
-        // how many of this group hit the legacy oem_correct flag).
+        // Precision on the OEM's own prediction category: of all events
+        // where OEM said `l`, the fraction the reviewer confirmed. This is
+        // the natural metric for a "by predicted class" view — balanced
+        // accuracy is meaningless on a subset filtered by the prediction
+        // itself (every class would collapse to 50% by construction).
         const c = wO.filter(d => d.oem_correct).length;
-        return { label: l, total: items.length, correct: c, accuracy: balAcc(wO) };
+        const accuracy = wO.length ? Math.round(c / wO.length * 100) : 0;
+        return { label: l, total: items.length, correct: c, accuracy };
       }).sort((a, b) => a.accuracy - b.accuracy);
       const mx = Math.max(...stats.map(s => s.total));
       stats.forEach(s => { const r = document.createElement('div'); r.className = 'bar-row'; if (s.total < 5) r.style.opacity = '0.4'; const bw = s.total / mx * 100, cw = s.correct / s.total * bw, iw = bw - cw; r.innerHTML = `<div class="bar-label">${dn(s.label)}</div><div class="bar-track"><div class="bar-fill correct" style="width:${cw}%"></div><div class="bar-fill incorrect" style="width:${iw}%"></div></div><div class="bar-value">${s.accuracy}% <span style="color:var(--text-muted)">(${s.total})</span></div>`; card.appendChild(r) });
