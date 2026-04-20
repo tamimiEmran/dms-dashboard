@@ -206,6 +206,120 @@
     .stat .value { font-family: var(--mono); font-size: 18px; font-weight: 500; color: var(--text) }
     .stat .sub { font-size: 11px; color: var(--text-dim); margin-top: 2px }
 
+    /* Landing-page stat cards — stronger hero treatment with family tints */
+    .intro-stats .stat {
+      padding: 18px 18px 16px;
+      position: relative;
+      overflow: hidden;
+      border-width: 1px;
+    }
+    .intro-stats .stat::before {
+      content: '';
+      position: absolute; inset: 0 auto 0 0;
+      width: 3px;
+    }
+    .intro-stats .stat .value {
+      font-size: 36px; font-weight: 600; letter-spacing: -0.02em; line-height: 1;
+      margin: 4px 0 8px;
+    }
+    .intro-stats .stat .label { color: var(--text-dim); font-weight: 700 }
+
+    .intro-stats .stat--accent { background: color-mix(in srgb, var(--accent) 6%, var(--bg-card)); border-color: color-mix(in srgb, var(--accent) 30%, var(--border)) }
+    .intro-stats .stat--accent::before { background: var(--accent) }
+    .intro-stats .stat--accent .value { color: var(--accent) }
+    .intro-stats .stat--accent .label { color: var(--accent) }
+
+    .intro-stats .stat--blue { background: color-mix(in srgb, var(--accent-2) 6%, var(--bg-card)); border-color: color-mix(in srgb, var(--accent-2) 30%, var(--border)) }
+    .intro-stats .stat--blue::before { background: var(--accent-2) }
+    .intro-stats .stat--blue .value { color: var(--accent-2) }
+    .intro-stats .stat--blue .label { color: var(--accent-2) }
+
+    .intro-stats .stat--amber { background: color-mix(in srgb, var(--accent-3) 7%, var(--bg-card)); border-color: color-mix(in srgb, var(--accent-3) 32%, var(--border)) }
+    .intro-stats .stat--amber::before { background: var(--accent-3) }
+    .intro-stats .stat--amber .value { color: var(--accent-3) }
+    .intro-stats .stat--amber .label { color: var(--accent-3) }
+
+    .intro-stats .stat--purple { background: color-mix(in srgb, var(--purple) 7%, var(--bg-card)); border-color: color-mix(in srgb, var(--purple) 30%, var(--border)) }
+    .intro-stats .stat--purple::before { background: var(--purple) }
+    .intro-stats .stat--purple .value { color: var(--purple) }
+    .intro-stats .stat--purple .label { color: var(--purple) }
+
+    /* Detector family breakdown */
+    .family-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    .fam-chip {
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 16px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      position: relative;
+      overflow: hidden;
+    }
+    .fam-chip::after {
+      content: '';
+      position: absolute; inset: auto 0 0 0;
+      height: 2px;
+    }
+    .fam-count {
+      font-family: var(--mono); font-size: 28px; font-weight: 500;
+      line-height: 1; letter-spacing: -0.02em;
+      min-width: 36px; text-align: center;
+    }
+    .fam-body { flex: 1; min-width: 0 }
+    .fam-name { font-size: 13px; font-weight: 600; color: var(--text); letter-spacing: -0.01em }
+    .fam-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; line-height: 1.4 }
+
+    .fam-chip--blue   { background: color-mix(in srgb, var(--accent-2) 5%, var(--bg-card)) }
+    .fam-chip--blue::after   { background: var(--accent-2) }
+    .fam-chip--blue .fam-count   { color: var(--accent-2) }
+
+    .fam-chip--amber  { background: color-mix(in srgb, var(--accent-3) 6%, var(--bg-card)) }
+    .fam-chip--amber::after  { background: var(--accent-3) }
+    .fam-chip--amber .fam-count  { color: var(--accent-3) }
+
+    .fam-chip--purple { background: color-mix(in srgb, var(--purple) 6%, var(--bg-card)) }
+    .fam-chip--purple::after { background: var(--purple) }
+    .fam-chip--purple .fam-count { color: var(--purple) }
+
+    .fam-chip--accent { background: color-mix(in srgb, var(--accent) 7%, var(--bg-card)) }
+    .fam-chip--accent::after { background: var(--accent) }
+    .fam-chip--accent .fam-count { color: var(--accent) }
+
+    /* Compact scoring guide */
+    .scoring-card {
+      padding: 12px 16px;
+      background: var(--bg-card);
+    }
+    .scoring-label {
+      font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--text-muted); font-weight: 700; margin-bottom: 8px;
+    }
+    .scoring-row {
+      display: flex; gap: 6px; flex-wrap: wrap; align-items: center;
+    }
+    .score-chip {
+      font-size: 11.5px; color: var(--text);
+      padding: 5px 10px; border-radius: 4px;
+      background: var(--bg-elevated);
+      border: 1px solid transparent;
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .score-chip code {
+      font-family: var(--mono); font-size: 11px; font-weight: 500;
+      background: transparent !important; padding: 0 !important; border: 0 !important;
+    }
+    .score-chip--excellent   { background: color-mix(in srgb, var(--accent) 22%, var(--bg-card)); color: var(--accent); font-weight: 600 }
+    .score-chip--useful      { background: color-mix(in srgb, var(--accent) 12%, var(--bg-card)); color: var(--accent) }
+    .score-chip--meaningful  { background: color-mix(in srgb, var(--accent) 6%,  var(--bg-card)); color: var(--text) }
+    .score-chip--borderline  { background: var(--bg-elevated); color: var(--text-dim) }
+    .score-chip--noskill     { background: color-mix(in srgb, var(--text-muted) 14%, var(--bg-card)); color: var(--text-dim); background-image: repeating-linear-gradient(-45deg, transparent 0 6px, color-mix(in srgb, var(--text-muted) 12%, transparent) 6px 7px) }
+    .score-chip--anti        { background: color-mix(in srgb, var(--red) 14%, var(--bg-card)); color: var(--red); font-weight: 600 }
+
     .lb-wrap {
       background: var(--bg-card);
       border: 1px solid var(--border);
@@ -390,59 +504,79 @@
     <span class="slide-counter" id="slideCounter">1 / 3</span>
   </nav>
 
-  <!-- ==================== 1. METHODOLOGY / LANDING ==================== -->
+  <!-- ==================== 1. LANDING ==================== -->
   <section class="slide" id="intro">
     <span class="tag tag--blue">Methodology</span>
-    <h2 style="font-size:32px;letter-spacing:-0.03em;line-height:1.15;margin-bottom:6px">Hikvision Leaderboard &mdash; Models vs. OEM Baseline</h2>
-    <h3 style="font-size:14px;max-width:900px">Per-class <strong>accuracy</strong> = <code>(recall + specificity) / 2</code>. Hikvision is the OEM&rsquo;s own <code>oem_prediction</code> judged against the same human GT. 0.500 = chance (always-no or always-yes); 1.000 = perfect.</h3>
+    <h2 style="font-size:34px;letter-spacing:-0.03em;line-height:1.12;margin-bottom:8px">
+      Hikvision Leaderboard <span style="color:var(--text-muted);font-weight:500">&mdash;</span>
+      <span style="background:linear-gradient(90deg,var(--accent),var(--accent-2));-webkit-background-clip:text;background-clip:text;color:transparent">36 Models</span>
+      <span style="color:var(--text-muted);font-weight:500">vs.</span> OEM Baseline
+    </h2>
+    <h3 style="font-size:14px;max-width:880px;margin-bottom:18px">Per-class <strong style="color:var(--text)">accuracy</strong> against the same 619 human-reviewed frames. Hikvision runs its own <code>oem_prediction</code>; every other row is a single-detector pipeline on the raw images. 0.500 = chance &middot; 1.000 = perfect.</h3>
 
-    <div class="stat-grid" style="margin-top:14px">
-      <div class="stat">
-        <div class="label">Dataset</div>
-        <div class="value">Hikvision</div>
-        <div class="sub">human-reviewed multi-label GT</div>
+    <div class="stat-grid intro-stats">
+      <div class="stat stat--accent">
+        <div class="label">Models tested</div>
+        <div class="value">36</div>
+        <div class="sub">vs. Hikvision OEM baseline</div>
       </div>
-      <div class="stat">
-        <div class="label">GT rows</div>
-        <div class="value">619</div>
-        <div class="sub">review-JSON entries</div>
+      <div class="stat stat--blue">
+        <div class="label">Detector families</div>
+        <div class="value">3 <span style="font-size:12px;color:var(--text-muted);margin-left:4px">+ fusion</span></div>
+        <div class="sub">MediaPipe &middot; Detection &middot; Classification</div>
       </div>
-      <div class="stat">
-        <div class="label">Classes</div>
+      <div class="stat stat--amber">
+        <div class="label">Canonical classes</div>
         <div class="value">6</div>
         <div class="sub">distracted, eating, fatigue, phone, seatbelt, smoking</div>
       </div>
-      <div class="stat">
-        <div class="label">Metric</div>
-        <div class="value">(rec + spec) / 2</div>
-        <div class="sub">accuracy &middot; rare-class robust</div>
+      <div class="stat stat--purple">
+        <div class="label">Frames scored</div>
+        <div class="value">619</div>
+        <div class="sub">Hikvision &middot; human-reviewed multi-label GT</div>
       </div>
     </div>
 
-    <div class="flex gap-16" style="flex:1;min-height:0">
-      <div class="card" style="flex:1">
-        <h4 style="color:var(--accent)">Hikvision baseline row</h4>
-        <p style="font-size:12.5px;color:var(--text-dim);line-height:1.6">
-          <code>oem_prediction</code> is synonym-expanded into the 6 canonical classes. Per class we count
-          TP / FP / FN / TN, derive recall = TP / (TP + FN) and specificity = TN / (TN + FP), and report their
-          average as accuracy. Classes with support = 0 are reported as <code>n/a</code>.
-        </p>
+    <div class="family-strip">
+      <div class="fam-chip fam-chip--blue">
+        <div class="fam-count">4</div>
+        <div class="fam-body">
+          <div class="fam-name">MediaPipe</div>
+          <div class="fam-sub">rule-based facial landmarks &middot; EAR / MAR / head pose</div>
+        </div>
       </div>
-      <div class="card" style="flex:1">
-        <h4 style="color:var(--accent-3)">Model rows</h4>
-        <p style="font-size:12.5px;color:var(--text-dim);line-height:1.6">
-          Each model runs as a <strong>single-detector</strong> pipeline (no fusion), except
-          <code>pipeline_max_f1</code> &mdash; a per-class fusion over 12 detectors. Models without a native
-          class-mapping for a canonical score 0.500 on that column (zero recall, perfect specificity).
-        </p>
+      <div class="fam-chip fam-chip--amber">
+        <div class="fam-count">20</div>
+        <div class="fam-body">
+          <div class="fam-name">Detection</div>
+          <div class="fam-sub">YOLOv8 / v10 / v11 &middot; RT-DETR &middot; DMS-tuned YOLOs</div>
+        </div>
       </div>
-      <div class="card" style="flex:1">
-        <h4 style="color:var(--accent-2)">Scoring guide</h4>
-        <p style="font-size:12.5px;color:var(--text-dim);line-height:1.6">
-          <code>&gt; 0.90</code> excellent &middot; <code>0.75&ndash;0.90</code> useful &middot;
-          <code>0.60&ndash;0.75</code> meaningful &middot; <code>0.50&ndash;0.60</code> borderline &middot;
-          <code>= 0.50</code> no skill &middot; <code>&lt; 0.50</code> anti-predictive (flip output).
-        </p>
+      <div class="fam-chip fam-chip--purple">
+        <div class="fam-count">11</div>
+        <div class="fam-body">
+          <div class="fam-name">Classification</div>
+          <div class="fam-sub">face / cabin image classifiers &middot; HF + custom</div>
+        </div>
+      </div>
+      <div class="fam-chip fam-chip--accent">
+        <div class="fam-count">1</div>
+        <div class="fam-body">
+          <div class="fam-name">Fusion</div>
+          <div class="fam-sub">per-class specialists router &middot; one best model per class</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card scoring-card">
+      <div class="scoring-label">How to read a cell</div>
+      <div class="scoring-row">
+        <span class="score-chip score-chip--excellent"><code>&gt; 0.90</code> excellent</span>
+        <span class="score-chip score-chip--useful"><code>0.75&ndash;0.90</code> useful</span>
+        <span class="score-chip score-chip--meaningful"><code>0.60&ndash;0.75</code> meaningful</span>
+        <span class="score-chip score-chip--borderline"><code>0.50&ndash;0.60</code> borderline</span>
+        <span class="score-chip score-chip--noskill"><code>= 0.50</code> no skill</span>
+        <span class="score-chip score-chip--anti"><code>&lt; 0.50</code> anti-predictive</span>
       </div>
     </div>
   </section>
