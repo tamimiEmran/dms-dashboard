@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=1920">
   <title>Hikvision Leaderboard Benchmark &mdash; Per-class Recall vs. OEM</title>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <link
     href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap"
     rel="stylesheet">
@@ -228,6 +229,7 @@
     .fam-dot.mediapipe { background: var(--accent-2) }
     .fam-dot.detection { background: var(--accent-3) }
     .fam-dot.classifier { background: var(--purple) }
+    .fam-dot.pipeline { background: var(--accent); box-shadow: 0 0 0 2px var(--accent-strong) }
 
     .cell-acc { font-family: var(--mono); font-size: 14px; font-weight: 500; color: var(--text) }
     .cell-acc.na { color: var(--text-muted); font-style: italic }
@@ -318,20 +320,22 @@
   <nav>
     <a href="index.html" style="color:var(--text-muted);font-size:10px;margin-right:6px;opacity:0.7">&larr; Home</a>
     <a href="#intro" class="active">Intro</a>
+    <a href="#specialists">Specialists</a>
+    <a href="#pareto">Pareto</a>
     <a href="#methodology">Methodology</a>
     <a href="#table">Leaderboard</a>
-    <a href="#breakdown">By Class</a>
-    <a href="#caveats">Caveats</a>
-    <span class="slide-counter" id="slideCounter">1 / 5</span>
+    <span class="slide-counter" id="slideCounter">1 / 3</span>
   </nav>
 
   <!-- ==================== 1. TITLE ==================== -->
   <section class="slide title-slide" id="intro">
     <span class="tag tag--accent">Leaderboard Benchmark</span>
     <h1>Hikvision Leaderboard &mdash; Models vs. OEM Baseline</h1>
-    <div class="subtitle">Per-class recall on the Hikvision human-reviewed manifest. For each canonical DMS class,
-      the cell shows <strong>correct_class / total_class</strong> &mdash; i.e. the fraction of GT-positive frames
-      that the row correctly flagged. Hikvision is the OEM&rsquo;s own
+    <div class="subtitle">Per-class <strong>balanced accuracy</strong> on the Hikvision human-reviewed manifest.
+      For each canonical DMS class, the cell shows <code>(recall + specificity) / 2</code> &mdash; the average of
+      &ldquo;how well we catch real events&rdquo; and &ldquo;how well we leave non-events alone&rdquo;. Balanced accuracy
+      doesn&rsquo;t get fooled by rare classes: a model that always says &ldquo;no&rdquo; scores exactly 0.500 regardless
+      of base rate. Hikvision is the OEM&rsquo;s own
       <code style="font-family:var(--mono);font-size:15px">oem_prediction</code> judged against the same human GT.</div>
     <div class="meta">April 2026 &middot; build_model_leaderboard.py &middot; 9 models &times; 6 classes</div>
 
@@ -343,11 +347,170 @@
     </div>
   </section>
 
+  <!-- ==================== 1.5 SPECIALIST PIPELINE KPI ==================== -->
+  <section class="slide" id="specialists">
+    <span class="tag tag--accent">Specialist Pipeline</span>
+    <h2>One best-in-class model per canonical class</h2>
+    <h3>No fusion, no overlap &mdash; each class routes to its single highest-balanced-accuracy specialist</h3>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px;margin:40px 0 28px;max-width:900px">
+      <div class="card" style="padding:36px 28px;text-align:center;border:1.5px solid var(--accent);background:var(--accent-dim)">
+        <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:12px">Specialist Pipeline</div>
+        <div style="font-family:var(--mono);font-size:64px;font-weight:500;color:var(--accent);line-height:1">0.713</div>
+        <div style="font-size:12px;color:var(--text-dim);margin-top:14px">mean balanced accuracy</div>
+      </div>
+      <div class="card" style="padding:36px 28px;text-align:center">
+        <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:600;margin-bottom:12px">Hikvision OEM</div>
+        <div style="font-family:var(--mono);font-size:64px;font-weight:500;color:var(--text);line-height:1">0.736</div>
+        <div style="font-size:12px;color:var(--text-dim);margin-top:14px">mean balanced accuracy</div>
+      </div>
+    </div>
+
+    <div class="card" style="padding:22px 28px;max-width:900px">
+      <table style="width:100%;font-family:var(--mono);font-size:13px;border-collapse:collapse">
+        <tbody>
+          <tr style="border-bottom:1px solid var(--border)">
+            <td style="padding:10px 0;color:var(--text-muted);width:180px">distracted_driving</td>
+            <td style="padding:10px 16px;color:var(--text-muted);width:20px">&rarr;</td>
+            <td style="padding:10px 0;color:var(--text)">classifier_followb1ind1y_mnv3</td>
+            <td style="padding:10px 0;text-align:right;color:var(--accent);font-weight:600">0.602</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border)">
+            <td style="padding:10px 0;color:var(--text-muted)">eating_drinking</td>
+            <td style="padding:10px 16px;color:var(--text-muted)">&rarr;</td>
+            <td style="padding:10px 0;color:var(--text)">yolov8x_coco</td>
+            <td style="padding:10px 0;text-align:right;color:var(--accent);font-weight:600">0.591</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border)">
+            <td style="padding:10px 0;color:var(--text-muted)">fatigue</td>
+            <td style="padding:10px 16px;color:var(--text-muted)">&rarr;</td>
+            <td style="padding:10px 0;color:var(--text)">mediapipe</td>
+            <td style="padding:10px 0;text-align:right;color:var(--accent);font-weight:600">0.792</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border)">
+            <td style="padding:10px 0;color:var(--text-muted)">phone_usage</td>
+            <td style="padding:10px 16px;color:var(--text-muted)">&rarr;</td>
+            <td style="padding:10px 0;color:var(--text)">rtdetr_x_coco</td>
+            <td style="padding:10px 0;text-align:right;color:var(--accent);font-weight:600">0.783</td>
+          </tr>
+          <tr>
+            <td style="padding:10px 0;color:var(--text-muted)">seatbelt</td>
+            <td style="padding:10px 16px;color:var(--text-muted)">&rarr;</td>
+            <td style="padding:10px 0;color:var(--text)">yolo_soham</td>
+            <td style="padding:10px 0;text-align:right;color:var(--accent);font-weight:600">0.796</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <!-- ==================== PARETO (N vs balanced accuracy) ==================== -->
+  <section class="slide" id="pareto">
+    <span class="tag tag--teal">Pareto</span>
+    <h2>Accuracy vs. number of models</h2>
+    <h3>Best combination of N models (each class routes to its best-of-set specialist) &mdash; hover for composition, size and GFLOPs</h3>
+
+    <div id="pareto-plot" style="flex:1;min-height:480px;margin-top:16px"></div>
+
+    <script>
+      const PARETO_DATA = {"hikvision_mean_bal_acc": 0.7362, "hikvision_per_class": {"distracted_driving": 0.683, "eating_drinking": 0.5, "fatigue": 0.888, "phone_usage": 0.752, "seatbelt": 0.858}, "classes": ["distracted_driving", "eating_drinking", "fatigue", "phone_usage", "seatbelt"], "combos": [{"n": 1, "mean_bal_acc": 0.5743, "models": ["rtdetr_x_coco"], "routing": {"distracted_driving": "rtdetr_x_coco", "eating_drinking": "rtdetr_x_coco", "fatigue": "rtdetr_x_coco", "phone_usage": "rtdetr_x_coco", "seatbelt": "rtdetr_x_coco"}, "per_class_bal_acc": {"distracted_driving": 0.5, "eating_drinking": 0.588, "fatigue": 0.5, "phone_usage": 0.783, "seatbelt": 0.5}, "total_params_m": 65.5, "total_size_mb": 130, "total_gflops": 222.5}, {"n": 2, "mean_bal_acc": 0.6336, "models": ["rtdetr_x_coco", "yolo_soham"], "routing": {"distracted_driving": "rtdetr_x_coco", "eating_drinking": "rtdetr_x_coco", "fatigue": "rtdetr_x_coco", "phone_usage": "rtdetr_x_coco", "seatbelt": "yolo_soham"}, "per_class_bal_acc": {"distracted_driving": 0.5, "eating_drinking": 0.588, "fatigue": 0.5, "phone_usage": 0.783, "seatbelt": 0.796}, "total_params_m": 68.1, "total_size_mb": 136, "total_gflops": 229.0}, {"n": 3, "mean_bal_acc": 0.6919, "models": ["mediapipe", "rtdetr_x_coco", "yolo_soham"], "routing": {"distracted_driving": "rtdetr_x_coco", "eating_drinking": "rtdetr_x_coco", "fatigue": "mediapipe", "phone_usage": "rtdetr_x_coco", "seatbelt": "yolo_soham"}, "per_class_bal_acc": {"distracted_driving": 0.5, "eating_drinking": 0.588, "fatigue": 0.792, "phone_usage": 0.783, "seatbelt": 0.796}, "total_params_m": 69.1, "total_size_mb": 138, "total_gflops": 229.1}, {"n": 4, "mean_bal_acc": 0.7124, "models": ["classifier_followb1ind1y_mnv3", "mediapipe", "rtdetr_x_coco", "yolo_soham"], "routing": {"distracted_driving": "classifier_followb1ind1y_mnv3", "eating_drinking": "rtdetr_x_coco", "fatigue": "mediapipe", "phone_usage": "rtdetr_x_coco", "seatbelt": "yolo_soham"}, "per_class_bal_acc": {"distracted_driving": 0.602, "eating_drinking": 0.588, "fatigue": 0.792, "phone_usage": 0.783, "seatbelt": 0.796}, "total_params_m": 74.5, "total_size_mb": 160, "total_gflops": 229.3}, {"n": 5, "mean_bal_acc": 0.7129, "models": ["classifier_followb1ind1y_mnv3", "mediapipe", "rtdetr_x_coco", "yolo_soham", "yolov8x_coco"], "routing": {"distracted_driving": "classifier_followb1ind1y_mnv3", "eating_drinking": "yolov8x_coco", "fatigue": "mediapipe", "phone_usage": "rtdetr_x_coco", "seatbelt": "yolo_soham"}, "per_class_bal_acc": {"distracted_driving": 0.602, "eating_drinking": 0.591, "fatigue": 0.792, "phone_usage": 0.783, "seatbelt": 0.796}, "total_params_m": 142.7, "total_size_mb": 290, "total_gflops": 487.1}, {"n": 6, "mean_bal_acc": 0.7129, "models": ["classifier_chbh7051_v2", "classifier_followb1ind1y_mnv3", "mediapipe", "rtdetr_x_coco", "yolo_soham", "yolov8x_coco"], "routing": {"distracted_driving": "classifier_followb1ind1y_mnv3", "eating_drinking": "yolov8x_coco", "fatigue": "mediapipe", "phone_usage": "rtdetr_x_coco", "seatbelt": "yolo_soham"}, "per_class_bal_acc": {"distracted_driving": 0.602, "eating_drinking": 0.591, "fatigue": 0.792, "phone_usage": 0.783, "seatbelt": 0.796}, "total_params_m": 228.7, "total_size_mb": 634, "total_gflops": 504.7}]};
+
+      const xs = PARETO_DATA.combos.map(d => d.n);
+      // Display balanced accuracy on a 0-100 scale for readability
+      const ys = PARETO_DATA.combos.map(d => d.mean_bal_acc * 100);
+      const hovers = PARETO_DATA.combos.map(d => {
+        const rows = [];
+        // Plotly hover supports <b>/<br>/<span> but NOT named entities like &middot; / &rarr;;
+        // use literal Unicode characters instead.
+        rows.push('<b style="font-size:15px">' + d.n + ' model' + (d.n > 1 ? 's' : '') + '  •  ' + (d.mean_bal_acc * 100).toFixed(1) + '%</b>');
+        // Per-inference cost + throughput demand at 30 FPS.
+        // 30 FPS * GFLOPs/frame = GFLOPs/sec; /1000 for TFLOPs/sec.
+        // Demand is precision-agnostic — same FLOPs whether you run
+        // FP32 or FP16. Precision only affects what the hardware can
+        // deliver (e.g. Jetson Orin Nano: ~5 FP32, ~20 FP16 TFLOPs).
+        const tflops30 = (d.total_gflops * 30 / 1000);
+        rows.push('<span style="color:#A8ADBD">Params ' + d.total_params_m.toFixed(1) + ' M  ·  Size ' + d.total_size_mb.toFixed(0) + ' MB  ·  ' + tflops30.toFixed(1) + ' TFLOPs/sec @ 30 FPS</span>');
+        rows.push(' ');
+        rows.push('<b>Routing</b>');
+        for (const cls of PARETO_DATA.classes) {
+          const m = d.routing[cls];
+          const v = d.per_class_bal_acc[cls] * 100;
+          const pad = '                   '.substr(0, 20 - cls.length);
+          rows.push(cls + pad + '→  ' + m + '   <b style="color:#5FD2B5">' + v.toFixed(1) + '%</b>');
+        }
+        return rows.join('<br>');
+      });
+
+      const hikY = PARETO_DATA.hikvision_mean_bal_acc * 100;
+
+      const layout = {
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(240,241,244,0.4)',
+        margin: { l: 76, r: 32, t: 20, b: 60 },
+        font: { family: 'DM Sans, system-ui, sans-serif', size: 13, color: '#5A5E6E' },
+        xaxis: {
+          title: { text: 'Number of models in the pipeline', font: { size: 13 } },
+          dtick: 1, range: [0.5, 6.5],
+          gridcolor: '#E0E2E8', zerolinecolor: '#E0E2E8',
+        },
+        yaxis: {
+          title: { text: 'Mean balanced accuracy (%)', font: { size: 13 } },
+          range: [0, 100],
+          ticksuffix: '%',
+          gridcolor: '#E0E2E8', zerolinecolor: '#E0E2E8',
+        },
+        shapes: [{
+          type: 'line',
+          x0: 0.5, x1: 6.5,
+          y0: hikY, y1: hikY,
+          line: { color: '#0E9A7E', dash: 'dash', width: 1.5 },
+        }],
+        annotations: [{
+          x: 6.5, y: hikY, xanchor: 'right', yanchor: 'bottom',
+          text: 'Hikvision OEM · ' + hikY.toFixed(1) + '%',
+          showarrow: false, font: { color: '#0E9A7E', size: 12 },
+        }],
+        hoverlabel: {
+          bgcolor: '#1A1D26',
+          bordercolor: '#0E9A7E',
+          font: {
+            family: 'JetBrains Mono, monospace',
+            size: 13,
+            color: '#FFFFFF',
+          },
+          align: 'left',
+          namelength: -1,
+        },
+      };
+
+      Plotly.newPlot('pareto-plot', [{
+        x: xs, y: ys,
+        mode: 'lines+markers',
+        line: { color: '#3B6FD6', width: 2 },
+        marker: { size: 16, color: '#3B6FD6', line: { color: 'white', width: 2 } },
+        text: hovers, hoverinfo: 'text',
+      }], layout, { displayModeBar: false, responsive: true });
+    </script>
+  </section>
+
   <!-- ==================== 2. METHODOLOGY ==================== -->
   <section class="slide" id="methodology">
     <span class="tag tag--blue">Methodology</span>
     <h2>How the table is computed</h2>
-    <h3>Per-class recall &mdash; correct predictions over total positive GT frames for that class</h3>
+    <h3>Per-class <strong>balanced accuracy</strong> &mdash; average of catch rate (recall) and quiet rate (specificity)</h3>
 
     <div class="stat-grid">
       <div class="stat">
@@ -367,8 +530,8 @@
       </div>
       <div class="stat">
         <div class="label">Metric</div>
-        <div class="value">TP / support</div>
-        <div class="sub">correct_class / total_class (= recall)</div>
+        <div class="value">(rec + spec) / 2</div>
+        <div class="sub">balanced accuracy; 0.5 = chance, 1.0 = perfect</div>
       </div>
     </div>
 
@@ -380,18 +543,23 @@
             <code style="font-family:var(--mono);font-size:11.5px;background:var(--bg-elevated);padding:1px 5px;border-radius:3px">oem_prediction</code>
             is synonym-expanded into the 6 canonical classes (same <code style="font-family:var(--mono);font-size:11.5px;background:var(--bg-elevated);padding:1px 5px;border-radius:3px">_SYNONYMS</code>
             dict as <code style="font-family:var(--mono);font-size:11.5px;background:var(--bg-elevated);padding:1px 5px;border-radius:3px">build_model_leaderboard.py</code>).
-            For each class we count TP (GT-positive &amp; predicted-positive) and support (all GT-positives).
-            Recall = TP / support. Classes with support = 0 in this manifest are reported as <code style="font-family:var(--mono);font-size:11.5px;background:var(--bg-elevated);padding:1px 5px;border-radius:3px">n/a</code>.
+            For each class we count TP / FP / FN / TN, derive recall = TP / (TP + FN) and specificity =
+            TN / (TN + FP), and report their average as balanced accuracy. Classes with support = 0 are reported
+            as <code style="font-family:var(--mono);font-size:11.5px;background:var(--bg-elevated);padding:1px 5px;border-radius:3px">n/a</code>
+            (no positives to evaluate against).
           </p>
         </div>
         <div class="card">
           <h4 style="color:var(--accent-3)">Model rows</h4>
           <p style="font-size:12.5px;color:var(--text-dim);line-height:1.6">
-            Each model runs as a <strong>single-detector</strong> pipeline (no fusion). Detectors without a native
-            class-mapping for a given canonical are forced to <code style="font-family:var(--mono);font-size:11.5px;background:var(--bg-elevated);padding:1px 5px;border-radius:3px">fires=False</code>
-            by design &mdash; on this recall view those rows show 0.000 because TP = 0. Per-run TP + support persist to
-            <code style="font-family:var(--mono);font-size:11.5px;background:var(--bg-elevated);padding:1px 5px;border-radius:3px">leaderboard.csv</code>
-            and the table below picks the latest run per (model, class).
+            Each model runs as a <strong>single-detector</strong> pipeline (no fusion), except
+            <code style="font-family:var(--mono);font-size:11.5px;background:var(--bg-elevated);padding:1px 5px;border-radius:3px">pipeline_max_f1</code>
+            which is a per-class fusion over 12 contributing detectors. Detectors without a native class-mapping
+            for a given canonical are forced to
+            <code style="font-family:var(--mono);font-size:11.5px;background:var(--bg-elevated);padding:1px 5px;border-radius:3px">fires=False</code>
+            &mdash; on balanced accuracy they score exactly 0.500 (perfect specificity, zero recall). The table
+            picks the latest run per (model, class) from
+            <code style="font-family:var(--mono);font-size:11.5px;background:var(--bg-elevated);padding:1px 5px;border-radius:3px">leaderboard.csv</code>.
           </p>
         </div>
       </div>
@@ -400,10 +568,10 @@
         <div class="card">
           <h4 style="color:var(--text)">Cell format</h4>
           <p style="font-size:12.5px;color:var(--text-dim);line-height:1.7">
-            <strong style="color:var(--text);font-family:var(--mono);font-size:13px">0.889</strong>
+            <strong style="color:var(--text);font-family:var(--mono);font-size:13px">0.683</strong>
             &nbsp;<strong class="cell-delta zero" style="font-size:11px">&plusmn;0.000</strong>&nbsp;
             <span style="font-family:var(--mono);font-size:11px;color:var(--text-muted)">(24/27)</span><br>
-            &uarr; recall &middot; &Delta; vs. Hikvision &middot; (correct / total)
+            &uarr; balanced accuracy &middot; &Delta; vs. Hikvision &middot; (TP / support)
           </p>
         </div>
         <div class="card">
@@ -416,11 +584,12 @@
           </p>
         </div>
         <div class="card">
-          <h4 style="color:var(--text)">Why recall &ne; a full ranking</h4>
+          <h4 style="color:var(--text)">Scoring guide</h4>
           <p style="font-size:12.5px;color:var(--text-dim);line-height:1.6">
-            A detector that says &ldquo;yes&rdquo; to every frame has recall 1.000 &mdash; but also massive false-positive rate.
-            Cross-check with <strong>F1</strong> (<code style="font-family:var(--mono);font-size:11.5px;background:var(--bg-elevated);padding:1px 5px;border-radius:3px">--view --metric f1</code>)
-            or <strong>precision</strong> before picking winners. See caveats slide.
+            <code>&gt; 0.90</code> excellent &middot; <code>0.75&ndash;0.90</code> genuinely useful &middot;
+            <code>0.60&ndash;0.75</code> meaningful &middot; <code>0.50&ndash;0.60</code> borderline &middot;
+            <code>= 0.50</code> no skill (always-yes or always-no) &middot; <code>&lt; 0.50</code>
+            anti-predictive (flip output).
           </p>
         </div>
       </div>
@@ -430,15 +599,16 @@
   <!-- ==================== 3. LEADERBOARD TABLE ==================== -->
   <section class="slide" id="table">
     <span class="tag tag--amber">Leaderboard</span>
-    <h2>Recall per model &times; canonical class</h2>
+    <h2>Balanced accuracy per model &times; canonical class</h2>
     <h3>Top row is Hikvision OEM baseline; every other row shows delta vs. Hikvision and raw (TP / support) counts</h3>
 
     <div class="legend">
       <div class="item"><span class="fam-dot mediapipe"></span> MediaPipe</div>
       <div class="item"><span class="fam-dot detection"></span> Detection (YOLO)</div>
       <div class="item"><span class="fam-dot classifier"></span> Classification</div>
-      <div class="item"><code>0.889 (24/27)</code> recall &middot; TP / support</div>
+      <div class="item"><code>0.683 (24/27)</code> balanced accuracy &middot; (TP / support)</div>
       <div class="item"><code>&Delta;</code> vs. Hikvision baseline</div>
+      <div class="item"><code>0.50</code> = no skill &middot; <code>1.00</code> = perfect</div>
       <div class="item"><code>n/a</code> no GT positives for this class in the 619-frame manifest</div>
     </div>
 
@@ -462,25 +632,39 @@
               <div class="name">HIKVISION</div>
               <div class="fam">OEM baseline</div>
             </td>
-            <td class="num"><div class="cell-acc">0.609</div><div class="cell-counts">170 / 279</div></td>
-            <td class="num"><div class="cell-acc">0.000</div><div class="cell-counts">0 / 11</div></td>
-            <td class="num"><div class="cell-acc">0.889</div><div class="cell-counts">24 / 27</div></td>
-            <td class="num"><div class="cell-acc">0.514</div><div class="cell-counts">57 / 111</div></td>
-            <td class="num"><div class="cell-acc">0.806</div><div class="cell-counts">175 / 217</div></td>
+            <td class="num"><div class="cell-acc">0.683</div><div class="cell-counts">170 / 279</div></td>
+            <td class="num"><div class="cell-acc">0.500</div><div class="cell-counts">0 / 11</div></td>
+            <td class="num"><div class="cell-acc">0.888</div><div class="cell-counts">24 / 27</div></td>
+            <td class="num"><div class="cell-acc">0.752</div><div class="cell-counts">57 / 111</div></td>
+            <td class="num"><div class="cell-acc">0.858</div><div class="cell-counts">175 / 217</div></td>
             <td class="num"><div class="cell-acc na">n/a</div><div class="cell-counts">0 / 0</div></td>
+          </tr>
+
+          <!-- pipeline_specialists -->
+          <tr>
+            <td class="model">
+              <div class="name"><span class="fam-dot pipeline"></span>pipeline_specialists</div>
+              <div class="fam">star specialist router - 1 best model per class</div>
+            </td>
+            <td class="num"><div class="cell-acc">0.602 <span class="cell-delta neg">&minus;0.080</span></div><div class="cell-counts">140 / 279</div></td>
+            <td class="num"><div class="cell-acc">0.591 <span class="cell-delta pos">+0.091</span></div><div class="cell-counts">2 / 11</div></td>
+            <td class="num"><div class="cell-acc">0.792 <span class="cell-delta neg">&minus;0.096</span></div><div class="cell-counts">24 / 27</div></td>
+            <td class="num"><div class="cell-acc">0.783 <span class="cell-delta pos">+0.031</span></div><div class="cell-counts">70 / 111</div></td>
+            <td class="num"><div class="cell-acc">0.796 <span class="cell-delta neg">&minus;0.062</span></div><div class="cell-counts">205 / 217</div></td>
+            <td class="num"><div class="cell-acc na">n/a <span class="cell-delta na">n/a</span></div><div class="cell-counts">0 / 0</div></td>
           </tr>
 
           <!-- mediapipe -->
           <tr>
             <td class="model">
               <div class="name"><span class="fam-dot mediapipe"></span>mediapipe</div>
-              <div class="fam">mediapipe &middot; rule-based</div>
+              <div class="fam">mediapipe - rule-based</div>
             </td>
-            <td class="num"><div class="cell-acc">0.724 <span class="cell-delta pos">+0.115</span></div><div class="cell-counts">202 / 279</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta zero">&plusmn;0.000</span></div><div class="cell-counts">0 / 11</div></td>
-            <td class="num"><div class="cell-acc">0.889 <span class="cell-delta zero">&plusmn;0.000</span></div><div class="cell-counts">24 / 27</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.514</span></div><div class="cell-counts">0 / 111</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.806</span></div><div class="cell-counts">0 / 217</div></td>
+            <td class="num"><div class="cell-acc">0.499 <span class="cell-delta neg">&minus;0.184</span></div><div class="cell-counts">202 / 279</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta zero">&plusmn;0.000</span></div><div class="cell-counts">0 / 11</div></td>
+            <td class="num"><div class="cell-acc">0.792 <span class="cell-delta neg">&minus;0.096</span></div><div class="cell-counts">24 / 27</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.252</span></div><div class="cell-counts">0 / 111</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.358</span></div><div class="cell-counts">0 / 217</div></td>
             <td class="num"><div class="cell-acc na">n/a <span class="cell-delta na">n/a</span></div><div class="cell-counts">0 / 0</div></td>
           </tr>
 
@@ -488,13 +672,13 @@
           <tr>
             <td class="model">
               <div class="name"><span class="fam-dot mediapipe"></span>eye_state_ocec</div>
-              <div class="fam">mediapipe-compat &middot; MediaPipe + OCEC eye ONNX &middot; MIT</div>
+              <div class="fam">mediapipe-compat - MediaPipe + OCEC eye ONNX - MIT</div>
             </td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.609</span></div><div class="cell-counts">0 / 279</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta zero">&plusmn;0.000</span></div><div class="cell-counts">0 / 11</div></td>
-            <td class="num"><div class="cell-acc">0.481 <span class="cell-delta neg">&minus;0.407</span></div><div class="cell-counts">13 / 27</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.514</span></div><div class="cell-counts">0 / 111</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.806</span></div><div class="cell-counts">0 / 217</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.183</span></div><div class="cell-counts">0 / 279</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta zero">&plusmn;0.000</span></div><div class="cell-counts">0 / 11</div></td>
+            <td class="num"><div class="cell-acc">0.680 <span class="cell-delta neg">&minus;0.208</span></div><div class="cell-counts">13 / 27</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.252</span></div><div class="cell-counts">0 / 111</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.358</span></div><div class="cell-counts">0 / 217</div></td>
             <td class="num"><div class="cell-acc na">n/a <span class="cell-delta na">n/a</span></div><div class="cell-counts">0 / 0</div></td>
           </tr>
 
@@ -502,13 +686,13 @@
           <tr>
             <td class="model">
               <div class="name"><span class="fam-dot mediapipe"></span>gaze_l2cs_net</div>
-              <div class="fam">mediapipe-compat &middot; L2CS-Net gaze (ResNet50) &middot; MIT</div>
+              <div class="fam">mediapipe-compat - L2CS-Net gaze (ResNet50) - MIT</div>
             </td>
-            <td class="num"><div class="cell-acc">0.828 <span class="cell-delta pos">+0.219</span></div><div class="cell-counts">231 / 279</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta zero">&plusmn;0.000</span></div><div class="cell-counts">0 / 11</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.889</span></div><div class="cell-counts">0 / 27</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.514</span></div><div class="cell-counts">0 / 111</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.806</span></div><div class="cell-counts">0 / 217</div></td>
+            <td class="num"><div class="cell-acc">0.519 <span class="cell-delta neg">&minus;0.163</span></div><div class="cell-counts">231 / 279</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta zero">&plusmn;0.000</span></div><div class="cell-counts">0 / 11</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.388</span></div><div class="cell-counts">0 / 27</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.252</span></div><div class="cell-counts">0 / 111</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.358</span></div><div class="cell-counts">0 / 217</div></td>
             <td class="num"><div class="cell-acc na">n/a <span class="cell-delta na">n/a</span></div><div class="cell-counts">0 / 0</div></td>
           </tr>
 
@@ -516,13 +700,13 @@
           <tr>
             <td class="model">
               <div class="name"><span class="fam-dot mediapipe"></span>head_pose_6drepnet</div>
-              <div class="fam">mediapipe-compat &middot; 6DRepNet head-pose &middot; MIT</div>
+              <div class="fam">mediapipe-compat - 6DRepNet head-pose - MIT</div>
             </td>
-            <td class="num"><div class="cell-acc">0.513 <span class="cell-delta neg">&minus;0.097</span></div><div class="cell-counts">143 / 279</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta zero">&plusmn;0.000</span></div><div class="cell-counts">0 / 11</div></td>
-            <td class="num"><div class="cell-acc">0.222 <span class="cell-delta neg">&minus;0.667</span></div><div class="cell-counts">6 / 27</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.514</span></div><div class="cell-counts">0 / 111</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.806</span></div><div class="cell-counts">0 / 217</div></td>
+            <td class="num"><div class="cell-acc">0.490 <span class="cell-delta neg">&minus;0.193</span></div><div class="cell-counts">143 / 279</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta zero">&plusmn;0.000</span></div><div class="cell-counts">0 / 11</div></td>
+            <td class="num"><div class="cell-acc">0.460 <span class="cell-delta neg">&minus;0.428</span></div><div class="cell-counts">6 / 27</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.252</span></div><div class="cell-counts">0 / 111</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.358</span></div><div class="cell-counts">0 / 217</div></td>
             <td class="num"><div class="cell-acc na">n/a <span class="cell-delta na">n/a</span></div><div class="cell-counts">0 / 0</div></td>
           </tr>
 
@@ -530,13 +714,13 @@
           <tr>
             <td class="model">
               <div class="name"><span class="fam-dot detection"></span>yolo_chaitanya</div>
-              <div class="fam">detection &middot; YOLOv8n DMS</div>
+              <div class="fam">detection - YOLOv8n DMS</div>
             </td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.609</span></div><div class="cell-counts">0 / 279</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta zero">&plusmn;0.000</span></div><div class="cell-counts">0 / 11</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.889</span></div><div class="cell-counts">0 / 27</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.514</span></div><div class="cell-counts">0 / 111</div></td>
-            <td class="num"><div class="cell-acc">1.000 <span class="cell-delta pos">+0.194</span></div><div class="cell-counts">217 / 217</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.183</span></div><div class="cell-counts">0 / 279</div></td>
+            <td class="num"><div class="cell-acc">0.496 <span class="cell-delta neg">&minus;0.004</span></div><div class="cell-counts">0 / 11</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.388</span></div><div class="cell-counts">0 / 27</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.252</span></div><div class="cell-counts">0 / 111</div></td>
+            <td class="num"><div class="cell-acc">0.557 <span class="cell-delta neg">&minus;0.301</span></div><div class="cell-counts">217 / 217</div></td>
             <td class="num"><div class="cell-acc na">n/a <span class="cell-delta na">n/a</span></div><div class="cell-counts">0 / 0</div></td>
           </tr>
 
@@ -544,13 +728,13 @@
           <tr>
             <td class="model">
               <div class="name"><span class="fam-dot detection"></span>yolo_soham</div>
-              <div class="fam">detection &middot; YOLO11n DMS</div>
+              <div class="fam">detection - YOLO11n DMS</div>
             </td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.609</span></div><div class="cell-counts">0 / 279</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta zero">&plusmn;0.000</span></div><div class="cell-counts">0 / 11</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.889</span></div><div class="cell-counts">0 / 27</div></td>
-            <td class="num"><div class="cell-acc">0.009 <span class="cell-delta neg">&minus;0.505</span></div><div class="cell-counts">1 / 111</div></td>
-            <td class="num"><div class="cell-acc">0.945 <span class="cell-delta pos">+0.138</span></div><div class="cell-counts">205 / 217</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.183</span></div><div class="cell-counts">0 / 279</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta zero">&plusmn;0.000</span></div><div class="cell-counts">0 / 11</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.388</span></div><div class="cell-counts">0 / 27</div></td>
+            <td class="num"><div class="cell-acc">0.504 <span class="cell-delta neg">&minus;0.248</span></div><div class="cell-counts">1 / 111</div></td>
+            <td class="num"><div class="cell-acc">0.796 <span class="cell-delta neg">&minus;0.062</span></div><div class="cell-counts">205 / 217</div></td>
             <td class="num"><div class="cell-acc na">n/a <span class="cell-delta na">n/a</span></div><div class="cell-counts">0 / 0</div></td>
           </tr>
 
@@ -558,13 +742,13 @@
           <tr>
             <td class="model">
               <div class="name"><span class="fam-dot detection"></span>seatbelt_v4_onnx</div>
-              <div class="fam">detection &middot; YOLOv8 ONNX DMS</div>
+              <div class="fam">detection - YOLOv8 ONNX DMS</div>
             </td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.609</span></div><div class="cell-counts">0 / 279</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta zero">&plusmn;0.000</span></div><div class="cell-counts">0 / 11</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.889</span></div><div class="cell-counts">0 / 27</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.514</span></div><div class="cell-counts">0 / 111</div></td>
-            <td class="num"><div class="cell-acc">0.783 <span class="cell-delta neg">&minus;0.023</span></div><div class="cell-counts">170 / 217</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.183</span></div><div class="cell-counts">0 / 279</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta zero">&plusmn;0.000</span></div><div class="cell-counts">0 / 11</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.388</span></div><div class="cell-counts">0 / 27</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.252</span></div><div class="cell-counts">0 / 111</div></td>
+            <td class="num"><div class="cell-acc">0.788 <span class="cell-delta neg">&minus;0.071</span></div><div class="cell-counts">170 / 217</div></td>
             <td class="num"><div class="cell-acc na">n/a <span class="cell-delta na">n/a</span></div><div class="cell-counts">0 / 0</div></td>
           </tr>
 
@@ -572,13 +756,13 @@
           <tr>
             <td class="model">
               <div class="name"><span class="fam-dot detection"></span>yolo11n_coco</div>
-              <div class="fam">detection &middot; YOLO11n COCO base &middot; 2.6M params</div>
+              <div class="fam">detection - YOLO11n COCO base - 2.6M params</div>
             </td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.609</span></div><div class="cell-counts">0 / 279</div></td>
-            <td class="num"><div class="cell-acc">0.091 <span class="cell-delta pos">+0.091</span></div><div class="cell-counts">1 / 11</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.889</span></div><div class="cell-counts">0 / 27</div></td>
-            <td class="num"><div class="cell-acc">0.027 <span class="cell-delta neg">&minus;0.486</span></div><div class="cell-counts">3 / 111</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.806</span></div><div class="cell-counts">0 / 217</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.183</span></div><div class="cell-counts">0 / 279</div></td>
+            <td class="num"><div class="cell-acc">0.544 <span class="cell-delta pos">+0.044</span></div><div class="cell-counts">1 / 11</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.388</span></div><div class="cell-counts">0 / 27</div></td>
+            <td class="num"><div class="cell-acc">0.513 <span class="cell-delta neg">&minus;0.239</span></div><div class="cell-counts">3 / 111</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.358</span></div><div class="cell-counts">0 / 217</div></td>
             <td class="num"><div class="cell-acc na">n/a <span class="cell-delta na">n/a</span></div><div class="cell-counts">0 / 0</div></td>
           </tr>
 
@@ -586,13 +770,13 @@
           <tr>
             <td class="model">
               <div class="name"><span class="fam-dot detection"></span>yolo11s_coco</div>
-              <div class="fam">detection &middot; YOLO11s COCO base &middot; 9.4M params</div>
+              <div class="fam">detection - YOLO11s COCO base - 9.4M params</div>
             </td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.609</span></div><div class="cell-counts">0 / 279</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta zero">&plusmn;0.000</span></div><div class="cell-counts">0 / 11</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.889</span></div><div class="cell-counts">0 / 27</div></td>
-            <td class="num"><div class="cell-acc">0.153 <span class="cell-delta neg">&minus;0.360</span></div><div class="cell-counts">17 / 111</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.806</span></div><div class="cell-counts">0 / 217</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.183</span></div><div class="cell-counts">0 / 279</div></td>
+            <td class="num"><div class="cell-acc">0.499 <span class="cell-delta neg">&minus;0.001</span></div><div class="cell-counts">0 / 11</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.388</span></div><div class="cell-counts">0 / 27</div></td>
+            <td class="num"><div class="cell-acc">0.574 <span class="cell-delta neg">&minus;0.178</span></div><div class="cell-counts">17 / 111</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.358</span></div><div class="cell-counts">0 / 217</div></td>
             <td class="num"><div class="cell-acc na">n/a <span class="cell-delta na">n/a</span></div><div class="cell-counts">0 / 0</div></td>
           </tr>
 
@@ -600,13 +784,13 @@
           <tr>
             <td class="model">
               <div class="name"><span class="fam-dot detection"></span>yolo11m_coco</div>
-              <div class="fam">detection &middot; YOLO11m COCO base &middot; 20M params</div>
+              <div class="fam">detection - YOLO11m COCO base - 20M params</div>
             </td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.609</span></div><div class="cell-counts">0 / 279</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta zero">&plusmn;0.000</span></div><div class="cell-counts">0 / 11</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.889</span></div><div class="cell-counts">0 / 27</div></td>
-            <td class="num"><div class="cell-acc">0.171 <span class="cell-delta neg">&minus;0.342</span></div><div class="cell-counts">19 / 111</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.806</span></div><div class="cell-counts">0 / 217</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.183</span></div><div class="cell-counts">0 / 279</div></td>
+            <td class="num"><div class="cell-acc">0.499 <span class="cell-delta neg">&minus;0.001</span></div><div class="cell-counts">0 / 11</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.388</span></div><div class="cell-counts">0 / 27</div></td>
+            <td class="num"><div class="cell-acc">0.584 <span class="cell-delta neg">&minus;0.168</span></div><div class="cell-counts">19 / 111</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.358</span></div><div class="cell-counts">0 / 217</div></td>
             <td class="num"><div class="cell-acc na">n/a <span class="cell-delta na">n/a</span></div><div class="cell-counts">0 / 0</div></td>
           </tr>
 
@@ -614,13 +798,13 @@
           <tr>
             <td class="model">
               <div class="name"><span class="fam-dot detection"></span>yolo11l_coco</div>
-              <div class="fam">detection &middot; YOLO11l COCO base &middot; 25M params</div>
+              <div class="fam">detection - YOLO11l COCO base - 25M params</div>
             </td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.609</span></div><div class="cell-counts">0 / 279</div></td>
-            <td class="num"><div class="cell-acc">0.091 <span class="cell-delta pos">+0.091</span></div><div class="cell-counts">1 / 11</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.889</span></div><div class="cell-counts">0 / 27</div></td>
-            <td class="num"><div class="cell-acc">0.225 <span class="cell-delta neg">&minus;0.288</span></div><div class="cell-counts">25 / 111</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.806</span></div><div class="cell-counts">0 / 217</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.183</span></div><div class="cell-counts">0 / 279</div></td>
+            <td class="num"><div class="cell-acc">0.545 <span class="cell-delta pos">+0.045</span></div><div class="cell-counts">1 / 11</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.388</span></div><div class="cell-counts">0 / 27</div></td>
+            <td class="num"><div class="cell-acc">0.607 <span class="cell-delta neg">&minus;0.145</span></div><div class="cell-counts">25 / 111</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.358</span></div><div class="cell-counts">0 / 217</div></td>
             <td class="num"><div class="cell-acc na">n/a <span class="cell-delta na">n/a</span></div><div class="cell-counts">0 / 0</div></td>
           </tr>
 
@@ -628,13 +812,13 @@
           <tr>
             <td class="model">
               <div class="name"><span class="fam-dot detection"></span>yolo11x_coco</div>
-              <div class="fam">detection &middot; YOLO11x COCO base</div>
+              <div class="fam">detection - YOLO11x COCO base</div>
             </td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.609</span></div><div class="cell-counts">0 / 279</div></td>
-            <td class="num"><div class="cell-acc">0.091 <span class="cell-delta pos">+0.091</span></div><div class="cell-counts">1 / 11</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.889</span></div><div class="cell-counts">0 / 27</div></td>
-            <td class="num"><div class="cell-acc">0.351 <span class="cell-delta neg">&minus;0.162</span></div><div class="cell-counts">39 / 111</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.806</span></div><div class="cell-counts">0 / 217</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.183</span></div><div class="cell-counts">0 / 279</div></td>
+            <td class="num"><div class="cell-acc">0.545 <span class="cell-delta pos">+0.045</span></div><div class="cell-counts">1 / 11</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.388</span></div><div class="cell-counts">0 / 27</div></td>
+            <td class="num"><div class="cell-acc">0.670 <span class="cell-delta neg">&minus;0.082</span></div><div class="cell-counts">39 / 111</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.358</span></div><div class="cell-counts">0 / 217</div></td>
             <td class="num"><div class="cell-acc na">n/a <span class="cell-delta na">n/a</span></div><div class="cell-counts">0 / 0</div></td>
           </tr>
 
@@ -642,13 +826,13 @@
           <tr>
             <td class="model">
               <div class="name"><span class="fam-dot detection"></span>yolov8s_coco</div>
-              <div class="fam">detection &middot; YOLOv8s COCO base &middot; 11M params</div>
+              <div class="fam">detection - YOLOv8s COCO base - 11M params</div>
             </td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.609</span></div><div class="cell-counts">0 / 279</div></td>
-            <td class="num"><div class="cell-acc">0.091 <span class="cell-delta pos">+0.091</span></div><div class="cell-counts">1 / 11</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.889</span></div><div class="cell-counts">0 / 27</div></td>
-            <td class="num"><div class="cell-acc">0.189 <span class="cell-delta neg">&minus;0.324</span></div><div class="cell-counts">21 / 111</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.806</span></div><div class="cell-counts">0 / 217</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.183</span></div><div class="cell-counts">0 / 279</div></td>
+            <td class="num"><div class="cell-acc">0.545 <span class="cell-delta pos">+0.045</span></div><div class="cell-counts">1 / 11</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.388</span></div><div class="cell-counts">0 / 27</div></td>
+            <td class="num"><div class="cell-acc">0.593 <span class="cell-delta neg">&minus;0.159</span></div><div class="cell-counts">21 / 111</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.358</span></div><div class="cell-counts">0 / 217</div></td>
             <td class="num"><div class="cell-acc na">n/a <span class="cell-delta na">n/a</span></div><div class="cell-counts">0 / 0</div></td>
           </tr>
 
@@ -656,13 +840,13 @@
           <tr>
             <td class="model">
               <div class="name"><span class="fam-dot detection"></span>yolov8m_coco</div>
-              <div class="fam">detection &middot; YOLOv8m COCO base &middot; 26M params</div>
+              <div class="fam">detection - YOLOv8m COCO base - 26M params</div>
             </td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.609</span></div><div class="cell-counts">0 / 279</div></td>
-            <td class="num"><div class="cell-acc">0.182 <span class="cell-delta pos">+0.182</span></div><div class="cell-counts">2 / 11</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.889</span></div><div class="cell-counts">0 / 27</div></td>
-            <td class="num"><div class="cell-acc">0.351 <span class="cell-delta neg">&minus;0.162</span></div><div class="cell-counts">39 / 111</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.806</span></div><div class="cell-counts">0 / 217</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.183</span></div><div class="cell-counts">0 / 279</div></td>
+            <td class="num"><div class="cell-acc">0.590 <span class="cell-delta pos">+0.090</span></div><div class="cell-counts">2 / 11</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.388</span></div><div class="cell-counts">0 / 27</div></td>
+            <td class="num"><div class="cell-acc">0.667 <span class="cell-delta neg">&minus;0.085</span></div><div class="cell-counts">39 / 111</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.358</span></div><div class="cell-counts">0 / 217</div></td>
             <td class="num"><div class="cell-acc na">n/a <span class="cell-delta na">n/a</span></div><div class="cell-counts">0 / 0</div></td>
           </tr>
 
@@ -670,13 +854,13 @@
           <tr>
             <td class="model">
               <div class="name"><span class="fam-dot detection"></span>yolov8l_coco</div>
-              <div class="fam">detection &middot; YOLOv8l COCO base &middot; 43M params</div>
+              <div class="fam">detection - YOLOv8l COCO base - 43M params</div>
             </td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.609</span></div><div class="cell-counts">0 / 279</div></td>
-            <td class="num"><div class="cell-acc">0.091 <span class="cell-delta pos">+0.091</span></div><div class="cell-counts">1 / 11</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.889</span></div><div class="cell-counts">0 / 27</div></td>
-            <td class="num"><div class="cell-acc">0.360 <span class="cell-delta neg">&minus;0.153</span></div><div class="cell-counts">40 / 111</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.806</span></div><div class="cell-counts">0 / 217</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.183</span></div><div class="cell-counts">0 / 279</div></td>
+            <td class="num"><div class="cell-acc">0.545 <span class="cell-delta pos">+0.045</span></div><div class="cell-counts">1 / 11</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.388</span></div><div class="cell-counts">0 / 27</div></td>
+            <td class="num"><div class="cell-acc">0.670 <span class="cell-delta neg">&minus;0.081</span></div><div class="cell-counts">40 / 111</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.358</span></div><div class="cell-counts">0 / 217</div></td>
             <td class="num"><div class="cell-acc na">n/a <span class="cell-delta na">n/a</span></div><div class="cell-counts">0 / 0</div></td>
           </tr>
 
@@ -684,13 +868,13 @@
           <tr>
             <td class="model">
               <div class="name"><span class="fam-dot detection"></span>yolov8x_coco</div>
-              <div class="fam">detection &middot; YOLOv8x COCO base &middot; 68M params</div>
+              <div class="fam">detection - YOLOv8x COCO base - 68M params</div>
             </td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.609</span></div><div class="cell-counts">0 / 279</div></td>
-            <td class="num"><div class="cell-acc">0.182 <span class="cell-delta pos">+0.182</span></div><div class="cell-counts">2 / 11</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.889</span></div><div class="cell-counts">0 / 27</div></td>
-            <td class="num"><div class="cell-acc">0.468 <span class="cell-delta neg">&minus;0.045</span></div><div class="cell-counts">52 / 111</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.806</span></div><div class="cell-counts">0 / 217</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.183</span></div><div class="cell-counts">0 / 279</div></td>
+            <td class="num"><div class="cell-acc">0.591 <span class="cell-delta pos">+0.091</span></div><div class="cell-counts">2 / 11</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.388</span></div><div class="cell-counts">0 / 27</div></td>
+            <td class="num"><div class="cell-acc">0.720 <span class="cell-delta neg">&minus;0.032</span></div><div class="cell-counts">52 / 111</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.358</span></div><div class="cell-counts">0 / 217</div></td>
             <td class="num"><div class="cell-acc na">n/a <span class="cell-delta na">n/a</span></div><div class="cell-counts">0 / 0</div></td>
           </tr>
 
@@ -698,13 +882,13 @@
           <tr>
             <td class="model">
               <div class="name"><span class="fam-dot detection"></span>yolov10n_coco</div>
-              <div class="fam">detection &middot; YOLOv10n COCO base &middot; 2.3M params</div>
+              <div class="fam">detection - YOLOv10n COCO base - 2.3M params</div>
             </td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.609</span></div><div class="cell-counts">0 / 279</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta zero">&plusmn;0.000</span></div><div class="cell-counts">0 / 11</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.889</span></div><div class="cell-counts">0 / 27</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.514</span></div><div class="cell-counts">0 / 111</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.806</span></div><div class="cell-counts">0 / 217</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.183</span></div><div class="cell-counts">0 / 279</div></td>
+            <td class="num"><div class="cell-acc">0.499 <span class="cell-delta neg">&minus;0.001</span></div><div class="cell-counts">0 / 11</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.388</span></div><div class="cell-counts">0 / 27</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.252</span></div><div class="cell-counts">0 / 111</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.358</span></div><div class="cell-counts">0 / 217</div></td>
             <td class="num"><div class="cell-acc na">n/a <span class="cell-delta na">n/a</span></div><div class="cell-counts">0 / 0</div></td>
           </tr>
 
@@ -712,13 +896,13 @@
           <tr>
             <td class="model">
               <div class="name"><span class="fam-dot detection"></span>yolov10s_coco</div>
-              <div class="fam">detection &middot; YOLOv10s COCO base &middot; 7.2M params</div>
+              <div class="fam">detection - YOLOv10s COCO base - 7.2M params</div>
             </td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.609</span></div><div class="cell-counts">0 / 279</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta zero">&plusmn;0.000</span></div><div class="cell-counts">0 / 11</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.889</span></div><div class="cell-counts">0 / 27</div></td>
-            <td class="num"><div class="cell-acc">0.135 <span class="cell-delta neg">&minus;0.378</span></div><div class="cell-counts">15 / 111</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.806</span></div><div class="cell-counts">0 / 217</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.183</span></div><div class="cell-counts">0 / 279</div></td>
+            <td class="num"><div class="cell-acc">0.498 <span class="cell-delta neg">&minus;0.002</span></div><div class="cell-counts">0 / 11</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.388</span></div><div class="cell-counts">0 / 27</div></td>
+            <td class="num"><div class="cell-acc">0.566 <span class="cell-delta neg">&minus;0.186</span></div><div class="cell-counts">15 / 111</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.358</span></div><div class="cell-counts">0 / 217</div></td>
             <td class="num"><div class="cell-acc na">n/a <span class="cell-delta na">n/a</span></div><div class="cell-counts">0 / 0</div></td>
           </tr>
 
@@ -726,13 +910,13 @@
           <tr>
             <td class="model">
               <div class="name"><span class="fam-dot detection"></span>yolov10m_coco</div>
-              <div class="fam">detection &middot; YOLOv10m COCO base &middot; 15.4M params</div>
+              <div class="fam">detection - YOLOv10m COCO base - 15.4M params</div>
             </td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.609</span></div><div class="cell-counts">0 / 279</div></td>
-            <td class="num"><div class="cell-acc">0.091 <span class="cell-delta pos">+0.091</span></div><div class="cell-counts">1 / 11</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.889</span></div><div class="cell-counts">0 / 27</div></td>
-            <td class="num"><div class="cell-acc">0.162 <span class="cell-delta neg">&minus;0.351</span></div><div class="cell-counts">18 / 111</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.806</span></div><div class="cell-counts">0 / 217</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.183</span></div><div class="cell-counts">0 / 279</div></td>
+            <td class="num"><div class="cell-acc">0.545 <span class="cell-delta pos">+0.045</span></div><div class="cell-counts">1 / 11</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.388</span></div><div class="cell-counts">0 / 27</div></td>
+            <td class="num"><div class="cell-acc">0.578 <span class="cell-delta neg">&minus;0.174</span></div><div class="cell-counts">18 / 111</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.358</span></div><div class="cell-counts">0 / 217</div></td>
             <td class="num"><div class="cell-acc na">n/a <span class="cell-delta na">n/a</span></div><div class="cell-counts">0 / 0</div></td>
           </tr>
 
@@ -740,13 +924,13 @@
           <tr>
             <td class="model">
               <div class="name"><span class="fam-dot detection"></span>yolov10l_coco</div>
-              <div class="fam">detection &middot; YOLOv10l COCO base &middot; 24.4M params</div>
+              <div class="fam">detection - YOLOv10l COCO base - 24.4M params</div>
             </td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.609</span></div><div class="cell-counts">0 / 279</div></td>
-            <td class="num"><div class="cell-acc">0.091 <span class="cell-delta pos">+0.091</span></div><div class="cell-counts">1 / 11</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.889</span></div><div class="cell-counts">0 / 27</div></td>
-            <td class="num"><div class="cell-acc">0.360 <span class="cell-delta neg">&minus;0.153</span></div><div class="cell-counts">40 / 111</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.806</span></div><div class="cell-counts">0 / 217</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.183</span></div><div class="cell-counts">0 / 279</div></td>
+            <td class="num"><div class="cell-acc">0.545 <span class="cell-delta pos">+0.045</span></div><div class="cell-counts">1 / 11</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.388</span></div><div class="cell-counts">0 / 27</div></td>
+            <td class="num"><div class="cell-acc">0.669 <span class="cell-delta neg">&minus;0.083</span></div><div class="cell-counts">40 / 111</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.358</span></div><div class="cell-counts">0 / 217</div></td>
             <td class="num"><div class="cell-acc na">n/a <span class="cell-delta na">n/a</span></div><div class="cell-counts">0 / 0</div></td>
           </tr>
 
@@ -754,13 +938,13 @@
           <tr>
             <td class="model">
               <div class="name"><span class="fam-dot detection"></span>yolov10x_coco</div>
-              <div class="fam">detection &middot; YOLOv10x COCO base</div>
+              <div class="fam">detection - YOLOv10x COCO base</div>
             </td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.609</span></div><div class="cell-counts">0 / 279</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta zero">&plusmn;0.000</span></div><div class="cell-counts">0 / 11</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.889</span></div><div class="cell-counts">0 / 27</div></td>
-            <td class="num"><div class="cell-acc">0.387 <span class="cell-delta neg">&minus;0.126</span></div><div class="cell-counts">43 / 111</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.806</span></div><div class="cell-counts">0 / 217</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.183</span></div><div class="cell-counts">0 / 279</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta zero">&plusmn;0.000</span></div><div class="cell-counts">0 / 11</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.388</span></div><div class="cell-counts">0 / 27</div></td>
+            <td class="num"><div class="cell-acc">0.687 <span class="cell-delta neg">&minus;0.065</span></div><div class="cell-counts">43 / 111</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.358</span></div><div class="cell-counts">0 / 217</div></td>
             <td class="num"><div class="cell-acc na">n/a <span class="cell-delta na">n/a</span></div><div class="cell-counts">0 / 0</div></td>
           </tr>
 
@@ -768,13 +952,13 @@
           <tr>
             <td class="model">
               <div class="name"><span class="fam-dot detection"></span>rtdetr_l_coco</div>
-              <div class="fam">detection &middot; RT-DETR-L COCO &middot; Apache-2.0</div>
+              <div class="fam">detection - RT-DETR-L COCO - Apache-2.0</div>
             </td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.609</span></div><div class="cell-counts">0 / 279</div></td>
-            <td class="num"><div class="cell-acc">0.182 <span class="cell-delta pos">+0.182</span></div><div class="cell-counts">2 / 11</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.889</span></div><div class="cell-counts">0 / 27</div></td>
-            <td class="num"><div class="cell-acc">0.586 <span class="cell-delta pos">+0.072</span></div><div class="cell-counts">65 / 111</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.806</span></div><div class="cell-counts">0 / 217</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.183</span></div><div class="cell-counts">0 / 279</div></td>
+            <td class="num"><div class="cell-acc">0.589 <span class="cell-delta pos">+0.089</span></div><div class="cell-counts">2 / 11</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.388</span></div><div class="cell-counts">0 / 27</div></td>
+            <td class="num"><div class="cell-acc">0.747 <span class="cell-delta neg">&minus;0.005</span></div><div class="cell-counts">65 / 111</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.358</span></div><div class="cell-counts">0 / 217</div></td>
             <td class="num"><div class="cell-acc na">n/a <span class="cell-delta na">n/a</span></div><div class="cell-counts">0 / 0</div></td>
           </tr>
 
@@ -782,13 +966,13 @@
           <tr>
             <td class="model">
               <div class="name"><span class="fam-dot detection"></span>rtdetr_x_coco</div>
-              <div class="fam">detection &middot; RT-DETR-X COCO &middot; 76M params &middot; Apache-2.0</div>
+              <div class="fam">detection - RT-DETR-X COCO - 76M params - Apache-2.0</div>
             </td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.609</span></div><div class="cell-counts">0 / 279</div></td>
-            <td class="num"><div class="cell-acc">0.182 <span class="cell-delta pos">+0.182</span></div><div class="cell-counts">2 / 11</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.889</span></div><div class="cell-counts">0 / 27</div></td>
-            <td class="num"><div class="cell-acc">0.631 <span class="cell-delta pos">+0.117</span></div><div class="cell-counts">70 / 111</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.806</span></div><div class="cell-counts">0 / 217</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.183</span></div><div class="cell-counts">0 / 279</div></td>
+            <td class="num"><div class="cell-acc">0.588 <span class="cell-delta pos">+0.088</span></div><div class="cell-counts">2 / 11</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.388</span></div><div class="cell-counts">0 / 27</div></td>
+            <td class="num"><div class="cell-acc">0.783 <span class="cell-delta pos">+0.031</span></div><div class="cell-counts">70 / 111</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.358</span></div><div class="cell-counts">0 / 217</div></td>
             <td class="num"><div class="cell-acc na">n/a <span class="cell-delta na">n/a</span></div><div class="cell-counts">0 / 0</div></td>
           </tr>
 
@@ -796,13 +980,13 @@
           <tr>
             <td class="model">
               <div class="name"><span class="fam-dot detection"></span>roboflow_dmd</div>
-              <div class="fam">detection &middot; YOLOv8 DMD fine-tune</div>
+              <div class="fam">detection - YOLOv8 DMD fine-tune</div>
             </td>
-            <td class="num"><div class="cell-acc">0.050 <span class="cell-delta neg">&minus;0.559</span></div><div class="cell-counts">14 / 279</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta zero">&plusmn;0.000</span></div><div class="cell-counts">0 / 11</div></td>
-            <td class="num"><div class="cell-acc">0.037 <span class="cell-delta neg">&minus;0.852</span></div><div class="cell-counts">1 / 27</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.514</span></div><div class="cell-counts">0 / 111</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.806</span></div><div class="cell-counts">0 / 217</div></td>
+            <td class="num"><div class="cell-acc">0.495 <span class="cell-delta neg">&minus;0.188</span></div><div class="cell-counts">14 / 279</div></td>
+            <td class="num"><div class="cell-acc">0.493 <span class="cell-delta neg">&minus;0.007</span></div><div class="cell-counts">0 / 11</div></td>
+            <td class="num"><div class="cell-acc">0.519 <span class="cell-delta neg">&minus;0.369</span></div><div class="cell-counts">1 / 27</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.252</span></div><div class="cell-counts">0 / 111</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.358</span></div><div class="cell-counts">0 / 217</div></td>
             <td class="num"><div class="cell-acc na">n/a <span class="cell-delta na">n/a</span></div><div class="cell-counts">0 / 0</div></td>
           </tr>
 
@@ -810,13 +994,13 @@
           <tr>
             <td class="model">
               <div class="name"><span class="fam-dot classifier"></span>classifier_doze_guard</div>
-              <div class="fam">classification &middot; SigLIP2 UTA-RLDD</div>
+              <div class="fam">classification - SigLIP2 UTA-RLDD</div>
             </td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.609</span></div><div class="cell-counts">0 / 279</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta zero">&plusmn;0.000</span></div><div class="cell-counts">0 / 11</div></td>
-            <td class="num"><div class="cell-acc">0.889 <span class="cell-delta zero">&plusmn;0.000</span></div><div class="cell-counts">24 / 27</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.514</span></div><div class="cell-counts">0 / 111</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.806</span></div><div class="cell-counts">0 / 217</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.183</span></div><div class="cell-counts">0 / 279</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta zero">&plusmn;0.000</span></div><div class="cell-counts">0 / 11</div></td>
+            <td class="num"><div class="cell-acc">0.478 <span class="cell-delta neg">&minus;0.410</span></div><div class="cell-counts">24 / 27</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.252</span></div><div class="cell-counts">0 / 111</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.358</span></div><div class="cell-counts">0 / 217</div></td>
             <td class="num"><div class="cell-acc na">n/a <span class="cell-delta na">n/a</span></div><div class="cell-counts">0 / 0</div></td>
           </tr>
 
@@ -824,13 +1008,13 @@
           <tr>
             <td class="model">
               <div class="name"><span class="fam-dot classifier"></span>classifier_chbh7051_vit</div>
-              <div class="fam">classification &middot; ViT-base UTA-RLDD</div>
+              <div class="fam">classification - ViT-base UTA-RLDD</div>
             </td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.609</span></div><div class="cell-counts">0 / 279</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta zero">&plusmn;0.000</span></div><div class="cell-counts">0 / 11</div></td>
-            <td class="num"><div class="cell-acc">0.148 <span class="cell-delta neg">&minus;0.741</span></div><div class="cell-counts">4 / 27</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.514</span></div><div class="cell-counts">0 / 111</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.806</span></div><div class="cell-counts">0 / 217</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.183</span></div><div class="cell-counts">0 / 279</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta zero">&plusmn;0.000</span></div><div class="cell-counts">0 / 11</div></td>
+            <td class="num"><div class="cell-acc">0.531 <span class="cell-delta neg">&minus;0.357</span></div><div class="cell-counts">4 / 27</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.252</span></div><div class="cell-counts">0 / 111</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.358</span></div><div class="cell-counts">0 / 217</div></td>
             <td class="num"><div class="cell-acc na">n/a <span class="cell-delta na">n/a</span></div><div class="cell-counts">0 / 0</div></td>
           </tr>
 
@@ -838,13 +1022,13 @@
           <tr>
             <td class="model">
               <div class="name"><span class="fam-dot classifier"></span>classifier_chbh7051_v2</div>
-              <div class="fam">classification &middot; ViT UTA-RLDD (author's 2nd model)</div>
+              <div class="fam">classification - ViT UTA-RLDD (author's 2nd model)</div>
             </td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.609</span></div><div class="cell-counts">0 / 279</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta zero">&plusmn;0.000</span></div><div class="cell-counts">0 / 11</div></td>
-            <td class="num"><div class="cell-acc">0.593 <span class="cell-delta neg">&minus;0.296</span></div><div class="cell-counts">16 / 27</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.514</span></div><div class="cell-counts">0 / 111</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.806</span></div><div class="cell-counts">0 / 217</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.183</span></div><div class="cell-counts">0 / 279</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta zero">&plusmn;0.000</span></div><div class="cell-counts">0 / 11</div></td>
+            <td class="num"><div class="cell-acc">0.543 <span class="cell-delta neg">&minus;0.344</span></div><div class="cell-counts">16 / 27</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.252</span></div><div class="cell-counts">0 / 111</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.358</span></div><div class="cell-counts">0 / 217</div></td>
             <td class="num"><div class="cell-acc na">n/a <span class="cell-delta na">n/a</span></div><div class="cell-counts">0 / 0</div></td>
           </tr>
 
@@ -852,13 +1036,13 @@
           <tr>
             <td class="model">
               <div class="name"><span class="fam-dot classifier"></span>classifier_mosesb_mobilevitv2</div>
-              <div class="fam">classification &middot; MobileViT-v2</div>
+              <div class="fam">classification - MobileViT-v2</div>
             </td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.609</span></div><div class="cell-counts">0 / 279</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta zero">&plusmn;0.000</span></div><div class="cell-counts">0 / 11</div></td>
-            <td class="num"><div class="cell-acc">0.259 <span class="cell-delta neg">&minus;0.630</span></div><div class="cell-counts">7 / 27</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.514</span></div><div class="cell-counts">0 / 111</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.806</span></div><div class="cell-counts">0 / 217</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.183</span></div><div class="cell-counts">0 / 279</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta zero">&plusmn;0.000</span></div><div class="cell-counts">0 / 11</div></td>
+            <td class="num"><div class="cell-acc">0.441 <span class="cell-delta neg">&minus;0.447</span></div><div class="cell-counts">7 / 27</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.252</span></div><div class="cell-counts">0 / 111</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.358</span></div><div class="cell-counts">0 / 217</div></td>
             <td class="num"><div class="cell-acc na">n/a <span class="cell-delta na">n/a</span></div><div class="cell-counts">0 / 0</div></td>
           </tr>
 
@@ -866,13 +1050,13 @@
           <tr>
             <td class="model">
               <div class="name"><span class="fam-dot classifier"></span>classifier_teen_d_mobilenetv2</div>
-              <div class="fam">classification &middot; MobileNetV2 Kaggle DDD</div>
+              <div class="fam">classification - MobileNetV2 Kaggle DDD</div>
             </td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.609</span></div><div class="cell-counts">0 / 279</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta zero">&plusmn;0.000</span></div><div class="cell-counts">0 / 11</div></td>
-            <td class="num"><div class="cell-acc">1.000 <span class="cell-delta pos">+0.111</span></div><div class="cell-counts">27 / 27</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.514</span></div><div class="cell-counts">0 / 111</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.806</span></div><div class="cell-counts">0 / 217</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.183</span></div><div class="cell-counts">0 / 279</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta zero">&plusmn;0.000</span></div><div class="cell-counts">0 / 11</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.388</span></div><div class="cell-counts">27 / 27</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.252</span></div><div class="cell-counts">0 / 111</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.358</span></div><div class="cell-counts">0 / 217</div></td>
             <td class="num"><div class="cell-acc na">n/a <span class="cell-delta na">n/a</span></div><div class="cell-counts">0 / 0</div></td>
           </tr>
 
@@ -880,13 +1064,13 @@
           <tr>
             <td class="model">
               <div class="name"><span class="fam-dot classifier"></span>classifier_teen_d_resnet18</div>
-              <div class="fam">classification &middot; ResNet18 Kaggle DDD</div>
+              <div class="fam">classification - ResNet18 Kaggle DDD</div>
             </td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.609</span></div><div class="cell-counts">0 / 279</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta zero">&plusmn;0.000</span></div><div class="cell-counts">0 / 11</div></td>
-            <td class="num"><div class="cell-acc">1.000 <span class="cell-delta pos">+0.111</span></div><div class="cell-counts">27 / 27</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.514</span></div><div class="cell-counts">0 / 111</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.806</span></div><div class="cell-counts">0 / 217</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.183</span></div><div class="cell-counts">0 / 279</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta zero">&plusmn;0.000</span></div><div class="cell-counts">0 / 11</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.388</span></div><div class="cell-counts">27 / 27</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.252</span></div><div class="cell-counts">0 / 111</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.358</span></div><div class="cell-counts">0 / 217</div></td>
             <td class="num"><div class="cell-acc na">n/a <span class="cell-delta na">n/a</span></div><div class="cell-counts">0 / 0</div></td>
           </tr>
 
@@ -894,13 +1078,13 @@
           <tr>
             <td class="model">
               <div class="name"><span class="fam-dot classifier"></span>classifier_teen_d_cnn_48</div>
-              <div class="fam">classification &middot; Custom CNN 48² DMS Facial &middot; 1.4M params</div>
+              <div class="fam">classification - Custom CNN 48 sq DMS Facial - 1.4M params</div>
             </td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.609</span></div><div class="cell-counts">0 / 279</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta zero">&plusmn;0.000</span></div><div class="cell-counts">0 / 11</div></td>
-            <td class="num"><div class="cell-acc">1.000 <span class="cell-delta pos">+0.111</span></div><div class="cell-counts">27 / 27</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.514</span></div><div class="cell-counts">0 / 111</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.806</span></div><div class="cell-counts">0 / 217</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.183</span></div><div class="cell-counts">0 / 279</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta zero">&plusmn;0.000</span></div><div class="cell-counts">0 / 11</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.388</span></div><div class="cell-counts">27 / 27</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.252</span></div><div class="cell-counts">0 / 111</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.358</span></div><div class="cell-counts">0 / 217</div></td>
             <td class="num"><div class="cell-acc na">n/a <span class="cell-delta na">n/a</span></div><div class="cell-counts">0 / 0</div></td>
           </tr>
 
@@ -908,13 +1092,13 @@
           <tr>
             <td class="model">
               <div class="name"><span class="fam-dot classifier"></span>classifier_malek_messaoudi</div>
-              <div class="fam">classification &middot; YOLOv8n-cls StateFarm</div>
+              <div class="fam">classification - YOLOv8n-cls StateFarm</div>
             </td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.609</span></div><div class="cell-counts">0 / 279</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta zero">&plusmn;0.000</span></div><div class="cell-counts">0 / 11</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.889</span></div><div class="cell-counts">0 / 27</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.514</span></div><div class="cell-counts">0 / 111</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.806</span></div><div class="cell-counts">0 / 217</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.183</span></div><div class="cell-counts">0 / 279</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta zero">&plusmn;0.000</span></div><div class="cell-counts">0 / 11</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.388</span></div><div class="cell-counts">0 / 27</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.252</span></div><div class="cell-counts">0 / 111</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.358</span></div><div class="cell-counts">0 / 217</div></td>
             <td class="num"><div class="cell-acc na">n/a <span class="cell-delta na">n/a</span></div><div class="cell-counts">0 / 0</div></td>
           </tr>
 
@@ -922,13 +1106,13 @@
           <tr>
             <td class="model">
               <div class="name"><span class="fam-dot classifier"></span>classifier_mosesb_yolo_cls</div>
-              <div class="fam">classification &middot; YOLOv11x-cls combined DMS &middot; AGPL-3.0</div>
+              <div class="fam">classification - YOLOv11x-cls combined DMS - AGPL-3.0</div>
             </td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.609</span></div><div class="cell-counts">0 / 279</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta zero">&plusmn;0.000</span></div><div class="cell-counts">0 / 11</div></td>
-            <td class="num"><div class="cell-acc">0.111 <span class="cell-delta neg">&minus;0.778</span></div><div class="cell-counts">3 / 27</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.514</span></div><div class="cell-counts">0 / 111</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.806</span></div><div class="cell-counts">0 / 217</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.183</span></div><div class="cell-counts">0 / 279</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta zero">&plusmn;0.000</span></div><div class="cell-counts">0 / 11</div></td>
+            <td class="num"><div class="cell-acc">0.435 <span class="cell-delta neg">&minus;0.453</span></div><div class="cell-counts">3 / 27</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.252</span></div><div class="cell-counts">0 / 111</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.358</span></div><div class="cell-counts">0 / 217</div></td>
             <td class="num"><div class="cell-acc na">n/a <span class="cell-delta na">n/a</span></div><div class="cell-counts">0 / 0</div></td>
           </tr>
 
@@ -936,13 +1120,13 @@
           <tr>
             <td class="model">
               <div class="name"><span class="fam-dot classifier"></span>classifier_followb1ind1y_effnet</div>
-              <div class="fam">classification &middot; EfficientNet-B0 StateFarm</div>
+              <div class="fam">classification - EfficientNet-B0 StateFarm</div>
             </td>
-            <td class="num"><div class="cell-acc">0.821 <span class="cell-delta pos">+0.211</span></div><div class="cell-counts">229 / 279</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta zero">&plusmn;0.000</span></div><div class="cell-counts">0 / 11</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.889</span></div><div class="cell-counts">0 / 27</div></td>
-            <td class="num"><div class="cell-acc">0.198 <span class="cell-delta neg">&minus;0.315</span></div><div class="cell-counts">22 / 111</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.806</span></div><div class="cell-counts">0 / 217</div></td>
+            <td class="num"><div class="cell-acc">0.516 <span class="cell-delta neg">&minus;0.167</span></div><div class="cell-counts">229 / 279</div></td>
+            <td class="num"><div class="cell-acc">0.498 <span class="cell-delta neg">&minus;0.002</span></div><div class="cell-counts">0 / 11</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.388</span></div><div class="cell-counts">0 / 27</div></td>
+            <td class="num"><div class="cell-acc">0.527 <span class="cell-delta neg">&minus;0.225</span></div><div class="cell-counts">22 / 111</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.358</span></div><div class="cell-counts">0 / 217</div></td>
             <td class="num"><div class="cell-acc na">n/a <span class="cell-delta na">n/a</span></div><div class="cell-counts">0 / 0</div></td>
           </tr>
 
@@ -950,13 +1134,13 @@
           <tr>
             <td class="model">
               <div class="name"><span class="fam-dot classifier"></span>classifier_followb1ind1y_mnv3</div>
-              <div class="fam">classification &middot; MobileNetV3-L StateFarm</div>
+              <div class="fam">classification - MobileNetV3-L StateFarm</div>
             </td>
-            <td class="num"><div class="cell-acc">0.502 <span class="cell-delta neg">&minus;0.108</span></div><div class="cell-counts">140 / 279</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta zero">&plusmn;0.000</span></div><div class="cell-counts">0 / 11</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.889</span></div><div class="cell-counts">0 / 27</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.514</span></div><div class="cell-counts">0 / 111</div></td>
-            <td class="num"><div class="cell-acc">0.000 <span class="cell-delta neg">&minus;0.806</span></div><div class="cell-counts">0 / 217</div></td>
+            <td class="num"><div class="cell-acc">0.602 <span class="cell-delta neg">&minus;0.080</span></div><div class="cell-counts">140 / 279</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta zero">&plusmn;0.000</span></div><div class="cell-counts">0 / 11</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.388</span></div><div class="cell-counts">0 / 27</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.252</span></div><div class="cell-counts">0 / 111</div></td>
+            <td class="num"><div class="cell-acc">0.500 <span class="cell-delta neg">&minus;0.358</span></div><div class="cell-counts">0 / 217</div></td>
             <td class="num"><div class="cell-acc na">n/a <span class="cell-delta na">n/a</span></div><div class="cell-counts">0 / 0</div></td>
           </tr>
         </tbody>
@@ -969,175 +1153,6 @@
         empirical evidence for the &ldquo;bad&rdquo; cell in the capability matrix. Rows at <code style="font-family:var(--mono);font-size:11.5px;background:var(--bg-card);padding:1px 5px;border-radius:3px">1.000</code>
         may be over-firing (check F1 / precision on the leaderboard before celebrating). <code style="font-family:var(--mono);font-size:11.5px;background:var(--bg-card);padding:1px 5px;border-radius:3px">n/a</code>
         means the 619-frame manifest has zero GT positives for that class.</div>
-    </div>
-  </section>
-
-  <!-- ==================== 4. CLASS-BY-CLASS BREAKDOWN ==================== -->
-  <section class="slide" id="breakdown">
-    <span class="tag tag--purple">Per-class breakdown</span>
-    <h2>Where each class lands</h2>
-    <h3>Who beats the OEM baseline, who loses, and the precision/recall trade-off behind the numbers</h3>
-
-    <div class="class-grid">
-
-      <!-- distracted_driving -->
-      <div class="class-card">
-        <div class="title-row">
-          <span class="cls">distracted_driving</span>
-          <span class="hk-acc">Hikvision 0.609</span>
-        </div>
-        <p class="winner"><strong>Best model:</strong> <code>mediapipe</code> at <code>0.724</code> (&Delta; +0.115) &mdash;
-          the only row that actually detects distracted_driving and beats the OEM on recall.</p>
-        <p class="laggard"><strong>Forced-negative everywhere else:</strong> 8 rows sit at <code>0.000</code> because
-          their class-mapping has nothing pointing to <code>distracted_driving</code>. That&rsquo;s the capability
-          matrix speaking empirically.</p>
-        <p class="note">Support = 279 / 619 (45%). Hikvision catches 170; MediaPipe catches 202. Pair with precision
-          before declaring MediaPipe a winner &mdash; its threshold-based over-firing is a known trade-off.</p>
-      </div>
-
-      <!-- eating_drinking -->
-      <div class="class-card">
-        <div class="title-row">
-          <span class="cls">eating_drinking</span>
-          <span class="hk-acc">Hikvision n/a</span>
-        </div>
-        <p class="winner"><strong>Every row:</strong> <code>n/a</code>.</p>
-        <p class="laggard"><strong>Why:</strong> the leaderboard&rsquo;s <code>_SYNONYMS</code> maps
-          <code>drinking_eating</code> to <code>distracted_driving</code> and leaves
-          <code>eating_drinking</code> empty, so no frame ends up as a positive for this class.</p>
-        <p class="note">Unblocks as soon as we either (a) add eating/drinking synonyms to the leaderboard&rsquo;s
-          expansion map, or (b) benchmark on OEM Raqeeb data where the taxonomy has a dedicated eating label.</p>
-      </div>
-
-      <!-- fatigue -->
-      <div class="class-card">
-        <div class="title-row">
-          <span class="cls">fatigue</span>
-          <span class="hk-acc">Hikvision 0.889</span>
-        </div>
-        <p class="winner"><strong>Perfect recall:</strong> <code>classifier_teen_d_mobilenetv2</code> and
-          <code>_resnet18</code> at <code>1.000</code> (27/27, &Delta; +0.111). They catch every drowsy GT frame.</p>
-        <p class="laggard"><strong>But:</strong> both models previously scored <code>0.043</code> on the
-          overall-accuracy view &mdash; because they fire drowsy on nearly every cabin frame. Their precision is
-          terrible; they trade FP for FN. <code>mediapipe</code> matches Hikvision exactly (24/27, &Delta; 0).</p>
-        <p class="note"><code>classifier_doze_guard</code> at <code>0.852</code> (23/27) is the most balanced face-crop
-          classifier. <code>classifier_chbh7051_vit</code> under-fires at <code>0.185</code> (5/27) &mdash; opposite failure mode.</p>
-      </div>
-
-      <!-- phone_usage -->
-      <div class="class-card">
-        <div class="title-row">
-          <span class="cls">phone_usage</span>
-          <span class="hk-acc">Hikvision 0.514</span>
-        </div>
-        <p class="winner"><strong>No model beats Hikvision.</strong> Best is <code>yolo_soham</code> at <code>0.009</code> (1/111).</p>
-        <p class="laggard"><strong>Chaitanya/Soham under-fire massively.</strong> Both are DMS-specific YOLOs with
-          a phone class, but their confidence threshold (0.50) is too strict for Hikvision&rsquo;s low-light cabin shots.</p>
-        <p class="note">Support = 111 / 619 (18%). Lower the confidence threshold, add SAHI slicing, or bring in
-          RT-DETR / YOLO-NAS / YOLO11x COCO rows &mdash; all queued in the roster. This is the column most likely to
-          unlock with more models.</p>
-      </div>
-
-      <!-- seatbelt -->
-      <div class="class-card">
-        <div class="title-row">
-          <span class="cls">seatbelt</span>
-          <span class="hk-acc">Hikvision 0.806</span>
-        </div>
-        <p class="winner"><strong>Perfect recall:</strong> <code>yolo_chaitanya</code> at <code>1.000</code>
-          (217/217, &Delta; +0.194). <code>yolo_soham</code> a close second at <code>0.945</code> (205/217, &Delta; +0.138).</p>
-        <p class="laggard"><strong>Caveat same as fatigue:</strong> Chaitanya&rsquo;s
-          <code>invert_classes=["seatbelt"]</code> flips presence into absence, and it over-fires missing-seatbelt
-          on a lot of frames &mdash; its accuracy (TP+TN/total) on this class was 0.422. Pair with precision.</p>
-        <p class="note">Support = 217 / 619 (35%). DMS-specific YOLO detectors beat the OEM decisively on recall.
-          <code>seatbelt_v4_onnx</code> is wired to drop in next and should give us a third independent row.</p>
-      </div>
-
-      <!-- smoking -->
-      <div class="class-card">
-        <div class="title-row">
-          <span class="cls">smoking</span>
-          <span class="hk-acc">Hikvision n/a</span>
-        </div>
-        <p class="winner"><strong>Every row:</strong> <code>n/a</code>.</p>
-        <p class="laggard"><strong>Why:</strong> zero smoking positives in the 619-frame review manifest.</p>
-        <p class="note">The column is uninformative until either (a) more frames with smoking labels land, or (b) we
-          benchmark on OEM Raqeeb / Howen which have smoking events. Catalogued as the persistent gap &mdash; no
-          base-COCO model covers cigarettes, so we&rsquo;re also waiting on a fine-tuned smoking classifier row.</p>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ==================== 5. CAVEATS ==================== -->
-  <section class="slide" id="caveats">
-    <span class="tag tag--red">Caveats</span>
-    <h2>Reading the table honestly</h2>
-    <h3>Three warnings before anyone reads recall as a leaderboard ranking</h3>
-
-    <div class="notes-grid">
-
-      <div class="note-card amber">
-        <div class="note-label">Recall alone</div>
-        <h4>1.000 can be bad</h4>
-        <p>A detector that always says &ldquo;yes&rdquo; has recall = 1.000. TEEN-D MobileNetV2/ResNet18 hit perfect
-          recall on fatigue (27/27) partly because they over-fire on every cabin frame &mdash; previously their
-          overall accuracy was <code>0.043</code>. Always pair recall with precision or F1. Use
-          <code>--view --metric f1</code> or <code>--view --metric precision</code> on the same leaderboard CSV.</p>
-      </div>
-
-      <div class="note-card red">
-        <div class="note-label">Support = 0</div>
-        <h4>n/a is not a zero</h4>
-        <p>The eating_drinking and smoking columns show <code>n/a</code> because the 619-frame manifest has no
-          GT positives for those classes. Any displayed number would be division-by-zero. Don&rsquo;t reward models
-          that don&rsquo;t fire there &mdash; we simply can&rsquo;t tell on this manifest.</p>
-      </div>
-
-      <div class="note-card blue">
-        <div class="note-label">Forced-negative</div>
-        <h4>0.000 with support &gt; 0 is information</h4>
-        <p>A row at <code>0.000</code> on a class with real support isn&rsquo;t &ldquo;broken&rdquo; &mdash; it&rsquo;s
-          empirical evidence that the row&rsquo;s class mapping doesn&rsquo;t reach that canonical. That&rsquo;s the
-          capability matrix&rsquo; &ldquo;bad&rdquo; cell proven by data. Eight of the nine rows show this pattern
-          for <code>distracted_driving</code>, phone, fatigue (for detection rows), or seatbelt (for classifier rows).</p>
-      </div>
-
-    </div>
-
-    <h2 style="margin-top:32px">Where this goes next</h2>
-    <h3>The roster still has 26 planned rows to wire before this table is complete</h3>
-
-    <div class="flex gap-16" style="margin-top:6px">
-      <div class="card" style="flex:1">
-        <h4 style="color:var(--accent-3)">Detection sweep (20 COCO-scale rows + 3 DMS-specific)</h4>
-        <p style="font-size:12.5px;color:var(--text-dim);line-height:1.6">YOLOv8/11/10 n&thinsp;/&thinsp;s&thinsp;/&thinsp;m&thinsp;/&thinsp;l&thinsp;/&thinsp;x
-          + RT-DETR s/l/x + YOLO-NAS s/m/l + SeatbeltModel_v4 ONNX + Roboflow Jui + Roboflow DMD. All fit in 12 GB
-          at batch = 1. Wire-up is sequential; runs are sequential on GPU. This is the path to moving phone_usage
-          off its current 0.009 floor.</p>
-      </div>
-      <div class="card" style="flex:1">
-        <h4 style="color:var(--purple)">Classifier follow-ups (2 pending)</h4>
-        <p style="font-size:12.5px;color:var(--text-dim);line-height:1.6">Followb1ind1y EfficientNet-B0 and MobileNetV3-L
-          (StateFarm, 21&ndash;22 MB). These fire <code>distracted_driving</code>, <code>phone_usage</code>,
-          <code>eating_drinking</code> simultaneously &mdash; cross-check against <code>classifier_malek_messaoudi</code>
-          (which currently shows 0.000 everywhere because its threshold 0.5 may be too strict).</p>
-      </div>
-      <div class="card" style="flex:1">
-        <h4 style="color:var(--accent-2)">Wrappers to unlock</h4>
-        <p style="font-size:12.5px;color:var(--text-dim);line-height:1.6">YuNet + <code>LandmarkEARDetector</code>
-          wrapper to swap the MediaPipe slot. <code>EyeStateDetector</code> around OCEC (R49, 6.4&nbsp;MB, F1 &ge; 0.99 on eye-crops)
-          for a fatigue column that doesn&rsquo;t depend on face-crop extraction. See the roster doc for the full list.</p>
-      </div>
-    </div>
-
-    <div class="action-bar" style="margin-top:18px">
-      <div class="action-text"><strong>Artefacts:</strong> long-form
-        <code style="font-family:var(--mono);font-size:11.5px;background:var(--bg-card);padding:1px 5px;border-radius:3px">outputs/leaderboards/hikvision/leaderboard.csv</code>
-        (all 10 metric names &times; 6 classes &times; 9 models, append-only history); per-run tidy CSVs at
-        <code style="font-family:var(--mono);font-size:11.5px;background:var(--bg-card);padding:1px 5px;border-radius:3px">outputs/leaderboards/hikvision/predictions/&lt;model&gt;__&lt;run&gt;__&#123;wide,tidy,meta&#125;.csv</code>.
-        Re-score without re-running by loading the tidy CSVs.
-      </div>
     </div>
   </section>
 
