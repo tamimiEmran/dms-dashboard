@@ -713,8 +713,8 @@
           <div style="font-family:var(--mono);font-size:44px;font-weight:500;color:var(--text);line-height:1">73.6%</div>
           <div style="font-size:11px;color:var(--text-dim);margin-top:8px">mean accuracy</div>
         </div>
-        <div class="card" style="padding:14px 18px;flex:1;overflow:auto">
-          <div style="font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:600;margin-bottom:10px">Routing</div>
+        <div class="card" style="padding:14px 18px">
+          <div style="font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:10px">Specialist routing &middot; 71.3%</div>
           <table style="width:100%;font-family:var(--mono);font-size:11.5px;border-collapse:collapse">
             <tbody>
               <tr style="border-bottom:1px solid var(--border)">
@@ -741,6 +741,42 @@
                 <td style="padding:7px 0;color:var(--text-muted)">seatbelt</td>
                 <td style="padding:7px 0;color:var(--text)">yolo_soham</td>
                 <td style="padding:7px 0;text-align:right;color:var(--accent);font-weight:600">79.6%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card" style="padding:14px 18px">
+          <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px">
+            <span style="font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent-2);font-weight:600">DMS-Live routing &middot; 56.9%</span>
+            <a href="file:///M:/DMS/reports/dashboard/hikvision_rulebased.html" style="font-family:var(--font);font-size:9px;font-weight:600;color:var(--accent-2);background:var(--accent-2-dim);padding:2px 7px;border-radius:3px;text-decoration:none;letter-spacing:0.04em;text-transform:uppercase">Details &rarr;</a>
+          </div>
+          <table style="width:100%;font-family:var(--mono);font-size:11.5px;border-collapse:collapse">
+            <tbody>
+              <tr style="border-bottom:1px solid var(--border)">
+                <td style="padding:7px 0;color:var(--text-muted)">distracted</td>
+                <td style="padding:7px 0;color:var(--text)">mediapipe</td>
+                <td style="padding:7px 0;text-align:right;color:var(--accent-2);font-weight:600">49.9%</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border)">
+                <td style="padding:7px 0;color:var(--text-muted)">eating</td>
+                <td style="padding:7px 0;color:var(--text)">chaitanya + soham</td>
+                <td style="padding:7px 0;text-align:right;color:var(--accent-2);font-weight:600">49.6%</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border)">
+                <td style="padding:7px 0;color:var(--text-muted)">fatigue</td>
+                <td style="padding:7px 0;color:var(--text)">mediapipe</td>
+                <td style="padding:7px 0;text-align:right;color:var(--accent-2);font-weight:600">79.2%</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border)">
+                <td style="padding:7px 0;color:var(--text-muted)">phone</td>
+                <td style="padding:7px 0;color:var(--text)">chaitanya + soham</td>
+                <td style="padding:7px 0;text-align:right;color:var(--accent-2);font-weight:600">50.4%</td>
+              </tr>
+              <tr>
+                <td style="padding:7px 0;color:var(--text-muted)">seatbelt</td>
+                <td style="padding:7px 0;color:var(--text)">chaitanya + soham</td>
+                <td style="padding:7px 0;text-align:right;color:var(--accent-2);font-weight:600">55.5%</td>
               </tr>
             </tbody>
           </table>
@@ -846,7 +882,6 @@
       <div class="item"><span class="fam-dot mediapipe"></span> MediaPipe</div>
       <div class="item"><span class="fam-dot detection"></span> Detection</div>
       <div class="item"><span class="fam-dot classifier"></span> Classification</div>
-      <div class="item"><code>0.683 (24/27)</code> accuracy &middot; (TP / support)</div>
       <div class="item"><code>&Delta;</code> vs. Hikvision baseline</div>
       <div class="item"><code>0.50</code> = no skill &middot; <code>1.00</code> = perfect</div>
       <div class="item"><code>n/a</code> no GT positives for this class in the 619-frame manifest</div>
