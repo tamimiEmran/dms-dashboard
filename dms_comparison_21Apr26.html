@@ -517,8 +517,9 @@
   <section class="slide title-slide" id="intro">
     <span class="tag tag--accent">Field Test Comparison</span>
     <h1>DMS Field Test &mdash; Comparison Report</h1>
-    <div class="subtitle">Comparative evaluation of five driver activities recorded simultaneously by a custom
-      rule-based pipeline and the Hikvision DMS in the same vehicle.</div>
+    <div class="subtitle">Five driver activities recorded simultaneously by the Hikvision DMS (production reference)
+      and a custom rule-based pipeline in the same vehicle. Hikvision correctly detected all five events; the
+      comparison concerns the form and granularity of each system's output, not detection correctness on this trip.</div>
     <div class="meta">April 2026 &middot; Mowasalat &middot; Custom Pipeline vs. Hikvision DMS</div>
 
     <div class="flex gap-12 mt-auto" style="padding-top:20px">
@@ -551,8 +552,8 @@
           <p style="font-size:12.5px;color:var(--text-dim);line-height:1.5">MediaPipe (EAR, MAR, head pose) &middot; YOLO object detection (phone, seatbelt, smoking) &middot; real-time on-screen alerts.</p>
         </div>
         <div class="card">
-          <h4 style="font-size:13px;font-weight:600;margin-bottom:6px">Hikvision DMS</h4>
-          <p style="font-size:12.5px;color:var(--text-dim);line-height:1.5">Factory-installed commercial DMS &middot; captures video evidence and in-vehicle audio alerts &middot; backend event logging.</p>
+          <h4 style="font-size:13px;font-weight:600;margin-bottom:6px">Hikvision DMS (reference)</h4>
+          <p style="font-size:12.5px;color:var(--text-dim);line-height:1.5">Factory-installed commercial DMS &middot; detects all five activities &middot; in-vehicle audio alert + backend event log with synchronised video.</p>
         </div>
         <div class="card">
           <h4 style="font-size:13px;font-weight:600;margin-bottom:6px">Activities Tested</h4>
@@ -578,10 +579,10 @@
       <div class="cmp-card">
         <div class="cmp-head">
           <span class="title">Hikvision DMS</span>
-          <span class="pill">No alert</span>
+          <span class="pill">Detected (logged)</span>
         </div>
         <div class="cmp-img-wrap"><img src="assets/21April26/doesnt%20raise%20seatbelt%20error%20(hikvision.jpeg" alt="Hikvision seatbelt"></div>
-        <div class="cmp-foot">Frame recorded; no seatbelt status overlay or in-vehicle alert.</div>
+        <div class="cmp-foot">Event logged with synchronised video; no on-screen seatbelt status overlay.</div>
       </div>
       <div class="cmp-card ours">
         <div class="cmp-head">
@@ -594,8 +595,8 @@
     </div>
 
     <div class="action-bar" style="margin-top:14px">
-      <div class="action-text"><strong>Result:</strong> Custom pipeline flagged the unbelted driver and rendered an
-        overlay alert. Hikvision recorded the same frame without raising a seatbelt alert.</div>
+      <div class="action-text"><strong>Result:</strong> Both systems registered the unbelted driver. Hikvision logged
+        the event with synchronised video; custom pipeline added an on-screen status overlay.</div>
     </div>
   </section>
 
@@ -615,10 +616,10 @@
       <div class="cmp-card">
         <div class="cmp-head">
           <span class="title">Hikvision DMS</span>
-          <span class="pill">Video capture</span>
+          <span class="pill">Detected</span>
         </div>
         <div class="cmp-img-wrap"><img src="assets/21April26/Phone%20Hik.jpg" alt="Hikvision phone"></div>
-        <div class="cmp-foot">Driver using phone</div>
+        <div class="cmp-foot">Phone use logged with synchronised video.</div>
       </div>
       <div class="cmp-card ours">
         <div class="cmp-head">
@@ -631,8 +632,8 @@
     </div>
 
     <div class="action-bar" style="margin-top:14px">
-      <div class="action-text"><strong>Result:</strong> Both systems flagged the event. Custom pipeline reports
-        per-frame confidence (0.53&ndash;0.72) and an on-screen alert; Hikvision logs the frame.</div>
+      <div class="action-text"><strong>Result:</strong> Both systems detected phone use. Hikvision logged the event
+        with synchronised video; custom pipeline added per-frame confidence (0.53&ndash;0.72) and an on-screen overlay.</div>
     </div>
   </section>
 
@@ -652,15 +653,15 @@
       <div class="cmp-card">
         <div class="cmp-head">
           <span class="title">Hikvision DMS</span>
-          <span class="pill">Video capture</span>
+          <span class="pill">Detected</span>
         </div>
         <div class="cmp-img-wrap"><img src="assets/21April26/Closed%20Eyes%20hik.jpg" alt="Hikvision eyes closed"></div>
-        <div class="cmp-foot">Driver with eyes partially closed</div>
+        <div class="cmp-foot">Drowsiness event logged with synchronised video.</div>
       </div>
       <div class="cmp-card ours">
         <div class="cmp-head">
           <span class="title">Custom Pipeline</span>
-          <span class="pill">Real-time alert</span>
+          <span class="pill">On-screen alert</span>
         </div>
         <div class="cmp-img-wrap"><img src="assets/21April26/Eyes%20Closed%20Custom%20Model.png" alt="Custom eyes closed"></div>
         <div class="cmp-foot">EYES CLOSED &mdash; WAKE UP! alert triggered</div>
@@ -668,8 +669,8 @@
     </div>
 
     <div class="action-bar blue" style="margin-top:14px">
-      <div class="action-text"><strong>Result:</strong> Custom pipeline reports EAR-based eye-closure with an on-screen
-        alert. Hikvision recorded the same frame; no on-screen drowsiness indicator was visible.</div>
+      <div class="action-text"><strong>Result:</strong> Both systems detected the eye-closure event. Hikvision logged
+        it with synchronised video; custom pipeline reports the EAR value and an on-screen overlay.</div>
     </div>
   </section>
 
@@ -689,15 +690,15 @@
       <div class="cmp-card">
         <div class="cmp-head">
           <span class="title">Hikvision DMS</span>
-          <span class="pill">Video capture</span>
+          <span class="pill">Detected</span>
         </div>
         <div class="cmp-img-wrap"><img src="assets/21April26/Yawn%20Hik.jpg" alt="Hikvision yawn"></div>
-        <div class="cmp-foot">Driver yawning (11:02:56)</div>
+        <div class="cmp-foot">Yawn event logged at 11:02:56 with synchronised video.</div>
       </div>
       <div class="cmp-card ours">
         <div class="cmp-head">
           <span class="title">Custom Pipeline</span>
-          <span class="pill">Real-time alert</span>
+          <span class="pill">On-screen alert</span>
         </div>
         <div class="cmp-img-wrap"><img src="assets/21April26/Yawn%20Custom%20Model.png" alt="Custom yawn"></div>
         <div class="cmp-foot">YAWNING DETECTED! (MAR: 0.649)</div>
@@ -705,8 +706,8 @@
     </div>
 
     <div class="action-bar amber" style="margin-top:14px">
-      <div class="action-text"><strong>Result:</strong> Both systems captured the yawning event. The custom pipeline
-        surfaces a "YAWNING DETECTED!" alert and displays the MAR value.</div>
+      <div class="action-text"><strong>Result:</strong> Both systems detected the yawn. Hikvision logged it with
+        synchronised video; custom pipeline added the measured MAR value and a "YAWNING DETECTED!" overlay.</div>
     </div>
   </section>
 
@@ -726,15 +727,15 @@
       <div class="cmp-card">
         <div class="cmp-head">
           <span class="title">Hikvision DMS</span>
-          <span class="pill">Video capture</span>
+          <span class="pill">Detected</span>
         </div>
         <div class="cmp-img-wrap"><img src="assets/21April26/Smoking%20Hik.jpg" alt="Hikvision smoking"></div>
-        <div class="cmp-foot">Driver smoking (11:14:48)</div>
+        <div class="cmp-foot">Smoking event logged at 11:14:48 with synchronised video.</div>
       </div>
       <div class="cmp-card ours">
         <div class="cmp-head">
           <span class="title">Custom Pipeline</span>
-          <span class="pill">Real-time alert</span>
+          <span class="pill">On-screen alert</span>
         </div>
         <div class="cmp-img-wrap"><img src="assets/21April26/Smoking%20Custom%20Model.png" alt="Custom smoking"></div>
         <div class="cmp-foot">SMOKING 0.77 + "NO SMOKING!" alert</div>
@@ -742,8 +743,8 @@
     </div>
 
     <div class="action-bar purple" style="margin-top:14px">
-      <div class="action-text"><strong>Result:</strong> Both systems captured smoking. The custom pipeline reports a
-        bounding box with confidence 0.77 and surfaces a "NO SMOKING!" alert.</div>
+      <div class="action-text"><strong>Result:</strong> Both systems detected the event. Hikvision logged it with
+        synchronised video; custom pipeline added a bounding box at 0.77 confidence and a "NO SMOKING!" overlay.</div>
     </div>
   </section>
 
@@ -852,7 +853,7 @@
   <section class="slide" id="summary">
     <span class="tag tag--accent">Summary</span>
     <h2>Side-by-Side Results</h2>
-    <h3>All five activities detected by the custom pipeline; Hikvision provides video evidence only</h3>
+    <h3>Per-activity outcomes for both systems on the same trip</h3>
 
     <div class="card" style="padding:0;overflow:hidden;margin-bottom:16px">
       <table class="summary-table">
@@ -864,23 +865,24 @@
           </tr>
         </thead>
         <tbody>
-          <tr><td class="activity">Seatbelt</td><td class="ours">Detected + Real-time alert</td><td>Captured in video</td></tr>
-          <tr><td class="activity">Phone Use</td><td class="ours">Detected (conf. 0.53&ndash;0.72)</td><td>Captured in video</td></tr>
-          <tr><td class="activity">Eyes Closed</td><td class="ours">Detected (EAR &lt; 0.25) + Alert</td><td>Captured in video</td></tr>
-          <tr><td class="activity">Yawning</td><td class="ours">Detected (MAR &gt; 0.6) + Alert</td><td>Captured in video</td></tr>
-          <tr><td class="activity">Smoking</td><td class="ours">Detected (conf. 0.77) + Alert</td><td>Captured in video</td></tr>
+          <tr><td class="activity">Seatbelt</td><td class="ours">Detected + on-screen overlay</td><td>Detected (logged with video)</td></tr>
+          <tr><td class="activity">Phone Use</td><td class="ours">Detected (conf. 0.53&ndash;0.72) + overlay</td><td>Detected (logged with video)</td></tr>
+          <tr><td class="activity">Eyes Closed</td><td class="ours">Detected (EAR &lt; 0.25) + overlay</td><td>Detected (logged with video)</td></tr>
+          <tr><td class="activity">Yawning</td><td class="ours">Detected (MAR &gt; 0.6) + overlay</td><td>Detected (logged with video)</td></tr>
+          <tr><td class="activity">Smoking</td><td class="ours">Detected (conf. 0.77) + overlay</td><td>Detected (logged with video)</td></tr>
         </tbody>
       </table>
     </div>
 
     <div class="action-bar" style="margin-bottom:8px">
-      <div class="action-text"><strong>Summary:</strong> The custom pipeline recovered all five activities Hikvision
-        captured, and additionally exposes per-frame confidence, on-screen alerts, and physiological metrics
-        (EAR / MAR). Hikvision provides video evidence and an in-vehicle audio alert.</div>
+      <div class="action-text"><strong>Summary:</strong> Custom pipeline raised on-screen alerts on all five
+        activities and reports per-frame confidence and physiological metrics (EAR, MAR). Hikvision recorded video
+        for all five and issued an in-vehicle audio alert. Failure modes from the errors slide remain open.</div>
     </div>
     <div class="action-bar amber">
-      <div class="action-text"><strong>Next steps:</strong> refine phone vs. drinking labels, arbitrate overlapping
-        hand-near-face alerts, and continue field testing across additional vehicles and drivers.</div>
+      <div class="action-text"><strong>Next steps:</strong> retrain the YOLO classifier head on a clean phone /
+        smoking / drinking split, deduplicate hand-near-face alerts, and extend the field test to additional vehicles
+        and drivers.</div>
     </div>
   </section>
 

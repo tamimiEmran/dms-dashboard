@@ -700,7 +700,9 @@
         const mc = countBy(items, 'modality');
         const times = items.filter(d => d.time_to_decision_s).map(d => d.time_to_decision_s);
         const avg = times.length > 0 ? (times.reduce((a, b) => a + b, 0) / times.length).toFixed(1) : '-';
-        return { dev, total: items.length, correct: c, errors: wO.length - c, acc, mc, avg }
+        // Frames column now counts only adjudicated frames (oem_correct !== null)
+        // so Correct + Errors always equals the Frames total.
+        return { dev, total: wO.length, correct: c, errors: wO.length - c, acc, mc, avg }
       }).sort((a, b) => a.acc - b.acc);
 
       const t = document.createElement('table'); t.className = 'data-table';
