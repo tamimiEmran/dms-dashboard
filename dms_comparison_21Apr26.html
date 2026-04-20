@@ -433,9 +433,9 @@
   <section class="slide title-slide" id="intro">
     <span class="tag tag--accent">Field Test Comparison</span>
     <h1>DMS Field Test &mdash; Comparison Report</h1>
-    <div class="subtitle">Side-by-side visual comparison of five driver activities detected simultaneously by
-      our custom model and the Hikvision DMS in the same vehicle.</div>
-    <div class="meta">April 2026 &middot; Mowasalat &middot; Custom Model vs. Hikvision DMS</div>
+    <div class="subtitle">Comparative evaluation of five driver activities recorded simultaneously by a custom
+      rule-based pipeline and the Hikvision DMS in the same vehicle.</div>
+    <div class="meta">April 2026 &middot; Mowasalat &middot; Custom Pipeline vs. Hikvision DMS</div>
 
     <div class="flex gap-12 mt-auto" style="padding-top:20px">
       <div class="event-badge"><span class="dot" style="background:var(--teal)"></span> Seatbelt</div>
@@ -459,7 +459,7 @@
           <span class="pill">April 16, 2026</span>
         </div>
         <div class="cmp-img-wrap"><img src="assets/21April26/setup%20in%20car.png" alt="In-vehicle setup"></div>
-        <div class="cmp-foot">Dual-camera setup: Hikvision DMS (factory) + our custom model on edge device &mdash; recording the same driver, same trip.</div>
+        <div class="cmp-foot">Dual-camera setup: Hikvision DMS (factory) + custom pipeline on edge device &mdash; same driver, same trip.</div>
       </div>
       <div class="flex flex-col gap-12" style="width:420px;flex-shrink:0">
         <div class="card">
@@ -507,7 +507,7 @@
       </div>
       <div class="cmp-card ours">
         <div class="cmp-head">
-          <span class="title">Custom Model (Ours)</span>
+          <span class="title">Custom Pipeline</span>
           <span class="pill">Real-time alert</span>
         </div>
         <div class="cmp-img-wrap"><img src="assets/21April26/Seat%20Belt%20Custom%20Model.png" alt="Custom seatbelt"></div>
@@ -516,8 +516,8 @@
     </div>
 
     <div class="action-bar" style="margin-top:14px">
-      <div class="action-text"><strong>Result:</strong> Both systems captured the violation. Our model adds an
-        immediate on-screen alert with status indicator.</div>
+      <div class="action-text"><strong>Result:</strong> Both systems captured the violation. The custom pipeline
+        additionally surfaces an on-screen status indicator and alert.</div>
     </div>
   </section>
 
@@ -544,7 +544,7 @@
       </div>
       <div class="cmp-card ours">
         <div class="cmp-head">
-          <span class="title">Custom Model (Ours)</span>
+          <span class="title">Custom Pipeline</span>
           <span class="pill">Detected</span>
         </div>
         <div class="cmp-img-wrap"><img src="assets/21April26/Phone%20Custom%20Model.png" alt="Custom phone"></div>
@@ -553,8 +553,8 @@
     </div>
 
     <div class="action-bar" style="margin-top:14px">
-      <div class="action-text"><strong>Result:</strong> Both systems captured phone use. Our model detects it in
-        real time with confidence 0.53&ndash;0.72 and triggers an on-screen alert.</div>
+      <div class="action-text"><strong>Result:</strong> Both systems captured phone use. The custom pipeline reports
+        per-frame confidence (0.53&ndash;0.72) and surfaces an on-screen alert.</div>
     </div>
   </section>
 
@@ -581,7 +581,7 @@
       </div>
       <div class="cmp-card ours">
         <div class="cmp-head">
-          <span class="title">Custom Model (Ours)</span>
+          <span class="title">Custom Pipeline</span>
           <span class="pill">Real-time alert</span>
         </div>
         <div class="cmp-img-wrap"><img src="assets/21April26/Eyes%20Closed%20Custom%20Model.png" alt="Custom eyes closed"></div>
@@ -590,8 +590,8 @@
     </div>
 
     <div class="action-bar blue" style="margin-top:14px">
-      <div class="action-text"><strong>Result:</strong> Our model provides precise EAR-based drowsiness detection
-        with immediate alert. Hikvision relies on backend processing for event logging.</div>
+      <div class="action-text"><strong>Result:</strong> The custom pipeline reports EAR-based drowsiness detection
+        with an on-screen alert. Hikvision relies on backend processing for event logging.</div>
     </div>
   </section>
 
@@ -618,7 +618,7 @@
       </div>
       <div class="cmp-card ours">
         <div class="cmp-head">
-          <span class="title">Custom Model (Ours)</span>
+          <span class="title">Custom Pipeline</span>
           <span class="pill">Real-time alert</span>
         </div>
         <div class="cmp-img-wrap"><img src="assets/21April26/Yawn%20Custom%20Model.png" alt="Custom yawn"></div>
@@ -627,8 +627,8 @@
     </div>
 
     <div class="action-bar amber" style="margin-top:14px">
-      <div class="action-text"><strong>Result:</strong> Both systems captured the yawning event. Our model triggers
-        a real-time "YAWNING DETECTED!" alert with the MAR value displayed.</div>
+      <div class="action-text"><strong>Result:</strong> Both systems captured the yawning event. The custom pipeline
+        surfaces a "YAWNING DETECTED!" alert and displays the MAR value.</div>
     </div>
   </section>
 
@@ -655,7 +655,7 @@
       </div>
       <div class="cmp-card ours">
         <div class="cmp-head">
-          <span class="title">Custom Model (Ours)</span>
+          <span class="title">Custom Pipeline</span>
           <span class="pill">Real-time alert</span>
         </div>
         <div class="cmp-img-wrap"><img src="assets/21April26/Smoking%20Custom%20Model.png" alt="Custom smoking"></div>
@@ -664,8 +664,8 @@
     </div>
 
     <div class="action-bar purple" style="margin-top:14px">
-      <div class="action-text"><strong>Result:</strong> Both systems captured smoking. Our model shows bounding box
-        with confidence score 0.77 and triggers a real-time "NO SMOKING!" alert.</div>
+      <div class="action-text"><strong>Result:</strong> Both systems captured smoking. The custom pipeline reports a
+        bounding box with confidence 0.77 and surfaces a "NO SMOKING!" alert.</div>
     </div>
   </section>
 
@@ -705,14 +705,14 @@
   <section class="slide" id="summary">
     <span class="tag tag--accent">Summary</span>
     <h2>Side-by-Side Results</h2>
-    <h3>All five activities detected by our custom model &mdash; Hikvision provides video evidence only</h3>
+    <h3>All five activities detected by the custom pipeline; Hikvision provides video evidence only</h3>
 
     <div class="card" style="padding:0;overflow:hidden;margin-bottom:16px">
       <table class="summary-table">
         <thead>
           <tr>
             <th style="width:24%">Activity</th>
-            <th style="width:42%">Custom Model</th>
+            <th style="width:42%">Custom Pipeline</th>
             <th style="width:34%">Hikvision</th>
           </tr>
         </thead>
@@ -727,10 +727,9 @@
     </div>
 
     <div class="action-bar" style="margin-bottom:8px">
-      <div class="action-text"><strong>Key takeaway:</strong> Our custom model successfully detected all five
-        activities that the Hikvision system captured, with the added advantage of real-time on-screen alerts,
-        confidence scores, and physiological metrics (EAR / MAR). Hikvision provides video evidence and an in-vehicle
-        alert.</div>
+      <div class="action-text"><strong>Summary:</strong> The custom pipeline recovered all five activities Hikvision
+        captured, and additionally exposes per-frame confidence, on-screen alerts, and physiological metrics
+        (EAR / MAR). Hikvision provides video evidence and an in-vehicle audio alert.</div>
     </div>
     <div class="action-bar amber">
       <div class="action-text"><strong>Next steps:</strong> refine phone vs. drinking labels, arbitrate overlapping

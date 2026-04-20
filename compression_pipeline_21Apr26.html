@@ -507,8 +507,8 @@
   <section class="slide title-slide" id="intro">
     <span class="tag tag--blue">Data Pipeline</span>
     <h1>Fleet Video Compression Pipeline</h1>
-    <div class="subtitle">Compressing raw bus camera footage for efficient cloud storage and AI inference &mdash;
-      from 674 GB of H.264 1080p down to ~24 GB of SVT-AV1 480p, a 28&times; reduction with strong visual fidelity.</div>
+    <div class="subtitle">Raw bus camera footage re-encoded for cloud storage and downstream inference: 674 GB of
+      H.264 1080p to ~24 GB of SVT-AV1 480p, a 28&times; reduction at inference-relevant quality.</div>
     <div class="meta">April 2026 &middot; Mowasalat &middot; SVT-AV1 480p / 2fps</div>
 
     <div class="flex gap-12 mt-auto" style="padding-top:20px">
@@ -524,7 +524,7 @@
   <section class="slide" id="approach">
     <span class="tag tag--purple">Approach</span>
     <h2>Encoding Evaluation &amp; Final Pipeline</h2>
-    <h3>Three encoders evaluated on the same source footage &mdash; SVT-AV1 selected for best size/quality trade-off</h3>
+    <h3>Three encoders evaluated on the same source footage; SVT-AV1 selected on the size/quality trade-off</h3>
 
     <div class="flex gap-8" style="margin-bottom:14px;flex-wrap:wrap">
       <div class="chip"><strong>Source:</strong> H.264 &middot; 1920&times;1080 &middot; 25 fps</div>
@@ -548,8 +548,8 @@
       <div class="encoder-card chosen">
         <div class="enc-name">SVT-AV1</div>
         <div class="enc-type">Software AV1</div>
-        <div class="enc-desc">Best compression efficiency at 480p / 2fps. Preserves driver/cabin detail at a
-          fraction of the bitrate &mdash; delivers the 96% size reduction.</div>
+        <div class="enc-desc">Highest compression efficiency at 480p / 2fps in this evaluation. Retains driver/cabin
+          detail at ~4% of the original bitrate &mdash; yields the 96% size reduction.</div>
       </div>
     </div>
 
@@ -570,8 +570,8 @@
 
     <div class="action-bar blue">
       <div class="action-text"><strong>Why SVT-AV1 at 2 fps:</strong> the DMS model operates on sparse sampled
-        frames &mdash; 2 fps retains every decision window while slashing bitrate. Dropping audio removes another
-        unused channel. Final footprint is small enough to archive an entire fleet in the cloud.</div>
+        frames &mdash; 2 fps retains every decision window at a fraction of the original bitrate. Audio is dropped
+        as an unused channel. Final footprint fits fleet-scale cloud archival.</div>
     </div>
   </section>
 

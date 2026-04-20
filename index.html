@@ -720,9 +720,9 @@
       <div class="hero-body">
         <div class="hero-top">
           <div>
-            <div class="hero-title">AI Brain Architecture — for Taxis</div>
-            <div class="hero-subtitle">End-to-end system: DMS Camera &rarr; Edge Device &rarr; Raqeeb Server &rarr;
-              Portal &rarr; Frontend</div>
+            <div class="hero-title">System Architecture — Mowasalat Taxi Fleet</div>
+            <div class="hero-subtitle">DMS Camera &rarr; Edge Device &rarr; Raqeeb Server &rarr; Portal &rarr;
+              Frontend</div>
           </div>
           <span class="badge" style="background:var(--accent-dim);color:var(--accent);">Overview</span>
         </div>
@@ -809,13 +809,13 @@
     const PRESENTATIONS = [
       {
         id: 'hikvision_deep_dive',
-        title: 'Hikvision Deep-Dive',
-        subtitle: 'EfficientNet-B0 + MediaPipe vs Hikvision commercial DMS, both graded against 619 human-reviewed alert snapshots from 5 fleet devices.',
+        title: 'Hikvision Evaluation',
+        subtitle: 'EfficientNet-B0 + MediaPipe vs Hikvision commercial DMS, scored against 619 human-reviewed alert snapshots from 5 fleet devices.',
         file: null,
         assetsDir: '21April26',
         status: 'wip',
         tags: [
-          { label: 'Head-to-Head', color: 'purple' },
+          { label: 'Comparison', color: 'purple' },
           { label: 'Hikvision', color: 'amber' },
           { label: 'EffNet-B0', color: 'blue' },
           { label: 'MediaPipe', color: 'teal' },
@@ -829,19 +829,25 @@
         materials: [
           {
             title: 'Hikvision Audit',
-            desc: 'Human review of every Hikvision alert evidence image \u2014 the ground truth used to grade both systems.',
+            desc: 'Human review of every Hikvision alert evidence image \u2014 the ground truth against which both systems are scored.',
             file: 'hikvision_audit.html',
             type: 'report',
           },
           {
             title: 'YOLOv8n + YOLO11n + MediaPipe vs Hikvision',
-            desc: 'Rule-based pipeline (MediaPipe for eye / yawn / head pose + dual-YOLO for phone, cigarette, seatbelt) scored head-to-head against Hikvision on 619 human-reviewed alerts \u2014 per-class accuracy, false alarms, and per-image winner breakdown.',
+            desc: 'Rule-based pipeline (MediaPipe for eye / yawn / head pose + dual-YOLO for phone, cigarette, seatbelt) scored against Hikvision on 619 human-reviewed alerts \u2014 per-class accuracy, false alarms, and per-image agreement breakdown.',
             file: 'hikvision_rulebased.html',
             type: 'report',
           },
           {
-            title: 'Custom Model vs Hikvision \u2014 Field Test',
-            desc: 'Side-by-side field-test comparison of five driver activities (seatbelt, phone, eyes, yawn, smoking) captured simultaneously by both systems.',
+            title: 'Model Leaderboard \u2014 9 Models vs Hikvision OEM',
+            desc: 'Per-class recall for 9 models (1 MediaPipe + 2 YOLOs + 6 classifiers) on the same 619-frame manifest. Delta-to-OEM and raw TP / support per class; forced-negative rows for models with no native mapping for a canonical class.',
+            file: 'hikvision_leaderboard_benchmark.html',
+            type: 'report',
+          },
+          {
+            title: 'Custom Pipeline vs Hikvision \u2014 In-Vehicle Comparison',
+            desc: 'Five driver activities (seatbelt, phone, eyes, yawn, smoking) captured simultaneously by both systems in the same vehicle.',
             file: 'dms_comparison_21Apr26.html',
             type: 'report',
           },
