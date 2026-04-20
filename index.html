@@ -371,6 +371,66 @@
       border: 1px solid var(--border);
     }
 
+    /* Ready variant — WIP card that has a linked deck ready to present */
+    .card.wip.ready {
+      border-color: rgba(14, 154, 126, 0.28);
+      background:
+        radial-gradient(circle at top right, rgba(14, 154, 126, 0.05), transparent 55%),
+        var(--bg-card);
+    }
+
+    .card.wip.ready .card-strip {
+      background: linear-gradient(90deg, var(--accent) 0%, rgba(14, 154, 126, 0.35) 100%);
+    }
+
+    .card.wip.ready .card-title,
+    .card.wip.ready .stat-value {
+      color: var(--text);
+    }
+
+    .card.wip.ready .card-subtitle {
+      color: var(--text-dim);
+    }
+
+    .card.wip.ready:hover {
+      border-color: var(--accent);
+      box-shadow: 0 6px 20px rgba(14, 154, 126, 0.14), 0 2px 6px rgba(0, 0, 0, 0.04);
+      transform: translateY(-1px);
+    }
+
+    .badge.wip.ready {
+      background: var(--accent-dim);
+      color: var(--accent);
+      border: 1px solid rgba(14, 154, 126, 0.2);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .badge.wip.ready::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 3px rgba(14, 154, 126, 0.18);
+      animation: readyPulse 2.2s ease-in-out infinite;
+    }
+
+    @keyframes readyPulse {
+
+      0%,
+      100% {
+        opacity: 1;
+        box-shadow: 0 0 0 3px rgba(14, 154, 126, 0.18);
+      }
+
+      50% {
+        opacity: 0.75;
+        box-shadow: 0 0 0 5px rgba(14, 154, 126, 0.08);
+      }
+    }
+
     /* Arrow connector */
     .arrow-connector {
       display: flex;
@@ -811,7 +871,7 @@
         id: 'hikvision_deep_dive',
         title: 'Hikvision Evaluation',
         subtitle: '36 models scored against the Hikvision OEM baseline on 619 reviewed alert frames from 5 fleet devices. Rule-based pipeline, in-vehicle comparison, and fleet video compression included.',
-        file: null,
+        file: 'summary_21Apr26.html#audit',
         assetsDir: '21April26',
         status: 'wip',
         tags: [
@@ -1059,13 +1119,21 @@
           return `<a class="card material" href="${m.file}"><div class="card-strip"></div><div class="card-body"><div class="material-icon ${iconClass}">${icon}</div><div class="material-info"><div class="material-title">${m.title}</div><div class="material-desc">${m.desc}</div></div><span class="${badgeClass}">${badgeText}</span></div></a>`;
         }).join('');
 
+        const isReady = !!p.file;
+        const wipClickAttrs = isReady
+          ? ` style="cursor:pointer" onclick="if(event.target.closest('a'))return;window.location.href='${p.file}'"`
+          : '';
+        const wipCardClass = isReady ? 'card wip ready' : 'card wip';
+        const wipBadgeClass = isReady ? 'badge wip ready' : 'badge wip';
+        const wipBadgeLabel = isReady ? 'Ready' : 'Upcoming';
+
         html += `
           <div class="upcoming-row">
-            <div class="card wip">
+            <div class="${wipCardClass}"${wipClickAttrs}>
               <div class="card-strip"></div>
               <div class="card-body">
                 <div class="card-top">
-                  <span class="badge wip">Upcoming</span>
+                  <span class="${wipBadgeClass}">${wipBadgeLabel}</span>
                   <span class="card-date">${dateStr}</span>
                 </div>
                 <div class="card-title">${p.title}</div>

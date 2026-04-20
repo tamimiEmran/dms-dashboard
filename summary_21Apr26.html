@@ -2078,6 +2078,19 @@
     .content-row[data-c="teal"] {
       color: var(--teal)
     }
+
+    /* Alert-class pair grouping (Accuracy by Alert Class card) */
+    .alert-group{padding:10px 0 12px;border-bottom:1px dashed color-mix(in srgb,var(--border) 80%,transparent)}
+    .alert-group:last-of-type{border-bottom:0}
+    .alert-group--faded{opacity:0.55}
+    .alert-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;padding-left:2px}
+    .alert-cls{font-family:var(--mono);font-size:12.5px;font-weight:600;color:var(--text);letter-spacing:-0.005em}
+    .alert-support{font-family:var(--mono);font-size:10px;color:var(--text-muted);letter-spacing:0.04em;text-transform:uppercase}
+    .alert-group .audit-bar-row{margin-bottom:4px}
+    .alert-group .audit-bar-row:last-child{margin-bottom:0}
+    .alert-sys{width:72px;font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;text-align:right}
+    .alert-sys--hik{color:var(--accent-3)}
+    .alert-sys--yolo{color:var(--accent-2)}
   </style>
 </head>
 
@@ -2329,133 +2342,136 @@
     </div>
 
     <div class="flex gap-16" style="flex:1;margin-top:20px">
-      <div class="card grow">
+      <div class="audit-bar-card grow">
         <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px">
-          <h4>Accuracy by Alert Class</h4>
-          <div style="font-size:11px;color:var(--text-muted)">
-            <span class="legend-dot" style="background:var(--hik-color)"></span>Hikvision
-            <span class="legend-dot" style="background:var(--yolo-color);margin-left:12px"></span>YOLOv8n + YOLO11n +
-            MediaPipe
+          <h4 style="font-size:13px;font-weight:600">Accuracy by Alert Class</h4>
+          <div style="font-size:10.5px;color:var(--text-muted);font-family:var(--mono);letter-spacing:0.04em">
+            <span style="color:var(--accent-3);font-weight:600">HIK</span> vs <span style="color:var(--accent-2);font-weight:600">YOLO+MP</span>
           </div>
         </div>
-        <p style="font-size:12px;color:var(--text-muted);margin-bottom:14px">
-          <strong>Accuracy</strong> here is balanced per class: the mean of recall on confirmed events
-          and specificity on events the reviewer ruled out. 50% is no skill, 100% is perfect.
+        <p style="font-size:12px;color:var(--text-muted);margin-bottom:20px">
+          <strong>Accuracy</strong> here is precision by prediction category, matching the OEM audit slide: of all
+          events where a system flagged class X, the fraction the reviewer confirmed. Sorted worst-first by Hikvision
+          precision. Bar width is proportional to the number of predictions (max = 253, Hikvision distracted_driving).
+          <em>smoking</em> rows are faded because both systems made fewer than 5 predictions &mdash; below the
+          meaningful-sample threshold.
         </p>
 
-        <!-- distracted_driving (support 279) -->
-        <div style="margin-bottom:14px">
-          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
-            <span style="font-family:var(--mono);font-size:12px;font-weight:600">distracted_driving
-              <span style="color:var(--text-muted);font-size:10px;margin-left:4px">279 true events</span></span>
+        <div class="alert-group alert-group--faded">
+          <div class="alert-head">
+            <span class="alert-cls">smoking</span>
+            <span class="alert-support">HIK 2 &middot; YOLO+MP 3 predictions</span>
           </div>
-          <div style="display:grid;grid-template-columns:1fr 60px;gap:8px;align-items:center;margin-bottom:3px">
-            <div style="height:14px;background:var(--bg-elevated);border-radius:3px;overflow:hidden">
-              <div style="height:100%;width:68.26%;background:var(--hik-color)"></div>
+          <div class="audit-bar-row">
+            <div class="audit-bar-label alert-sys alert-sys--hik">Hik</div>
+            <div class="audit-bar-track">
+              <div class="audit-bar-fill audit-bar-correct" style="width:0.00%"></div>
+              <div class="audit-bar-fill audit-bar-incorrect" style="width:0.79%"></div>
             </div>
-            <div style="font-family:var(--mono);font-size:11px;text-align:right;color:var(--hik-color);font-weight:600">
-              68%</div>
+            <div class="audit-bar-value">0% <span style="color:var(--text-muted)">(2)</span></div>
           </div>
-          <div style="display:grid;grid-template-columns:1fr 60px;gap:8px;align-items:center">
-            <div style="height:14px;background:var(--bg-elevated);border-radius:3px;overflow:hidden">
-              <div style="height:100%;width:40.37%;background:var(--yolo-color)"></div>
+          <div class="audit-bar-row">
+            <div class="audit-bar-label alert-sys alert-sys--yolo">YOLO+MP</div>
+            <div class="audit-bar-track">
+              <div class="audit-bar-fill audit-bar-correct" style="width:0.00%"></div>
+              <div class="audit-bar-fill audit-bar-incorrect" style="width:1.19%"></div>
             </div>
-            <div
-              style="font-family:var(--mono);font-size:11px;text-align:right;color:var(--yolo-color);font-weight:600">
-              40%</div>
+            <div class="audit-bar-value">0% <span style="color:var(--text-muted)">(3)</span></div>
           </div>
         </div>
 
-        <!-- seatbelt (support 217) -->
-        <div style="margin-bottom:14px">
-          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
-            <span style="font-family:var(--mono);font-size:12px;font-weight:600">seatbelt
-              <span style="color:var(--text-muted);font-size:10px;margin-left:4px">217 true events</span></span>
+        <div class="alert-group">
+          <div class="alert-head">
+            <span class="alert-cls">fatigue</span>
+            <span class="alert-support">HIK 91 &middot; YOLO+MP 206 predictions</span>
           </div>
-          <div style="display:grid;grid-template-columns:1fr 60px;gap:8px;align-items:center;margin-bottom:3px">
-            <div style="height:14px;background:var(--bg-elevated);border-radius:3px;overflow:hidden">
-              <div style="height:100%;width:85.84%;background:var(--hik-color)"></div>
+          <div class="audit-bar-row">
+            <div class="audit-bar-label alert-sys alert-sys--hik">Hik</div>
+            <div class="audit-bar-track">
+              <div class="audit-bar-fill audit-bar-correct" style="width:9.49%"></div>
+              <div class="audit-bar-fill audit-bar-incorrect" style="width:26.48%"></div>
             </div>
-            <div style="font-family:var(--mono);font-size:11px;text-align:right;color:var(--hik-color);font-weight:600">
-              86%</div>
+            <div class="audit-bar-value">26% <span style="color:var(--text-muted)">(91)</span></div>
           </div>
-          <div style="display:grid;grid-template-columns:1fr 60px;gap:8px;align-items:center">
-            <div style="height:14px;background:var(--bg-elevated);border-radius:3px;overflow:hidden">
-              <div style="height:100%;width:55.42%;background:var(--yolo-color)"></div>
+          <div class="audit-bar-row">
+            <div class="audit-bar-label alert-sys alert-sys--yolo">YOLO+MP</div>
+            <div class="audit-bar-track">
+              <div class="audit-bar-fill audit-bar-correct" style="width:9.49%"></div>
+              <div class="audit-bar-fill audit-bar-incorrect" style="width:71.93%"></div>
             </div>
-            <div
-              style="font-family:var(--mono);font-size:11px;text-align:right;color:var(--yolo-color);font-weight:600">
-              55%</div>
+            <div class="audit-bar-value">12% <span style="color:var(--text-muted)">(206)</span></div>
           </div>
         </div>
 
-        <!-- phone_usage (support 111) -->
-        <div style="margin-bottom:14px">
-          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
-            <span style="font-family:var(--mono);font-size:12px;font-weight:600">phone_usage
-              <span style="color:var(--text-muted);font-size:10px;margin-left:4px">111 true events</span></span>
+        <div class="alert-group">
+          <div class="alert-head">
+            <span class="alert-cls">distracted_driving</span>
+            <span class="alert-support">HIK 253 &middot; YOLO+MP 243 predictions</span>
           </div>
-          <div style="display:grid;grid-template-columns:1fr 60px;gap:8px;align-items:center;margin-bottom:3px">
-            <div style="height:14px;background:var(--bg-elevated);border-radius:3px;overflow:hidden">
-              <div style="height:100%;width:75.18%;background:var(--hik-color)"></div>
+          <div class="audit-bar-row">
+            <div class="audit-bar-label alert-sys alert-sys--hik">Hik</div>
+            <div class="audit-bar-track">
+              <div class="audit-bar-fill audit-bar-correct" style="width:67.19%"></div>
+              <div class="audit-bar-fill audit-bar-incorrect" style="width:32.81%"></div>
             </div>
-            <div style="font-family:var(--mono);font-size:11px;text-align:right;color:var(--hik-color);font-weight:600">
-              75%</div>
+            <div class="audit-bar-value">67% <span style="color:var(--text-muted)">(253)</span></div>
           </div>
-          <div style="display:grid;grid-template-columns:1fr 60px;gap:8px;align-items:center">
-            <div style="height:14px;background:var(--bg-elevated);border-radius:3px;overflow:hidden">
-              <div style="height:100%;width:50.00%;background:var(--yolo-color)"></div>
+          <div class="audit-bar-row">
+            <div class="audit-bar-label alert-sys alert-sys--yolo">YOLO+MP</div>
+            <div class="audit-bar-track">
+              <div class="audit-bar-fill audit-bar-correct" style="width:31.62%"></div>
+              <div class="audit-bar-fill audit-bar-incorrect" style="width:64.43%"></div>
             </div>
-            <div
-              style="font-family:var(--mono);font-size:11px;text-align:right;color:var(--yolo-color);font-weight:600">
-              50%</div>
+            <div class="audit-bar-value">33% <span style="color:var(--text-muted)">(243)</span></div>
           </div>
         </div>
 
-        <!-- fatigue (support 27) -->
-        <div style="margin-bottom:14px">
-          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
-            <span style="font-family:var(--mono);font-size:12px;font-weight:600">fatigue
-              <span style="color:var(--text-muted);font-size:10px;margin-left:4px">27 true events</span></span>
+        <div class="alert-group">
+          <div class="alert-head">
+            <span class="alert-cls">seatbelt</span>
+            <span class="alert-support">HIK 211 &middot; YOLO+MP 119 predictions</span>
           </div>
-          <div style="display:grid;grid-template-columns:1fr 60px;gap:8px;align-items:center;margin-bottom:3px">
-            <div style="height:14px;background:var(--bg-elevated);border-radius:3px;overflow:hidden">
-              <div style="height:100%;width:88.79%;background:var(--hik-color)"></div>
+          <div class="audit-bar-row">
+            <div class="audit-bar-label alert-sys alert-sys--hik">Hik</div>
+            <div class="audit-bar-track">
+              <div class="audit-bar-fill audit-bar-correct" style="width:69.17%"></div>
+              <div class="audit-bar-fill audit-bar-incorrect" style="width:14.23%"></div>
             </div>
-            <div style="font-family:var(--mono);font-size:11px;text-align:right;color:var(--hik-color);font-weight:600">
-              89%</div>
+            <div class="audit-bar-value">83% <span style="color:var(--text-muted)">(211)</span></div>
           </div>
-          <div style="display:grid;grid-template-columns:1fr 60px;gap:8px;align-items:center">
-            <div style="height:14px;background:var(--bg-elevated);border-radius:3px;overflow:hidden">
-              <div style="height:100%;width:79.07%;background:var(--yolo-color)"></div>
+          <div class="audit-bar-row">
+            <div class="audit-bar-label alert-sys alert-sys--yolo">YOLO+MP</div>
+            <div class="audit-bar-track">
+              <div class="audit-bar-fill audit-bar-correct" style="width:22.53%"></div>
+              <div class="audit-bar-fill audit-bar-incorrect" style="width:24.51%"></div>
             </div>
-            <div
-              style="font-family:var(--mono);font-size:11px;text-align:right;color:var(--yolo-color);font-weight:600">
-              79%</div>
+            <div class="audit-bar-value">48% <span style="color:var(--text-muted)">(119)</span></div>
           </div>
         </div>
 
-        <!-- eating_drinking (support 11) -->
-        <div style="margin-bottom:14px">
-          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
-            <span style="font-family:var(--mono);font-size:12px;font-weight:600">eating_drinking
-              <span style="color:var(--text-muted);font-size:10px;margin-left:4px">11 true events</span></span>
+        <div class="alert-group">
+          <div class="alert-head">
+            <span class="alert-cls">phone_usage</span>
+            <span class="alert-support">HIK 62 &middot; YOLO+MP 0 predictions</span>
           </div>
-          <div style="display:grid;grid-template-columns:1fr 60px;gap:8px;align-items:center;margin-bottom:3px">
-            <div style="height:14px;background:var(--bg-elevated);border-radius:3px;overflow:hidden">
-              <div style="height:100%;width:50.00%;background:var(--hik-color)"></div>
+          <div class="audit-bar-row">
+            <div class="audit-bar-label alert-sys alert-sys--hik">Hik</div>
+            <div class="audit-bar-track">
+              <div class="audit-bar-fill audit-bar-correct" style="width:22.53%"></div>
+              <div class="audit-bar-fill audit-bar-incorrect" style="width:1.98%"></div>
             </div>
-            <div style="font-family:var(--mono);font-size:11px;text-align:right;color:var(--hik-color);font-weight:600">
-              50%</div>
+            <div class="audit-bar-value">92% <span style="color:var(--text-muted)">(62)</span></div>
           </div>
-          <div style="display:grid;grid-template-columns:1fr 60px;gap:8px;align-items:center">
-            <div style="height:14px;background:var(--bg-elevated);border-radius:3px;overflow:hidden">
-              <div style="height:100%;width:50.00%;background:var(--yolo-color)"></div>
-            </div>
-            <div
-              style="font-family:var(--mono);font-size:11px;text-align:right;color:var(--yolo-color);font-weight:600">
-              50%</div>
+          <div class="audit-bar-row">
+            <div class="audit-bar-label alert-sys alert-sys--yolo">YOLO+MP</div>
+            <div class="audit-bar-track" style="background:transparent"></div>
+            <div class="audit-bar-value" style="color:var(--text-muted)">&mdash; <span style="font-size:10px">(0)</span></div>
           </div>
+        </div>
+
+        <div style="display:flex;gap:18px;margin-top:14px;font-size:11px;color:var(--text-muted)">
+          <span><span style="display:inline-block;width:10px;height:10px;background:var(--accent);border-radius:2px;margin-right:4px;vertical-align:middle"></span>Correct predictions</span>
+          <span><span style="display:inline-block;width:10px;height:10px;background:var(--red);border-radius:2px;margin-right:4px;vertical-align:middle"></span>Incorrect predictions</span>
         </div>
       </div>
 

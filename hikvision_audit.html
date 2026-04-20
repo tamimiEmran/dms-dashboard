@@ -616,14 +616,21 @@
       const card = mkCard();
       const groups = groupBy(DATA, 'oem_prediction');
       const stats = Object.entries(groups).map(([l, items]) => {
-        const wO = items.filter(d => d.oem_correct !== null);
         // Precision on the OEM's own prediction category: of all events
-        // where OEM said `l`, the fraction the reviewer confirmed. This is
-        // the natural metric for a "by predicted class" view — balanced
-        // accuracy is meaningless on a subset filtered by the prediction
-        // itself (every class would collapse to 50% by construction).
-        const c = wO.filter(d => d.oem_correct).length;
-        const accuracy = wO.length ? Math.round(c / wO.length * 100) : 0;
+        // where OEM said `l`, the fraction the reviewer confirmed. Correctness
+        // is recomputed live using the canonical synonym set (same rule the
+        // rule-based dashboard uses), so the raw pre-frozen `oem_correct`
+        // flag is ignored — it was written with a narrower synonym map and
+        // diverged after we widened the rules (e.g., eating_drinking now
+        // maps to both distracted_driving and eating_drinking).
+        const c = items.filter(d => {
+          const gt = expandCanonical(d.manual_labels || []);
+          const pred = expandCanonical(d.oem_prediction || '');
+          // prediction is "correct" if any of its canonical expansions is in GT
+          for (const p of pred) if (gt.has(p)) return true;
+          return false;
+        }).length;
+        const accuracy = items.length ? Math.round(c / items.length * 100) : 0;
         return { label: l, total: items.length, correct: c, accuracy };
       }).sort((a, b) => a.accuracy - b.accuracy);
       const mx = Math.max(...stats.map(s => s.total));
