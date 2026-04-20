@@ -12,252 +12,2072 @@
   All other slides summarise their source file with the headline numbers
   pulled verbatim. Each carries a link to the full source report.
 -->
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=1920">
   <title>21 Apr — DMS Fleet Evaluation Summary</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
   <style>
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    :root{
-      --bg:#F8F9FB;--bg-card:#FFFFFF;--bg-elevated:#F0F1F4;--border:#E0E2E8;
-      --text:#1A1D26;--text-dim:#5A5E6E;--text-muted:#8E92A0;
-      --accent:#0E9A7E;--accent-dim:rgba(14,154,126,0.08);--accent-strong:rgba(14,154,126,0.18);
-      --accent-2:#3B6FD6;--accent-2-dim:rgba(59,111,214,0.08);
-      --accent-3:#C88A1A;--accent-3-dim:rgba(200,138,26,0.08);
-      --red:#D9453E;--red-dim:rgba(217,69,62,0.07);
-      --purple:#8B5CC4;--purple-dim:rgba(139,92,196,0.08);
-      --teal:#0E8A9A;--teal-dim:rgba(14,138,154,0.08);
-      --hik-color:#C88A1A;--yolo-color:#3B6FD6;
-      --font:'DM Sans',system-ui,sans-serif;--mono:'JetBrains Mono',monospace;
-      --radius:10px;--radius-sm:6px;
-    }
-    html{scroll-snap-type:y mandatory;scroll-behavior:smooth}
-    body{
-      background:var(--bg);color:var(--text);font-family:var(--font);line-height:1.5;
-      -webkit-font-smoothing:antialiased;
-      background-image:radial-gradient(circle,rgba(26,29,38,0.035) 1px,transparent 1px);
-      background-size:22px 22px;
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
     }
 
-    .slide{min-height:100vh;scroll-snap-align:start;display:flex;flex-direction:column;padding:64px 56px 28px;position:relative}
-    .slide::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent 0%,var(--border) 20%,var(--border) 80%,transparent 100%)}
+    :root {
+      --bg: #F8F9FB;
+      --bg-card: #FFFFFF;
+      --bg-elevated: #F0F1F4;
+      --border: #E0E2E8;
+      --text: #1A1D26;
+      --text-dim: #5A5E6E;
+      --text-muted: #8E92A0;
+      --accent: #0E9A7E;
+      --accent-dim: rgba(14, 154, 126, 0.08);
+      --accent-strong: rgba(14, 154, 126, 0.18);
+      --accent-2: #3B6FD6;
+      --accent-2-dim: rgba(59, 111, 214, 0.08);
+      --accent-3: #C88A1A;
+      --accent-3-dim: rgba(200, 138, 26, 0.08);
+      --red: #D9453E;
+      --red-dim: rgba(217, 69, 62, 0.07);
+      --purple: #8B5CC4;
+      --purple-dim: rgba(139, 92, 196, 0.08);
+      --teal: #0E8A9A;
+      --teal-dim: rgba(14, 138, 154, 0.08);
+      --hik-color: #C88A1A;
+      --yolo-color: #3B6FD6;
+      --font: 'DM Sans', system-ui, sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+      --radius: 10px;
+      --radius-sm: 6px;
+    }
 
-    nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(248,249,251,0.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 40px;height:44px;gap:2px;overflow-x:auto}
-    nav a{color:var(--text-muted);text-decoration:none;font-size:11.5px;font-weight:500;letter-spacing:0.02em;padding:5px 10px;border-radius:20px;white-space:nowrap;transition:all 0.15s}
-    nav a:hover,nav a.active{color:var(--text);background:var(--bg-elevated)}
-    nav .slide-counter{margin-left:auto;color:var(--text-muted);font-size:11px;font-family:var(--mono);padding-left:12px}
+    html {
+      scroll-snap-type: y mandatory;
+      scroll-behavior: smooth
+    }
 
-    h1{font-size:42px;font-weight:700;letter-spacing:-0.03em;line-height:1.1}
-    h2{font-size:26px;font-weight:600;letter-spacing:-0.02em;margin-bottom:4px}
-    h3{font-size:13px;font-weight:400;color:var(--text-dim);margin-bottom:16px;max-width:960px}
-    h4{font-size:13px;font-weight:600;margin-bottom:6px}
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      background-image: radial-gradient(circle, rgba(26, 29, 38, 0.035) 1px, transparent 1px);
+      background-size: 22px 22px;
+    }
 
-    .tag{display:inline-block;font-size:10px;font-weight:600;font-family:var(--mono);letter-spacing:0.06em;text-transform:uppercase;padding:3px 8px;border-radius:4px;margin-bottom:6px}
-    .tag--accent{background:var(--accent-dim);color:var(--accent)}
-    .tag--blue{background:var(--accent-2-dim);color:var(--accent-2)}
-    .tag--amber{background:var(--accent-3-dim);color:var(--accent-3)}
-    .tag--red{background:var(--red-dim);color:var(--red)}
-    .tag--purple{background:var(--purple-dim);color:var(--purple)}
-    .tag--teal{background:var(--teal-dim);color:var(--teal)}
+    .slide {
+      min-height: 100vh;
+      scroll-snap-align: start;
+      display: flex;
+      flex-direction: column;
+      padding: 64px 56px 28px;
+      position: relative
+    }
 
-    .slide-stamp{position:absolute;top:18px;right:56px;font-family:var(--mono);font-size:9.5px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);display:flex;align-items:center;gap:8px;opacity:0.75;z-index:2}
-    .slide-stamp .sep{width:24px;height:1px;background:var(--border)}
-    .slide-stamp .idx{color:var(--text-dim);font-weight:500}
+    .slide::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, var(--border) 20%, var(--border) 80%, transparent 100%)
+    }
 
-    .card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
-    .card p,.card li{font-size:12.5px;color:var(--text-dim);line-height:1.55}
-    .card ul{list-style:none;padding:0}
-    .card ul li{padding-left:14px;position:relative;margin-top:4px}
-    .card ul li::before{content:'';position:absolute;left:0;top:8px;width:4px;height:4px;border-radius:50%;background:var(--text-muted)}
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: rgba(248, 249, 251, 0.92);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 40px;
+      height: 44px;
+      gap: 2px;
+      overflow-x: auto
+    }
 
-    .chip{font-family:var(--mono);font-size:11px;padding:4px 10px;border-radius:4px;background:var(--bg-elevated);color:var(--text-dim);border:1px solid var(--border)}
-    .chip strong{color:var(--text);font-weight:600}
+    nav a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 11.5px;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      padding: 5px 10px;
+      border-radius: 20px;
+      white-space: nowrap;
+      transition: all 0.15s
+    }
+
+    nav a:hover,
+    nav a.active {
+      color: var(--text);
+      background: var(--bg-elevated)
+    }
+
+    nav .slide-counter {
+      margin-left: auto;
+      color: var(--text-muted);
+      font-size: 11px;
+      font-family: var(--mono);
+      padding-left: 12px
+    }
+
+    h1 {
+      font-size: 42px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.1
+    }
+
+    h2 {
+      font-size: 26px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: 4px
+    }
+
+    h3 {
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--text-dim);
+      margin-bottom: 16px;
+      max-width: 960px
+    }
+
+    h4 {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px
+    }
+
+    .tag {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 600;
+      font-family: var(--mono);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin-bottom: 6px
+    }
+
+    .tag--accent {
+      background: var(--accent-dim);
+      color: var(--accent)
+    }
+
+    .tag--blue {
+      background: var(--accent-2-dim);
+      color: var(--accent-2)
+    }
+
+    .tag--amber {
+      background: var(--accent-3-dim);
+      color: var(--accent-3)
+    }
+
+    .tag--red {
+      background: var(--red-dim);
+      color: var(--red)
+    }
+
+    .tag--purple {
+      background: var(--purple-dim);
+      color: var(--purple)
+    }
+
+    .tag--teal {
+      background: var(--teal-dim);
+      color: var(--teal)
+    }
+
+    .slide-stamp {
+      position: absolute;
+      top: 18px;
+      right: 56px;
+      font-family: var(--mono);
+      font-size: 9.5px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      opacity: 0.75;
+      z-index: 2
+    }
+
+    .slide-stamp .sep {
+      width: 24px;
+      height: 1px;
+      background: var(--border)
+    }
+
+    .slide-stamp .idx {
+      color: var(--text-dim);
+      font-weight: 500
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04)
+    }
+
+    .card p,
+    .card li {
+      font-size: 12.5px;
+      color: var(--text-dim);
+      line-height: 1.55
+    }
+
+    .card ul {
+      list-style: none;
+      padding: 0
+    }
+
+    .card ul li {
+      padding-left: 14px;
+      position: relative;
+      margin-top: 4px
+    }
+
+    .card ul li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 8px;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--text-muted)
+    }
+
+    .chip {
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 4px;
+      background: var(--bg-elevated);
+      color: var(--text-dim);
+      border: 1px solid var(--border)
+    }
+
+    .chip strong {
+      color: var(--text);
+      font-weight: 600
+    }
 
     /* Stat grid + intro-stats */
-    .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
-    .stat{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px}
-    .stat .label{font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);font-weight:700;margin-bottom:4px}
-    .stat .value{font-family:var(--mono);font-size:18px;font-weight:500;color:var(--text)}
-    .stat .sub{font-size:11px;color:var(--text-dim);margin-top:2px}
-    .intro-stats .stat{padding:18px 18px 16px;position:relative;overflow:hidden}
-    .intro-stats .stat::before{content:'';position:absolute;inset:0 auto 0 0;width:3px}
-    .intro-stats .stat .value{font-size:36px;font-weight:600;letter-spacing:-0.02em;line-height:1;margin:4px 0 8px}
-    .intro-stats .stat--accent{background:color-mix(in srgb,var(--accent) 6%,var(--bg-card));border-color:color-mix(in srgb,var(--accent) 30%,var(--border))}
-    .intro-stats .stat--accent::before{background:var(--accent)}.intro-stats .stat--accent .value,.intro-stats .stat--accent .label{color:var(--accent)}
-    .intro-stats .stat--blue{background:color-mix(in srgb,var(--accent-2) 6%,var(--bg-card));border-color:color-mix(in srgb,var(--accent-2) 30%,var(--border))}
-    .intro-stats .stat--blue::before{background:var(--accent-2)}.intro-stats .stat--blue .value,.intro-stats .stat--blue .label{color:var(--accent-2)}
-    .intro-stats .stat--amber{background:color-mix(in srgb,var(--accent-3) 7%,var(--bg-card));border-color:color-mix(in srgb,var(--accent-3) 32%,var(--border))}
-    .intro-stats .stat--amber::before{background:var(--accent-3)}.intro-stats .stat--amber .value,.intro-stats .stat--amber .label{color:var(--accent-3)}
-    .intro-stats .stat--purple{background:color-mix(in srgb,var(--purple) 7%,var(--bg-card));border-color:color-mix(in srgb,var(--purple) 30%,var(--border))}
-    .intro-stats .stat--purple::before{background:var(--purple)}.intro-stats .stat--purple .value,.intro-stats .stat--purple .label{color:var(--purple)}
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 14px
+    }
+
+    .stat {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px
+    }
+
+    .stat .label {
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 700;
+      margin-bottom: 4px
+    }
+
+    .stat .value {
+      font-family: var(--mono);
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--text)
+    }
+
+    .stat .sub {
+      font-size: 11px;
+      color: var(--text-dim);
+      margin-top: 2px
+    }
+
+    .intro-stats .stat {
+      padding: 18px 18px 16px;
+      position: relative;
+      overflow: hidden
+    }
+
+    .intro-stats .stat::before {
+      content: '';
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 3px
+    }
+
+    .intro-stats .stat .value {
+      font-size: 36px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      line-height: 1;
+      margin: 4px 0 8px
+    }
+
+    .intro-stats .stat--accent {
+      background: color-mix(in srgb, var(--accent) 6%, var(--bg-card));
+      border-color: color-mix(in srgb, var(--accent) 30%, var(--border))
+    }
+
+    .intro-stats .stat--accent::before {
+      background: var(--accent)
+    }
+
+    .intro-stats .stat--accent .value,
+    .intro-stats .stat--accent .label {
+      color: var(--accent)
+    }
+
+    .intro-stats .stat--blue {
+      background: color-mix(in srgb, var(--accent-2) 6%, var(--bg-card));
+      border-color: color-mix(in srgb, var(--accent-2) 30%, var(--border))
+    }
+
+    .intro-stats .stat--blue::before {
+      background: var(--accent-2)
+    }
+
+    .intro-stats .stat--blue .value,
+    .intro-stats .stat--blue .label {
+      color: var(--accent-2)
+    }
+
+    .intro-stats .stat--amber {
+      background: color-mix(in srgb, var(--accent-3) 7%, var(--bg-card));
+      border-color: color-mix(in srgb, var(--accent-3) 32%, var(--border))
+    }
+
+    .intro-stats .stat--amber::before {
+      background: var(--accent-3)
+    }
+
+    .intro-stats .stat--amber .value,
+    .intro-stats .stat--amber .label {
+      color: var(--accent-3)
+    }
+
+    .intro-stats .stat--purple {
+      background: color-mix(in srgb, var(--purple) 7%, var(--bg-card));
+      border-color: color-mix(in srgb, var(--purple) 30%, var(--border))
+    }
+
+    .intro-stats .stat--purple::before {
+      background: var(--purple)
+    }
+
+    .intro-stats .stat--purple .value,
+    .intro-stats .stat--purple .label {
+      color: var(--purple)
+    }
 
     /* Family breakdown chips */
-    .family-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px}
-    .fam-chip{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg-card);position:relative;overflow:hidden}
-    .fam-chip::after{content:'';position:absolute;inset:auto 0 0 0;height:2px}
-    .fam-count{font-family:var(--mono);font-size:28px;font-weight:500;line-height:1;letter-spacing:-0.02em;min-width:36px;text-align:center}
-    .fam-body{flex:1;min-width:0}
-    .fam-name{font-size:13px;font-weight:600;color:var(--text);letter-spacing:-0.01em}
-    .fam-sub{font-size:11px;color:var(--text-muted);margin-top:2px;line-height:1.4}
-    .fam-chip--blue{background:color-mix(in srgb,var(--accent-2) 5%,var(--bg-card))}
-    .fam-chip--blue::after{background:var(--accent-2)}.fam-chip--blue .fam-count{color:var(--accent-2)}
-    .fam-chip--amber{background:color-mix(in srgb,var(--accent-3) 6%,var(--bg-card))}
-    .fam-chip--amber::after{background:var(--accent-3)}.fam-chip--amber .fam-count{color:var(--accent-3)}
-    .fam-chip--purple{background:color-mix(in srgb,var(--purple) 6%,var(--bg-card))}
-    .fam-chip--purple::after{background:var(--purple)}.fam-chip--purple .fam-count{color:var(--purple)}
+    .family-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 18px
+    }
+
+    .fam-chip {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      position: relative;
+      overflow: hidden
+    }
+
+    .fam-chip::after {
+      content: '';
+      position: absolute;
+      inset: auto 0 0 0;
+      height: 2px
+    }
+
+    .fam-count {
+      font-family: var(--mono);
+      font-size: 28px;
+      font-weight: 500;
+      line-height: 1;
+      letter-spacing: -0.02em;
+      min-width: 36px;
+      text-align: center
+    }
+
+    .fam-body {
+      flex: 1;
+      min-width: 0
+    }
+
+    .fam-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: -0.01em
+    }
+
+    .fam-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+      line-height: 1.4
+    }
+
+    .fam-chip--blue {
+      background: color-mix(in srgb, var(--accent-2) 5%, var(--bg-card))
+    }
+
+    .fam-chip--blue::after {
+      background: var(--accent-2)
+    }
+
+    .fam-chip--blue .fam-count {
+      color: var(--accent-2)
+    }
+
+    .fam-chip--amber {
+      background: color-mix(in srgb, var(--accent-3) 6%, var(--bg-card))
+    }
+
+    .fam-chip--amber::after {
+      background: var(--accent-3)
+    }
+
+    .fam-chip--amber .fam-count {
+      color: var(--accent-3)
+    }
+
+    .fam-chip--purple {
+      background: color-mix(in srgb, var(--purple) 6%, var(--bg-card))
+    }
+
+    .fam-chip--purple::after {
+      background: var(--purple)
+    }
+
+    .fam-chip--purple .fam-count {
+      color: var(--purple)
+    }
 
     /* Capability matrix */
-    .cap-wrap{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 18px 16px;margin-top:4px}
-    .cap-head{display:flex;align-items:baseline;gap:14px;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--border)}
-    .cap-head .lbl{font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);font-weight:700}
-    .cap-head .ttl{font-size:14px;font-weight:600;color:var(--text);letter-spacing:-0.01em}
-    .cap-head .sub{font-size:11.5px;color:var(--text-dim);margin-left:auto;font-style:italic}
-    .cap-matrix{width:100%;border-collapse:separate;border-spacing:0;font-size:12.5px}
-    .cap-matrix th,.cap-matrix td{padding:7px 12px;text-align:center;vertical-align:middle}
-    .cap-matrix thead th{font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);border-bottom:1px solid var(--border)}
-    .cap-matrix thead th.uc{text-align:left}
-    .cap-matrix thead th.fb{color:var(--accent-2)}
-    .cap-matrix thead th.fa{color:var(--accent-3)}
-    .cap-matrix thead th.fp{color:var(--purple)}
-    .cap-matrix tbody tr+tr td{border-top:1px solid var(--border)}
-    .cap-matrix td.uc{text-align:left;font-size:13px;font-weight:600;color:var(--text);letter-spacing:-0.01em;width:28%}
-    .verdict{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:99px;font-size:11.5px;font-weight:600;border:1px solid transparent}
-    .verdict .dot{width:6px;height:6px;border-radius:50%;background:currentColor}
-    .verdict--good{color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,var(--bg-card));border-color:color-mix(in srgb,var(--accent) 28%,transparent)}
-    .verdict--maybe{color:var(--accent-3);background:color-mix(in srgb,var(--accent-3) 14%,var(--bg-card));border-color:color-mix(in srgb,var(--accent-3) 28%,transparent)}
-    .verdict--bad{color:var(--text-muted);background:var(--bg-elevated);border-color:var(--border);font-weight:500}
-    .verdict--bad .dot{opacity:0.5}
+    .cap-wrap {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 18px 16px;
+      margin-top: 4px
+    }
+
+    .cap-head {
+      display: flex;
+      align-items: baseline;
+      gap: 14px;
+      margin-bottom: 8px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border)
+    }
+
+    .cap-head .lbl {
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 700
+    }
+
+    .cap-head .ttl {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: -0.01em
+    }
+
+    .cap-head .sub {
+      font-size: 11.5px;
+      color: var(--text-dim);
+      margin-left: auto;
+      font-style: italic
+    }
+
+    .cap-matrix {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: 12.5px
+    }
+
+    .cap-matrix th,
+    .cap-matrix td {
+      padding: 7px 12px;
+      text-align: center;
+      vertical-align: middle
+    }
+
+    .cap-matrix thead th {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border)
+    }
+
+    .cap-matrix thead th.uc {
+      text-align: left
+    }
+
+    .cap-matrix thead th.fb {
+      color: var(--accent-2)
+    }
+
+    .cap-matrix thead th.fa {
+      color: var(--accent-3)
+    }
+
+    .cap-matrix thead th.fp {
+      color: var(--purple)
+    }
+
+    .cap-matrix tbody tr+tr td {
+      border-top: 1px solid var(--border)
+    }
+
+    .cap-matrix td.uc {
+      text-align: left;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: -0.01em;
+      width: 28%
+    }
+
+    .verdict {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 10px;
+      border-radius: 99px;
+      font-size: 11.5px;
+      font-weight: 600;
+      border: 1px solid transparent
+    }
+
+    .verdict .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor
+    }
+
+    .verdict--good {
+      color: var(--accent);
+      background: color-mix(in srgb, var(--accent) 14%, var(--bg-card));
+      border-color: color-mix(in srgb, var(--accent) 28%, transparent)
+    }
+
+    .verdict--maybe {
+      color: var(--accent-3);
+      background: color-mix(in srgb, var(--accent-3) 14%, var(--bg-card));
+      border-color: color-mix(in srgb, var(--accent-3) 28%, transparent)
+    }
+
+    .verdict--bad {
+      color: var(--text-muted);
+      background: var(--bg-elevated);
+      border-color: var(--border);
+      font-weight: 500
+    }
+
+    .verdict--bad .dot {
+      opacity: 0.5
+    }
 
     /* Rule-based: score pair */
-    .score-pair{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-    .score-card{border-radius:var(--radius);padding:20px 22px;border:1px solid}
-    .score-card .pre{font-size:10px;letter-spacing:0.08em;text-transform:uppercase;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:8px}
-    .score-card .pre .dot{width:8px;height:8px;border-radius:50%}
-    .score-card .big{font-family:var(--mono);font-size:56px;font-weight:500;line-height:1;letter-spacing:-0.03em}
-    .score-card .ratio{font-size:12px;color:var(--text-dim);margin-top:10px}
-    .score-card .fa{margin-top:14px;padding-top:10px;border-top:1px dashed var(--border);font-size:12px;display:flex;justify-content:space-between}
-    .score-card.hik{background:color-mix(in srgb,var(--accent-3) 8%,var(--bg-card));border-color:color-mix(in srgb,var(--accent-3) 30%,var(--border))}
-    .score-card.hik .pre,.score-card.hik .big,.score-card.hik .fa strong{color:var(--accent-3)}
-    .score-card.cus{background:color-mix(in srgb,var(--accent-2) 8%,var(--bg-card));border-color:color-mix(in srgb,var(--accent-2) 30%,var(--border))}
-    .score-card.cus .pre,.score-card.cus .big,.score-card.cus .fa strong{color:var(--accent-2)}
+    .score-pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px
+    }
+
+    .score-card {
+      border-radius: var(--radius);
+      padding: 20px 22px;
+      border: 1px solid
+    }
+
+    .score-card .pre {
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .score-card .pre .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%
+    }
+
+    .score-card .big {
+      font-family: var(--mono);
+      font-size: 56px;
+      font-weight: 500;
+      line-height: 1;
+      letter-spacing: -0.03em
+    }
+
+    .score-card .ratio {
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-top: 10px
+    }
+
+    .score-card .fa {
+      margin-top: 14px;
+      padding-top: 10px;
+      border-top: 1px dashed var(--border);
+      font-size: 12px;
+      display: flex;
+      justify-content: space-between
+    }
+
+    .score-card.hik {
+      background: color-mix(in srgb, var(--accent-3) 8%, var(--bg-card));
+      border-color: color-mix(in srgb, var(--accent-3) 30%, var(--border))
+    }
+
+    .score-card.hik .pre,
+    .score-card.hik .big,
+    .score-card.hik .fa strong {
+      color: var(--accent-3)
+    }
+
+    .score-card.cus {
+      background: color-mix(in srgb, var(--accent-2) 8%, var(--bg-card));
+      border-color: color-mix(in srgb, var(--accent-2) 30%, var(--border))
+    }
+
+    .score-card.cus .pre,
+    .score-card.cus .big,
+    .score-card.cus .fa strong {
+      color: var(--accent-2)
+    }
 
     /* Comparison table (shared: audit per-class + rule-based per-class) */
-    .cmp-table{width:100%;border-collapse:separate;border-spacing:0;font-size:12.5px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
-    .cmp-table th,.cmp-table td{padding:9px 12px;text-align:right}
-    .cmp-table th:first-child,.cmp-table td:first-child{text-align:left}
-    .cmp-table thead th{font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);background:var(--bg-elevated);border-bottom:1px solid var(--border)}
-    .cmp-table thead th.hik{color:var(--accent-3)}
-    .cmp-table thead th.cus{color:var(--accent-2)}
-    .cmp-table tbody tr+tr td{border-top:1px solid var(--border)}
-    .cmp-table td.uc{font-weight:600;color:var(--text)}
-    .cmp-table td.hik{color:var(--accent-3);font-family:var(--mono);font-weight:500}
-    .cmp-table td.cus{color:var(--accent-2);font-family:var(--mono);font-weight:500}
-    .cmp-table td.win{font-size:10px;letter-spacing:0.08em;text-transform:uppercase;font-weight:700;text-align:center}
-    .cmp-table td.win.hik{color:var(--accent-3)}
-    .cmp-table td.win.cus{color:var(--accent-2)}
-    .cmp-table td.win.tie{color:var(--text-muted)}
+    .cmp-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: 12.5px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden
+    }
+
+    .cmp-table th,
+    .cmp-table td {
+      padding: 9px 12px;
+      text-align: right
+    }
+
+    .cmp-table th:first-child,
+    .cmp-table td:first-child {
+      text-align: left
+    }
+
+    .cmp-table thead th {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      background: var(--bg-elevated);
+      border-bottom: 1px solid var(--border)
+    }
+
+    .cmp-table thead th.hik {
+      color: var(--accent-3)
+    }
+
+    .cmp-table thead th.cus {
+      color: var(--accent-2)
+    }
+
+    .cmp-table tbody tr+tr td {
+      border-top: 1px solid var(--border)
+    }
+
+    .cmp-table td.uc {
+      font-weight: 600;
+      color: var(--text)
+    }
+
+    .cmp-table td.hik {
+      color: var(--accent-3);
+      font-family: var(--mono);
+      font-weight: 500
+    }
+
+    .cmp-table td.cus {
+      color: var(--accent-2);
+      font-family: var(--mono);
+      font-weight: 500
+    }
+
+    .cmp-table td.win {
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 700;
+      text-align: center
+    }
+
+    .cmp-table td.win.hik {
+      color: var(--accent-3)
+    }
+
+    .cmp-table td.win.cus {
+      color: var(--accent-2)
+    }
+
+    .cmp-table td.win.tie {
+      color: var(--text-muted)
+    }
 
     /* Leaderboard KPI pair + routing */
-    .kpi-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:14px}
-    .kpi{padding:22px 20px;text-align:center;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg-card)}
-    .kpi .lbl{font-size:10px;letter-spacing:0.08em;text-transform:uppercase;font-weight:700;color:var(--text-muted);margin-bottom:8px}
-    .kpi .big{font-family:var(--mono);font-size:44px;font-weight:500;line-height:1;color:var(--text)}
-    .kpi .sub{font-size:11px;color:var(--text-dim);margin-top:8px}
-    .kpi.primary{border:1.5px solid var(--accent);background:var(--accent-dim)}
-    .kpi.primary .lbl,.kpi.primary .big{color:var(--accent)}
+    .kpi-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 14px
+    }
 
-    .routing{width:100%;font-family:var(--mono);font-size:12px;border-collapse:collapse}
-    .routing td{padding:8px 4px;border-bottom:1px solid var(--border)}
-    .routing td:first-child{color:var(--text-muted)}
-    .routing td:nth-child(2){color:var(--text)}
-    .routing td:last-child{text-align:right;color:var(--accent);font-weight:600}
-    .routing tr:last-child td{border-bottom:0}
+    .kpi {
+      padding: 22px 20px;
+      text-align: center;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--bg-card)
+    }
+
+    .kpi .lbl {
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 8px
+    }
+
+    .kpi .big {
+      font-family: var(--mono);
+      font-size: 44px;
+      font-weight: 500;
+      line-height: 1;
+      color: var(--text)
+    }
+
+    .kpi .sub {
+      font-size: 11px;
+      color: var(--text-dim);
+      margin-top: 8px
+    }
+
+    .kpi.primary {
+      border: 1.5px solid var(--accent);
+      background: var(--accent-dim)
+    }
+
+    .kpi.primary .lbl,
+    .kpi.primary .big {
+      color: var(--accent)
+    }
+
+    .routing {
+      width: 100%;
+      font-family: var(--mono);
+      font-size: 12px;
+      border-collapse: collapse
+    }
+
+    .routing td {
+      padding: 8px 4px;
+      border-bottom: 1px solid var(--border)
+    }
+
+    .routing td:first-child {
+      color: var(--text-muted)
+    }
+
+    .routing td:nth-child(2) {
+      color: var(--text)
+    }
+
+    .routing td:last-child {
+      text-align: right;
+      color: var(--accent);
+      font-weight: 600
+    }
+
+    .routing tr:last-child td {
+      border-bottom: 0
+    }
 
     /* In-vehicle setup */
-    .inv-grid{display:grid;grid-template-columns:1fr 420px;gap:16px;flex:1;min-height:0}
-    .inv-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);display:flex;flex-direction:column;overflow:hidden}
-    .inv-card .head{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--bg-elevated);border-bottom:1px solid var(--border)}
-    .inv-card .head .title{font-size:13px;font-weight:600}
-    .inv-card .head .pill{font-family:var(--mono);font-size:10px;letter-spacing:0.04em;color:var(--text-muted);text-transform:uppercase}
-    .inv-card .img{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:12px;background:#0B0C10}
-    .inv-card .img img{max-width:100%;max-height:100%;object-fit:contain;border-radius:6px}
-    .inv-card .foot{padding:10px 14px;font-size:12.5px;color:var(--text-dim);border-top:1px solid var(--border);font-style:italic}
+    .inv-grid {
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      gap: 16px;
+      flex: 1;
+      min-height: 0
+    }
+
+    .inv-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden
+    }
+
+    .inv-card .head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      background: var(--bg-elevated);
+      border-bottom: 1px solid var(--border)
+    }
+
+    .inv-card .head .title {
+      font-size: 13px;
+      font-weight: 600
+    }
+
+    .inv-card .head .pill {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+      text-transform: uppercase
+    }
+
+    .inv-card .img {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+      background: #0B0C10
+    }
+
+    .inv-card .img img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      border-radius: 6px
+    }
+
+    .inv-card .foot {
+      padding: 10px 14px;
+      font-size: 12.5px;
+      color: var(--text-dim);
+      border-top: 1px solid var(--border);
+      font-style: italic
+    }
 
     /* In-vehicle slide 08: cmp-card + err-row (copied verbatim from dms_comparison_21Apr26.html) */
-    .cmp-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);display:flex;flex-direction:column;overflow:hidden}
-    .cmp-card.ours{border-color:rgba(14,154,126,0.35)}
-    .cmp-head{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--bg-elevated);border-bottom:1px solid var(--border)}
-    .cmp-card.ours .cmp-head{background:var(--accent-dim);border-bottom-color:rgba(14,154,126,0.2)}
-    .cmp-head .title{font-size:13px;font-weight:600}
-    .cmp-head .pill{font-family:var(--mono);font-size:10px;letter-spacing:0.04em;color:var(--text-muted);text-transform:uppercase}
-    .cmp-card.ours .cmp-head .pill{color:var(--accent)}
-    .cmp-img-wrap{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:12px;background:#0B0C10}
-    .cmp-img-wrap img{max-width:100%;max-height:100%;object-fit:contain;border-radius:6px}
-    .cmp-foot{padding:10px 14px;font-size:12.5px;color:var(--text-dim);border-top:1px solid var(--border);background:var(--bg-card);font-style:italic}
-    .cmp-card.ours .cmp-foot{color:var(--text)}
-    .row-stack{display:flex;flex-direction:column;gap:16px;flex:1;min-height:0}
-    .err-row{display:grid;grid-template-columns:260px 1fr;gap:14px;align-items:stretch;flex:1;min-height:0}
-    .err-row-label{display:flex;gap:12px;background:var(--bg-elevated);border:1px solid var(--border);border-left:3px solid var(--red);border-radius:var(--radius-sm);padding:14px 16px}
-    .err-row-label.ok{border-left-color:var(--accent)}
-    .err-row-num{font-family:var(--mono);font-size:20px;font-weight:600;color:var(--red);line-height:1;min-width:22px}
-    .err-row-label.ok .err-row-num{color:var(--accent)}
-    .err-row-title{font-size:13.5px;font-weight:600;margin-bottom:4px;letter-spacing:-0.005em}
-    .err-row-desc{font-size:12px;color:var(--text-dim);line-height:1.45}
-    .err-pair-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    .err-pair-grid .cmp-card{min-height:0}
-    .err-pair-grid .cmp-img-wrap{padding:8px}
-    .err-pair-grid .cmp-img-wrap img{max-height:260px}
+    .cmp-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden
+    }
+
+    .cmp-card.ours {
+      border-color: rgba(14, 154, 126, 0.35)
+    }
+
+    .cmp-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      background: var(--bg-elevated);
+      border-bottom: 1px solid var(--border)
+    }
+
+    .cmp-card.ours .cmp-head {
+      background: var(--accent-dim);
+      border-bottom-color: rgba(14, 154, 126, 0.2)
+    }
+
+    .cmp-head .title {
+      font-size: 13px;
+      font-weight: 600
+    }
+
+    .cmp-head .pill {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+      text-transform: uppercase
+    }
+
+    .cmp-card.ours .cmp-head .pill {
+      color: var(--accent)
+    }
+
+    .cmp-img-wrap {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+      background: #0B0C10
+    }
+
+    .cmp-img-wrap img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      border-radius: 6px
+    }
+
+    .cmp-foot {
+      padding: 10px 14px;
+      font-size: 12.5px;
+      color: var(--text-dim);
+      border-top: 1px solid var(--border);
+      background: var(--bg-card);
+      font-style: italic
+    }
+
+    .cmp-card.ours .cmp-foot {
+      color: var(--text)
+    }
+
+    .row-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      flex: 1;
+      min-height: 0
+    }
+
+    .err-row {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 14px;
+      align-items: stretch;
+      flex: 1;
+      min-height: 0
+    }
+
+    .err-row-label {
+      display: flex;
+      gap: 12px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--red);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px
+    }
+
+    .err-row-label.ok {
+      border-left-color: var(--accent)
+    }
+
+    .err-row-num {
+      font-family: var(--mono);
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--red);
+      line-height: 1;
+      min-width: 22px
+    }
+
+    .err-row-label.ok .err-row-num {
+      color: var(--accent)
+    }
+
+    .err-row-title {
+      font-size: 13.5px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      letter-spacing: -0.005em
+    }
+
+    .err-row-desc {
+      font-size: 12px;
+      color: var(--text-dim);
+      line-height: 1.45
+    }
+
+    .err-pair-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px
+    }
+
+    .err-pair-grid .cmp-card {
+      min-height: 0
+    }
+
+    .err-pair-grid .cmp-img-wrap {
+      padding: 8px
+    }
+
+    .err-pair-grid .cmp-img-wrap img {
+      max-height: 260px
+    }
 
     /* Compression: encoder grid + flow + result cards */
-    .encoder-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-    .encoder-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:18px 18px 16px;position:relative}
-    .encoder-card .verdict-chip{position:absolute;top:12px;right:14px;font-family:var(--mono);font-size:9.5px;letter-spacing:0.1em;text-transform:uppercase;padding:3px 8px;border-radius:3px;font-weight:600}
-    .encoder-card .verdict-chip.pass{color:var(--accent);background:color-mix(in srgb,var(--accent) 15%,var(--bg-card));border:1px solid color-mix(in srgb,var(--accent) 32%,transparent)}
-    .encoder-card .verdict-chip.fail{color:var(--text-muted);background:var(--bg-elevated);border:1px solid var(--border)}
-    .encoder-card .nm{font-size:14px;font-weight:700;margin-bottom:4px}
-    .encoder-card .ty{font-family:var(--mono);font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px}
-    .encoder-card .dc{font-size:12px;color:var(--text-dim);line-height:1.55}
-    .encoder-card.chosen{border-color:rgba(14,154,126,0.4);background:linear-gradient(180deg,var(--accent-dim) 0%,var(--bg-card) 50%)}
-    .flow-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-    .flow-step{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 14px;font-family:var(--mono);font-size:12px;color:var(--text-dim)}
-    .flow-step strong{color:var(--text);font-weight:600}
-    .flow-arrow{color:var(--text-muted);font-size:16px}
-    .result-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-    .rc{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px 18px 14px;position:relative;overflow:hidden}
-    .rc::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px}
-    .rc[data-a="red"]::before{background:var(--red)}
-    .rc[data-a="green"]::before{background:var(--accent)}
-    .rc[data-a="blue"]::before{background:var(--accent-2)}
-    .rc[data-a="purple"]::before{background:var(--purple)}
-    .rc .lbl{font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);font-weight:700}
-    .rc .val{font-family:var(--mono);font-size:30px;font-weight:500;margin-top:6px;letter-spacing:-0.02em}
-    .rc .det{font-size:11px;color:var(--text-dim);margin-top:6px}
+    .encoder-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px
+    }
+
+    .encoder-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 18px 16px;
+      position: relative
+    }
+
+    .encoder-card .verdict-chip {
+      position: absolute;
+      top: 12px;
+      right: 14px;
+      font-family: var(--mono);
+      font-size: 9.5px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 3px;
+      font-weight: 600
+    }
+
+    .encoder-card .verdict-chip.pass {
+      color: var(--accent);
+      background: color-mix(in srgb, var(--accent) 15%, var(--bg-card));
+      border: 1px solid color-mix(in srgb, var(--accent) 32%, transparent)
+    }
+
+    .encoder-card .verdict-chip.fail {
+      color: var(--text-muted);
+      background: var(--bg-elevated);
+      border: 1px solid var(--border)
+    }
+
+    .encoder-card .nm {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 4px
+    }
+
+    .encoder-card .ty {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 10px
+    }
+
+    .encoder-card .dc {
+      font-size: 12px;
+      color: var(--text-dim);
+      line-height: 1.55
+    }
+
+    .encoder-card.chosen {
+      border-color: rgba(14, 154, 126, 0.4);
+      background: linear-gradient(180deg, var(--accent-dim) 0%, var(--bg-card) 50%)
+    }
+
+    .flow-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap
+    }
+
+    .flow-step {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text-dim)
+    }
+
+    .flow-step strong {
+      color: var(--text);
+      font-weight: 600
+    }
+
+    .flow-arrow {
+      color: var(--text-muted);
+      font-size: 16px
+    }
+
+    .result-cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px
+    }
+
+    .rc {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 16px 18px 14px;
+      position: relative;
+      overflow: hidden
+    }
+
+    .rc::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px
+    }
+
+    .rc[data-a="red"]::before {
+      background: var(--red)
+    }
+
+    .rc[data-a="green"]::before {
+      background: var(--accent)
+    }
+
+    .rc[data-a="blue"]::before {
+      background: var(--accent-2)
+    }
+
+    .rc[data-a="purple"]::before {
+      background: var(--purple)
+    }
+
+    .rc .lbl {
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 700
+    }
+
+    .rc .val {
+      font-family: var(--mono);
+      font-size: 30px;
+      font-weight: 500;
+      margin-top: 6px;
+      letter-spacing: -0.02em
+    }
+
+    .rc .det {
+      font-size: 11px;
+      color: var(--text-dim);
+      margin-top: 6px
+    }
+
+    .summary-cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px
+    }
+
+    .summary-card {
+      border-radius: 8px;
+      padding: 14px;
+      text-align: center;
+      border: 1px solid rgba(0, 0, 0, 0.04);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03)
+    }
+
+    .summary-card .label {
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-family: var(--mono);
+      color: var(--text-dim)
+    }
+
+    .summary-card .value {
+      font-size: 28px;
+      font-weight: 700;
+      font-family: var(--mono);
+      margin-top: 2px
+    }
+
+    .summary-card .detail {
+      font-size: 10.5px;
+      color: var(--text-muted);
+      margin-top: 3px
+    }
+
+    .video-section {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 20px;
+      flex: 1;
+      min-height: 0
+    }
+
+    .video-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden
+    }
+
+    .video-card .v-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      background: var(--bg-elevated);
+      border-bottom: 1px solid var(--border)
+    }
+
+    .video-card .v-head .title {
+      font-size: 13px;
+      font-weight: 600
+    }
+
+    .video-card .v-head .pill {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+      text-transform: uppercase
+    }
+
+    .video-wrap {
+      flex: 1;
+      min-height: 0;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center
+    }
+
+    .video-wrap video {
+      width: 100%;
+      height: 100%;
+      max-height: 100%;
+      object-fit: contain
+    }
+
+    .video-foot {
+      padding: 10px 14px;
+      font-size: 12.5px;
+      color: var(--text-dim);
+      border-top: 1px solid var(--border);
+      background: var(--bg-card)
+    }
+
+    .size-chart {
+      display: flex;
+      flex-direction: column;
+      gap: 12px
+    }
+
+    .size-row {
+      display: grid;
+      grid-template-columns: 86px 1fr 126px;
+      gap: 10px;
+      align-items: center
+    }
+
+    .size-row .size-label {
+      display: flex;
+      flex-direction: column;
+      gap: 2px
+    }
+
+    .size-row .size-label .name {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-family: var(--mono);
+      color: var(--text-dim)
+    }
+
+    .size-row .size-label .name .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%
+    }
+
+    .size-row .size-label .val {
+      font-family: var(--mono);
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text)
+    }
+
+    .size-bar-track {
+      height: 16px;
+      border-radius: 8px;
+      background: var(--bg-elevated);
+      overflow: hidden;
+      position: relative
+    }
+
+    .size-bar-fill {
+      height: 100%;
+      border-radius: 8px 0 0 8px
+    }
+
+    .size-bar-fill.green {
+      background: linear-gradient(90deg, var(--accent), rgba(14, 154, 126, 0.75))
+    }
+
+    .size-bar-fill.blue {
+      background: linear-gradient(90deg, var(--accent-2), rgba(59, 111, 214, 0.75))
+    }
+
+    hr.rule {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 18px 0
+    }
 
     /* Action bar */
-    .action-bar{display:flex;align-items:flex-start;gap:8px;padding:10px 14px;background:var(--bg-elevated);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:0 var(--radius-sm) var(--radius-sm) 0;font-size:12.5px}
-    .action-bar.blue{border-left-color:var(--accent-2)}
-    .action-bar.amber{border-left-color:var(--accent-3)}
-    .action-bar .t{color:var(--text);flex:1}.action-bar .t strong{font-weight:600}
+    .action-bar {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 10px 14px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-size: 12.5px
+    }
 
-    .open-link{font-family:var(--mono);font-size:10.5px;letter-spacing:0.06em;color:var(--text-muted);text-decoration:none}
-    .open-link:hover{color:var(--accent-2)}
+    .action-bar.blue {
+      border-left-color: var(--accent-2)
+    }
 
-    .flex{display:flex}.flex-col{flex-direction:column}.gap-12{gap:12px}.gap-16{gap:16px}.grow{flex:1}.mt-auto{margin-top:auto}
+    .action-bar.amber {
+      border-left-color: var(--accent-3)
+    }
+
+    .action-bar .t {
+      color: var(--text);
+      flex: 1
+    }
+
+    .action-bar .t strong {
+      font-weight: 600
+    }
+
+    .open-link {
+      font-family: var(--mono);
+      font-size: 10.5px;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      text-decoration: none
+    }
+
+    .open-link:hover {
+      color: var(--accent-2)
+    }
+
+    .flex {
+      display: flex
+    }
+
+    .flex-col {
+      flex-direction: column
+    }
+
+    .gap-12 {
+      gap: 12px
+    }
+
+    .gap-16 {
+      gap: 16px
+    }
+
+    .grow {
+      flex: 1
+    }
+
+    .mt-auto {
+      margin-top: auto
+    }
 
     /* Pareto mini-chart (slide 06) */
-    .pareto-chart{display:flex;flex-direction:column;gap:10px;padding-top:8px}
-    .pareto-row{display:grid;grid-template-columns:72px 1fr 50px;align-items:center;gap:10px;font-size:11.5px}
-    .pareto-row.selected{font-weight:600}
-    .pareto-n{font-family:var(--mono);font-size:10.5px;color:var(--text-muted);text-align:right}
-    .pareto-row.selected .pareto-n{color:var(--accent)}
-    .pareto-v{font-family:var(--mono);font-size:11.5px;color:var(--text);text-align:right}
-    .pareto-row.selected .pareto-v{color:var(--accent);font-weight:600}
-    .pareto-bar{position:relative;height:16px;background:var(--bg-elevated);border-radius:3px;overflow:visible}
-    .pareto-fill{height:100%;background:linear-gradient(90deg,color-mix(in srgb,var(--accent) 55%,var(--bg-elevated)),var(--accent));border-radius:3px 0 0 3px;transition:width 0.25s ease}
-    .pareto-row.selected .pareto-fill{background:linear-gradient(90deg,var(--accent),color-mix(in srgb,var(--accent) 70%,var(--accent-2)))}
-    .pareto-hik{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--accent-3);transform:translateX(-1px)}
-    .pareto-row:first-child .pareto-hik::after{content:'Hik 73.6%';position:absolute;top:-14px;right:-34px;font-family:var(--mono);font-size:9px;letter-spacing:0.04em;color:var(--accent-3);white-space:nowrap}
+    .pareto-chart {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding-top: 8px
+    }
+
+    .pareto-row {
+      display: grid;
+      grid-template-columns: 72px 1fr 50px;
+      align-items: center;
+      gap: 10px;
+      font-size: 11.5px
+    }
+
+    .pareto-row.selected {
+      font-weight: 600
+    }
+
+    .pareto-n {
+      font-family: var(--mono);
+      font-size: 10.5px;
+      color: var(--text-muted);
+      text-align: right
+    }
+
+    .pareto-row.selected .pareto-n {
+      color: var(--accent)
+    }
+
+    .pareto-v {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      color: var(--text);
+      text-align: right
+    }
+
+    .pareto-row.selected .pareto-v {
+      color: var(--accent);
+      font-weight: 600
+    }
+
+    .pareto-bar {
+      position: relative;
+      height: 16px;
+      background: var(--bg-elevated);
+      border-radius: 3px;
+      overflow: visible
+    }
+
+    .pareto-fill {
+      height: 100%;
+      background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 55%, var(--bg-elevated)), var(--accent));
+      border-radius: 3px 0 0 3px;
+      transition: width 0.25s ease
+    }
+
+    .pareto-row.selected .pareto-fill {
+      background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 70%, var(--accent-2)))
+    }
+
+    .pareto-hik {
+      position: absolute;
+      top: -3px;
+      bottom: -3px;
+      width: 2px;
+      background: var(--accent-3);
+      transform: translateX(-1px)
+    }
+
+    .pareto-row:first-child .pareto-hik::after {
+      content: 'Hik 73.6%';
+      position: absolute;
+      top: -14px;
+      right: -34px;
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.04em;
+      color: var(--accent-3);
+      white-space: nowrap
+    }
+
+    /* Audit-dashboard-style blocks — lifted verbatim from hikvision_audit.html so slides 01/02 render identically */
+    .audit-title {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px
+    }
+
+    .audit-subtitle {
+      font-size: 14px;
+      color: var(--text-dim);
+      margin-bottom: 28px;
+      max-width: none;
+      font-weight: 400
+    }
+
+    .audit-summary-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px
+    }
+
+    .audit-summary-card {
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center
+    }
+
+    .audit-summary-card .label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-family: var(--mono);
+      color: var(--text-dim)
+    }
+
+    .audit-summary-card .value {
+      font-size: 36px;
+      font-weight: 700;
+      font-family: var(--mono);
+      margin-top: 4px;
+      line-height: 1.1
+    }
+
+    .audit-summary-card .detail {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px
+    }
+
+    .audit-bar-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04)
+    }
+
+    .audit-bar-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px
+    }
+
+    .audit-bar-label {
+      width: 160px;
+      text-align: right;
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--text-dim);
+      flex-shrink: 0
+    }
+
+    .audit-bar-track {
+      flex: 1;
+      display: flex;
+      height: 24px;
+      border-radius: 4px;
+      overflow: hidden;
+      background: var(--bg-elevated)
+    }
+
+    .audit-bar-fill {
+      height: 100%;
+      transition: width 0.3s ease
+    }
+
+    .audit-bar-correct {
+      background: var(--accent)
+    }
+
+    .audit-bar-incorrect {
+      background: var(--red)
+    }
+
+    .audit-bar-value {
+      min-width: 80px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text-dim)
+    }
+
+    /* Rule-based Overview blocks — lifted from hikvision_rulebased.html for the rule-1 slide */
+    .system-card {
+      border-radius: 10px;
+      padding: 24px;
+      border: 1px solid rgba(0, 0, 0, 0.04);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+      position: relative;
+      overflow: hidden
+    }
+
+    .system-card .sys-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-family: var(--mono);
+      font-weight: 600;
+      margin-bottom: 4px
+    }
+
+    .system-card .sys-value {
+      font-size: 52px;
+      font-weight: 700;
+      font-family: var(--mono);
+      line-height: 1.0
+    }
+
+    .system-card .sys-ratio {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 6px
+    }
+
+    .system-card .sys-fa {
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(0, 0, 0, 0.06);
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px
+    }
+
+    .legend-dot {
+      display: inline-block;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      margin-right: 5px;
+      vertical-align: middle
+    }
+
+    .rb-chip {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 500;
+      padding: 2px 7px;
+      border-radius: 3px;
+      white-space: nowrap;
+      font-family: var(--mono)
+    }
+
+    .rb-chip-distr {
+      background: var(--purple-dim);
+      color: var(--purple)
+    }
+
+    .rb-chip-fatigue {
+      background: var(--bg-elevated);
+      color: var(--text-dim)
+    }
+
+    .rb-chip-phone {
+      background: var(--red-dim);
+      color: var(--red)
+    }
+
+    .rb-chip-belt {
+      background: var(--teal-dim);
+      color: var(--teal)
+    }
+
+    .rb-chip-smoke {
+      background: var(--accent-3-dim);
+      color: var(--accent-3)
+    }
+
+    .rb-chip-ctx {
+      background: var(--bg-elevated);
+      color: var(--text-muted);
+      font-size: 9px
+    }
+
+    /* ===== Enhanced intro (slide 00) — editorial masthead + contents ===== */
+    .intro-slide {
+      padding-top: 72px
+    }
+
+    .intro-masthead {
+      max-width: 1180px;
+      margin-bottom: 30px
+    }
+
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: var(--mono);
+      font-size: 10.5px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-bottom: 20px
+    }
+
+    .eyebrow .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-dim)
+    }
+
+    .eyebrow .tick {
+      width: 28px;
+      height: 1px;
+      background: var(--border)
+    }
+
+    .eyebrow .date {
+      color: var(--text-dim)
+    }
+
+    .intro-title {
+      font-family: var(--font);
+      font-size: 60px;
+      font-weight: 600;
+      letter-spacing: -0.035em;
+      line-height: 1.02;
+      margin-bottom: 22px;
+      color: var(--text)
+    }
+
+    .intro-title .accent {
+      font-style: italic;
+      font-weight: 400;
+      color: var(--accent);
+      background-image: linear-gradient(180deg, transparent 64%, color-mix(in srgb, var(--accent) 22%, transparent) 64%, color-mix(in srgb, var(--accent) 22%, transparent) 94%, transparent 94%);
+      padding: 0 4px;
+      margin-left: -2px
+    }
+
+    .intro-dek {
+      font-size: 16.5px;
+      line-height: 1.55;
+      color: var(--text-dim);
+      max-width: 1000px;
+      font-weight: 400
+    }
+
+    .intro-dek strong {
+      color: var(--text);
+      font-weight: 600
+    }
+
+    .intro-dek .num {
+      font-family: var(--mono);
+      font-weight: 500;
+      color: var(--text);
+      letter-spacing: -0.01em
+    }
+
+    .intro-numbers {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+      margin: 0 0 26px;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border)
+    }
+
+    .num-cell {
+      padding: 20px 26px 20px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      border-right: 1px solid var(--border);
+      position: relative
+    }
+
+    .num-cell:last-child {
+      border-right: 0
+    }
+
+    .num-cell::before {
+      content: '';
+      position: absolute;
+      left: -1px;
+      top: 0;
+      width: 3px;
+      height: 42px;
+      background: currentColor;
+      opacity: 0.85
+    }
+
+    .num-cell .n-idx {
+      font-family: var(--mono);
+      font-size: 9.5px;
+      letter-spacing: 0.18em;
+      color: var(--text-muted);
+      font-weight: 700;
+      margin-bottom: 6px
+    }
+
+    .num-cell .n-val {
+      font-family: var(--mono);
+      font-size: 40px;
+      font-weight: 500;
+      letter-spacing: -0.025em;
+      line-height: 1;
+      color: currentColor
+    }
+
+    .num-cell .n-val sub {
+      font-family: var(--mono);
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-dim);
+      letter-spacing: 0;
+      margin-left: 4px;
+      vertical-align: baseline
+    }
+
+    .num-cell .n-lbl {
+      font-size: 12.5px;
+      color: var(--text);
+      font-weight: 600;
+      margin-top: 8px;
+      letter-spacing: -0.005em
+    }
+
+    .num-cell .n-sub {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      line-height: 1.45;
+      margin-top: 2px
+    }
+
+    .num-cell.c-blue {
+      color: var(--accent-2)
+    }
+
+    .num-cell.c-amber {
+      color: var(--accent-3)
+    }
+
+    .num-cell.c-purple {
+      color: var(--purple)
+    }
+
+    .intro-contents-head {
+      display: flex;
+      align-items: baseline;
+      gap: 14px;
+      margin-bottom: 2px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border)
+    }
+
+    .intro-contents-head .lbl {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 700
+    }
+
+    .intro-contents-head .ttl {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: -0.01em
+    }
+
+    .intro-contents-head .hint {
+      margin-left: auto;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted)
+    }
+
+    .content-row {
+      display: grid;
+      grid-template-columns: 54px 1fr 180px;
+      gap: 20px;
+      align-items: center;
+      padding: 16px 10px 16px 6px;
+      border-bottom: 1px solid var(--border);
+      text-decoration: none;
+      color: inherit;
+      position: relative;
+      transition: background-color 0.18s ease, transform 0.18s ease
+    }
+
+    .content-row:last-child {
+      border-bottom: 0
+    }
+
+    .content-row::before {
+      content: '';
+      position: absolute;
+      left: -6px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: currentColor;
+      opacity: 0;
+      transition: opacity 0.18s ease
+    }
+
+    .content-row:hover {
+      background: linear-gradient(90deg, color-mix(in srgb, currentColor 5%, transparent) 0%, transparent 70%)
+    }
+
+    .content-row:hover::before {
+      opacity: 0.55
+    }
+
+    .content-row:hover .cr-title::after {
+      transform: translateX(4px);
+      opacity: 1
+    }
+
+    .content-row .cr-idx {
+      font-family: var(--mono);
+      font-size: 15px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      color: currentColor;
+      opacity: 0.85;
+      text-align: center
+    }
+
+    .content-row .cr-body {
+      min-width: 0
+    }
+
+    .content-row .cr-title {
+      font-size: 15.5px;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: -0.015em;
+      margin-bottom: 4px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .content-row .cr-title::after {
+      content: '\2192';
+      font-family: var(--mono);
+      font-size: 13px;
+      color: currentColor;
+      opacity: 0;
+      transform: translateX(-2px);
+      transition: transform 0.18s ease, opacity 0.18s ease
+    }
+
+    .content-row .cr-desc {
+      font-size: 12.5px;
+      color: var(--text-dim);
+      line-height: 1.5;
+      display: block
+    }
+
+    .content-row .cr-metric {
+      text-align: right;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 3px
+    }
+
+    .content-row .cr-mval {
+      font-family: var(--mono);
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      line-height: 1;
+      color: currentColor
+    }
+
+    .content-row .cr-mval small {
+      font-size: 14px;
+      color: var(--text-dim);
+      font-weight: 500;
+      margin-left: 2px
+    }
+
+    .content-row .cr-mlabel {
+      font-family: var(--mono);
+      font-size: 9.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+      font-weight: 600
+    }
+
+    .content-row[data-c="amber"] {
+      color: var(--accent-3)
+    }
+
+    .content-row[data-c="purple"] {
+      color: var(--purple)
+    }
+
+    .content-row[data-c="green"] {
+      color: var(--accent)
+    }
+
+    .content-row[data-c="blue"] {
+      color: var(--accent-2)
+    }
+
+    .content-row[data-c="teal"] {
+      color: var(--teal)
+    }
   </style>
 </head>
 
@@ -266,280 +2086,467 @@
   <nav>
     <a href="index.html" style="color:var(--text-muted);font-size:10px;margin-right:6px;opacity:0.7">&larr; Home</a>
     <a href="#intro" class="active">Intro</a>
-    <a href="#audit-1">Audit</a>
-    <a href="#audit-2">Audit·2</a>
+    <a href="#audit">Audit</a>
     <a href="#rule-1">Rule-based</a>
-    <a href="#rule-2">Rule·2</a>
-    <a href="#lb-1">Leaderboard</a>
-    <a href="#lb-2">LB·2</a>
     <a href="#inv-1">In-vehicle</a>
     <a href="#inv-2">Errors</a>
+    <a href="#lb">Leaderboard</a>
     <a href="#cmp-1">Compression</a>
     <a href="#cmp-2">Cmp·2</a>
     <span class="slide-counter" id="slideCounter">1 / 11</span>
   </nav>
 
   <!-- ==================== 00. INTRO ==================== -->
-  <section class="slide" id="intro">
-    <div class="slide-stamp"><span>summary / 21 apr / 2026-04</span><span class="sep"></span><span class="idx">00 / 10</span></div>
-    <span class="tag tag--accent">Summary</span>
-    <h1 style="font-size:38px">DMS Fleet Evaluation &mdash; Summary</h1>
-    <h3 style="font-size:14px;max-width:900px;margin-bottom:18px">Five linked investigations on the same 619 reviewed Hikvision alert frames: OEM quality audit, rule-based pipeline comparison, 36-model leaderboard, in-vehicle side-by-side, and the upstream video compression pipeline.</h3>
+  <section class="slide intro-slide" id="intro">
+    <div class="slide-stamp"><span>summary / 21 apr / 2026-04</span><span class="sep"></span><span class="idx">00 /
+        07</span></div>
 
-    <div class="stat-grid intro-stats">
-      <div class="stat stat--accent"><div class="label">Models scored</div><div class="value">36</div><div class="sub">MediaPipe &middot; Detection &middot; Classification</div></div>
-      <div class="stat stat--blue"><div class="label">Hikvision alerts</div><div class="value">619</div><div class="sub">human-reviewed multi-label GT</div></div>
-      <div class="stat stat--amber"><div class="label">Use cases</div><div class="value">6</div><div class="sub">distracted, eating, fatigue, phone, seatbelt, smoking</div></div>
-      <div class="stat stat--purple"><div class="label">Fleet footage</div><div class="value">440 h</div><div class="sub">28&times; reduction on 674 GB</div></div>
+    <div class="intro-masthead">
+      <div class="eyebrow">
+        <span class="dot"></span>
+        <span>DMS &middot; Fleet Evaluation</span>
+        <span class="tick"></span>
+        <span class="date">21 April 2026</span>
+      </div>
+      <h1 class="intro-title">Fleet evaluation summary.</h1>
+      <p class="intro-dek">
+        Evaluations over the same <span class="num">619</span> Hikvision alert frames, reviewed manually across <span
+          class="num">5</span> fleet devices. Covered here: OEM accuracy on its own alerts, a rule-based pipeline scored
+        on the same frames, an in-vehicle recording running both systems together, a leaderboard of <span
+          class="num">36</span> candidate models with per-class specialist routing, and the video compression pipeline
+        that produced the footage.
+      </p>
     </div>
 
-    <div class="card" style="margin-top:6px">
-      <h4>What's in this deck</h4>
-      <ul>
-        <li><strong>Hikvision OEM Quality Audit</strong> &mdash; the ground truth: 619 alert frames reviewed by hand across 5 devices.</li>
-        <li><strong>Rule-based Pipeline vs Hikvision</strong> &mdash; MediaPipe + dual-YOLO scored against OEM on the same frames. Hikvision 68.8% vs custom 28.6% overall.</li>
-        <li><strong>36-Model Leaderboard</strong> &mdash; broader search across three detector families. Best specialist pipeline reaches 71.3% (Hikvision 73.6%).</li>
-        <li><strong>Custom Pipeline &mdash; In-Vehicle</strong> &mdash; both systems recorded in the same vehicle; one correct detection + one observed error on slide 08.</li>
-        <li><strong>Fleet Video Compression</strong> &mdash; 674 GB of H.264 1080p to ~24 GB of SVT-AV1 480p, 28&times; reduction.</li>
-      </ul>
+    <div class="intro-numbers">
+      <div class="num-cell c-blue">
+        <span class="n-idx">01 &middot; Frames</span>
+        <span class="n-val">619</span>
+        <span class="n-lbl">Hikvision alerts, manually reviewed</span>
+        <span class="n-sub">multi-label annotations &middot; 5 devices</span>
+      </div>
+      <div class="num-cell c-amber">
+        <span class="n-idx">02 &middot; Classes</span>
+        <span class="n-val">6</span>
+        <span class="n-lbl">Alert classes</span>
+        <span class="n-sub">distracted &middot; eating &middot; fatigue &middot; phone &middot; seatbelt &middot;
+          smoking</span>
+      </div>
+      <div class="num-cell c-purple">
+        <span class="n-idx">03 &middot; Footage</span>
+        <span class="n-val">440<sub>h</sub></span>
+        <span class="n-lbl">Fleet video re-encoded</span>
+        <span class="n-sub">674&nbsp;GB H.264 1080p &rarr; 24&nbsp;GB AV1 480p</span>
+      </div>
     </div>
+
+    <div class="intro-contents-head">
+      <span class="lbl">Contents</span>
+      <span class="ttl">Five sections on the same reviewed frames</span>
+      <span class="hint">jump to section &rarr;</span>
+    </div>
+
+    <a class="content-row" href="#audit" data-c="amber">
+      <span class="cr-idx">I</span>
+      <span class="cr-body">
+        <span class="cr-title">Hikvision OEM quality audit</span>
+        <span class="cr-desc">619 alert frames reviewed manually across 5 devices. OEM predictions scored against the
+          reviews.</span>
+      </span>
+      <span class="cr-metric">
+        <span class="cr-mval">74<small>%</small></span>
+        <span class="cr-mlabel">OEM accuracy</span>
+      </span>
+    </a>
+
+    <a class="content-row" href="#rule-1" data-c="purple">
+      <span class="cr-idx">II</span>
+      <span class="cr-body">
+        <span class="cr-title">Rule-based pipeline vs. Hikvision</span>
+        <span class="cr-desc">MediaPipe + YOLOv8n + YOLO11n run on the same 619 frames. Balanced per-class accuracy
+          reported alongside the OEM.</span>
+      </span>
+      <span class="cr-metric">
+        <span class="cr-mval">73.6<small>&nbsp;/&nbsp;55.0</small></span>
+        <span class="cr-mlabel">Hik vs. rule-based</span>
+      </span>
+    </a>
+
+    <a class="content-row" href="#inv-1" data-c="green">
+      <span class="cr-idx">III</span>
+      <span class="cr-body">
+        <span class="cr-title">Custom pipeline &mdash; in-vehicle</span>
+        <span class="cr-desc">Custom pipeline and Hikvision recorded simultaneously in the same vehicle. One correct
+          detection and one error shown on the following slide.</span>
+      </span>
+      <span class="cr-metric">
+        <span class="cr-mval">1&nbsp;+&nbsp;1</span>
+        <span class="cr-mlabel">correct &middot; error</span>
+      </span>
+    </a>
+
+    <a class="content-row" href="#lb" data-c="teal">
+      <span class="cr-idx">IV</span>
+      <span class="cr-body">
+        <span class="cr-title">Model leaderboard &amp; specialist routing</span>
+        <span class="cr-desc">36 candidate models benchmarked on the same frames. Per-class routing to the best
+          specialist reaches 71.3% accuracy; Hikvision 73.6%.</span>
+      </span>
+      <span class="cr-metric">
+        <span class="cr-mval">71.3<small>&nbsp;/&nbsp;73.6</small></span>
+        <span class="cr-mlabel">specialists vs. Hik</span>
+      </span>
+    </a>
+
+    <a class="content-row" href="#cmp-1" data-c="blue">
+      <span class="cr-idx">V</span>
+      <span class="cr-body">
+        <span class="cr-title">Fleet video compression</span>
+        <span class="cr-desc">Fleet recordings re-encoded from H.264 1080p to SVT-AV1 480p. 674&nbsp;GB to ~24&nbsp;GB
+          across 440 hours.</span>
+      </span>
+      <span class="cr-metric">
+        <span class="cr-mval">28<small>&times;</small></span>
+        <span class="cr-mlabel">size reduction</span>
+      </span>
+    </a>
   </section>
 
-  <!-- ==================== 01. AUDIT — what was reviewed ==================== -->
-  <section class="slide" id="audit-1">
-    <div class="slide-stamp"><span>audit / hikvision OEM / 2026-04</span><span class="sep"></span><span class="idx">01 / 10</span></div>
-    <span class="tag tag--amber">Hikvision OEM Quality Audit &middot; 1 / 2</span>
-    <h2>Ground truth &mdash; 619 Hikvision alert frames, reviewed by hand</h2>
-    <h3>Every alert image the commercial DMS flagged on 5 fleet devices was opened and re-labelled by a human reviewer. This is the reference the rest of the deck scores against.</h3>
+  <!-- ==================== 01. AUDIT — overview + by-event-type combined ==================== -->
+  <section class="slide" id="audit">
+    <div class="slide-stamp"><span>audit / hikvision OEM / 2026-04</span><span class="sep"></span><span class="idx">01 /
+        07</span></div>
+    <span class="tag tag--amber">Hikvision OEM Quality Audit</span>
+    <h2 class="audit-title">OEM Accuracy Overview</h2>
+    <p class="audit-subtitle">Overall Hikvision prediction performance across 619 manually reviewed frame images</p>
 
-    <div class="stat-grid" style="margin-bottom:14px">
-      <div class="stat"><div class="label">Frames reviewed</div><div class="value">619</div><div class="sub">1920&times;1088 (617) + 1280&times;720 (9)</div></div>
-      <div class="stat"><div class="label">Devices</div><div class="value">5</div><div class="sub">fleet cameras in active service</div></div>
-      <div class="stat"><div class="label">Labelling</div><div class="value">multi-label</div><div class="sub">a frame can carry multiple true classes</div></div>
-      <div class="stat"><div class="label">Review date</div><div class="value">2026-04-16</div><div class="sub">source: <code>hikvision_review_results.json</code></div></div>
+    <div class="audit-summary-cards">
+      <div class="audit-summary-card" style="background:var(--accent-2-dim)">
+        <div class="label">Total Frames</div>
+        <div class="value" style="color:var(--accent-2)">619</div>
+        <div class="detail">across 5 devices</div>
+      </div>
+      <div class="audit-summary-card" style="background:var(--accent-dim)">
+        <div class="label">OEM Accuracy</div>
+        <div class="value" style="color:var(--accent)">74%</div>
+        <div class="detail">across 617 reviewed frames</div>
+      </div>
+      <div class="audit-summary-card" style="background:var(--red-dim)">
+        <div class="label">False Alarms</div>
+        <div class="value" style="color:var(--red)">23%</div>
+        <div class="detail">141 of 619 flagged frames were safe driving</div>
+      </div>
     </div>
 
-    <div class="action-bar blue" style="margin-top:6px">
-      <div class="t"><strong>Scope.</strong> The OEM raises alerts as it sees fit; we neither prompted nor filtered. This is its lived behaviour on real trips, not a curated benchmark.</div>
+    <h2 class="audit-title" style="margin-top:40px">OEM Accuracy by Event Type</h2>
+    <p class="audit-subtitle">Per-class accuracy using Hikvision prediction categories, sorted worst-first</p>
+
+    <div class="audit-bar-card">
+      <div class="audit-bar-row" style="opacity:0.4">
+        <div class="audit-bar-label">Smoking</div>
+        <div class="audit-bar-track">
+          <div class="audit-bar-fill audit-bar-correct" style="width:0%"></div>
+          <div class="audit-bar-fill audit-bar-incorrect" style="width:0.79%"></div>
+        </div>
+        <div class="audit-bar-value">0% <span style="color:var(--text-muted)">(2)</span></div>
+      </div>
+      <div class="audit-bar-row">
+        <div class="audit-bar-label">Fatigue</div>
+        <div class="audit-bar-track">
+          <div class="audit-bar-fill audit-bar-correct" style="width:8.70%"></div>
+          <div class="audit-bar-fill audit-bar-incorrect" style="width:27.27%"></div>
+        </div>
+        <div class="audit-bar-value">24% <span style="color:var(--text-muted)">(91)</span></div>
+      </div>
+      <div class="audit-bar-row">
+        <div class="audit-bar-label">Distracted Driving</div>
+        <div class="audit-bar-track">
+          <div class="audit-bar-fill audit-bar-correct" style="width:66.01%"></div>
+          <div class="audit-bar-fill audit-bar-incorrect" style="width:33.99%"></div>
+        </div>
+        <div class="audit-bar-value">66% <span style="color:var(--text-muted)">(253)</span></div>
+      </div>
+      <div class="audit-bar-row">
+        <div class="audit-bar-label">Seatbelt</div>
+        <div class="audit-bar-track">
+          <div class="audit-bar-fill audit-bar-correct" style="width:69.17%"></div>
+          <div class="audit-bar-fill audit-bar-incorrect" style="width:14.23%"></div>
+        </div>
+        <div class="audit-bar-value">84% <span style="color:var(--text-muted)">(211)</span></div>
+      </div>
+      <div class="audit-bar-row">
+        <div class="audit-bar-label">Phone Usage</div>
+        <div class="audit-bar-track">
+          <div class="audit-bar-fill audit-bar-correct" style="width:22.53%"></div>
+          <div class="audit-bar-fill audit-bar-incorrect" style="width:1.98%"></div>
+        </div>
+        <div class="audit-bar-value">92% <span style="color:var(--text-muted)">(62)</span></div>
+      </div>
+      <div style="display:flex;gap:16px;margin-top:16px;font-size:11px;color:var(--text-muted)">
+        <span><span
+            style="display:inline-block;width:10px;height:10px;background:var(--accent);border-radius:2px;margin-right:4px;vertical-align:middle"></span>Correct</span>
+        <span><span
+            style="display:inline-block;width:10px;height:10px;background:var(--red);border-radius:2px;margin-right:4px;vertical-align:middle"></span>Incorrect</span>
+      </div>
     </div>
 
-    <div style="margin-top:14px">
+    <div style="margin-top:16px">
       <a class="open-link" href="hikvision_audit.html" target="_blank">&rarr; full dashboard: hikvision_audit.html</a>
     </div>
   </section>
 
-  <!-- ==================== 02. AUDIT — OEM accuracy per class ==================== -->
-  <section class="slide" id="audit-2">
-    <div class="slide-stamp"><span>audit / hikvision OEM / 2026-04</span><span class="sep"></span><span class="idx">02 / 10</span></div>
-    <span class="tag tag--amber">Hikvision OEM Quality Audit &middot; 2 / 2</span>
-    <h2>OEM accuracy against human review</h2>
-    <h3>Per-class accuracy = fraction of Hikvision alerts of that class the reviewer confirmed. Sorted worst-first. <em>smoking</em> row has <em>n</em> = 2 &mdash; shown faded since it is under the meaningful-sample threshold.</h3>
-
-    <div class="card" style="padding:0">
-      <table class="cmp-table" style="border:0;border-radius:0">
-        <thead><tr><th>Alert class</th><th>OEM accuracy</th><th>Correct / total</th></tr></thead>
-        <tbody>
-          <tr style="opacity:0.45"><td class="uc">smoking</td><td class="hik">0%</td><td>0 / 2</td></tr>
-          <tr><td class="uc">fatigue</td><td class="hik">24%</td><td>22 / 91</td></tr>
-          <tr><td class="uc">distracted_driving</td><td class="hik">66%</td><td>167 / 253</td></tr>
-          <tr><td class="uc">seatbelt</td><td class="hik">84%</td><td>175 / 209</td></tr>
-          <tr><td class="uc">phone_usage</td><td class="hik">92%</td><td>57 / 62</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="action-bar amber" style="margin-top:14px">
-      <div class="t"><strong>Reading.</strong> Hikvision&rsquo;s fatigue class is the weakest: only 22 of 91 &ldquo;fatigue&rdquo; alerts were confirmed. The confusion log in the full dashboard shows the same alerts were most often actually distracted_driving (44) or phone_usage (29).</div>
-    </div>
-
-    <div style="margin-top:12px">
-      <a class="open-link" href="hikvision_audit.html" target="_blank">&rarr; open the full interactive bar chart</a>
-    </div>
-  </section>
-
-  <!-- ==================== 03. RULE-BASED — overall ==================== -->
+  <!-- ==================== 03. RULE-BASED — overview (ported verbatim from hikvision_rulebased.html slide 1/3) ==================== -->
   <section class="slide" id="rule-1">
-    <div class="slide-stamp"><span>rule-based / 2026-04</span><span class="sep"></span><span class="idx">03 / 10</span></div>
-    <span class="tag tag--teal">Rule-based Pipeline vs Hikvision &middot; 1 / 2</span>
-    <h2>Custom rule-based pipeline vs Hikvision OEM</h2>
-    <h3>MediaPipe (eye closure, yawning, head pose) + YOLOv8n (phone, cigarette, seatbelt) + YOLO11n (phone, smoking, seatbelt), scored against Hikvision on the same 619 reviewed alerts.</h3>
+    <div class="slide-stamp"><span>rule-based / 2026-04</span><span class="sep"></span><span class="idx">02 / 07</span>
+    </div>
+    <span class="tag tag--purple">Head-to-Head Evaluation</span>
+    <h2 class="audit-title">Hikvision vs YOLOv8n + YOLO11n + MediaPipe</h2>
+    <p class="audit-subtitle">
+      619 manually-reviewed alerts across 5 devices. Ground truth = human review of each evidence image.
+      Both systems are scored against the same manual labels. Canonical alert classes: distracted_driving,
+      eating_drinking, fatigue, phone_usage, seatbelt, smoking. Rule-based pipeline: MediaPipe (eye closure
+      &middot; yawning &middot; head pose) + YOLOv8n (phone &middot; cigarette &middot; seatbelt) + YOLO11n
+      (phone &middot; smoking &middot; seatbelt).
+    </p>
 
-    <div class="score-pair">
-      <div class="score-card hik">
-        <div class="pre"><span class="dot" style="background:var(--accent-3)"></span>Hikvision (commercial DMS)</div>
-        <div class="big">68.8%</div>
-        <div class="ratio">426 of 619 alerts flagged a class the reviewer confirmed</div>
-        <div class="fa"><span style="color:var(--text-muted)">False alarms</span><strong>193 (31.2%)</strong></div>
+    <div class="audit-summary-cards" style="grid-template-columns:repeat(2,1fr)">
+      <div class="audit-summary-card" style="background:var(--accent-3-dim)">
+        <div class="label" style="color:var(--accent-3)">Hikvision (commercial DMS)</div>
+        <div class="value" style="color:var(--accent-3)">73.6%</div>
+        <div class="detail">426 of 619 alerts flagged a class the reviewer confirmed</div>
+        <div class="detail" style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(0,0,0,0.06)">
+          False alarms: <span style="color:var(--accent-3);font-family:var(--mono);font-weight:600">193 (31.2%)</span>
+        </div>
       </div>
-      <div class="score-card cus">
-        <div class="pre"><span class="dot" style="background:var(--accent-2)"></span>Custom rule-based pipeline</div>
-        <div class="big">28.6%</div>
-        <div class="ratio">177 of 619 alerts flagged a class the reviewer confirmed</div>
-        <div class="fa"><span style="color:var(--text-muted)">False alarms</span><strong>410 (66.2%)</strong></div>
-      </div>
-    </div>
-
-    <div class="action-bar amber" style="margin-top:16px">
-      <div class="t"><strong>Headline.</strong> On the OEM's own alert stream, the hand-tuned rule-based pipeline raises more than twice as many false alarms as Hikvision and agrees with it on less than a third of flagged events. The per-class split on the next slide explains why.</div>
-    </div>
-
-    <div style="margin-top:12px">
-      <a class="open-link" href="hikvision_rulebased.html" target="_blank">&rarr; full report: hikvision_rulebased.html</a>
-    </div>
-  </section>
-
-  <!-- ==================== 04. RULE-BASED — per-class ==================== -->
-  <section class="slide" id="rule-2">
-    <div class="slide-stamp"><span>rule-based / 2026-04</span><span class="sep"></span><span class="idx">04 / 10</span></div>
-    <span class="tag tag--teal">Rule-based Pipeline vs Hikvision &middot; 2 / 2</span>
-    <h2>Per-class accuracy &mdash; where each system wins</h2>
-    <h3>Per-class balanced accuracy: (recall on confirmed events + specificity on ruled-out events) / 2. 0.50 = chance; 1.00 = perfect. <code>eating_drinking</code> collapses to the 0.500 floor on this manifest (no model fires for it); <code>smoking</code> has zero GT support.</h3>
-
-    <div class="card" style="padding:0">
-      <table class="cmp-table" style="border:0;border-radius:0">
-        <thead>
-          <tr>
-            <th>Alert class</th>
-            <th>True events</th>
-            <th class="hik">Hik accuracy</th>
-            <th class="hik">Hik FA</th>
-            <th class="cus">Custom accuracy</th>
-            <th class="cus">Custom FA</th>
-            <th style="text-align:center">Winner</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td class="uc">distracted_driving</td><td>279</td><td class="hik">68.3%</td><td class="hik">83</td><td class="cus">40.4%</td><td class="cus">163</td><td class="win hik">Hik</td></tr>
-          <tr><td class="uc">fatigue</td><td>27</td><td class="hik">88.8%</td><td class="hik">67</td><td class="cus">79.1%</td><td class="cus">182</td><td class="win hik">Hik</td></tr>
-          <tr><td class="uc">phone_usage</td><td>111</td><td class="hik">75.2%</td><td class="hik">5</td><td class="cus">50.0%</td><td class="cus">0</td><td class="win hik">Hik</td></tr>
-          <tr><td class="uc">seatbelt</td><td>217</td><td class="hik">85.8%</td><td class="hik">36</td><td class="cus">55.4%</td><td class="cus">62</td><td class="win hik">Hik</td></tr>
-          <tr style="opacity:0.5"><td class="uc">eating_drinking</td><td>11</td><td class="hik">50.0%</td><td class="hik">0</td><td class="cus">50.0%</td><td class="cus">0</td><td class="win tie">Tie</td></tr>
-          <tr style="opacity:0.4"><td class="uc">smoking</td><td>0</td><td class="hik">n/a</td><td class="hik">2</td><td class="cus">n/a</td><td class="cus">3</td><td class="win tie">n/a</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="action-bar amber" style="margin-top:14px">
-      <div class="t"><strong>Takeaway.</strong> Hikvision wins every use case with real support: the custom rule-based pipeline is within 10 points on fatigue but trails by 25&ndash;30 points everywhere else, and phone_usage collapses to 0 recall (the YOLO weights we have don&rsquo;t fire on Hikvision&rsquo;s phone frames at the 0.5 confidence threshold).</div>
-    </div>
-
-    <div style="margin-top:10px">
-      <a class="open-link" href="hikvision_rulebased.html#perclass" target="_blank">&rarr; source: hikvision_rulebased.html &middot; Per-Class Detail</a>
-    </div>
-  </section>
-
-  <!-- ==================== 05. LEADERBOARD — roster + capability matrix ==================== -->
-  <section class="slide" id="lb-1">
-    <div class="slide-stamp"><span>leaderboard / 2026-04</span><span class="sep"></span><span class="idx">05 / 10</span></div>
-    <span class="tag tag--purple">36-Model Leaderboard &middot; 1 / 2</span>
-    <h2>Roster &amp; capability matrix</h2>
-    <h3>36 models across three detector families, scored per use case on the same 619 reviewed frames. Matrix below is the a priori expectation &mdash; the leaderboard tests it.</h3>
-
-    <div class="family-strip">
-      <div class="fam-chip fam-chip--blue"><div class="fam-count">4</div><div class="fam-body"><div class="fam-name">MediaPipe</div><div class="fam-sub">rule-based facial landmarks &middot; EAR / MAR / head pose</div></div></div>
-      <div class="fam-chip fam-chip--amber"><div class="fam-count">20</div><div class="fam-body"><div class="fam-name">Detection</div><div class="fam-sub">YOLOv8 / v10 / v11 &middot; RT-DETR &middot; DMS-tuned YOLOs</div></div></div>
-      <div class="fam-chip fam-chip--purple"><div class="fam-count">11</div><div class="fam-body"><div class="fam-name">Classification</div><div class="fam-sub">face / cabin image classifiers &middot; HF + custom</div></div></div>
-    </div>
-
-    <div class="cap-wrap">
-      <div class="cap-head">
-        <span class="lbl">Capability Matrix</span>
-        <span class="ttl">Which family should own which use case</span>
-        <span class="sub">a priori expectation</span>
-      </div>
-      <table class="cap-matrix">
-        <thead><tr><th class="uc">Use case</th><th class="fb">MediaPipe</th><th class="fa">Detection</th><th class="fp">Classification</th></tr></thead>
-        <tbody>
-          <tr><td class="uc">Fatigue</td><td><span class="verdict verdict--good"><span class="dot"></span>good</span></td><td><span class="verdict verdict--bad"><span class="dot"></span>bad</span></td><td><span class="verdict verdict--bad"><span class="dot"></span>bad</span></td></tr>
-          <tr><td class="uc">Mobile phone</td><td><span class="verdict verdict--bad"><span class="dot"></span>bad</span></td><td><span class="verdict verdict--good"><span class="dot"></span>good</span></td><td><span class="verdict verdict--bad"><span class="dot"></span>bad</span></td></tr>
-          <tr><td class="uc">Eating / drinking</td><td><span class="verdict verdict--maybe"><span class="dot"></span>maybe</span></td><td><span class="verdict verdict--maybe"><span class="dot"></span>maybe</span></td><td><span class="verdict verdict--good"><span class="dot"></span>good</span></td></tr>
-          <tr><td class="uc">Distracted driving</td><td><span class="verdict verdict--good"><span class="dot"></span>good</span></td><td><span class="verdict verdict--bad"><span class="dot"></span>bad</span></td><td><span class="verdict verdict--bad"><span class="dot"></span>bad</span></td></tr>
-          <tr><td class="uc">Smoking</td><td><span class="verdict verdict--bad"><span class="dot"></span>bad</span></td><td><span class="verdict verdict--good"><span class="dot"></span>good</span></td><td><span class="verdict verdict--bad"><span class="dot"></span>bad</span></td></tr>
-          <tr><td class="uc">Seatbelt</td><td><span class="verdict verdict--bad"><span class="dot"></span>bad</span></td><td><span class="verdict verdict--maybe"><span class="dot"></span>maybe</span></td><td><span class="verdict verdict--good"><span class="dot"></span>good</span></td></tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
-
-  <!-- ==================== 06. LEADERBOARD — specialist pipeline ==================== -->
-  <section class="slide" id="lb-2">
-    <div class="slide-stamp"><span>leaderboard / 2026-04</span><span class="sep"></span><span class="idx">06 / 10</span></div>
-    <span class="tag tag--purple">36-Model Leaderboard &middot; 2 / 2</span>
-    <h2>Specialist routing &mdash; one best model per use case</h2>
-    <h3>Each use case routes to its single highest-accuracy specialist. Mean balanced accuracy across the 5 scored use cases (<code>eating_drinking</code> has zero support in this manifest and is excluded).</h3>
-
-    <div class="kpi-row">
-      <div class="kpi primary">
-        <div class="lbl">Specialist pipeline</div>
-        <div class="big">71.3%</div>
-        <div class="sub">mean accuracy, one best model per use case</div>
-      </div>
-      <div class="kpi">
-        <div class="lbl">Hikvision OEM</div>
-        <div class="big">73.6%</div>
-        <div class="sub">mean accuracy, same use cases</div>
+      <div class="audit-summary-card" style="background:var(--accent-2-dim)">
+        <div class="label" style="color:var(--accent-2)">YOLOv8n + YOLO11n + MediaPipe</div>
+        <div class="value" style="color:var(--accent-2)">55.0%</div>
+        <div class="detail">177 of 619 alerts flagged a class the reviewer confirmed</div>
+        <div class="detail" style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(0,0,0,0.06)">
+          False alarms: <span style="color:var(--accent-2);font-family:var(--mono);font-weight:600">410 (66.2%)</span>
+        </div>
       </div>
     </div>
 
-    <div class="flex gap-16" style="flex:1;min-height:0">
-      <div class="card" style="flex:1">
-        <h4>Routing (best model per use case)</h4>
-        <table class="routing" style="margin-top:8px">
-          <tr><td>distracted_driving</td><td>followb1ind1y_mnv3</td><td>60.2%</td></tr>
-          <tr><td>eating_drinking</td><td>yolov8x</td><td>59.1%</td></tr>
-          <tr><td>fatigue</td><td>mediapipe</td><td>79.2%</td></tr>
-          <tr><td>phone_usage</td><td>rtdetr_x</td><td>78.3%</td></tr>
-          <tr><td>seatbelt</td><td>yolo_soham</td><td>79.6%</td></tr>
-        </table>
-      </div>
-      <div class="card" style="flex:1">
-        <h4>Pareto &mdash; accuracy vs. number of models</h4>
-        <p style="font-size:11px;color:var(--text-muted);margin-top:2px">mean balanced accuracy across the 5 scored use cases; Hikvision OEM at 73.6% shown as reference</p>
+    <div class="flex gap-16" style="flex:1;margin-top:20px">
+      <div class="card grow">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px">
+          <h4>Accuracy by Alert Class</h4>
+          <div style="font-size:11px;color:var(--text-muted)">
+            <span class="legend-dot" style="background:var(--hik-color)"></span>Hikvision
+            <span class="legend-dot" style="background:var(--yolo-color);margin-left:12px"></span>YOLOv8n + YOLO11n +
+            MediaPipe
+          </div>
+        </div>
+        <p style="font-size:12px;color:var(--text-muted);margin-bottom:14px">
+          <strong>Accuracy</strong> here is balanced per class: the mean of recall on confirmed events
+          and specificity on events the reviewer ruled out. 50% is no skill, 100% is perfect.
+        </p>
 
-        <div class="pareto-chart" style="margin-top:14px">
-          <div class="pareto-row"><span class="pareto-n">1 model</span><div class="pareto-bar"><div class="pareto-fill" style="width:77.9%"></div><span class="pareto-hik" style="left:100%"></span></div><span class="pareto-v">57.4%</span></div>
-          <div class="pareto-row"><span class="pareto-n">2 models</span><div class="pareto-bar"><div class="pareto-fill" style="width:86.0%"></div><span class="pareto-hik" style="left:100%"></span></div><span class="pareto-v">63.4%</span></div>
-          <div class="pareto-row"><span class="pareto-n">3 models</span><div class="pareto-bar"><div class="pareto-fill" style="width:93.9%"></div><span class="pareto-hik" style="left:100%"></span></div><span class="pareto-v">69.2%</span></div>
-          <div class="pareto-row"><span class="pareto-n">4 models</span><div class="pareto-bar"><div class="pareto-fill" style="width:96.7%"></div><span class="pareto-hik" style="left:100%"></span></div><span class="pareto-v">71.2%</span></div>
-          <div class="pareto-row selected"><span class="pareto-n">5 models</span><div class="pareto-bar"><div class="pareto-fill" style="width:96.8%"></div><span class="pareto-hik" style="left:100%"></span></div><span class="pareto-v">71.3%</span></div>
+        <!-- distracted_driving (support 279) -->
+        <div style="margin-bottom:14px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
+            <span style="font-family:var(--mono);font-size:12px;font-weight:600">distracted_driving
+              <span style="color:var(--text-muted);font-size:10px;margin-left:4px">279 true events</span></span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 60px;gap:8px;align-items:center;margin-bottom:3px">
+            <div style="height:14px;background:var(--bg-elevated);border-radius:3px;overflow:hidden">
+              <div style="height:100%;width:68.26%;background:var(--hik-color)"></div>
+            </div>
+            <div style="font-family:var(--mono);font-size:11px;text-align:right;color:var(--hik-color);font-weight:600">
+              68%</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 60px;gap:8px;align-items:center">
+            <div style="height:14px;background:var(--bg-elevated);border-radius:3px;overflow:hidden">
+              <div style="height:100%;width:40.37%;background:var(--yolo-color)"></div>
+            </div>
+            <div
+              style="font-family:var(--mono);font-size:11px;text-align:right;color:var(--yolo-color);font-weight:600">
+              40%</div>
+          </div>
         </div>
 
-        <p style="margin-top:12px;font-size:12px;color:var(--text-dim)">4 models already recovers 97% of the 5-model ceiling. A 6th adds cost without raising accuracy (identical 71.3%).</p>
+        <!-- seatbelt (support 217) -->
+        <div style="margin-bottom:14px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
+            <span style="font-family:var(--mono);font-size:12px;font-weight:600">seatbelt
+              <span style="color:var(--text-muted);font-size:10px;margin-left:4px">217 true events</span></span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 60px;gap:8px;align-items:center;margin-bottom:3px">
+            <div style="height:14px;background:var(--bg-elevated);border-radius:3px;overflow:hidden">
+              <div style="height:100%;width:85.84%;background:var(--hik-color)"></div>
+            </div>
+            <div style="font-family:var(--mono);font-size:11px;text-align:right;color:var(--hik-color);font-weight:600">
+              86%</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 60px;gap:8px;align-items:center">
+            <div style="height:14px;background:var(--bg-elevated);border-radius:3px;overflow:hidden">
+              <div style="height:100%;width:55.42%;background:var(--yolo-color)"></div>
+            </div>
+            <div
+              style="font-family:var(--mono);font-size:11px;text-align:right;color:var(--yolo-color);font-weight:600">
+              55%</div>
+          </div>
+        </div>
+
+        <!-- phone_usage (support 111) -->
+        <div style="margin-bottom:14px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
+            <span style="font-family:var(--mono);font-size:12px;font-weight:600">phone_usage
+              <span style="color:var(--text-muted);font-size:10px;margin-left:4px">111 true events</span></span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 60px;gap:8px;align-items:center;margin-bottom:3px">
+            <div style="height:14px;background:var(--bg-elevated);border-radius:3px;overflow:hidden">
+              <div style="height:100%;width:75.18%;background:var(--hik-color)"></div>
+            </div>
+            <div style="font-family:var(--mono);font-size:11px;text-align:right;color:var(--hik-color);font-weight:600">
+              75%</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 60px;gap:8px;align-items:center">
+            <div style="height:14px;background:var(--bg-elevated);border-radius:3px;overflow:hidden">
+              <div style="height:100%;width:50.00%;background:var(--yolo-color)"></div>
+            </div>
+            <div
+              style="font-family:var(--mono);font-size:11px;text-align:right;color:var(--yolo-color);font-weight:600">
+              50%</div>
+          </div>
+        </div>
+
+        <!-- fatigue (support 27) -->
+        <div style="margin-bottom:14px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
+            <span style="font-family:var(--mono);font-size:12px;font-weight:600">fatigue
+              <span style="color:var(--text-muted);font-size:10px;margin-left:4px">27 true events</span></span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 60px;gap:8px;align-items:center;margin-bottom:3px">
+            <div style="height:14px;background:var(--bg-elevated);border-radius:3px;overflow:hidden">
+              <div style="height:100%;width:88.79%;background:var(--hik-color)"></div>
+            </div>
+            <div style="font-family:var(--mono);font-size:11px;text-align:right;color:var(--hik-color);font-weight:600">
+              89%</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 60px;gap:8px;align-items:center">
+            <div style="height:14px;background:var(--bg-elevated);border-radius:3px;overflow:hidden">
+              <div style="height:100%;width:79.07%;background:var(--yolo-color)"></div>
+            </div>
+            <div
+              style="font-family:var(--mono);font-size:11px;text-align:right;color:var(--yolo-color);font-weight:600">
+              79%</div>
+          </div>
+        </div>
+
+        <!-- eating_drinking (support 11) -->
+        <div style="margin-bottom:14px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
+            <span style="font-family:var(--mono);font-size:12px;font-weight:600">eating_drinking
+              <span style="color:var(--text-muted);font-size:10px;margin-left:4px">11 true events</span></span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 60px;gap:8px;align-items:center;margin-bottom:3px">
+            <div style="height:14px;background:var(--bg-elevated);border-radius:3px;overflow:hidden">
+              <div style="height:100%;width:50.00%;background:var(--hik-color)"></div>
+            </div>
+            <div style="font-family:var(--mono);font-size:11px;text-align:right;color:var(--hik-color);font-weight:600">
+              50%</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 60px;gap:8px;align-items:center">
+            <div style="height:14px;background:var(--bg-elevated);border-radius:3px;overflow:hidden">
+              <div style="height:100%;width:50.00%;background:var(--yolo-color)"></div>
+            </div>
+            <div
+              style="font-family:var(--mono);font-size:11px;text-align:right;color:var(--yolo-color);font-weight:600">
+              50%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="width:320px;flex-shrink:0">
+        <h4>Ground Truth Breakdown</h4>
+        <p style="font-size:12px;color:var(--text-muted);margin-bottom:10px">
+          After the human review. Each event can have multiple canonical classes.
+        </p>
+        <div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border)">
+          <span style="flex:1"><span class="rb-chip rb-chip-distr">distracted_driving</span></span>
+          <span style="font-family:var(--mono);font-size:11px;color:var(--text-dim);min-width:60px;text-align:right">279
+            (43%)</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border)">
+          <span style="flex:1"><span class="rb-chip rb-chip-belt">seatbelt</span></span>
+          <span style="font-family:var(--mono);font-size:11px;color:var(--text-dim);min-width:60px;text-align:right">217
+            (34%)</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border)">
+          <span style="flex:1"><span class="rb-chip rb-chip-phone">phone_usage</span></span>
+          <span style="font-family:var(--mono);font-size:11px;color:var(--text-dim);min-width:60px;text-align:right">111
+            (17%)</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border)">
+          <span style="flex:1"><span class="rb-chip rb-chip-fatigue">fatigue</span></span>
+          <span style="font-family:var(--mono);font-size:11px;color:var(--text-dim);min-width:60px;text-align:right">27
+            (4%)</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border)">
+          <span style="flex:1"><span class="rb-chip rb-chip-ctx">eating_drinking</span></span>
+          <span style="font-family:var(--mono);font-size:11px;color:var(--text-dim);min-width:60px;text-align:right">11
+            (2%)</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border)">
+          <span style="flex:1"><span class="rb-chip rb-chip-smoke">smoking</span></span>
+          <span style="font-family:var(--mono);font-size:11px;color:var(--text-dim);min-width:60px;text-align:right">0
+            (0%)</span>
+        </div>
       </div>
     </div>
 
-    <div style="margin-top:10px">
-      <a class="open-link" href="hikvision_leaderboard_benchmark.html#specialists" target="_blank">&rarr; source: hikvision_leaderboard_benchmark.html &middot; Specialists + Pareto</a>
+    <div style="margin-top:12px">
+      <a class="open-link" href="hikvision_rulebased.html" target="_blank">&rarr; full report:
+        hikvision_rulebased.html</a>
     </div>
   </section>
 
-  <!-- ==================== 07. IN-VEHICLE — setup ==================== -->
+  <!-- ==================== 03. IN-VEHICLE — setup ==================== -->
   <section class="slide" id="inv-1">
-    <div class="slide-stamp"><span>in-vehicle / 2026-04</span><span class="sep"></span><span class="idx">07 / 10</span></div>
+    <div class="slide-stamp"><span>in-vehicle / 2026-04</span><span class="sep"></span><span class="idx">03 / 07</span>
+    </div>
     <span class="tag tag--blue">Custom Pipeline &mdash; In-Vehicle &middot; 1 / 2</span>
     <h2>Dual-camera setup &mdash; same driver, same trip</h2>
-    <h3>Both systems recorded simultaneously: Hikvision factory DMS + the custom pipeline on an edge device. April 16, 2026.</h3>
+    <h3>Both systems recorded simultaneously: Hikvision factory DMS + the custom pipeline on an edge device. April 16,
+      2026.</h3>
 
     <div class="inv-grid">
       <div class="inv-card">
         <div class="head"><span class="title">Vehicle Setup</span><span class="pill">April 16, 2026</span></div>
         <div class="img"><img src="assets/21April26/setup%20in%20car.png" alt="In-vehicle setup"></div>
-        <div class="foot">Dual-camera setup: Hikvision DMS (factory) + custom pipeline on edge device &mdash; same driver, same trip.</div>
+        <div class="foot">Dual-camera setup: Hikvision DMS (factory) + custom pipeline on edge device &mdash; same
+          driver, same trip.</div>
       </div>
       <div class="flex flex-col gap-12">
-        <div class="card"><h4>Custom pipeline stack</h4><p>MediaPipe (EAR / MAR / head pose) &middot; YOLO object detection (phone, seatbelt, smoking) &middot; on-screen alerts.</p></div>
-        <div class="card"><h4>Hikvision DMS (reference)</h4><p>Factory-installed commercial DMS &middot; in-vehicle audio alert + backend event log with synchronised video.</p></div>
-        <div class="card"><h4>Activities tested</h4><p>Seatbelt &middot; Phone use &middot; Eyes closed / drowsiness &middot; Yawning / fatigue &middot; Smoking.</p></div>
+        <div class="card">
+          <h4>Custom pipeline stack</h4>
+          <p>MediaPipe (EAR / MAR / head pose) &middot; YOLO object detection (phone, seatbelt, smoking) &middot;
+            on-screen alerts.</p>
+        </div>
+        <div class="card">
+          <h4>Hikvision DMS (reference)</h4>
+          <p>Factory-installed commercial DMS &middot; in-vehicle audio alert + backend event log with synchronised
+            video.</p>
+        </div>
+        <div class="card">
+          <h4>Activities tested</h4>
+          <p>Seatbelt &middot; Phone use &middot; Eyes closed / drowsiness &middot; Yawning / fatigue &middot; Smoking.
+          </p>
+        </div>
       </div>
     </div>
   </section>
 
   <!-- ==================== 08. IN-VEHICLE — 1 correct + 1 error ==================== -->
   <section class="slide" id="inv-2">
-    <div class="slide-stamp"><span>in-vehicle / 2026-04</span><span class="sep"></span><span class="idx">08 / 10</span></div>
+    <div class="slide-stamp"><span>in-vehicle / 2026-04</span><span class="sep"></span><span class="idx">04 / 07</span>
+    </div>
     <span class="tag tag--blue">Custom Pipeline &mdash; In-Vehicle &middot; 2 / 2</span>
     <h2>One correct detection, one observed error</h2>
-    <h3>Two rows from the full in-vehicle comparison. Top: phone detection &mdash; both systems flag the same event. Bottom: a distraction the custom pipeline failed to flag while Hikvision logged it.</h3>
+    <h3>Two rows from the full in-vehicle comparison. Top: phone detection &mdash; both systems flag the same event.
+      Bottom: a distraction the custom pipeline failed to flag while Hikvision logged it.</h3>
 
     <div class="row-stack">
 
@@ -549,7 +2556,8 @@
           <span class="err-row-num">&check;</span>
           <div>
             <div class="err-row-title">Phone use &mdash; both flag it</div>
-            <div class="err-row-desc">Driver holding phone to ear. Custom pipeline fires a YOLO phone box (conf. 0.53&ndash;0.72); Hikvision logs the same event to the backend.</div>
+            <div class="err-row-desc">Driver holding phone to ear. Custom pipeline fires a YOLO phone box (conf.
+              0.53&ndash;0.72); Hikvision logs the same event to the backend.</div>
           </div>
         </div>
         <div class="err-pair-grid">
@@ -560,7 +2568,8 @@
           </div>
           <div class="cmp-card ours">
             <div class="cmp-head"><span class="title">Custom pipeline</span><span class="pill">Detected</span></div>
-            <div class="cmp-img-wrap"><img src="assets/21April26/Phone%20Custom%20Model.png" alt="Custom phone detection"></div>
+            <div class="cmp-img-wrap"><img src="assets/21April26/Phone%20Custom%20Model.png"
+                alt="Custom phone detection"></div>
             <div class="cmp-foot">Phone bounding box with per-frame confidence.</div>
           </div>
         </div>
@@ -572,18 +2581,22 @@
           <span class="err-row-num">&times;</span>
           <div>
             <div class="err-row-title">Distraction not flagged</div>
-            <div class="err-row-desc">Driver off-road; custom pipeline returns SAFE DRIVING overlay. Hikvision flags the same moment as an inattention event.</div>
+            <div class="err-row-desc">Driver off-road; custom pipeline returns SAFE DRIVING overlay. Hikvision flags the
+              same moment as an inattention event.</div>
           </div>
         </div>
         <div class="err-pair-grid">
           <div class="cmp-card">
-            <div class="cmp-head"><span class="title">Hikvision (reference)</span><span class="pill">Class: inattention</span></div>
-            <div class="cmp-img-wrap"><img src="assets/21April26/distracted%20detected%20by%20hikvision.jpeg" alt="Hikvision flags distraction"></div>
+            <div class="cmp-head"><span class="title">Hikvision (reference)</span><span class="pill">Class:
+                inattention</span></div>
+            <div class="cmp-img-wrap"><img src="assets/21April26/distracted%20detected%20by%20hikvision.jpeg"
+                alt="Hikvision flags distraction"></div>
             <div class="cmp-foot">Same scenario; logged as inattention.</div>
           </div>
           <div class="cmp-card ours">
             <div class="cmp-head"><span class="title">Custom pipeline</span><span class="pill">No flag</span></div>
-            <div class="cmp-img-wrap"><img src="assets/21April26/Error_%20actual_Distracted%20.png" alt="Custom pipeline misses distraction"></div>
+            <div class="cmp-img-wrap"><img src="assets/21April26/Error_%20actual_Distracted%20.png"
+                alt="Custom pipeline misses distraction"></div>
             <div class="cmp-foot">SAFE DRIVING overlay on an inattention frame.</div>
           </div>
         </div>
@@ -592,13 +2605,21 @@
     </div>
 
     <div style="margin-top:12px">
-      <a class="open-link" href="dms_comparison_21Apr26.html" target="_blank">&rarr; full side-by-side: all five activities + observed error modes</a>
+      <a class="open-link" href="dms_comparison_21Apr26.html" target="_blank">&rarr; full side-by-side: all five
+        activities + observed error modes</a>
     </div>
   </section>
 
-  <!-- ==================== 09. COMPRESSION — selection + pipeline ==================== -->
+  <!-- ==================== LEADERBOARD — full benchmark dashboard, embedded verbatim via iframe ==================== -->
+  <section class="slide" id="lb" style="padding:0;min-height:100vh">
+    <iframe src="hikvision_leaderboard_benchmark.html" title="36-Model Leaderboard Benchmark"
+      style="width:100%;height:100vh;border:0;display:block;background:var(--bg)"></iframe>
+  </section>
+
+  <!-- ==================== COMPRESSION — selection + pipeline ==================== -->
   <section class="slide" id="cmp-1">
-    <div class="slide-stamp"><span>compression / fleet / 2026-04</span><span class="sep"></span><span class="idx">09 / 10</span></div>
+    <div class="slide-stamp"><span>compression / fleet / 2026-04</span><span class="sep"></span><span class="idx">06 /
+        07</span></div>
     <span class="tag tag--purple">Fleet Video Compression &middot; 1 / 2</span>
     <h2>Encoder selection</h2>
     <h3>Three encoders on the same source clips. SVT-AV1 picked on size-at-quality.</h3>
@@ -610,9 +2631,24 @@
     </div>
 
     <div class="encoder-grid" style="margin-bottom:14px">
-      <div class="encoder-card"><span class="verdict-chip fail">Ruled out</span><div class="nm">Apple VideoToolbox</div><div class="ty">Hardware H.265</div><div class="dc">Hardware HEVC on Apple Silicon. Fast, low CPU. Rate-distortion falls off before hitting the target size.</div></div>
-      <div class="encoder-card"><span class="verdict-chip fail">Not picked</span><div class="nm">libx265</div><div class="ty">Software H.265</div><div class="dc">Software HEVC. Competitive on quality, but needs more bits than AV1 at matched cabin fidelity on this footage.</div></div>
-      <div class="encoder-card chosen"><span class="verdict-chip pass">Selected</span><div class="nm">SVT-AV1</div><div class="ty">Software AV1</div><div class="dc">Lowest bitrate at the quality threshold used. Cabin detail holds at ~4% of the source bitrate; background texture softens.</div></div>
+      <div class="encoder-card"><span class="verdict-chip fail">Ruled out</span>
+        <div class="nm">Apple VideoToolbox</div>
+        <div class="ty">Hardware H.265</div>
+        <div class="dc">Hardware HEVC on Apple Silicon. Fast, low CPU. Rate-distortion falls off before hitting the
+          target size.</div>
+      </div>
+      <div class="encoder-card"><span class="verdict-chip fail">Not picked</span>
+        <div class="nm">libx265</div>
+        <div class="ty">Software H.265</div>
+        <div class="dc">Software HEVC. Competitive on quality, but needs more bits than AV1 at matched cabin fidelity on
+          this footage.</div>
+      </div>
+      <div class="encoder-card chosen"><span class="verdict-chip pass">Selected</span>
+        <div class="nm">SVT-AV1</div>
+        <div class="ty">Software AV1</div>
+        <div class="dc">Lowest bitrate at the quality threshold used. Cabin detail holds at ~4% of the source bitrate;
+          background texture softens.</div>
+      </div>
     </div>
 
     <div class="card" style="margin-bottom:14px">
@@ -631,49 +2667,116 @@
     </div>
 
     <div class="action-bar blue">
-      <div class="t"><strong>Note on 2&nbsp;fps.</strong> The DMS model samples frames sparsely, so every decision window is kept. Audio carries no signal we use and is dropped. The resulting footprint is small enough to archive the whole fleet.</div>
+      <div class="t"><strong>Note on 2&nbsp;fps.</strong> The DMS model samples frames sparsely, so every decision
+        window is kept. Audio carries no signal we use and is dropped. The resulting footprint is small enough to
+        archive the whole fleet.</div>
     </div>
   </section>
 
   <!-- ==================== 10. COMPRESSION — results ==================== -->
   <section class="slide" id="cmp-2">
-    <div class="slide-stamp"><span>compression / fleet / 2026-04</span><span class="sep"></span><span class="idx">10 / 10</span></div>
+    <div class="slide-stamp"><span>compression / fleet / 2026-04</span><span class="sep"></span><span class="idx">07 /
+        07</span></div>
     <span class="tag tag--accent">Fleet Video Compression &middot; 2 / 2</span>
     <h2>Results</h2>
-    <h3>Fleet totals. Single-clip side-by-side available in the full report.</h3>
+    <h3>Fleet totals. One clip shown side-by-side below.</h3>
 
-    <div class="result-cards" style="margin-bottom:18px">
-      <div class="rc" data-a="red"><div class="lbl">Original</div><div class="val" style="color:var(--red)">674 GB</div><div class="det">468 + 210 GB, two batches</div></div>
-      <div class="rc" data-a="green"><div class="lbl">Compressed</div><div class="val" style="color:var(--accent)">~24 GB</div><div class="det">SVT-AV1 &middot; 480p &middot; 2 fps</div></div>
-      <div class="rc" data-a="blue"><div class="lbl">Ratio</div><div class="val" style="color:var(--accent-2)">~28&times;</div><div class="det">96% reduction</div></div>
-      <div class="rc" data-a="purple"><div class="lbl">Kept</div><div class="val" style="color:var(--purple)">~440 h</div><div class="det">~10 school buses + 1 PT bus</div></div>
+    <div class="summary-cards" style="margin-bottom:14px">
+      <div class="summary-card" data-accent="red">
+        <div class="label">Original</div>
+        <div class="value" style="color:var(--red)">674 GB</div>
+        <div class="detail">468 + 210 GB, two batches</div>
+      </div>
+      <div class="summary-card" data-accent="green">
+        <div class="label">Compressed</div>
+        <div class="value" style="color:var(--accent)">~24 GB</div>
+        <div class="detail">SVT-AV1 &middot; 480p &middot; 2 fps</div>
+      </div>
+      <div class="summary-card" data-accent="blue">
+        <div class="label">Ratio</div>
+        <div class="value" style="color:var(--accent-2)">~28&times;</div>
+        <div class="detail">96% reduction</div>
+      </div>
+      <div class="summary-card" data-accent="purple">
+        <div class="label">Kept</div>
+        <div class="value" style="color:var(--purple)">~440 h</div>
+        <div class="detail">~10 school buses + 1 PT bus</div>
+      </div>
     </div>
 
-    <div class="action-bar blue">
-      <div class="t"><strong>Why this matters.</strong> The compressed footage fits the cloud archive and is the substrate every evaluation in this deck is run on. Without it, 674&nbsp;GB of raw video is a bottleneck upstream of any model comparison.</div>
-    </div>
+    <div class="video-section">
+      <div class="video-card">
+        <div class="v-head">
+          <span class="title">Original vs. compressed</span>
+          <span class="pill">Sample clip</span>
+        </div>
+        <div class="video-wrap">
+          <video controls loop muted playsinline preload="metadata">
+            <source src="assets/21April26/comparison_original_vs_compressed%201.mp4" type="video/mp4">
+            Your browser does not support embedded video.
+          </video>
+        </div>
+        <div class="video-foot">Left: 1920&times;1080 H.264. Right: 854&times;480 SVT-AV1 at 2&nbsp;fps. Driver and
+          cabin detail hold; fine background texture softens.</div>
+      </div>
 
-    <div style="margin-top:12px">
-      <a class="open-link" href="compression_pipeline_21Apr26.html" target="_blank">&rarr; full report: compression_pipeline_21Apr26.html</a>
+      <div class="card">
+        <h4>Single clip</h4>
+        <div class="size-chart" style="margin-top:12px">
+          <div class="size-row">
+            <div class="size-label">
+              <span class="name"><span class="dot" style="background:var(--accent)"></span>Original</span>
+              <span class="val">3.1 GB</span>
+            </div>
+            <div class="size-bar-track">
+              <div class="size-bar-fill green" style="width:100%"></div>
+            </div>
+            <div style="font-size:11px;color:var(--text-muted);font-family:var(--mono)">1920&times;1080 &middot; H.264
+            </div>
+          </div>
+          <div class="size-row">
+            <div class="size-label">
+              <span class="name"><span class="dot" style="background:var(--accent-2)"></span>Compressed</span>
+              <span class="val">103 MB</span>
+            </div>
+            <div class="size-bar-track">
+              <div class="size-bar-fill blue" style="width:3.3%"></div>
+            </div>
+            <div style="font-size:11px;color:var(--text-muted);font-family:var(--mono)">854&times;480 &middot; SVT-AV1
+              &middot; 2 fps</div>
+          </div>
+        </div>
+
+        <hr class="rule">
+
+        <h4>Notes</h4>
+        <ul>
+          <li>Source: 1080p / 25&nbsp;fps H.264. Too large for archive and inference.</li>
+          <li>Three encoders tested on the same clips.</li>
+          <li>SVT-AV1 at 480p / 2&nbsp;fps, no audio: 96% reduction.</li>
+          <li>~440&nbsp;h kept across ~10 school buses + 1 PT bus.</li>
+        </ul>
+      </div>
     </div>
   </section>
 
   <script>
-    const slides=document.querySelectorAll('.slide');
-    const navLinks=document.querySelectorAll('nav a[href^="#"]');
-    const counter=document.getElementById('slideCounter');
-    const io=new IntersectionObserver(entries=>{
-      entries.forEach(e=>{
-        if(e.isIntersecting){
-          const idx=Array.from(slides).indexOf(e.target);
-          counter.textContent=(idx+1)+' / '+slides.length;
-          const id=e.target.id;
-          navLinks.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+id));
+    const slides = document.querySelectorAll('.slide');
+    const navLinks = document.querySelectorAll('nav a[href^="#"]');
+    const counter = document.getElementById('slideCounter');
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          const idx = Array.from(slides).indexOf(e.target);
+          counter.textContent = (idx + 1) + ' / ' + slides.length;
+          const id = e.target.id;
+          navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + id));
         }
       });
-    },{threshold:0.5});
-    slides.forEach(s=>io.observe(s));
+    }, { threshold: 0.5 });
+    slides.forEach(s => io.observe(s));
   </script>
 
 </body>
+
 </html>
