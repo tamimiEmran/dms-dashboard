@@ -328,6 +328,49 @@
       background: rgba(59, 111, 214, 0.04);
     }
 
+    /* ============================================
+       UPCOMING — greyed-out main card + arrow + materials
+       ============================================ */
+    .upcoming-row {
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+      margin-bottom: 16px;
+    }
+
+    .card.wip {
+      flex: 1;
+      min-width: 0;
+      position: relative;
+    }
+
+    .card.wip .card-strip {
+      background: var(--bg-elevated);
+    }
+
+    .card.wip .card-title {
+      color: var(--text-dim);
+    }
+
+    .card.wip .card-subtitle {
+      color: var(--text-muted);
+    }
+
+    .card.wip .stat-value {
+      color: var(--text-dim);
+    }
+
+    .card.wip:hover {
+      border-color: #C8CBD4;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+
+    .badge.wip {
+      background: var(--bg-elevated);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+
     /* Arrow connector */
     .arrow-connector {
       display: flex;
@@ -765,6 +808,46 @@
     // ===== PRESENTATION REGISTRY =====
     const PRESENTATIONS = [
       {
+        id: 'hikvision_deep_dive',
+        title: 'Hikvision Deep-Dive',
+        subtitle: 'EfficientNet-B0 + MediaPipe vs Hikvision commercial DMS, both graded against 619 human-reviewed alert snapshots from 5 fleet devices.',
+        file: null,
+        assetsDir: '21April26',
+        status: 'wip',
+        tags: [
+          { label: 'Head-to-Head', color: 'purple' },
+          { label: 'Hikvision', color: 'amber' },
+          { label: 'EffNet-B0', color: 'blue' },
+          { label: 'MediaPipe', color: 'teal' },
+        ],
+        stats: [
+          { value: '619', label: 'Events' },
+          { value: '5', label: 'Devices' },
+          { value: '2', label: 'Systems' },
+          { value: '21 Apr', label: 'Target' },
+        ],
+        materials: [
+          {
+            title: 'Hikvision Audit',
+            desc: 'Human review of every Hikvision alert evidence image \u2014 the ground truth used to grade both systems.',
+            file: 'hikvision_audit.html',
+            type: 'report',
+          },
+          {
+            title: 'EfficientNet-B0 + MediaPipe vs Hikvision',
+            desc: 'Head-to-head: per-class accuracy and false alarms for both systems on the same 619 reviewed alerts.',
+            file: 'hikvision_rulebased.html',
+            type: 'report',
+          },
+          {
+            title: 'Custom Model vs Hikvision \u2014 Field Test',
+            desc: 'Side-by-side field-test comparison of five driver activities (seatbelt, phone, eyes, yawn, smoking) captured simultaneously by both systems.',
+            file: 'dms_comparison_21Apr26.html',
+            type: 'report',
+          },
+        ],
+      },
+      {
         id: 'efficientnet_eval',
         title: 'EfficientNet-B0 \u2014 Test Set Evaluation',
         subtitle: 'Fine-tuned EfficientNet-B0 vs OEM on 48 test videos across 2 devices, per-event accuracy breakdown, and 9-step preprocessing pipeline.',
@@ -935,7 +1018,7 @@
     function renderUpcomingSection(items) {
       let html = `<div class="section">
         <div class="section-title">Upcoming</div>
-        <div class="section-subtitle">Scheduled for presentation</div>`;
+        <div class="section-subtitle">In preparation &mdash; will include the dashboards linked to the right</div>`;
 
       items.forEach(p => {
         const dateStr = p.date ? formatDate(p.date) : 'Date unknown';
@@ -970,7 +1053,7 @@
               <div class="card-strip"></div>
               <div class="card-body">
                 <div class="card-top">
-                  <span class="badge wip">In Progress</span>
+                  <span class="badge wip">Upcoming</span>
                   <span class="card-date">${dateStr}</span>
                 </div>
                 <div class="card-title">${p.title}</div>
