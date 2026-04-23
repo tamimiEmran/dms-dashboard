@@ -1,0 +1,28 @@
+# Line-ending policy for the dms-dashboard repo.
+# Rationale: the repo is almost entirely web assets (HTML/CSS/JS/SVG) served
+# as-is. LF everywhere keeps diffs stable regardless of contributor OS or
+# editor, and avoids the "5,048 lines changed" noise commits that happen
+# when an editor on Windows re-saves with CRLF.
+#
+# * text=auto   -> detect text files; binary files untouched
+# eol=lf        -> store LF in the repo AND check out LF in the working tree
+#
+# See: https://git-scm.com/docs/gitattributes
+
+* text=auto eol=lf
+
+# Explicit binary markers (belt-and-suspenders; `text=auto` would usually
+# detect these, but being explicit prevents edge-case misdetection).
+*.png    binary
+*.jpg    binary
+*.jpeg   binary
+*.gif    binary
+*.webp   binary
+*.ico    binary
+*.pdf    binary
+*.zip    binary
+*.woff   binary
+*.woff2  binary
+*.ttf    binary
+*.otf    binary
+*.eot    binary
