@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DMS Onboarding</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #F8F9FB;
+      --bg-card: #FFFFFF;
+      --bg-elevated: #F0F1F4;
+      --border: #E0E2E8;
+      --text: #1A1D26;
+      --text-dim: #5A5E6E;
+      --text-muted: #8E92A0;
+      --accent: #0E9A7E;
+      --accent-dim: rgba(14, 154, 126, 0.08);
+      --red: #D9453E;
+      --red-dim: rgba(217, 69, 62, 0.07);
+      --blue: #3B6FD6;
+      --blue-dim: rgba(59, 111, 214, 0.08);
+      --purple: #8B5CC4;
+      --purple-dim: rgba(139, 92, 196, 0.08);
+      --amber: #C88A1A;
+      --amber-dim: rgba(200, 138, 26, 0.08);
+      --teal: #0E8A9A;
+      --teal-dim: rgba(14, 138, 154, 0.08);
+      --font: 'DM Sans', system-ui, sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+      --radius: 10px;
+      --radius-sm: 6px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 48px 64px;
+    }
+
+    /* === Breadcrumb === */
+    .crumb {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 18px;
+    }
+    .crumb a { color: var(--text-muted); text-decoration: none; }
+    .crumb a:hover { color: var(--accent); }
+
+    /* === Page header === */
+    .page-header { margin-bottom: 36px; }
+    .page-header h1 {
+      font-size: 30px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin-bottom: 8px;
+    }
+    .page-header p {
+      font-size: 14px;
+      color: var(--text-dim);
+    }
+
+    /* === One-line intro === */
+    .one-line {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: var(--radius);
+      padding: 18px 22px;
+      margin-bottom: 40px;
+      font-size: 15px;
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .one-line strong { font-weight: 600; }
+
+    /* === Section scaffolding === */
+    .section { margin-bottom: 56px; }
+    .section-title {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
+    .section-subtitle {
+      font-size: 13.5px;
+      color: var(--text-dim);
+      margin-bottom: 24px;
+    }
+    .section-tag {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: var(--accent-dim);
+      color: var(--accent);
+      margin-bottom: 10px;
+      font-weight: 500;
+    }
+
+    /* === Pipeline hero (interactive 5-stage flow) === */
+    .pipeline-hero {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 20px 24px;
+      margin-bottom: 14px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+    .pipeline-caption {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .pipeline-flow {
+      display: flex;
+      align-items: stretch;
+      gap: 6px;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+    .stage {
+      flex: 1 1 0;
+      min-width: 140px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px 12px 12px;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition: all 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .stage::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--accent);
+      opacity: 0.7;
+    }
+    .stage[data-accent="blue"]::before   { background: var(--blue); }
+    .stage[data-accent="green"]::before  { background: var(--accent); }
+    .stage[data-accent="purple"]::before { background: var(--purple); }
+    .stage[data-accent="amber"]::before  { background: var(--amber); }
+    .stage[data-accent="teal"]::before   { background: var(--teal); }
+
+    .stage:hover {
+      border-color: #C8CBD4;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+      transform: translateY(-1px);
+    }
+    .stage-num {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+    .stage-name {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+    .stage-role {
+      font-family: var(--mono);
+      font-size: 10.5px;
+      color: var(--text-dim);
+      line-height: 1.4;
+    }
+    .stage-hint {
+      margin-top: 6px;
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+    .pipeline-arrow {
+      align-self: center;
+      font-family: var(--mono);
+      color: var(--text-muted);
+      font-size: 18px;
+      flex: 0 0 auto;
+      padding: 0 2px;
+      user-select: none;
+    }
+
+    .pipeline-note {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-align: center;
+      font-family: var(--mono);
+      letter-spacing: 0.04em;
+      margin-top: 4px;
+    }
+
+    /* === Quick-facts bar === */
+    .facts {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 0;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 0;
+      margin-bottom: 48px;
+    }
+    .fact {
+      text-align: center;
+      padding: 4px 10px;
+      position: relative;
+    }
+    .fact + .fact::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 6px; bottom: 6px;
+      width: 1px;
+      background: var(--border);
+    }
+    .fact-value {
+      font-family: var(--mono);
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1;
+    }
+    .fact-label {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    /* === Navigation cards === */
+    .nav-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 18px;
+    }
+    .nav-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+    .nav-card:hover {
+      border-color: #C8CBD4;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.07);
+      transform: translateY(-1px);
+    }
+    .nav-strip {
+      height: 3px;
+      background: var(--accent);
+    }
+    .nav-card[data-accent="blue"]   .nav-strip { background: var(--blue); }
+    .nav-card[data-accent="green"]  .nav-strip { background: var(--accent); }
+    .nav-card[data-accent="purple"] .nav-strip { background: var(--purple); }
+    .nav-card[data-accent="amber"]  .nav-strip { background: var(--amber); }
+
+    .nav-body { padding: 22px 22px 20px; }
+    .nav-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .nav-badge {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: var(--bg-elevated);
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .nav-card[data-accent="blue"]   .nav-badge { background: var(--blue-dim);   color: var(--blue); }
+    .nav-card[data-accent="green"]  .nav-badge { background: var(--accent-dim); color: var(--accent); }
+    .nav-card[data-accent="purple"] .nav-badge { background: var(--purple-dim); color: var(--purple); }
+    .nav-card[data-accent="amber"]  .nav-badge { background: var(--amber-dim); color: var(--amber); }
+
+    .nav-count {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .nav-title {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
+    .nav-subtitle {
+      font-size: 13px;
+      color: var(--text-dim);
+      line-height: 1.5;
+      margin-bottom: 14px;
+    }
+    .nav-topics {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .nav-topic {
+      font-family: var(--mono);
+      font-size: 10.5px;
+      padding: 3px 7px;
+      border-radius: 4px;
+      background: var(--bg-elevated);
+      color: var(--text-dim);
+    }
+
+    /* === Reading order === */
+    .reading-order {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px 28px;
+    }
+    .reading-order ol {
+      list-style: none;
+      counter-reset: step;
+    }
+    .reading-order li {
+      counter-increment: step;
+      padding: 10px 0 10px 42px;
+      position: relative;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+      color: var(--text);
+    }
+    .reading-order li:last-child { border-bottom: none; }
+    .reading-order li::before {
+      content: counter(step);
+      position: absolute;
+      left: 0;
+      top: 10px;
+      width: 28px;
+      height: 24px;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--accent);
+      background: var(--accent-dim);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 500;
+    }
+    .reading-order code {
+      font-family: var(--mono);
+      font-size: 12.5px;
+      background: var(--bg-elevated);
+      padding: 1px 5px;
+      border-radius: 3px;
+      color: var(--text);
+    }
+    .reading-order .note {
+      font-size: 12.5px;
+      color: var(--text-dim);
+      margin-top: 4px;
+    }
+
+    /* === Footer back-link === */
+    .footer {
+      margin-top: 56px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12.5px;
+      color: var(--text-muted);
+    }
+    .footer a {
+      color: var(--text-dim);
+      text-decoration: none;
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.04em;
+    }
+    .footer a:hover { color: var(--accent); }
+
+    /* === Responsive === */
+    @media (max-width: 1024px) {
+      .facts { grid-template-columns: repeat(3, 1fr); }
+      .fact + .fact::before { display: none; }
+      .fact { border-right: 1px solid var(--border); }
+    }
+    @media (max-width: 720px) {
+      body { padding: 32px 20px; }
+      .pipeline-flow { flex-direction: column; }
+      .pipeline-arrow { transform: rotate(90deg); padding: 4px 0; }
+      .stage { min-width: 0; }
+      .facts { grid-template-columns: repeat(2, 1fr); }
+      .page-header h1 { font-size: 24px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="crumb">
+    <a href="../index.html">&larr; Dashboard</a>
+    <span style="margin: 0 6px;">/</span>
+    <span>Onboarding</span>
+  </div>
+
+  <div class="page-header">
+    <h1>DMS Onboarding</h1>
+    <p>PyTorch pipeline &middot; driver monitoring &middot; for new contributors</p>
+  </div>
+
+  <div class="one-line">
+    DMS is a <strong>pipeline</strong>, not a project with one model. Every experiment has the same shape.
+    Five stages, each pluggable, each registered by string name, each configured by YAML.
+    Note that shape and 80% of the codebase maps itself.
+  </div>
+
+  <!-- HERO: clickable 5-stage pipeline -->
+  <div class="section">
+    <span class="section-tag">The pipeline</span>
+    <div class="section-title">Five stages, one shape</div>
+    <div class="section-subtitle">Click a stage for its page. Each page covers: what it does, the boundary it enforces, a code example, gotchas.</div>
+
+    <div class="pipeline-hero">
+      <div class="pipeline-caption">Data &rarr; Model &rarr; Training &rarr; Evaluation</div>
+      <div class="pipeline-flow">
+        <a class="stage" data-accent="blue" href="pipeline.html#adapter">
+          <div class="stage-num">01 / Data in</div>
+          <div class="stage-name">Adapter</div>
+          <div class="stage-role">raw dataset &rarr; manifest.csv</div>
+          <div class="stage-hint">10 registered. StateFarm, DMD, OEM Raqeeb, synthetic, ...</div>
+        </a>
+        <div class="pipeline-arrow">&rsaquo;</div>
+        <a class="stage" data-accent="green" href="pipeline.html#datamodule">
+          <div class="stage-num">02</div>
+          <div class="stage-name">DataModule</div>
+          <div class="stage-role">manifest.csv &rarr; DataLoaders</div>
+          <div class="stage-hint">Applies preprocessing + augmentation. Train / val / test.</div>
+        </a>
+        <div class="pipeline-arrow">&rsaquo;</div>
+        <a class="stage" data-accent="purple" href="pipeline.html#composedmodel">
+          <div class="stage-num">03</div>
+          <div class="stage-name">ComposedModel</div>
+          <div class="stage-role">backbone &rarr; [temporal] &rarr; head</div>
+          <div class="stage-hint">Three pluggable parts. 8 backbones, 4 temporal, 1+ heads.</div>
+        </a>
+        <div class="pipeline-arrow">&rsaquo;</div>
+        <a class="stage" data-accent="amber" href="pipeline.html#trainer">
+          <div class="stage-num">04</div>
+          <div class="stage-name">Trainer</div>
+          <div class="stage-role">loaders + model &rarr; checkpoint</div>
+          <div class="stage-hint">One loop. FineTuneStrategy plugs in: frozen, full, LoRA, BitFit, progressive.</div>
+        </a>
+        <div class="pipeline-arrow">&rsaquo;</div>
+        <a class="stage" data-accent="teal" href="pipeline.html#evaluationrunner">
+          <div class="stage-num">05 / Data out</div>
+          <div class="stage-name">EvaluationRunner</div>
+          <div class="stage-role">predictions &rarr; EvalReport</div>
+          <div class="stage-hint">Metrics + analyzers + visualizers. Common PredictionBundle.</div>
+        </a>
+      </div>
+      <div class="pipeline-note">one pipeline &middot; five boundaries &middot; every experiment shares this shape</div>
+    </div>
+  </div>
+
+  <!-- Quick facts bar -->
+  <div class="facts">
+    <div class="fact">
+      <div class="fact-value">13</div>
+      <div class="fact-label">Registries</div>
+    </div>
+    <div class="fact">
+      <div class="fact-value">10</div>
+      <div class="fact-label">Adapters</div>
+    </div>
+    <div class="fact">
+      <div class="fact-value">8</div>
+      <div class="fact-label">Backbones</div>
+    </div>
+    <div class="fact">
+      <div class="fact-value">6</div>
+      <div class="fact-label">Fine-tune strategies</div>
+    </div>
+    <div class="fact">
+      <div class="fact-value">4</div>
+      <div class="fact-label">Temporal modules</div>
+    </div>
+    <div class="fact">
+      <div class="fact-value">31</div>
+      <div class="fact-label">API gotchas</div>
+    </div>
+  </div>
+
+  <!-- Topic navigation -->
+  <div class="section">
+    <span class="section-tag">Topics</span>
+    <div class="section-title">Deeper detail</div>
+    <div class="section-subtitle">Four decks. Read in the order shown below, or skip to whichever is blocking you.</div>
+
+    <div class="nav-grid">
+
+      <a class="nav-card" data-accent="purple" href="pipeline.html">
+        <div class="nav-strip"></div>
+        <div class="nav-body">
+          <div class="nav-top">
+            <span class="nav-badge">Deck &middot; 01</span>
+            <span class="nav-count">6 slides</span>
+          </div>
+          <div class="nav-title">Pipeline stages</div>
+          <div class="nav-subtitle">One slide per stage: what it does, its boundary, a minimal code example, and the gotchas that bite at that stage.</div>
+          <div class="nav-topics">
+            <span class="nav-topic">Adapter</span>
+            <span class="nav-topic">DataModule</span>
+            <span class="nav-topic">ComposedModel</span>
+            <span class="nav-topic">Trainer</span>
+            <span class="nav-topic">EvalReport</span>
+          </div>
+        </div>
+      </a>
+
+      <a class="nav-card" data-accent="blue" href="configuration.html">
+        <div class="nav-strip"></div>
+        <div class="nav-body">
+          <div class="nav-top">
+            <span class="nav-badge">Deck &middot; 02</span>
+            <span class="nav-count">5 slides</span>
+          </div>
+          <div class="nav-title">Configuration</div>
+          <div class="nav-subtitle">Hydra YAML groups, the three override forms, and the registry pattern that turns every string in YAML into a class.</div>
+          <div class="nav-topics">
+            <span class="nav-topic">Hydra groups</span>
+            <span class="nav-topic">Override syntax</span>
+            <span class="nav-topic">Registries</span>
+            <span class="nav-topic">Catalog</span>
+          </div>
+        </div>
+      </a>
+
+      <a class="nav-card" data-accent="amber" href="scenarios.html">
+        <div class="nav-strip"></div>
+        <div class="nav-body">
+          <div class="nav-top">
+            <span class="nav-badge">Deck &middot; 03</span>
+            <span class="nav-count">6 slides</span>
+          </div>
+          <div class="nav-title">Scenarios &amp; gotchas</div>
+          <div class="nav-subtitle">Two worked scenarios: run an existing experiment, add something new. Then the top 5 gotchas from <code>CLAUDE.md &sect;8</code>.</div>
+          <div class="nav-topics">
+            <span class="nav-topic">Run an experiment</span>
+            <span class="nav-topic">Add a metric</span>
+            <span class="nav-topic">Top 5 traps</span>
+          </div>
+        </div>
+      </a>
+
+      <a class="nav-card" data-accent="green" href="checklists.html">
+        <div class="nav-strip"></div>
+        <div class="nav-body">
+          <div class="nav-top">
+            <span class="nav-badge">Deck &middot; 04</span>
+            <span class="nav-count">4 slides</span>
+          </div>
+          <div class="nav-title">Checklists</div>
+          <div class="nav-subtitle">Day one. Week one. The three non-code rules. Reading order for every subsystem.</div>
+          <div class="nav-topics">
+            <span class="nav-topic">Day 1</span>
+            <span class="nav-topic">Week 1</span>
+            <span class="nav-topic">Coding rules</span>
+            <span class="nav-topic">Reading order</span>
+          </div>
+        </div>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- Reading order -->
+  <div class="section">
+    <span class="section-tag">Where to go from here</span>
+    <div class="section-title">Canonical reading order</div>
+    <div class="section-subtitle">From this page through to the source code &mdash; fastest path to being productive.</div>
+
+    <div class="reading-order">
+      <ol>
+        <li>
+          Read this page end-to-end. Pay attention to the pipeline diagram &mdash; that shape repeats.
+        </li>
+        <li>
+          <code>CONTRIBUTING.md</code> &mdash; dev setup, the three coding rules, PR conventions. ~200 lines.
+          <div class="note">Enforced in review; skipping it produces PRs that bounce.</div>
+        </li>
+        <li>
+          <code>CLAUDE.md</code> &sect;4 (Module Map) and &sect;5 (Architecture). ~50 lines total.
+          <div class="note">Labelled "for AI assistants" but higher-signal than any human doc. Not optional.</div>
+        </li>
+        <li>
+          The pipeline deck (link above). Stop at whichever stage your first task touches.
+        </li>
+        <li>
+          The per-subsystem <code>CLAUDE.md</code> for that stage: <code>src/dms/data/CLAUDE.md</code>, <code>src/dms/models/CLAUDE.md</code>, <code>src/dms/training/CLAUDE.md</code>, <code>src/dms/evaluation/CLAUDE.md</code>.
+        </li>
+        <li>
+          Source code. Start from <code>src/dms/data/datamodule.py</code> or <code>src/dms/training/trainer.py</code> &mdash; whichever matches your task. Both are shortest-path into real behaviour.
+        </li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div>dms_ml_pipeline &middot; onboarding &middot; 2026-04</div>
+    <a href="../index.html">&larr; back to dashboard</a>
+  </div>
+
+</body>
+
+</html>

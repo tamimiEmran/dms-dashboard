@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1920">
+  <title>DMS Onboarding &mdash; Pipeline Stages</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0 }
+
+    :root {
+      --bg: #F8F9FB;
+      --bg-card: #FFFFFF;
+      --bg-elevated: #F0F1F4;
+      --border: #E0E2E8;
+      --text: #1A1D26;
+      --text-dim: #5A5E6E;
+      --text-muted: #8E92A0;
+      --accent: #0E9A7E;
+      --accent-dim: rgba(14, 154, 126, 0.08);
+      --accent-2: #3B6FD6;
+      --accent-2-dim: rgba(59, 111, 214, 0.08);
+      --accent-3: #C88A1A;
+      --accent-3-dim: rgba(200, 138, 26, 0.08);
+      --red: #D9453E;
+      --red-dim: rgba(217, 69, 62, 0.07);
+      --purple: #8B5CC4;
+      --purple-dim: rgba(139, 92, 196, 0.08);
+      --teal: #0E8A9A;
+      --teal-dim: rgba(14, 138, 154, 0.08);
+      --font: 'DM Sans', system-ui, sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+      --radius: 10px;
+      --radius-sm: 6px
+    }
+
+    html { scroll-snap-type: y mandatory; scroll-behavior: smooth }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      line-height: 1.5;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased
+    }
+
+    .slide {
+      min-height: 100vh;
+      scroll-snap-align: start;
+      display: flex;
+      flex-direction: column;
+      padding: 64px 56px 28px;
+      position: relative
+    }
+
+    .slide::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, var(--border) 20%, var(--border) 80%, transparent 100%)
+    }
+
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      background: rgba(248, 249, 251, 0.90);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 40px;
+      height: 44px;
+      gap: 4px
+    }
+
+    nav a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      padding: 5px 12px;
+      border-radius: 20px;
+      transition: all 0.2s
+    }
+
+    nav a:hover, nav a.active { color: var(--text); background: var(--bg-elevated) }
+
+    nav .slide-counter {
+      margin-left: auto;
+      color: var(--text-muted);
+      font-size: 11px;
+      font-family: var(--mono)
+    }
+
+    h1 { font-size: 48px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.15 }
+    h2 { font-size: 24px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 4px }
+    h3 { font-size: 13px; font-weight: 400; color: var(--text-dim); margin-bottom: 16px }
+
+    .tag {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 600;
+      font-family: var(--mono);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin-bottom: 6px
+    }
+
+    .tag--accent { background: var(--accent-dim); color: var(--accent) }
+    .tag--blue   { background: var(--accent-2-dim); color: var(--accent-2) }
+    .tag--amber  { background: var(--accent-3-dim); color: var(--accent-3) }
+    .tag--red    { background: var(--red-dim); color: var(--red) }
+    .tag--purple { background: var(--purple-dim); color: var(--purple) }
+    .tag--teal   { background: var(--teal-dim); color: var(--teal) }
+
+    .flex { display: flex }
+    .flex-col { flex-direction: column }
+    .gap-8 { gap: 8px }
+    .gap-12 { gap: 12px }
+    .gap-16 { gap: 16px }
+    .gap-20 { gap: 20px }
+    .grow { flex: 1 }
+    .mt-auto { margin-top: auto }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04)
+    }
+
+    .card h4 {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px
+    }
+
+    .card p, .card li {
+      font-size: 12.5px;
+      color: var(--text-dim);
+      line-height: 1.55
+    }
+
+    .card ul { list-style: none; padding: 0 }
+
+    .card ul li {
+      padding-left: 14px;
+      position: relative;
+      margin-top: 4px
+    }
+
+    .card ul li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 8px;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--text-muted)
+    }
+
+    .action-bar {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 8px 12px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-size: 12.5px
+    }
+
+    .action-bar.red    { border-left-color: var(--red) }
+    .action-bar.amber  { border-left-color: var(--accent-3) }
+    .action-bar.blue   { border-left-color: var(--accent-2) }
+    .action-bar.purple { border-left-color: var(--purple) }
+    .action-bar.teal   { border-left-color: var(--teal) }
+
+    .action-bar .action-text { color: var(--text); flex: 1 }
+    .action-bar .action-text strong { font-weight: 600 }
+
+    /* === Chip === */
+    .chip {
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 4px;
+      background: var(--bg-elevated);
+      color: var(--text-dim);
+      border: 1px solid var(--border)
+    }
+
+    .chip strong { color: var(--text); font-weight: 600 }
+
+    /* === Pipeline flow === */
+    .flow-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap
+    }
+
+    .flow-step {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text-dim)
+    }
+
+    .flow-step strong { color: var(--text); font-weight: 600 }
+
+    .flow-arrow {
+      color: var(--text-muted);
+      font-size: 16px
+    }
+
+    /* Lab-notebook grid -- very faint background dots */
+    body {
+      background-image:
+        radial-gradient(circle, rgba(26,29,38,0.035) 1px, transparent 1px);
+      background-size: 22px 22px;
+      background-position: 0 0;
+    }
+
+    /* Field-log stamp in corner of every slide */
+    .slide-stamp {
+      position: absolute;
+      top: 20px; right: 56px;
+      font-family: var(--mono);
+      font-size: 9.5px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      opacity: 0.75;
+    }
+    .slide-stamp .stamp-sep {
+      width: 24px; height: 1px; background: var(--border);
+    }
+    .slide-stamp .stamp-idx {
+      color: var(--text-dim);
+      font-weight: 500;
+    }
+
+    hr.rule {
+      border: 0;
+      border-top: 1px dashed var(--border);
+      margin: 14px 0;
+    }
+
+    /* === Pipeline stage diagram (slide 1) === */
+    .stage-flow {
+      display: flex;
+      align-items: stretch;
+      gap: 6px;
+      flex-wrap: nowrap;
+      margin-top: 6px;
+    }
+    .stage-card {
+      flex: 1 1 0;
+      min-width: 140px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px 14px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      position: relative;
+      overflow: hidden;
+    }
+    .stage-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+    }
+    .stage-card[data-accent="blue"]::before   { background: var(--accent-2) }
+    .stage-card[data-accent="green"]::before  { background: var(--accent) }
+    .stage-card[data-accent="purple"]::before { background: var(--purple) }
+    .stage-card[data-accent="amber"]::before  { background: var(--accent-3) }
+    .stage-card[data-accent="teal"]::before   { background: var(--teal) }
+
+    .stage-card .stage-num {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+    .stage-card .stage-name {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+    .stage-card .stage-role {
+      font-family: var(--mono);
+      font-size: 10.5px;
+      color: var(--text-dim);
+      line-height: 1.4;
+    }
+    .flow-sep {
+      align-self: center;
+      font-family: var(--mono);
+      color: var(--text-muted);
+      font-size: 18px;
+      flex: 0 0 auto;
+      padding: 0 2px;
+      user-select: none;
+    }
+
+    /* === Roster table === */
+    .roster {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+    }
+    .roster th, .roster td {
+      text-align: left;
+      padding: 8px 12px;
+      font-size: 12.5px;
+      border-bottom: 1px solid var(--border);
+    }
+    .roster th {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+    .roster td.stage-col {
+      font-weight: 600;
+      color: var(--text);
+    }
+    .roster td.mono, .roster td code {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      color: var(--text-dim);
+    }
+    .roster tr:last-child td { border-bottom: none }
+
+    /* === Code block === */
+    pre.code {
+      background: #1A1D26;
+      color: #E4E6EB;
+      font-family: var(--mono);
+      font-size: 11.5px;
+      line-height: 1.55;
+      padding: 14px 16px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      overflow-x: auto;
+      margin: 0;
+    }
+    pre.code .kw  { color: #C88A1A }
+    pre.code .str { color: #0E9A7E }
+    pre.code .com { color: #8E92A0; font-style: italic }
+    pre.code .fn  { color: #3B6FD6 }
+    pre.code .cls { color: #8B5CC4 }
+
+    /* === Gotcha list === */
+    .gotcha-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .gotcha {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .gotcha .num {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      padding-top: 2px;
+      flex: 0 0 auto;
+      min-width: 62px;
+    }
+    .gotcha .body {
+      flex: 1;
+      font-size: 12.5px;
+      color: var(--text);
+      line-height: 1.55;
+    }
+    .gotcha .body code {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      background: var(--bg-elevated);
+      padding: 1px 5px;
+      border-radius: 3px;
+      color: var(--text);
+    }
+    .gotcha .body strong { font-weight: 600 }
+
+    /* === Parts (backbone/temporal/head) === */
+    .parts-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .part-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      position: relative;
+    }
+    .part-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; bottom: 0;
+      width: 3px;
+    }
+    .part-card[data-accent="purple"]::before { background: var(--purple) }
+    .part-card[data-accent="teal"]::before   { background: var(--teal) }
+    .part-card[data-accent="amber"]::before  { background: var(--accent-3) }
+
+    .part-card .part-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .part-card .part-name {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      margin: 2px 0 6px;
+    }
+    .part-card .part-list {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-dim);
+      line-height: 1.55;
+    }
+
+    /* Sub-heading inside a body */
+    .sub-heading {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin: 10px 0 6px;
+    }
+
+    /* Strategy chips */
+    .strategy-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 4px 0 10px;
+    }
+    .strategy-chip {
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 4px;
+      background: var(--accent-3-dim);
+      color: var(--accent-3);
+      border: 1px solid rgba(200, 138, 26, 0.24);
+      font-weight: 500;
+    }
+
+    /* Body block wrapper */
+    .body-block { margin-bottom: 10px }
+    .body-block p {
+      font-size: 12.5px;
+      color: var(--text-dim);
+      line-height: 1.55;
+    }
+    .body-block p strong { color: var(--text); font-weight: 600 }
+    .body-block p code {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      background: var(--bg-elevated);
+      padding: 1px 5px;
+      border-radius: 3px;
+      color: var(--text);
+    }
+
+    /* Two-column layout */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    /* Adapter roster chips */
+    .roster-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+    }
+    .roster-strip .chip {
+      background: var(--accent-2-dim);
+      color: var(--accent-2);
+      border-color: rgba(59, 111, 214, 0.24);
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <a href="index.html" style="color:var(--text-muted);font-size:10px;margin-right:6px;opacity:0.7">&larr; Home</a>
+    <a href="#overview" class="active">Overview</a>
+    <a href="#adapter">Adapter</a>
+    <a href="#datamodule">DataModule</a>
+    <a href="#composedmodel">ComposedModel</a>
+    <a href="#trainer">Trainer</a>
+    <a href="#evaluationrunner">EvalRunner</a>
+    <span class="slide-counter" id="slideCounter">1 / 6</span>
+  </nav>
+
+  <!-- ==================== 1. OVERVIEW ==================== -->
+  <section class="slide" id="overview">
+    <div class="slide-stamp">
+      <span>onboarding / pipeline / 2026-04</span>
+      <span class="stamp-sep"></span>
+      <span class="stamp-idx">01 / 06</span>
+    </div>
+    <span class="tag tag--teal">Pipeline</span>
+    <h2>Five stages, one shape</h2>
+    <h3>Every DMS experiment walks this path. Each arrow is a boundary; each boundary is pluggable.</h3>
+
+    <div class="card" style="margin-bottom:14px">
+      <h4>Data &rarr; Model &rarr; Training &rarr; Evaluation</h4>
+      <div class="stage-flow" style="margin-top:10px">
+        <div class="stage-card" data-accent="blue">
+          <div class="stage-num">01</div>
+          <div class="stage-name">Adapter</div>
+          <div class="stage-role">raw dataset &rarr; manifest.csv</div>
+        </div>
+        <div class="flow-sep">&rsaquo;</div>
+        <div class="stage-card" data-accent="green">
+          <div class="stage-num">02</div>
+          <div class="stage-name">DataModule</div>
+          <div class="stage-role">manifest.csv &rarr; DataLoaders</div>
+        </div>
+        <div class="flow-sep">&rsaquo;</div>
+        <div class="stage-card" data-accent="purple">
+          <div class="stage-num">03</div>
+          <div class="stage-name">ComposedModel</div>
+          <div class="stage-role">backbone &rarr; [temporal] &rarr; head</div>
+        </div>
+        <div class="flow-sep">&rsaquo;</div>
+        <div class="stage-card" data-accent="amber">
+          <div class="stage-num">04</div>
+          <div class="stage-name">Trainer</div>
+          <div class="stage-role">loaders + model &rarr; checkpoint</div>
+        </div>
+        <div class="flow-sep">&rsaquo;</div>
+        <div class="stage-card" data-accent="teal">
+          <div class="stage-num">05</div>
+          <div class="stage-name">EvaluationRunner</div>
+          <div class="stage-role">predictions &rarr; EvalReport</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:14px">
+      <h4>Stage roster</h4>
+      <table class="roster">
+        <thead>
+          <tr>
+            <th style="width:220px">Stage</th>
+            <th style="width:360px">Role</th>
+            <th>Home directory</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="stage-col">Adapter</td>
+            <td>raw dataset &rarr; <code>manifest.csv</code></td>
+            <td class="mono"><code>src/dms/data/adapters/</code></td>
+          </tr>
+          <tr>
+            <td class="stage-col">DataModule</td>
+            <td><code>manifest.csv</code> &rarr; train / val / test loaders</td>
+            <td class="mono"><code>src/dms/data/datamodule.py</code></td>
+          </tr>
+          <tr>
+            <td class="stage-col">ComposedModel</td>
+            <td>backbone &rarr; optional temporal &rarr; classification head</td>
+            <td class="mono"><code>src/dms/models/</code></td>
+          </tr>
+          <tr>
+            <td class="stage-col">Trainer</td>
+            <td>one loop + FineTuneStrategy &rarr; checkpoint under <code>experiments/runs/</code></td>
+            <td class="mono"><code>src/dms/training/trainer.py</code></td>
+          </tr>
+          <tr>
+            <td class="stage-col">EvaluationRunner</td>
+            <td><code>PredictionBundle</code> &rarr; <code>EvalReport</code> (metrics, analyzers, visualizers)</td>
+            <td class="mono"><code>src/dms/evaluation/runner.py</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="action-bar teal">
+      <div class="action-text"><strong>Why one shape.</strong>
+        Every extension point &mdash; adapter, backbone, metric &mdash; plugs into exactly one of these five stages.
+        That is why there are 13 registries, not 100 utility functions.
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 2. ADAPTER ==================== -->
+  <section class="slide" id="adapter">
+    <div class="slide-stamp">
+      <span>onboarding / pipeline / 2026-04</span>
+      <span class="stamp-sep"></span>
+      <span class="stamp-idx">02 / 06</span>
+    </div>
+    <span class="tag tag--blue">Adapter / 01</span>
+    <h2>Raw dataset &rarr; manifest.csv</h2>
+    <h3>The first boundary. Every dataset enters through an adapter and leaves as a CSV with the same schema.</h3>
+
+    <div class="two-col" style="margin-bottom:14px">
+      <div class="card">
+        <h4>What it does</h4>
+        <p style="font-size:12.5px;color:var(--text-dim);line-height:1.55">
+          Normalizes any raw dataset into one <code>manifest.csv</code> with a fixed schema
+          (<code>sample_id, frame_path, label, label_id, split, subject_id, session_id, ...</code>).
+          After this boundary, the pipeline does not know which dataset it is.
+        </p>
+      </div>
+      <div class="card">
+        <h4>Contract</h4>
+        <p style="font-size:12.5px;color:var(--text-dim);line-height:1.55">
+          3 abstract methods &mdash; <code>download()</code>, <code>convert()</code>, <code>get_label_map()</code>
+          &mdash; plus 4 class attrs: <code>name</code>, <code>supported_tasks</code>,
+          <code>supported_modalities</code>, <code>supported_cameras</code>.
+          Enforced via <code>__init_subclass__</code>. Missing attr = <code>TypeError</code> at class-definition time.
+        </p>
+      </div>
+    </div>
+
+    <div style="margin-bottom:14px">
+      <div class="sub-heading">Minimal adapter</div>
+      <pre class="code"><span class="kw">from</span> dms.data.adapters.base <span class="kw">import</span> BaseDatasetAdapter
+<span class="kw">from</span> dms.registry <span class="kw">import</span> dataset_registry
+
+@dataset_registry.register(<span class="str">"my_dataset"</span>)
+<span class="kw">class</span> <span class="cls">MyDataset</span>(BaseDatasetAdapter):
+    name = <span class="str">"my_dataset"</span>
+    supported_tasks = (<span class="str">"classification"</span>,)
+    supported_modalities = (<span class="str">"frame"</span>,)
+    supported_cameras = (<span class="str">"front"</span>,)
+    <span class="kw">def</span> <span class="fn">download</span>(self): ...
+    <span class="kw">def</span> <span class="fn">convert</span>(self): ...
+    <span class="kw">def</span> <span class="fn">get_label_map</span>(self): ...</pre>
+    </div>
+
+    <div class="card" style="margin-bottom:14px">
+      <h4>Registered adapters (10)</h4>
+      <div class="roster-strip">
+        <div class="chip">dmd</div>
+        <div class="chip">driveact</div>
+        <div class="chip">hikvision</div>
+        <div class="chip">kaggle_ddd</div>
+        <div class="chip">oem_raqeeb</div>
+        <div class="chip">raqeeb_events</div>
+        <div class="chip">roboflow_dms</div>
+        <div class="chip">statefarm</div>
+        <div class="chip">synthetic</div>
+        <div class="chip">yawdd</div>
+      </div>
+      <p style="margin-top:10px;font-size:11.5px;font-family:var(--mono);color:var(--text-muted)">
+        List everything registered: <code style="background:var(--bg-elevated);padding:1px 5px;border-radius:3px">python -m dms.registry list datasets</code>
+      </p>
+    </div>
+
+    <div class="action-bar amber">
+      <div class="action-text"><strong>Never write to <code>datasets/</code>.</strong>
+        That is raw data. Outputs go to <code>data/processed/&lt;new_name&gt;/</code>.
+        CLAUDE.md rule #3 is enforced in review.
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 3. DATAMODULE ==================== -->
+  <section class="slide" id="datamodule">
+    <div class="slide-stamp">
+      <span>onboarding / pipeline / 2026-04</span>
+      <span class="stamp-sep"></span>
+      <span class="stamp-idx">03 / 06</span>
+    </div>
+    <span class="tag tag--accent">DataModule / 02</span>
+    <h2>manifest.csv &rarr; PyTorch DataLoaders</h2>
+    <h3>Applies preprocessing + augmentation, emits three loaders.</h3>
+
+    <div style="margin-bottom:14px">
+      <div class="sub-heading">Construction</div>
+      <pre class="code">dm = <span class="cls">DataModule</span>(
+    config=<span class="cls">DataConfig</span>(...),
+    preprocessing_config=<span class="cls">PreprocessingConfig</span>(...),
+    augmentation_config=<span class="cls">AugmentationConfig</span>(...),
+)
+dm.<span class="fn">setup</span>()
+train_loader = dm.<span class="fn">train_loader</span>()   <span class="com"># NOT train_dataloader()</span>
+val_loader   = dm.<span class="fn">val_loader</span>()
+test_loader  = dm.<span class="fn">test_loader</span>()</pre>
+    </div>
+
+    <div class="action-bar blue" style="margin-bottom:14px">
+      <div class="action-text"><strong>Lightning muscle memory.</strong>
+        Users will type <code>train_dataloader()</code> out of habit. That method does not exist here.
+        Call <code>train_loader()</code>, <code>val_loader()</code>, <code>test_loader()</code>,
+        and <code>.setup()</code> before any of them. (CLAUDE.md &sect;8 #6)
+      </div>
+    </div>
+
+    <div class="sub-heading">Gotchas at this boundary</div>
+    <div class="gotcha-list">
+      <div class="gotcha">
+        <div class="num">&sect;8 #1</div>
+        <div class="body">
+          <strong><code>ManifestReader.read()</code> returns <code>list[FrameSample] | list[VideoClipSample]</code></strong>,
+          not a DataFrame. Use <code>.read_as_dataframe()</code> to get a <code>pd.DataFrame</code>.
+        </div>
+      </div>
+      <div class="gotcha">
+        <div class="num">&sect;8 #18</div>
+        <div class="body">
+          <strong>Hydra augmentation config has double nesting.</strong>
+          <code>cfg.augmentation</code> returns <code>{"augmentation": {...}}</code>.
+          Must unwrap: <code>aug_dict = aug_dict["augmentation"]</code> before passing to <code>AugmentationConfig()</code>.
+        </div>
+      </div>
+      <div class="gotcha">
+        <div class="num">&sect;8 #21</div>
+        <div class="body">
+          <strong>Windows: DataLoader <code>num_workers</code> must be 0.</strong>
+          Lambda-based transforms from <code>TransformPipeline</code> can't be pickled for multiprocessing spawn.
+          Set <code>num_workers=0</code> and <code>prefetch_factor=None</code>.
+        </div>
+      </div>
+      <div class="gotcha">
+        <div class="num">&sect;8 #23</div>
+        <div class="body">
+          <strong><code>AugmentationConfig</code> validates <code>speed_jitter_range[0] &lt; [1]</code></strong>
+          even when speed jitter is disabled.
+          Don't use <code>[1.0, 1.0]</code> as a "disabled" sentinel &mdash; use valid defaults like <code>[0.8, 1.2]</code>.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 4. COMPOSEDMODEL ==================== -->
+  <section class="slide" id="composedmodel">
+    <div class="slide-stamp">
+      <span>onboarding / pipeline / 2026-04</span>
+      <span class="stamp-sep"></span>
+      <span class="stamp-idx">04 / 06</span>
+    </div>
+    <span class="tag tag--purple">ComposedModel / 03</span>
+    <h2>backbone &rarr; [temporal] &rarr; head</h2>
+    <h3>Three pluggable parts. One constructor for 8 backbones, 4 temporal aggregators, multiple heads.</h3>
+
+    <div class="parts-grid">
+      <div class="part-card" data-accent="purple">
+        <div class="part-label">Backbone &middot; features</div>
+        <div class="part-name">8 registered</div>
+        <div class="part-list">MobileNetV3 &middot; ResNet &middot; ViT &middot; EfficientNet &middot; ConvNeXt &middot; VideoMAE &middot; EfficientFormerV2 &middot; YOLO-cls</div>
+      </div>
+      <div class="part-card" data-accent="teal">
+        <div class="part-label">Temporal &middot; aggregator (optional)</div>
+        <div class="part-name">4 registered</div>
+        <div class="part-list">mean_pool &middot; lstm &middot; tcn &middot; transformer</div>
+      </div>
+      <div class="part-card" data-accent="amber">
+        <div class="part-label">Head &middot; classifier</div>
+        <div class="part-name">Linear</div>
+        <div class="part-list">MultiTaskModel branches by num_classes type</div>
+      </div>
+    </div>
+
+    <div class="two-col" style="margin-bottom:10px">
+      <div>
+        <div class="sub-heading">Build from config</div>
+        <pre class="code"><span class="kw">from</span> dms.models.factory <span class="kw">import</span> build_model
+
+model = <span class="fn">build_model</span>(cfg, num_classes=<span class="str">10</span>)
+<span class="com"># &rarr; ComposedModel</span>
+
+model = <span class="fn">build_model</span>(cfg, num_classes={<span class="str">"drowsy"</span>: <span class="str">2</span>,
+                                      <span class="str">"distract"</span>: <span class="str">5</span>})
+<span class="com"># &rarr; MultiTaskModel</span></pre>
+      </div>
+      <div>
+        <div class="sub-heading">Load pretrained</div>
+        <pre class="code">model, preprocessing, id2label = \
+    <span class="fn">build_composed_from_pretrained</span>(
+        source, model_id, num_classes
+    )
+<span class="com"># 3-tuple. Binding to a single variable</span>
+<span class="com"># is the bug that bites everyone once.</span></pre>
+      </div>
+    </div>
+
+    <div class="action-bar purple" style="margin-bottom:10px">
+      <div class="action-text"><strong>Silent architecture switch.</strong>
+        The type of <code>num_classes</code> silently selects a different architecture.
+        <code>int</code> &rarr; <code>ComposedModel</code>. <code>dict</code> &rarr; <code>MultiTaskModel</code>.
+        (CLAUDE.md &sect;8 #30)
+      </div>
+    </div>
+
+    <div class="action-bar blue" style="margin-bottom:10px">
+      <div class="action-text"><strong>Pretrained head is preserved by default (fixed 2026-04-20).</strong>
+        <code>build_composed_from_pretrained</code> transplants the classifier's
+        <code>Linear.weight/bias</code> into the fresh <code>LinearHead</code>.
+        Fine-tuning callers must pass <code>preserve_pretrained_head=False</code>;
+        <code>num_classes</code> must equal the pretrained head's <code>out_features</code> or it raises.
+        (CLAUDE.md &sect;8 #2, #31)
+      </div>
+    </div>
+
+    <div class="sub-heading">Gotchas at this boundary</div>
+    <div class="gotcha-list">
+      <div class="gotcha">
+        <div class="num">&sect;8 #19</div>
+        <div class="body">
+          <strong>LoRA targets must match the backbone architecture.</strong>
+          Transformer backbones: <code>qkv, proj, fc1, fc2</code>.
+          MobileNetV3 (CNN): <code>conv_reduce, conv_expand, conv_pw, conv_pwl</code>.
+          Using wrong targets causes <code>ValueError: Target modules not found</code>.
+        </div>
+      </div>
+      <div class="gotcha">
+        <div class="num">&sect;8 #20</div>
+        <div class="body">
+          <strong>PEFT <code>task_type</code> must be <code>None</code> for non-HuggingFace models.</strong>
+          Using <code>TaskType.FEATURE_EXTRACTION</code> wraps the model in <code>PeftModelForFeatureExtraction</code>
+          which passes <code>input_ids</code> kwargs &mdash; breaks custom backbones like <code>TimmBackbone</code>.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 5. TRAINER ==================== -->
+  <section class="slide" id="trainer">
+    <div class="slide-stamp">
+      <span>onboarding / pipeline / 2026-04</span>
+      <span class="stamp-sep"></span>
+      <span class="stamp-idx">05 / 06</span>
+    </div>
+    <span class="tag tag--amber">Trainer / 04</span>
+    <h2>One loop, many strategies</h2>
+    <h3>FineTuneStrategy plugs into a single Trainer class. That is how LoRA, BitFit, progressive unfreezing share one training loop.</h3>
+
+    <div style="margin-bottom:12px">
+      <div class="sub-heading">Construction</div>
+      <pre class="code"><span class="kw">from</span> dms.training.trainer <span class="kw">import</span> Trainer
+
+trainer = <span class="cls">Trainer</span>(model, train_loader, val_loader,
+                  optimizer, scheduler, loss, callbacks, ...)
+result = trainer.<span class="fn">fit</span>()   <span class="com"># &rarr; TrainResult; checkpoint at experiments/runs/&lt;model.name&gt;/</span></pre>
+    </div>
+
+    <div style="margin-bottom:12px">
+      <div class="sub-heading">Fine-tune strategies (6)</div>
+      <div class="strategy-strip">
+        <span class="strategy-chip">frozen_backbone</span>
+        <span class="strategy-chip">full</span>
+        <span class="strategy-chip">progressive</span>
+        <span class="strategy-chip">lora</span>
+        <span class="strategy-chip">bitfit</span>
+        <span class="strategy-chip">head_to_toe</span>
+      </div>
+    </div>
+
+    <div class="two-col" style="margin-bottom:10px">
+      <div>
+        <div class="sub-heading">Strategy lifecycle</div>
+        <pre class="code">optimizer = strategy.<span class="fn">apply</span>(
+    model, optimizer_cls, optimizer_kwargs
+)
+<span class="com"># 3 args &rarr; returns an Optimizer.</span>
+<span class="com"># The strategy mutates requires_grad AND</span>
+<span class="com"># builds param groups.</span></pre>
+        <p style="font-size:11.5px;color:var(--text-muted);margin-top:6px;font-family:var(--mono)">
+          Three args, not one. Very common mistake to pass only the model. (CLAUDE.md &sect;8 #15)
+        </p>
+      </div>
+      <div>
+        <div class="sub-heading">LoRA config hand-off</div>
+        <pre class="code"><span class="com"># FineTuneConfig.lora from Hydra is a plain</span>
+<span class="com"># dict, not a LoRAConfig dataclass.</span>
+lora_dict.pop(<span class="str">"merge_on_export"</span>, <span class="kw">None</span>)
+cfg_lora = <span class="cls">LoRAConfig</span>(**lora_dict)
+<span class="com"># Strip extra keys (e.g. merge_on_export)</span>
+<span class="com"># that are not in LoRAConfig.</span></pre>
+        <p style="font-size:11.5px;color:var(--text-muted);margin-top:6px;font-family:var(--mono)">
+          CLAUDE.md &sect;8 #22.
+        </p>
+      </div>
+    </div>
+
+    <div class="action-bar amber">
+      <div class="action-text"><strong>Import site matters.</strong>
+        <code>FineTuneConfig</code> and <code>LoRAConfig</code> live in <code>dms.schemas.config</code>,
+        not in <code>dms.training.fine_tune</code>. (CLAUDE.md &sect;8 #14)
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 6. EVALUATIONRUNNER ==================== -->
+  <section class="slide" id="evaluationrunner">
+    <div class="slide-stamp">
+      <span>onboarding / pipeline / 2026-04</span>
+      <span class="stamp-sep"></span>
+      <span class="stamp-idx">06 / 06</span>
+    </div>
+    <span class="tag tag--teal">Evaluation / 05</span>
+    <h2>PredictionBundle &rarr; EvalReport</h2>
+    <h3>Classes, not functions. Metrics compute numbers, analyzers produce reports, visualizers produce images.</h3>
+
+    <div class="two-col" style="margin-bottom:10px">
+      <div>
+        <div class="sub-heading">PredictionBundle shape</div>
+        <pre class="code"><span class="cls">PredictionBundle</span>(
+    logits, probabilities,
+    predicted_labels, true_labels,
+    sample_ids, label_map,
+    <span class="com"># optional:</span>
+    features, temporal_logits, metadata,
+)</pre>
+        <p style="font-size:11.5px;color:var(--text-muted);margin-top:6px;font-family:var(--mono)">
+          CLAUDE.md &sect;8 #12.
+        </p>
+      </div>
+      <div>
+        <div class="sub-heading">Usage</div>
+        <pre class="code">runner = <span class="cls">EvaluationRunner</span>(
+    metrics=[<span class="str">"accuracy"</span>, <span class="str">"f1_macro"</span>,
+             <span class="str">"confusion_matrix"</span>],
+    visualizers=[...], analyzers=[...],
+)
+report = runner.<span class="fn">run</span>(predictions)   <span class="com"># &rarr; EvalReport</span>
+metric = report.<span class="fn">get_metric</span>(<span class="str">"accuracy"</span>)
+<span class="kw">if</span> metric <span class="kw">is</span> <span class="kw">None</span>:
+    <span class="kw">raise</span> <span class="cls">RuntimeError</span>(
+        <span class="str">"accuracy was not requested"</span>)</pre>
+      </div>
+    </div>
+
+    <div class="two-col" style="margin-bottom:10px">
+      <div class="action-bar red">
+        <div class="action-text"><strong><code>EvalReport.get_metric(name)</code> returns <code>None</code></strong>
+          when the metric does not exist &mdash; it does NOT raise. Always check.
+          (CLAUDE.md &sect;8 #26)
+        </div>
+      </div>
+      <div class="action-bar blue">
+        <div class="action-text"><strong>No shortcut attrs.</strong>
+          <code>EvalReport</code> has <code>metrics: list[MetricResult]</code>.
+          There are no <code>.accuracy</code> / <code>.f1_macro</code> attributes. (CLAUDE.md &sect;8 #11)
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-bottom:10px">
+      <div class="sub-heading">Metric contract</div>
+      <pre class="code">@metric_registry.register(<span class="str">"my_metric"</span>)
+<span class="kw">class</span> <span class="cls">MyMetric</span>(BaseMetric):
+    name = <span class="str">"my_metric"</span>
+    requires = [<span class="str">"predicted_labels"</span>, <span class="str">"true_labels"</span>]
+    higher_is_better = <span class="kw">True</span>
+    <span class="kw">def</span> <span class="fn">compute</span>(self, predictions): ...
+    <span class="kw">def</span> <span class="fn">format</span>(self, result): ...</pre>
+      <p style="font-size:11.5px;color:var(--text-muted);margin-top:6px;font-family:var(--mono)">
+        All three of <code>name</code>, <code>requires</code>, <code>higher_is_better</code> are enforced via
+        <code>__init_subclass__</code> on <code>BaseMetric</code>. Missing attr &rarr; <code>TypeError</code>
+        at class-definition time. Same for <code>BaseVisualizer</code>, <code>BaseAnalyzer</code>,
+        <code>BaseDatasetAdapter</code>. (CLAUDE.md &sect;8 #29)
+      </p>
+    </div>
+
+    <div class="sub-heading">Miscellaneous gotchas</div>
+    <div class="gotcha-list">
+      <div class="gotcha">
+        <div class="num">&sect;8 #3</div>
+        <div class="body">
+          <strong>Aggregators from <code>get_aggregator()</code> are plain functions</strong>
+          called as <code>aggregator(logits, labels)</code>.
+          They are NOT objects with an <code>.aggregate()</code> method.
+        </div>
+      </div>
+      <div class="gotcha">
+        <div class="num">&sect;8 #4</div>
+        <div class="body">
+          <strong><code>predict_frames()</code> / <code>predict_clips()</code> return softmax probabilities</strong>
+          (not raw logits, despite the variable name in <code>pipeline.py</code>).
+        </div>
+      </div>
+      <div class="gotcha">
+        <div class="num">&sect;8 #28</div>
+        <div class="body">
+          <strong><code>ManifestReader.read(validate=True)</code> raises <code>ManifestValidationError</code></strong>
+          (not a generic <code>ValueError</code>) when rows don't conform.
+          The error collects all row-level issues.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const navLinks = document.querySelectorAll('nav a[href^="#"]');
+    const counter = document.getElementById('slideCounter');
+    const total = slides.length;
+
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          const idx = Array.from(slides).indexOf(e.target);
+          counter.textContent = (idx + 1) + ' / ' + total;
+          const id = e.target.id;
+          navLinks.forEach((a) => {
+            a.classList.toggle('active', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, { threshold: 0.5 });
+
+    slides.forEach((s) => io.observe(s));
+  </script>
+
+</body>
+</html>

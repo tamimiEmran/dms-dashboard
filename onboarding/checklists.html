@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1920">
+  <title>DMS Onboarding &mdash; Checklists</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0 }
+
+    :root {
+      --bg: #F8F9FB;
+      --bg-card: #FFFFFF;
+      --bg-elevated: #F0F1F4;
+      --border: #E0E2E8;
+      --text: #1A1D26;
+      --text-dim: #5A5E6E;
+      --text-muted: #8E92A0;
+      --accent: #0E9A7E;
+      --accent-dim: rgba(14, 154, 126, 0.08);
+      --accent-2: #3B6FD6;
+      --accent-2-dim: rgba(59, 111, 214, 0.08);
+      --accent-3: #C88A1A;
+      --accent-3-dim: rgba(200, 138, 26, 0.08);
+      --red: #D9453E;
+      --red-dim: rgba(217, 69, 62, 0.07);
+      --purple: #8B5CC4;
+      --purple-dim: rgba(139, 92, 196, 0.08);
+      --teal: #0E8A9A;
+      --teal-dim: rgba(14, 138, 154, 0.08);
+      --font: 'DM Sans', system-ui, sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+      --radius: 10px;
+      --radius-sm: 6px
+    }
+
+    html { scroll-snap-type: y mandatory; scroll-behavior: smooth }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      line-height: 1.5;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased
+    }
+
+    .slide {
+      min-height: 100vh;
+      scroll-snap-align: start;
+      display: flex;
+      flex-direction: column;
+      padding: 64px 56px 28px;
+      position: relative
+    }
+
+    .slide::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, var(--border) 20%, var(--border) 80%, transparent 100%)
+    }
+
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      background: rgba(248, 249, 251, 0.90);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 40px;
+      height: 44px;
+      gap: 4px
+    }
+
+    nav a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      padding: 5px 12px;
+      border-radius: 20px;
+      transition: all 0.2s
+    }
+
+    nav a:hover, nav a.active { color: var(--text); background: var(--bg-elevated) }
+
+    nav .slide-counter {
+      margin-left: auto;
+      color: var(--text-muted);
+      font-size: 11px;
+      font-family: var(--mono)
+    }
+
+    h1 { font-size: 48px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.15 }
+    h2 { font-size: 24px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 4px }
+    h3 { font-size: 13px; font-weight: 400; color: var(--text-dim); margin-bottom: 16px }
+
+    .tag {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 600;
+      font-family: var(--mono);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin-bottom: 6px
+    }
+
+    .tag--accent { background: var(--accent-dim); color: var(--accent) }
+    .tag--blue   { background: var(--accent-2-dim); color: var(--accent-2) }
+    .tag--amber  { background: var(--accent-3-dim); color: var(--accent-3) }
+    .tag--red    { background: var(--red-dim); color: var(--red) }
+    .tag--purple { background: var(--purple-dim); color: var(--purple) }
+    .tag--teal   { background: var(--teal-dim); color: var(--teal) }
+
+    .flex { display: flex }
+    .flex-col { flex-direction: column }
+    .gap-8 { gap: 8px }
+    .gap-12 { gap: 12px }
+    .gap-16 { gap: 16px }
+    .gap-20 { gap: 20px }
+    .grow { flex: 1 }
+    .mt-auto { margin-top: auto }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04)
+    }
+
+    .card h4 {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px
+    }
+
+    .card p, .card li {
+      font-size: 12.5px;
+      color: var(--text-dim);
+      line-height: 1.55
+    }
+
+    .card ul { list-style: none; padding: 0 }
+
+    .card ul li {
+      padding-left: 14px;
+      position: relative;
+      margin-top: 4px
+    }
+
+    .card ul li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 8px;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--text-muted)
+    }
+
+    .action-bar {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 10px 14px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-size: 12.5px
+    }
+
+    .action-bar.red    { border-left-color: var(--red) }
+    .action-bar.amber  { border-left-color: var(--accent-3) }
+    .action-bar.blue   { border-left-color: var(--accent-2) }
+    .action-bar.purple { border-left-color: var(--purple) }
+
+    .action-bar .action-text { color: var(--text); flex: 1 }
+    .action-bar .action-text strong { font-weight: 600 }
+
+    .chip {
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 4px;
+      background: var(--bg-elevated);
+      color: var(--text-dim);
+      border: 1px solid var(--border)
+    }
+
+    .chip strong { color: var(--text); font-weight: 600 }
+
+    /* Lab-notebook grid -- very faint background dots */
+    body {
+      background-image:
+        radial-gradient(circle, rgba(26,29,38,0.035) 1px, transparent 1px);
+      background-size: 22px 22px;
+      background-position: 0 0;
+    }
+
+    /* Field-log stamp in corner of every slide */
+    .slide-stamp {
+      position: absolute;
+      top: 20px; right: 56px;
+      font-family: var(--mono);
+      font-size: 9.5px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      opacity: 0.75;
+    }
+    .slide-stamp .stamp-sep {
+      width: 24px; height: 1px; background: var(--border);
+    }
+    .slide-stamp .stamp-idx {
+      color: var(--text-dim);
+      font-weight: 500;
+    }
+
+    hr.rule {
+      border: 0;
+      border-top: 1px dashed var(--border);
+      margin: 14px 0;
+    }
+
+    /* === Checklist cards: numbered left rail === */
+    .check-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .check-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 18px 14px 56px;
+      position: relative;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+    .check-card::before {
+      content: attr(data-num);
+      position: absolute;
+      left: 14px;
+      top: 14px;
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      width: 28px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      background: var(--accent-dim);
+      color: var(--accent);
+    }
+    .check-card[data-accent="blue"]::before   { background: var(--accent-2-dim); color: var(--accent-2) }
+    .check-card[data-accent="red"]::before    { background: var(--red-dim); color: var(--red) }
+    .check-card[data-accent="amber"]::before  { background: var(--accent-3-dim); color: var(--accent-3) }
+    .check-card[data-accent="purple"]::before { background: var(--purple-dim); color: var(--purple) }
+    .check-card .title {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .check-card .body {
+      font-size: 12.5px;
+      color: var(--text-dim);
+      line-height: 1.55;
+    }
+    .check-card code,
+    .check-card .mono {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      background: var(--bg-elevated);
+      padding: 2px 6px;
+      border-radius: 3px;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .check-card pre {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      background: var(--bg-elevated);
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      color: var(--text);
+      margin-top: 6px;
+      overflow-x: auto;
+      line-height: 1.5;
+    }
+    .check-card .effect {
+      display: block;
+      margin-top: 6px;
+      color: var(--text-muted);
+      font-size: 11.5px;
+    }
+
+    /* === Rule cards (slide 3): side-by-side bad / good === */
+    .rule-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+      border-left: 3px solid var(--red);
+    }
+    .rule-card .rule-head {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .rule-card .rule-num {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--red);
+      background: var(--red-dim);
+      padding: 3px 7px;
+      border-radius: 3px;
+      font-weight: 600;
+    }
+    .rule-card .rule-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.01em;
+    }
+    .rule-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .rule-panel {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+    }
+    .rule-panel.bad   { border-left: 3px solid var(--red) }
+    .rule-panel.good  { border-left: 3px solid var(--accent) }
+    .rule-panel .panel-head {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+    .rule-panel.bad  .panel-head { color: var(--red) }
+    .rule-panel.good .panel-head { color: var(--accent) }
+    .rule-panel pre,
+    .rule-panel .panel-body {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      color: var(--text);
+      line-height: 1.55;
+      background: transparent;
+      border: 0;
+      padding: 0;
+    }
+    .rule-panel .panel-body {
+      font-family: var(--font);
+      color: var(--text-dim);
+    }
+    .rule-card .rationale {
+      font-size: 12px;
+      color: var(--text-dim);
+      padding-top: 8px;
+      border-top: 1px dashed var(--border);
+    }
+    .rule-card .rationale strong { color: var(--text); font-weight: 600 }
+
+    /* === Subsystem 2x2 grid (slide 4) === */
+    .subsys-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .subsys-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+      position: relative;
+      overflow: hidden;
+    }
+    .subsys-card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+    }
+    .subsys-card[data-accent="blue"]::before   { background: var(--accent-2) }
+    .subsys-card[data-accent="green"]::before  { background: var(--accent) }
+    .subsys-card[data-accent="purple"]::before { background: var(--purple) }
+    .subsys-card[data-accent="amber"]::before  { background: var(--accent-3) }
+    .subsys-card .path {
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .subsys-card .scope {
+      font-size: 12px;
+      color: var(--text-dim);
+      line-height: 1.5;
+    }
+
+    /* === Two-column layout for slide 4 === */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 20px;
+      flex: 1;
+      min-height: 0;
+    }
+    .col-head {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <a href="index.html" style="color:var(--text-muted);font-size:10px;margin-right:6px;opacity:0.7">&larr; Home</a>
+    <a href="#day1" class="active">Day 1</a>
+    <a href="#week1">Week 1</a>
+    <a href="#rules">Rules</a>
+    <a href="#reading">Reading order</a>
+    <span class="slide-counter" id="slideCounter">1 / 4</span>
+  </nav>
+
+  <!-- ==================== 1. DAY 1 ==================== -->
+  <section class="slide" id="day1">
+    <div class="slide-stamp">
+      <span>onboarding / checklists / 2026-04</span>
+      <span class="stamp-sep"></span>
+      <span class="stamp-idx">01 / 04</span>
+    </div>
+    <span class="tag tag--accent">Day 1 / 01</span>
+    <h2>Six items. One afternoon.</h2>
+    <h3>Everything runs on a laptop. No GPU. No external data downloads.</h3>
+
+    <div class="check-list">
+      <div class="check-card" data-num="01">
+        <div class="title">Read <span class="mono">CONTRIBUTING.md</span> end-to-end.</div>
+        <div class="body">
+          ~200 lines. Dev setup, the three coding rules, PR conventions.
+          <span class="effect">Effect: the rules in slide 3 are enforced in review. Skipping this produces PRs that bounce.</span>
+        </div>
+      </div>
+
+      <div class="check-card" data-num="02">
+        <div class="title">Set up the environment.</div>
+        <div class="body">
+          <code>./setup.sh</code> creates <code>.venv</code>, detects the GPU, installs the <code>[dev]</code> extra.
+          Manual path:
+          <pre>python -m venv .venv
+source .venv/bin/activate
+pip install -e ".[dev]"</pre>
+          <span class="effect">Effect: <span class="mono">ruff</span>, <span class="mono">mypy</span>, <span class="mono">pytest</span>, <span class="mono">pre-commit</span> all wired up.</span>
+        </div>
+      </div>
+
+      <div class="check-card" data-num="03">
+        <div class="title">Smoke test &mdash; imports &amp; configs.</div>
+        <div class="body">
+          <pre>python scripts/utils/verify_tsm_pipeline.py</pre>
+          Expected: four <code>[OK]</code> lines covering torch, timm, DMS import, Hydra configs.
+          <span class="effect">Effect: confirms the install is intact before any training runs.</span>
+        </div>
+      </div>
+
+      <div class="check-card" data-num="04">
+        <div class="title">One-epoch synthetic train.</div>
+        <div class="body">
+          <pre>python scripts/training/train.py dataset=synthetic trainer.epochs=1</pre>
+          The <code>synthetic</code> adapter generates data in memory. Runs on CPU in under a minute. Exercises every stage: adapter &rarr; DataModule &rarr; ComposedModel &rarr; Trainer &rarr; EvalReport.
+          <span class="effect">Effect: proves the five-stage shape end-to-end on your machine.</span>
+        </div>
+      </div>
+
+      <div class="check-card" data-num="05">
+        <div class="title">Open the module <span class="mono">CLAUDE.md</span> for whichever subsystem you will touch first.</div>
+        <div class="body">
+          One of: <code>src/dms/data/CLAUDE.md</code>, <code>src/dms/models/CLAUDE.md</code>, <code>src/dms/training/CLAUDE.md</code>, <code>src/dms/evaluation/CLAUDE.md</code>.
+          <span class="effect">Effect: subsystem conventions before you write a line of code in that area.</span>
+        </div>
+      </div>
+
+      <div class="check-card" data-num="06">
+        <div class="title">Browse the parts catalog.</div>
+        <div class="body">
+          <pre>python -m dms.registry list all</pre>
+          See what is registered across the 13 registries. Before you write anything new, confirm it does not already exist.
+          <span class="effect">Effect: 10 adapters, 8 backbones, 4 temporal, 6 fine-tune strategies all visible by name.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="action-bar">
+      <div class="action-text"><strong>If all 6 pass, the install is sound and you understand the pipeline shape.</strong> That is day 1 done.</div>
+    </div>
+  </section>
+
+  <!-- ==================== 2. WEEK 1 ==================== -->
+  <section class="slide" id="week1">
+    <div class="slide-stamp">
+      <span>onboarding / checklists / 2026-04</span>
+      <span class="stamp-sep"></span>
+      <span class="stamp-idx">02 / 04</span>
+    </div>
+    <span class="tag tag--blue">Week 1 / 02</span>
+    <h2>One task end-to-end</h2>
+    <h3>Build something small that crosses every boundary at least once.</h3>
+
+    <div class="check-list">
+      <div class="check-card" data-num="01" data-accent="blue">
+        <div class="title">Pick a small concrete task.</div>
+        <div class="body">
+          A new metric, a new augmentation profile, a new <code>configs/evaluation/*.yaml</code> &mdash; anything that adds ~50 lines of code. Do it all the way through: register &rarr; import &rarr; YAML reference &rarr; rerun an experiment with the new YAML.
+          <span class="effect">Effect: five boundaries crossed once. The shape stops being abstract.</span>
+        </div>
+      </div>
+
+      <div class="check-card" data-num="02" data-accent="blue">
+        <div class="title">Nail the three Hydra override forms.</div>
+        <div class="body">
+          On a real experiment: <code>key=value</code> (swap group), <code>key.sub=value</code> (edit leaf), <code>+key=value</code> (add new).
+          <span class="effect">Effect: confusing these silently ships the wrong config. The outputs will still look plausible.</span>
+        </div>
+      </div>
+
+      <div class="check-card" data-num="03" data-accent="blue">
+        <div class="title">Read two PRs.</div>
+        <div class="body">
+          One you agree with; one you would push back on. Look at the merge commits in the last two months.
+          <span class="effect">Effect: calibrates what review feedback looks like before you send your own PR.</span>
+        </div>
+      </div>
+
+      <div class="check-card" data-num="04" data-accent="blue">
+        <div class="title">Dashboard clone (optional).</div>
+        <div class="body">
+          For audit UIs and <code>scripts/evaluation/eval_effnet_test_videos.py</code>:
+          <pre>git clone https://github.com/tamimiEmran/dms-dashboard.git reports/dashboard</pre>
+          Separately maintained repo; used to ship bundled.
+          <span class="effect">Effect: audit HTML and video-frame viewers become editable locally.</span>
+        </div>
+      </div>
+
+      <div class="check-card" data-num="05" data-accent="blue">
+        <div class="title">Read <span class="mono">CLAUDE.md</span> &sect;8 &mdash; all 31 gotchas.</div>
+        <div class="body">
+          ~15 minutes. Most of your first-month bugs are already described there.
+          <span class="effect">Effect: <code>build_composed_from_pretrained</code> returning a 3-tuple, Hydra augmentation double-nesting, <span class="mono">num_workers=0</span> on Windows &mdash; all named in advance.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="action-bar blue">
+      <div class="action-text"><strong>End of week 1:</strong> one PR merged, one experiment re-run with your new config, the 31 gotchas read once.</div>
+    </div>
+  </section>
+
+  <!-- ==================== 3. RULES ==================== -->
+  <section class="slide" id="rules">
+    <div class="slide-stamp">
+      <span>onboarding / checklists / 2026-04</span>
+      <span class="stamp-sep"></span>
+      <span class="stamp-idx">03 / 04</span>
+    </div>
+    <span class="tag tag--red">Rules / 03</span>
+    <h2>Enforced in review</h2>
+    <h3>Three rules. Both <span class="mono" style="color:var(--text)">CLAUDE.md</span> and <span class="mono" style="color:var(--text)">CONTRIBUTING.md</span> cite them. Breaking them is the fastest way to get a PR bounced.</h3>
+
+    <div class="flex flex-col gap-12" style="margin-bottom:12px">
+
+      <div class="rule-card">
+        <div class="rule-head">
+          <span class="rule-num">Rule 1</span>
+          <span class="rule-title">Never swallow errors or degrade gracefully</span>
+        </div>
+        <div class="rule-grid">
+          <div class="rule-panel bad">
+            <div class="panel-head">&#x2718; Bad</div>
+<pre>try:
+    weights = load(path)
+except Exception:
+    weights = default_weights()  # silent fallback</pre>
+          </div>
+          <div class="rule-panel good">
+            <div class="panel-head">&#x2714; Good</div>
+<pre>weights = load(path)
+# let FileNotFoundError propagate</pre>
+          </div>
+        </div>
+        <div class="rationale">
+          <strong>Rationale.</strong> If something fails, the caller must know something went wrong. No silent fallbacks, no <span class="mono">except: pass</span>, no returning defaults on failure.
+        </div>
+      </div>
+
+      <div class="rule-card">
+        <div class="rule-head">
+          <span class="rule-num">Rule 2</span>
+          <span class="rule-title">Always document edge case handling</span>
+        </div>
+        <div class="rule-grid">
+          <div class="rule-panel bad">
+            <div class="panel-head">&#x2718; Bad</div>
+<pre>def pick(xs):
+    # no comment, no raise
+    return xs[0] if xs else None</pre>
+          </div>
+          <div class="rule-panel good">
+            <div class="panel-head">&#x2714; Good</div>
+<pre>def pick(xs):
+    if not xs:
+        raise ValueError("xs empty")
+    return xs[0]</pre>
+          </div>
+        </div>
+        <div class="rationale">
+          <strong>Rationale.</strong> Every function states how edge cases are handled &mdash; via docstring, comment, or explicit <span class="mono">raise</span>. If a case is intentionally unsupported: <span class="mono">raise NotImplementedError(...)</span> or <span class="mono">ValueError(...)</span>. Never silently produce wrong results.
+        </div>
+      </div>
+
+      <div class="rule-card">
+        <div class="rule-head">
+          <span class="rule-num">Rule 3</span>
+          <span class="rule-title">Never delete raw data</span>
+        </div>
+        <div class="rule-grid">
+          <div class="rule-panel bad">
+            <div class="panel-head">&#x2718; Bad</div>
+<pre># wipes the source dataset
+shutil.rmtree("datasets/raw/yawdd")
+extract(new_frames, to="datasets/raw/yawdd")</pre>
+          </div>
+          <div class="rule-panel good">
+            <div class="panel-head">&#x2714; Good</div>
+<pre># read from datasets/, write new dir
+extract(
+  src="datasets/raw/yawdd",
+  dst="data/processed/yawdd_faces",
+)</pre>
+          </div>
+        </div>
+        <div class="rationale">
+          <strong>Rationale.</strong> <code>datasets/</code> is append-only. Processing scripts write to <code>data/processed/&lt;new_name&gt;/</code>. If a script could destroy data (<span class="mono">shutil.rmtree</span>, <span class="mono">os.remove</span> on a data dir), it must refuse and ask the user. The two data directories are intentional: <code>datasets/</code> = immutable source, <code>data/</code> = scratchpad.
+        </div>
+      </div>
+
+    </div>
+
+    <div class="action-bar red mt-auto">
+      <div class="action-text"><strong>These three show up in review comments more than any stylistic nit.</strong> Internalise them before writing your first PR.</div>
+    </div>
+  </section>
+
+  <!-- ==================== 4. READING ORDER ==================== -->
+  <section class="slide" id="reading">
+    <div class="slide-stamp">
+      <span>onboarding / checklists / 2026-04</span>
+      <span class="stamp-sep"></span>
+      <span class="stamp-idx">04 / 04</span>
+    </div>
+    <span class="tag tag--purple">Reading / 04</span>
+    <h2>This page &rarr; source code</h2>
+    <h3>Fastest path to being productive.</h3>
+
+    <div class="two-col">
+      <div class="flex flex-col">
+        <div class="col-head">Ordered reading list</div>
+        <div class="check-list">
+          <div class="check-card" data-num="01" data-accent="purple">
+            <div class="title">This deck and its three siblings.</div>
+            <div class="body">
+              Pipeline, configuration, scenarios, checklists. Four decks linked from <code>onboarding/index.html</code>.
+              <span class="effect">Effect: one overview pass before reading any file in the repo.</span>
+            </div>
+          </div>
+          <div class="check-card" data-num="02" data-accent="purple">
+            <div class="title"><span class="mono">CONTRIBUTING.md</span></div>
+            <div class="body">
+              ~200 lines. Dev setup, the three coding rules, PR conventions.
+              <span class="effect">Effect: enforced in review. Not optional.</span>
+            </div>
+          </div>
+          <div class="check-card" data-num="03" data-accent="purple">
+            <div class="title"><span class="mono">CLAUDE.md</span> &sect;4 (Module Map) and &sect;5 (Architecture).</div>
+            <div class="body">
+              ~50 lines. Which module does what; how data flows between them.
+              <span class="effect">Effect: the 13 registries and five-stage flow named once.</span>
+            </div>
+          </div>
+          <div class="check-card" data-num="04" data-accent="purple">
+            <div class="title">The pipeline deck.</div>
+            <div class="body">
+              Stop at whichever stage your first task touches.
+              <span class="effect">Effect: one slide per stage &mdash; adapter, DataModule, ComposedModel, Trainer, EvalReport.</span>
+            </div>
+          </div>
+          <div class="check-card" data-num="05" data-accent="purple">
+            <div class="title">The per-subsystem <span class="mono">CLAUDE.md</span> for that stage.</div>
+            <div class="body">
+              See the 2x2 map on the right.
+              <span class="effect">Effect: local conventions before any edit lands in that folder.</span>
+            </div>
+          </div>
+          <div class="check-card" data-num="06" data-accent="purple">
+            <div class="title">Source code.</div>
+            <div class="body">
+              Start from <code>src/dms/data/datamodule.py</code> or <code>src/dms/training/trainer.py</code> &mdash; whichever matches your task. Both are shortest-path into real behaviour.
+              <span class="effect">Effect: you are now reading code with context, not cold.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-col">
+        <div class="col-head">Subsystem CLAUDE.md map</div>
+        <div class="subsys-grid">
+          <div class="subsys-card" data-accent="blue">
+            <div class="path">src/dms/data/CLAUDE.md</div>
+            <div class="scope">Adapters, DataModule, preprocessing, augmentation, manifest schema.</div>
+          </div>
+          <div class="subsys-card" data-accent="purple">
+            <div class="path">src/dms/models/CLAUDE.md</div>
+            <div class="scope">Backbones, temporal aggregators, heads, pretrained loading, LoRA targets.</div>
+          </div>
+          <div class="subsys-card" data-accent="amber">
+            <div class="path">src/dms/training/CLAUDE.md</div>
+            <div class="scope">Trainer loop, fine-tune strategies, optimizers, callbacks.</div>
+          </div>
+          <div class="subsys-card" data-accent="green">
+            <div class="path">src/dms/evaluation/CLAUDE.md</div>
+            <div class="scope">Metrics, analyzers, visualizers, PredictionBundle, EvalReport.</div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:14px">
+          <h4>Why these files</h4>
+          <ul>
+            <li>Labelled for AI assistants; written as subsystem documentation.</li>
+            <li>Higher-signal than any of <span class="mono">docs/</span> &mdash; the gotchas live here.</li>
+            <li>Updated alongside code, not after the fact.</li>
+            <li>Same conventions and vocabulary across all four subsystems.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="action-bar purple" style="margin-top:14px">
+      <div class="action-text"><strong>These files are labelled "for AI assistants" but they are the best subsystem documentation in the repo.</strong> Higher-signal than any of <span class="mono">docs/</span>. Read them.</div>
+    </div>
+  </section>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const navLinks = document.querySelectorAll('nav a[href^="#"]');
+    const counter = document.getElementById('slideCounter');
+    const total = slides.length;
+
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          const idx = Array.from(slides).indexOf(e.target);
+          counter.textContent = (idx + 1) + ' / ' + total;
+          const id = e.target.id;
+          navLinks.forEach((a) => {
+            a.classList.toggle('active', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, { threshold: 0.5 });
+
+    slides.forEach((s) => io.observe(s));
+  </script>
+
+</body>
+</html>

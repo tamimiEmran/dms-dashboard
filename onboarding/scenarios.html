@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1920">
+  <title>DMS Onboarding &mdash; Scenarios &amp; Gotchas</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0 }
+
+    :root {
+      --bg: #F8F9FB;
+      --bg-card: #FFFFFF;
+      --bg-elevated: #F0F1F4;
+      --border: #E0E2E8;
+      --text: #1A1D26;
+      --text-dim: #5A5E6E;
+      --text-muted: #8E92A0;
+      --accent: #0E9A7E;
+      --accent-dim: rgba(14, 154, 126, 0.08);
+      --accent-2: #3B6FD6;
+      --accent-2-dim: rgba(59, 111, 214, 0.08);
+      --accent-3: #C88A1A;
+      --accent-3-dim: rgba(200, 138, 26, 0.08);
+      --red: #D9453E;
+      --red-dim: rgba(217, 69, 62, 0.07);
+      --purple: #8B5CC4;
+      --purple-dim: rgba(139, 92, 196, 0.08);
+      --teal: #0E8A9A;
+      --teal-dim: rgba(14, 138, 154, 0.08);
+      --font: 'DM Sans', system-ui, sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+      --radius: 10px;
+      --radius-sm: 6px
+    }
+
+    html { scroll-snap-type: y mandatory; scroll-behavior: smooth }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      line-height: 1.5;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased
+    }
+
+    .slide {
+      min-height: 100vh;
+      scroll-snap-align: start;
+      display: flex;
+      flex-direction: column;
+      padding: 64px 56px 28px;
+      position: relative
+    }
+
+    .slide::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, var(--border) 20%, var(--border) 80%, transparent 100%)
+    }
+
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      background: rgba(248, 249, 251, 0.90);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 40px;
+      height: 44px;
+      gap: 4px
+    }
+
+    nav a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      padding: 5px 12px;
+      border-radius: 20px;
+      transition: all 0.2s
+    }
+
+    nav a:hover, nav a.active { color: var(--text); background: var(--bg-elevated) }
+
+    nav .slide-counter {
+      margin-left: auto;
+      color: var(--text-muted);
+      font-size: 11px;
+      font-family: var(--mono)
+    }
+
+    h1 { font-size: 48px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.15 }
+    h2 { font-size: 24px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 4px }
+    h3 { font-size: 13px; font-weight: 400; color: var(--text-dim); margin-bottom: 16px }
+
+    .tag {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 600;
+      font-family: var(--mono);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin-bottom: 6px
+    }
+
+    .tag--accent { background: var(--accent-dim); color: var(--accent) }
+    .tag--blue   { background: var(--accent-2-dim); color: var(--accent-2) }
+    .tag--amber  { background: var(--accent-3-dim); color: var(--accent-3) }
+    .tag--red    { background: var(--red-dim); color: var(--red) }
+    .tag--purple { background: var(--purple-dim); color: var(--purple) }
+    .tag--teal   { background: var(--teal-dim); color: var(--teal) }
+
+    .flex { display: flex }
+    .flex-col { flex-direction: column }
+    .gap-8 { gap: 8px }
+    .gap-12 { gap: 12px }
+    .gap-16 { gap: 16px }
+    .gap-20 { gap: 20px }
+    .grow { flex: 1 }
+    .mt-auto { margin-top: auto }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04)
+    }
+
+    .card h4 {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px
+    }
+
+    .card p, .card li {
+      font-size: 12.5px;
+      color: var(--text-dim);
+      line-height: 1.55
+    }
+
+    .card ul { list-style: none; padding: 0 }
+
+    .card ul li {
+      padding-left: 14px;
+      position: relative;
+      margin-top: 4px
+    }
+
+    .card ul li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 8px;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--text-muted)
+    }
+
+    .action-bar {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 8px 12px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-size: 12.5px
+    }
+
+    .action-bar.red    { border-left-color: var(--red) }
+    .action-bar.amber  { border-left-color: var(--accent-3) }
+    .action-bar.blue   { border-left-color: var(--accent-2) }
+    .action-bar.purple { border-left-color: var(--purple) }
+    .action-bar.teal   { border-left-color: var(--teal) }
+
+    .action-bar .action-text { color: var(--text); flex: 1 }
+    .action-bar .action-text strong { font-weight: 600 }
+
+    .chip {
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 4px;
+      background: var(--bg-elevated);
+      color: var(--text-dim);
+      border: 1px solid var(--border)
+    }
+
+    .chip strong { color: var(--text); font-weight: 600 }
+
+    /* Lab-notebook grid */
+    body {
+      background-image:
+        radial-gradient(circle, rgba(26,29,38,0.035) 1px, transparent 1px);
+      background-size: 22px 22px;
+      background-position: 0 0;
+    }
+
+    .slide-stamp {
+      position: absolute;
+      top: 20px; right: 56px;
+      font-family: var(--mono);
+      font-size: 9.5px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      opacity: 0.75;
+    }
+    .slide-stamp .stamp-sep {
+      width: 24px; height: 1px; background: var(--border);
+    }
+    .slide-stamp .stamp-idx {
+      color: var(--text-dim);
+      font-weight: 500;
+    }
+
+    /* Code blocks */
+    pre {
+      font-family: var(--mono);
+      font-size: 13px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      overflow-x: auto;
+      line-height: 1.5;
+      color: var(--text);
+    }
+    code {
+      font-family: var(--mono);
+      font-size: 13px;
+      background: var(--bg-elevated);
+      padding: 1px 5px;
+      border-radius: 3px;
+    }
+    pre code {
+      background: transparent;
+      padding: 0;
+      font-size: 13px;
+    }
+
+    /* Two-panel scenario row on the landing slide */
+    .scenario-panels {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+    .scenario-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 22px;
+      position: relative;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+    .scenario-panel::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+      border-radius: var(--radius) 0 0 var(--radius);
+    }
+    .scenario-panel[data-accent="blue"]::before   { background: var(--accent-2); }
+    .scenario-panel[data-accent="purple"]::before { background: var(--purple); }
+    .scenario-panel .sp-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+    .scenario-panel[data-accent="blue"]   .sp-label { color: var(--accent-2); }
+    .scenario-panel[data-accent="purple"] .sp-label { color: var(--purple); }
+    .scenario-panel .sp-title {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      margin-top: 4px;
+      margin-bottom: 6px;
+    }
+    .scenario-panel .sp-body {
+      font-size: 13px;
+      color: var(--text-dim);
+      line-height: 1.55;
+      margin-bottom: 12px;
+    }
+    .scenario-panel .sp-steps {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      color: var(--text);
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+    }
+
+    /* Gotcha teaser tiles (landing slide) */
+    .gotcha-tiles {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+    }
+    .g-tile {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent-3);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .g-tile .g-num {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent-3);
+      font-weight: 600;
+    }
+    .g-tile .g-title {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.35;
+    }
+    .g-tile .g-ref {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: auto;
+      padding-top: 4px;
+    }
+
+    /* Step blocks (scenario slides) */
+    .steps-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+    .step-block {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .step-head {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+    .step-num {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent-2);
+      font-weight: 600;
+    }
+    .step-title {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+    .step-block p {
+      font-size: 12.5px;
+      color: var(--text-dim);
+      line-height: 1.55;
+    }
+    .step-block ul {
+      list-style: none;
+      padding: 0;
+    }
+    .step-block ul li {
+      font-size: 12.5px;
+      color: var(--text-dim);
+      padding-left: 14px;
+      position: relative;
+      margin-top: 4px;
+      line-height: 1.55;
+    }
+    .step-block ul li::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 8px;
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: var(--text-muted);
+    }
+    .step-block ul li code {
+      font-size: 12px;
+    }
+
+    /* Extend-slide numbered steps */
+    .extend-steps {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .ext-step {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .ext-step .ext-num {
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--purple);
+      background: var(--purple-dim);
+      width: 26px; height: 26px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .ext-step .ext-body {
+      flex: 1;
+      font-size: 12.5px;
+      color: var(--text);
+      line-height: 1.55;
+    }
+    .ext-step .ext-body p {
+      font-size: 12.5px;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+    }
+    .ext-step .ext-body .ext-title {
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .ext-step .ext-body pre {
+      font-size: 11.5px;
+      padding: 10px 12px;
+      line-height: 1.45;
+    }
+    .ext-step .ext-body .ext-note {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      margin-top: 6px;
+      font-style: italic;
+    }
+
+    /* Gotcha card */
+    .gotcha-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent-3);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      margin-bottom: 14px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+    .gotcha-card .gc-head {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+    .gotcha-card .gc-head-left {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+    .gotcha-card .gc-num {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--accent-3);
+      font-weight: 700;
+    }
+    .gotcha-card .gc-title {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+    .gotcha-card .gc-ref {
+      font-family: var(--mono);
+      font-size: 10.5px;
+      color: var(--text-muted);
+      background: var(--bg-elevated);
+      padding: 2px 7px;
+      border-radius: 3px;
+    }
+    .gotcha-card .gc-row {
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      gap: 10px;
+      margin-bottom: 8px;
+      align-items: start;
+    }
+    .gotcha-card .gc-row:last-child { margin-bottom: 0; }
+    .gotcha-card .gc-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 600;
+      padding-top: 3px;
+    }
+    .gotcha-card .gc-value {
+      font-size: 12.5px;
+      color: var(--text);
+      line-height: 1.55;
+    }
+    .gotcha-card .gc-value p {
+      color: var(--text-dim);
+      font-size: 12.5px;
+    }
+    .gotcha-card .gc-value pre {
+      font-size: 12px;
+      padding: 10px 12px;
+      line-height: 1.45;
+    }
+
+    /* Roster block for slide 6 */
+    .roster {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      margin-bottom: 14px;
+    }
+    .roster h4 {
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      letter-spacing: -0.01em;
+    }
+    .roster ul { list-style: none; padding: 0; }
+    .roster ul li {
+      padding-left: 16px;
+      position: relative;
+      margin-top: 6px;
+      font-size: 12.5px;
+      color: var(--text-dim);
+      line-height: 1.55;
+    }
+    .roster ul li::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 8px;
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: var(--accent-3);
+    }
+    .roster code { font-size: 11.5px; }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <a href="index.html" style="color:var(--text-muted);font-size:10px;margin-right:6px;opacity:0.7">&larr; Home</a>
+    <a href="#overview" class="active">Overview</a>
+    <a href="#run">Run</a>
+    <a href="#extend">Extend</a>
+    <a href="#gotchas-1">Gotchas 1&ndash;2</a>
+    <a href="#gotchas-2">Gotchas 3&ndash;4</a>
+    <a href="#gotchas-3">Gotcha 5+</a>
+    <span class="slide-counter" id="slideCounter">1 / 6</span>
+  </nav>
+
+  <!-- ==================== 1. OVERVIEW ==================== -->
+  <section class="slide" id="overview">
+    <div class="slide-stamp">
+      <span>onboarding / scenarios / 2026-04</span>
+      <span class="stamp-sep"></span>
+      <span class="stamp-idx">01 / 06</span>
+    </div>
+    <span class="tag tag--teal">Scenarios</span>
+    <h2>Two walkthroughs. Five traps.</h2>
+    <h3>Run an existing experiment. Add something new. Then: the gotchas that bite first.</h3>
+
+    <div class="scenario-panels">
+      <div class="scenario-panel" data-accent="blue">
+        <div class="sp-label">Scenario A &middot; Run</div>
+        <div class="sp-title">Run an existing experiment</div>
+        <div class="sp-body">Fine-tune ViT-small on StateFarm with LoRA. Four commands, no code changes, no YAML edits. The pieces are already registered.</div>
+        <div class="sp-steps">registry list &rarr; train &rarr; inspect &rarr; evaluate</div>
+      </div>
+      <div class="scenario-panel" data-accent="purple">
+        <div class="sp-label">Scenario B &middot; Extend</div>
+        <div class="sp-title">Add something new</div>
+        <div class="sp-body">Register a new metric: <code>precision_at_recall</code>. Six steps. The same pattern generalises to every extension point in the 13 registries.</div>
+        <div class="sp-steps">file &rarr; subclass &rarr; implement &rarr; decorate &rarr; import &rarr; reference</div>
+      </div>
+    </div>
+
+    <div class="gotcha-tiles">
+      <div class="g-tile">
+        <div class="g-num">Trap 1</div>
+        <div class="g-title">Hydra augmentation config has double nesting.</div>
+        <div class="g-ref">&sect;8 #18</div>
+      </div>
+      <div class="g-tile">
+        <div class="g-num">Trap 2</div>
+        <div class="g-title"><code>ManifestReader.read()</code> returns a list, not a DataFrame.</div>
+        <div class="g-ref">&sect;8 #1</div>
+      </div>
+      <div class="g-tile">
+        <div class="g-num">Trap 3</div>
+        <div class="g-title"><code>build_composed_from_pretrained()</code> returns a 3-tuple.</div>
+        <div class="g-ref">&sect;8 #2, #31</div>
+      </div>
+      <div class="g-tile">
+        <div class="g-num">Trap 4</div>
+        <div class="g-title">Windows DataLoader needs <code>num_workers=0</code>.</div>
+        <div class="g-ref">&sect;8 #21</div>
+      </div>
+      <div class="g-tile">
+        <div class="g-num">Trap 5</div>
+        <div class="g-title"><code>EvalReport.get_metric()</code> returns <code>None</code> when missing.</div>
+        <div class="g-ref">&sect;8 #26</div>
+      </div>
+    </div>
+
+    <div class="action-bar teal" style="margin-top:14px">
+      <div class="action-text"><strong>Scope.</strong> 31 gotchas are listed in <code>CLAUDE.md</code> &sect;8. This deck covers the five that hit first. The other 26 are indexed on the last slide.</div>
+    </div>
+  </section>
+
+  <!-- ==================== 2. RUN ==================== -->
+  <section class="slide" id="run">
+    <div class="slide-stamp">
+      <span>onboarding / scenarios / 2026-04</span>
+      <span class="stamp-sep"></span>
+      <span class="stamp-idx">02 / 06</span>
+    </div>
+    <span class="tag tag--blue">Run / 01</span>
+    <h2>Fine-tune ViT-small on StateFarm with LoRA</h2>
+    <h3>Four commands. No code changes. No YAML edits.</h3>
+
+    <div class="steps-grid">
+
+      <div class="step-block">
+        <div class="step-head">
+          <span class="step-num">Step 1</span>
+          <span class="step-title">Confirm pieces exist</span>
+        </div>
+        <p>Every plug point is registered by string. Check the backbone, the dataset, and the fine-tune strategy are in the three registries this run touches.</p>
+<pre><code>python -m dms.registry list backbones   # vit_small &mdash; yes
+python -m dms.registry list datasets    # statefarm &mdash; yes
+python -m dms.registry list fine_tune   # lora &mdash; yes</code></pre>
+      </div>
+
+      <div class="step-block">
+        <div class="step-head">
+          <span class="step-num">Step 2</span>
+          <span class="step-title">Run</span>
+        </div>
+        <p>Hydra composes the full config from YAML groups. Flat overrides on the CLI tune batch size, learning rate, epochs.</p>
+<pre><code>python scripts/training/train.py \
+    model=vit_small \
+    dataset=statefarm \
+    trainer=finetune_lora \
+    trainer.epochs=20 \
+    trainer.optimizer.lr=3e-4 \
+    trainer.batch_size=16</code></pre>
+      </div>
+
+      <div class="step-block">
+        <div class="step-head">
+          <span class="step-num">Step 3</span>
+          <span class="step-title">Inspect outputs</span>
+        </div>
+        <p>Outputs land at <code>experiments/runs/vit_small/</code>. Three things to know:</p>
+        <ul>
+          <li><code>best.pt</code> &mdash; the checkpoint at the best validation epoch.</li>
+          <li><code>metrics.json</code> &mdash; per-epoch losses and accuracies.</li>
+          <li><code>.hydra/</code> &mdash; the fully-composed config. Use this to reproduce the run months later.</li>
+        </ul>
+      </div>
+
+      <div class="step-block">
+        <div class="step-head">
+          <span class="step-num">Step 4</span>
+          <span class="step-title">Evaluate</span>
+        </div>
+        <p>Same Hydra shape, different script. Point at the checkpoint; the dataset + model configs determine the eval loader and the model architecture.</p>
+<pre><code>python scripts/evaluation/evaluate.py \
+    model=vit_small \
+    dataset=statefarm \
+    checkpoint_path=experiments/runs/vit_small/best.pt</code></pre>
+      </div>
+
+    </div>
+
+    <div class="action-bar blue">
+      <div class="action-text"><strong><code>checkpoint_path</code> is a TOP-LEVEL override.</strong> Not a nested <code>model.*</code> field. A common stumble on the first evaluation run.</div>
+    </div>
+  </section>
+
+  <!-- ==================== 3. EXTEND ==================== -->
+  <section class="slide" id="extend">
+    <div class="slide-stamp">
+      <span>onboarding / scenarios / 2026-04</span>
+      <span class="stamp-sep"></span>
+      <span class="stamp-idx">03 / 06</span>
+    </div>
+    <span class="tag tag--purple">Extend / 02</span>
+    <h2>Add a new metric: <code>precision_at_recall</code></h2>
+    <h3>Six steps. The pattern works for every extension point.</h3>
+
+    <div class="extend-steps">
+
+      <div class="ext-step">
+        <div class="ext-num">1</div>
+        <div class="ext-body">
+          <div class="ext-title">Create the file</div>
+          <p>One class, one file. Path mirrors the existing metrics:</p>
+<pre><code>src/dms/evaluation/metrics/precision_at_recall.py</code></pre>
+        </div>
+      </div>
+
+      <div class="ext-step">
+        <div class="ext-num">2</div>
+        <div class="ext-body">
+          <div class="ext-title">Subclass <code>BaseMetric</code> with required class attrs</div>
+<pre><code>from dms.evaluation.metrics.base import BaseMetric, MetricResult
+from dms.registry import metric_registry
+
+@metric_registry.register("precision_at_recall")
+class PrecisionAtRecall(BaseMetric):
+    name = "precision_at_recall"
+    requires = ["predicted_labels", "true_labels"]
+    higher_is_better = True</code></pre>
+          <div class="ext-note">Missing any of <code>name</code>, <code>requires</code>, <code>higher_is_better</code> raises <code>TypeError</code> at class-definition time. <code>CLAUDE.md</code> &sect;8 #29.</div>
+        </div>
+      </div>
+
+      <div class="ext-step">
+        <div class="ext-num">3</div>
+        <div class="ext-body">
+          <div class="ext-title">Implement the two methods</div>
+          <p><code>compute(predictions) -&gt; MetricResult</code> and <code>format(result) -&gt; dict</code>. The bundle carries <code>predicted_labels</code>, <code>true_labels</code>, probabilities, and more.</p>
+        </div>
+      </div>
+
+      <div class="ext-step">
+        <div class="ext-num">4</div>
+        <div class="ext-body">
+          <div class="ext-title">Decorate &mdash; already shown in step 2</div>
+          <p><code>@metric_registry.register("precision_at_recall")</code> binds the string name to the class. YAML configs refer to the string.</p>
+        </div>
+      </div>
+
+      <div class="ext-step">
+        <div class="ext-num">5</div>
+        <div class="ext-body">
+          <div class="ext-title">Import in <code>__init__.py</code></div>
+          <p>Registration fires on module import. Add the line to <code>src/dms/evaluation/metrics/__init__.py</code> so the class loads when the package loads.</p>
+        </div>
+      </div>
+
+      <div class="ext-step">
+        <div class="ext-num">6</div>
+        <div class="ext-body">
+          <div class="ext-title">Reference in a YAML + run</div>
+<pre><code># configs/evaluation/my_eval.yaml
+metrics:
+  - accuracy
+  - precision_at_recall</code></pre>
+<pre><code>python scripts/evaluation/evaluate.py evaluation=my_eval ...</code></pre>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="action-bar teal">
+      <div class="action-text"><strong>Same six steps</strong> for adapters, backbones, temporal modules, losses, schedulers, callbacks, visualizers, analyzers, compressors. Subclass base &rarr; register &rarr; import &rarr; reference in YAML.</div>
+    </div>
+  </section>
+
+  <!-- ==================== 4. GOTCHAS 1-2 ==================== -->
+  <section class="slide" id="gotchas-1">
+    <div class="slide-stamp">
+      <span>onboarding / scenarios / 2026-04</span>
+      <span class="stamp-sep"></span>
+      <span class="stamp-idx">04 / 06</span>
+    </div>
+    <span class="tag tag--amber">Gotchas / 03</span>
+    <h2>Top 5 traps. One of three.</h2>
+    <h3>The subset of <code>CLAUDE.md</code> &sect;8 you will hit in your first week.</h3>
+
+    <div class="gotcha-card">
+      <div class="gc-head">
+        <div class="gc-head-left">
+          <span class="gc-num">Gotcha 1</span>
+          <span class="gc-title">Hydra augmentation has double nesting</span>
+        </div>
+        <span class="gc-ref">CLAUDE.md &sect;8 #18</span>
+      </div>
+      <div class="gc-row">
+        <div class="gc-label">Symptom</div>
+        <div class="gc-value"><code>TypeError: AugmentationConfig.__init__() got an unexpected keyword argument 'augmentation'</code></div>
+      </div>
+      <div class="gc-row">
+        <div class="gc-label">Cause</div>
+        <div class="gc-value"><p><code>cfg.augmentation</code> from Hydra returns <code>{"augmentation": {...}}</code>, not <code>{...}</code>.</p></div>
+      </div>
+      <div class="gc-row">
+        <div class="gc-label">Fix</div>
+        <div class="gc-value">
+<pre><code>aug_dict = OmegaConf.to_container(cfg.augmentation, resolve=True)
+aug_dict = aug_dict["augmentation"]      # unwrap once
+aug_cfg = AugmentationConfig(**aug_dict)</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="gotcha-card">
+      <div class="gc-head">
+        <div class="gc-head-left">
+          <span class="gc-num">Gotcha 2</span>
+          <span class="gc-title"><code>ManifestReader.read()</code> returns a list, not a DataFrame</span>
+        </div>
+        <span class="gc-ref">CLAUDE.md &sect;8 #1</span>
+      </div>
+      <div class="gc-row">
+        <div class="gc-label">Symptom</div>
+        <div class="gc-value"><code>AttributeError: 'list' object has no attribute 'loc'</code></div>
+      </div>
+      <div class="gc-row">
+        <div class="gc-label">Cause</div>
+        <div class="gc-value"><p><code>.read()</code> returns <code>list[FrameSample] | list[VideoClipSample]</code> &mdash; Pydantic samples, one per manifest row.</p></div>
+      </div>
+      <div class="gc-row">
+        <div class="gc-label">Fix</div>
+        <div class="gc-value"><p>Use <code>ManifestReader(...).read_as_dataframe()</code> for a <code>pd.DataFrame</code>.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 5. GOTCHAS 3-4 ==================== -->
+  <section class="slide" id="gotchas-2">
+    <div class="slide-stamp">
+      <span>onboarding / scenarios / 2026-04</span>
+      <span class="stamp-sep"></span>
+      <span class="stamp-idx">05 / 06</span>
+    </div>
+    <span class="tag tag--amber">Gotchas / 04</span>
+    <h2>Top 5 traps. Two of three.</h2>
+    <h3>Continued.</h3>
+
+    <div class="gotcha-card">
+      <div class="gc-head">
+        <div class="gc-head-left">
+          <span class="gc-num">Gotcha 3</span>
+          <span class="gc-title"><code>build_composed_from_pretrained</code> returns a 3-tuple</span>
+        </div>
+        <span class="gc-ref">CLAUDE.md &sect;8 #2, #31</span>
+      </div>
+      <div class="gc-row">
+        <div class="gc-label">Symptom</div>
+        <div class="gc-value"><code>AttributeError</code> later when trying <code>model.forward(...)</code> because <code>model</code> is actually a tuple.</div>
+      </div>
+      <div class="gc-row">
+        <div class="gc-label">Cause</div>
+        <div class="gc-value"><p>The factory returns <code>(ComposedModel, PreprocessingConfig, id2label)</code>.</p></div>
+      </div>
+      <div class="gc-row">
+        <div class="gc-label">Fix</div>
+        <div class="gc-value">
+<pre><code>model, preprocessing, id2label = build_composed_from_pretrained(
+    source, model_id, num_classes
+)</code></pre>
+        </div>
+      </div>
+      <div class="gc-row">
+        <div class="gc-label">Extra</div>
+        <div class="gc-value"><p>Fine-tuning callers must pass <code>preserve_pretrained_head=False</code>. Without it, the factory transplants the pretrained classifier head and <code>num_classes</code> must match the pretrained head's <code>out_features</code>.</p></div>
+      </div>
+    </div>
+
+    <div class="gotcha-card">
+      <div class="gc-head">
+        <div class="gc-head-left">
+          <span class="gc-num">Gotcha 4</span>
+          <span class="gc-title">Windows DataLoader needs <code>num_workers=0</code> AND <code>prefetch_factor=null</code></span>
+        </div>
+        <span class="gc-ref">CLAUDE.md &sect;8 #21</span>
+      </div>
+      <div class="gc-row">
+        <div class="gc-label">Symptom</div>
+        <div class="gc-value">Training process hangs, or a pickling error on the first batch.</div>
+      </div>
+      <div class="gc-row">
+        <div class="gc-label">Cause</div>
+        <div class="gc-value"><p><code>TransformPipeline</code> uses lambda transforms that cannot be pickled for spawn-based multiprocessing.</p></div>
+      </div>
+      <div class="gc-row">
+        <div class="gc-label">Fix</div>
+        <div class="gc-value">
+<pre><code>python scripts/training/train.py \
+    data.num_workers=0 \
+    data.prefetch_factor=null \
+    ...</code></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 6. GOTCHA 5 + ROSTER ==================== -->
+  <section class="slide" id="gotchas-3">
+    <div class="slide-stamp">
+      <span>onboarding / scenarios / 2026-04</span>
+      <span class="stamp-sep"></span>
+      <span class="stamp-idx">06 / 06</span>
+    </div>
+    <span class="tag tag--amber">Gotchas / 05</span>
+    <h2>Top 5 traps. Three of three.</h2>
+    <h3>Plus: where the other 26 live.</h3>
+
+    <div class="gotcha-card">
+      <div class="gc-head">
+        <div class="gc-head-left">
+          <span class="gc-num">Gotcha 5</span>
+          <span class="gc-title"><code>EvalReport.get_metric(name)</code> returns <code>None</code> when missing</span>
+        </div>
+        <span class="gc-ref">CLAUDE.md &sect;8 #26</span>
+      </div>
+      <div class="gc-row">
+        <div class="gc-label">Symptom</div>
+        <div class="gc-value"><code>AttributeError: 'NoneType' object has no attribute 'value'</code> downstream.</div>
+      </div>
+      <div class="gc-row">
+        <div class="gc-label">Cause</div>
+        <div class="gc-value"><p><code>.get_metric()</code> returns <code>None</code> if that metric was not in the evaluation request. It does NOT raise.</p></div>
+      </div>
+      <div class="gc-row">
+        <div class="gc-label">Fix</div>
+        <div class="gc-value">
+<pre><code>metric = report.get_metric("accuracy")
+if metric is None:
+    raise RuntimeError(
+        "'accuracy' was not requested in the metrics list"
+    )</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="roster">
+      <h4>Where the other 26 live</h4>
+      <ul>
+        <li><code>CLAUDE.md</code> &sect;8 &mdash; 31 numbered gotchas total, each one sentence.</li>
+        <li><code>src/dms/data/CLAUDE.md</code> &mdash; manifest schemas, adapter contracts, preprocessing edge cases.</li>
+        <li><code>src/dms/models/CLAUDE.md</code> &mdash; backbone shapes, temporal module signatures, head swap rules.</li>
+        <li><code>src/dms/training/CLAUDE.md</code> &mdash; fine-tune strategy semantics, optimizer parameter groups, callback ordering.</li>
+        <li><code>src/dms/evaluation/CLAUDE.md</code> &mdash; metric bundle requirements, analyzer vs. visualizer split, report serialisation.</li>
+      </ul>
+    </div>
+
+    <div class="action-bar amber">
+      <div class="action-text"><strong>Reading the full <code>CLAUDE.md</code> &sect;8 list takes 15 minutes.</strong> Most bugs in the first month are already listed there.</div>
+    </div>
+  </section>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const navLinks = document.querySelectorAll('nav a[href^="#"]');
+    const counter = document.getElementById('slideCounter');
+    const total = slides.length;
+
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          const idx = Array.from(slides).indexOf(e.target);
+          counter.textContent = (idx + 1) + ' / ' + total;
+          const id = e.target.id;
+          navLinks.forEach((a) => {
+            a.classList.toggle('active', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, { threshold: 0.5 });
+
+    slides.forEach((s) => io.observe(s));
+  </script>
+
+</body>
+</html>

@@ -736,6 +736,116 @@
       opacity: 1;
     }
 
+    /* ============================================
+       START-HERE — onboarding callout card
+       ============================================ */
+    .start-here {
+      margin-bottom: 48px;
+    }
+
+    .start-here-card {
+      display: block;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.25s ease;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.03);
+      position: relative;
+    }
+
+    .start-here-card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 6px 20px rgba(14, 154, 126, 0.14), 0 2px 6px rgba(0, 0, 0, 0.04);
+      transform: translateY(-1px);
+    }
+
+    .start-here-strip {
+      height: 4px;
+      background: linear-gradient(90deg, var(--accent), var(--blue), var(--purple));
+    }
+
+    .start-here-body {
+      padding: 22px 26px;
+    }
+
+    .start-here-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .start-here-tag {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 4px;
+      background: var(--accent-dim);
+      color: var(--accent);
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .start-here-tag::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 3px rgba(14, 154, 126, 0.18);
+    }
+
+    .start-here-arrow {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+      transition: color 0.2s;
+    }
+
+    .start-here-card:hover .start-here-arrow {
+      color: var(--accent);
+    }
+
+    .start-here-title {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
+
+    .start-here-desc {
+      font-size: 14px;
+      color: var(--text-dim);
+      line-height: 1.55;
+      margin-bottom: 14px;
+      max-width: 780px;
+    }
+
+    .start-here-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+    }
+
+    .start-here-meta .dot {
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: var(--border);
+    }
+
     /* === Responsive === */
     @media (max-width: 960px) {
       body {
@@ -804,6 +914,30 @@
     </div>
   </div>
 
+  <!-- Start-here — prominent link to the onboarding hub -->
+  <div class="start-here">
+    <a class="start-here-card" href="onboarding/index.html">
+      <div class="start-here-strip"></div>
+      <div class="start-here-body">
+        <div class="start-here-head">
+          <span class="start-here-tag">Start here</span>
+          <span class="start-here-arrow">Open &rsaquo;</span>
+        </div>
+        <div class="start-here-title">DMS Onboarding</div>
+        <div class="start-here-desc">
+          Visual guide for new contributors &mdash; 5-stage pipeline walkthrough, Hydra config + registry pattern, two worked scenarios, top 5 gotchas, day-one / week-one checklists.
+        </div>
+        <div class="start-here-meta">
+          <span>5 linked pages</span>
+          <span class="dot"></span>
+          <span>21 slides</span>
+          <span class="dot"></span>
+          <span>interactive pipeline diagram</span>
+        </div>
+      </div>
+    </a>
+  </div>
+
   <div id="app"></div>
 
   <!-- Architecture Image Lightbox -->
@@ -838,6 +972,12 @@
   <script>
     // ===== RESOURCES REGISTRY =====
     const RESOURCES = [
+      {
+        title: 'DMS Onboarding',
+        desc: 'Visual guide for new contributors \u2014 5-stage pipeline walkthrough, Hydra config + registry pattern, two worked scenarios, top 5 gotchas, day-one / week-one checklists. 5 linked pages.',
+        file: 'onboarding/index.html',
+        type: 'report',
+      },
       {
         title: 'Hikvision DMS \u2014 OEM Quality Audit',
         desc: '619 frame images reviewed across 5 devices \u2014 68% OEM accuracy, confusion analysis, per-device breakdown',

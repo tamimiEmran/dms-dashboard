@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1920">
+  <title>DMS Onboarding &mdash; Configuration &amp; Extension</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0 }
+
+    :root {
+      --bg: #F8F9FB;
+      --bg-card: #FFFFFF;
+      --bg-elevated: #F0F1F4;
+      --border: #E0E2E8;
+      --text: #1A1D26;
+      --text-dim: #5A5E6E;
+      --text-muted: #8E92A0;
+      --accent: #0E9A7E;
+      --accent-dim: rgba(14, 154, 126, 0.08);
+      --accent-2: #3B6FD6;
+      --accent-2-dim: rgba(59, 111, 214, 0.08);
+      --accent-3: #C88A1A;
+      --accent-3-dim: rgba(200, 138, 26, 0.08);
+      --red: #D9453E;
+      --red-dim: rgba(217, 69, 62, 0.07);
+      --purple: #8B5CC4;
+      --purple-dim: rgba(139, 92, 196, 0.08);
+      --teal: #0E8A9A;
+      --teal-dim: rgba(14, 138, 154, 0.08);
+      --font: 'DM Sans', system-ui, sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+      --radius: 10px;
+      --radius-sm: 6px
+    }
+
+    html { scroll-snap-type: y mandatory; scroll-behavior: smooth }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      line-height: 1.5;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased
+    }
+
+    .slide {
+      min-height: 100vh;
+      scroll-snap-align: start;
+      display: flex;
+      flex-direction: column;
+      padding: 64px 56px 28px;
+      position: relative
+    }
+
+    .slide::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, var(--border) 20%, var(--border) 80%, transparent 100%)
+    }
+
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      background: rgba(248, 249, 251, 0.90);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 40px;
+      height: 44px;
+      gap: 4px
+    }
+
+    nav a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      padding: 5px 12px;
+      border-radius: 20px;
+      transition: all 0.2s
+    }
+
+    nav a:hover, nav a.active { color: var(--text); background: var(--bg-elevated) }
+
+    nav .slide-counter {
+      margin-left: auto;
+      color: var(--text-muted);
+      font-size: 11px;
+      font-family: var(--mono)
+    }
+
+    h1 { font-size: 48px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.15 }
+    h2 { font-size: 24px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 4px }
+    h3 { font-size: 13px; font-weight: 400; color: var(--text-dim); margin-bottom: 16px }
+
+    .tag {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 600;
+      font-family: var(--mono);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin-bottom: 6px
+    }
+
+    .tag--accent { background: var(--accent-dim); color: var(--accent) }
+    .tag--blue   { background: var(--accent-2-dim); color: var(--accent-2) }
+    .tag--amber  { background: var(--accent-3-dim); color: var(--accent-3) }
+    .tag--red    { background: var(--red-dim); color: var(--red) }
+    .tag--purple { background: var(--purple-dim); color: var(--purple) }
+    .tag--teal   { background: var(--teal-dim); color: var(--teal) }
+
+    .flex { display: flex }
+    .flex-col { flex-direction: column }
+    .gap-8 { gap: 8px }
+    .gap-12 { gap: 12px }
+    .gap-16 { gap: 16px }
+    .gap-20 { gap: 20px }
+    .grow { flex: 1 }
+    .mt-auto { margin-top: auto }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04)
+    }
+
+    .card h4 {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px
+    }
+
+    .card p, .card li {
+      font-size: 12.5px;
+      color: var(--text-dim);
+      line-height: 1.55
+    }
+
+    .card ul { list-style: none; padding: 0 }
+
+    .card ul li {
+      padding-left: 14px;
+      position: relative;
+      margin-top: 4px
+    }
+
+    .card ul li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 8px;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--text-muted)
+    }
+
+    /* === Summary cards === */
+    .summary-cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px
+    }
+
+    .summary-card {
+      border-radius: 8px;
+      padding: 14px;
+      text-align: center;
+      border: 1px solid rgba(0, 0, 0, 0.04);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03)
+    }
+
+    .summary-card .label {
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-family: var(--mono);
+      color: var(--text-dim)
+    }
+
+    .summary-card .value {
+      font-size: 28px;
+      font-weight: 700;
+      font-family: var(--mono);
+      margin-top: 2px
+    }
+
+    .summary-card .detail {
+      font-size: 10.5px;
+      color: var(--text-muted);
+      margin-top: 3px
+    }
+
+    .action-bar {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 8px 12px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-size: 12.5px
+    }
+
+    .action-bar.red    { border-left-color: var(--red) }
+    .action-bar.amber  { border-left-color: var(--accent-3) }
+    .action-bar.blue   { border-left-color: var(--accent-2) }
+    .action-bar.purple { border-left-color: var(--purple) }
+    .action-bar.teal   { border-left-color: var(--teal) }
+
+    .action-bar .action-text { color: var(--text); flex: 1 }
+    .action-bar .action-text strong { font-weight: 600 }
+
+    /* === Chip === */
+    .chip {
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 4px;
+      background: var(--bg-elevated);
+      color: var(--text-dim);
+      border: 1px solid var(--border)
+    }
+
+    .chip strong { color: var(--text); font-weight: 600 }
+
+    /* Lab-notebook grid -- very faint background dots */
+    body {
+      background-image:
+        radial-gradient(circle, rgba(26,29,38,0.035) 1px, transparent 1px);
+      background-size: 22px 22px;
+      background-position: 0 0;
+    }
+
+    /* Field-log stamp in corner of every slide */
+    .slide-stamp {
+      position: absolute;
+      top: 20px; right: 56px;
+      font-family: var(--mono);
+      font-size: 9.5px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      opacity: 0.75;
+    }
+    .slide-stamp .stamp-sep {
+      width: 24px; height: 1px; background: var(--border);
+    }
+    .slide-stamp .stamp-idx {
+      color: var(--text-dim);
+      font-weight: 500;
+    }
+
+    /* Summary cards: restrained with a single accent strip */
+    .summary-card {
+      background: var(--bg-card) !important;
+      position: relative;
+      overflow: hidden;
+      text-align: left;
+      padding: 16px 18px 14px;
+    }
+    .summary-card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+    }
+    .summary-card[data-accent="red"]::before    { background: var(--red) }
+    .summary-card[data-accent="green"]::before  { background: var(--accent) }
+    .summary-card[data-accent="blue"]::before   { background: var(--accent-2) }
+    .summary-card[data-accent="purple"]::before { background: var(--purple) }
+    .summary-card[data-accent="teal"]::before   { background: var(--teal) }
+    .summary-card[data-accent="amber"]::before  { background: var(--accent-3) }
+    .summary-card .label { text-align: left; color: var(--text-muted); font-weight: 700 }
+    .summary-card .value { text-align: left; font-size: 32px; font-weight: 500; margin-top: 6px; letter-spacing: -0.02em }
+    .summary-card .detail { text-align: left; color: var(--text-dim); margin-top: 6px; font-size: 11px }
+
+    hr.rule {
+      border: 0;
+      border-top: 1px dashed var(--border);
+      margin: 14px 0;
+    }
+
+    /* === Code blocks === */
+    pre.code {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--text-muted);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      font-family: var(--mono);
+      font-size: 11.5px;
+      color: var(--text);
+      line-height: 1.55;
+      overflow-x: auto;
+      white-space: pre;
+    }
+    pre.code.accent    { border-left-color: var(--accent) }
+    pre.code.blue      { border-left-color: var(--accent-2) }
+    pre.code.amber     { border-left-color: var(--accent-3) }
+    pre.code.purple    { border-left-color: var(--purple) }
+    pre.code.teal      { border-left-color: var(--teal) }
+    pre.code .c-comment { color: var(--text-muted) }
+    pre.code .c-key     { color: var(--accent-2) }
+    pre.code .c-str     { color: var(--accent) }
+    pre.code .c-fn      { color: var(--purple) }
+    pre.code .c-kw      { color: var(--accent-3) }
+    pre.code .c-num     { color: var(--text-dim) }
+
+    /* === Landing chip row === */
+    .landing-stats {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .big-chip {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      padding: 14px 18px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--teal);
+      border-radius: var(--radius-sm);
+    }
+    .big-chip.blue { border-left-color: var(--accent-2) }
+    .big-chip .big-num {
+      font-family: var(--mono);
+      font-size: 38px;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      color: var(--text);
+    }
+    .big-chip .big-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    /* === Config-groups table === */
+    table.groups {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.5px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    table.groups th, table.groups td {
+      text-align: left;
+      padding: 9px 14px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    table.groups thead th {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      background: var(--bg-elevated);
+      font-weight: 600;
+    }
+    table.groups tbody tr:last-child td { border-bottom: none }
+    table.groups td.g-name {
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      width: 120px;
+      white-space: nowrap;
+    }
+    table.groups td.g-files {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-dim);
+      line-height: 1.5;
+    }
+    table.groups td.g-controls {
+      color: var(--text-dim);
+      font-size: 12px;
+    }
+
+    /* === Override form cards === */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    .form-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      display: grid;
+      grid-template-columns: 170px 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+    .form-card .form-title {
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+    .form-card .form-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-family: var(--mono);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .form-card .form-right pre.code {
+      margin-bottom: 6px;
+    }
+    .form-card .form-effect {
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+    .form-card .form-effect strong { color: var(--text); font-weight: 600 }
+
+    /* === Registry roster === */
+    .registry-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 6px 24px;
+      font-size: 12px;
+    }
+    .reg-row {
+      display: grid;
+      grid-template-columns: 110px 1fr auto;
+      gap: 10px;
+      padding: 6px 0;
+      border-bottom: 1px dashed var(--border);
+      align-items: baseline;
+    }
+    .reg-row .reg-name {
+      font-family: var(--mono);
+      font-weight: 600;
+      color: var(--text);
+      font-size: 11.5px;
+    }
+    .reg-row .reg-desc {
+      color: var(--text-dim);
+      font-size: 12px;
+    }
+    .reg-row .reg-count {
+      font-family: var(--mono);
+      font-size: 10.5px;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+
+    /* === Numbered step list === */
+    ol.steps {
+      list-style: none;
+      counter-reset: step;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+    ol.steps li {
+      counter-increment: step;
+      padding: 10px 14px 10px 44px;
+      position: relative;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 12.5px;
+      color: var(--text);
+    }
+    ol.steps li::before {
+      content: counter(step);
+      position: absolute;
+      left: 12px;
+      top: 10px;
+      width: 22px;
+      height: 22px;
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--purple);
+      background: var(--purple-dim);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    ol.steps li code {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      background: var(--bg-elevated);
+      padding: 1px 5px;
+      border-radius: 3px;
+      color: var(--text);
+    }
+    ol.steps li .step-note {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+
+    /* === When-to-use bullets === */
+    ul.bullets {
+      list-style: none;
+      padding: 0;
+      font-size: 12.5px;
+      color: var(--text-dim);
+    }
+    ul.bullets li {
+      padding-left: 14px;
+      position: relative;
+      margin-top: 5px;
+      line-height: 1.55;
+    }
+    ul.bullets li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 9px;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+    ul.bullets li code {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      background: var(--bg-elevated);
+      padding: 1px 5px;
+      border-radius: 3px;
+      color: var(--text);
+    }
+
+    /* Two-column body layout */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .two-col-wide-left {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr;
+      gap: 16px;
+    }
+
+    /* Back-home link */
+    nav a.home-link {
+      color: var(--text-muted);
+      font-size: 10.5px;
+      margin-right: 6px;
+      opacity: 0.7;
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <a href="index.html" class="home-link">&larr; Home</a>
+    <a href="#overview" class="active">Overview</a>
+    <a href="#groups">Groups</a>
+    <a href="#overrides">Overrides</a>
+    <a href="#registries">Registries</a>
+    <a href="#catalog">Catalog</a>
+    <span class="slide-counter" id="slideCounter">1 / 5</span>
+  </nav>
+
+  <!-- ==================== 1. OVERVIEW (landing) ==================== -->
+  <section class="slide" id="overview">
+    <div class="slide-stamp">
+      <span>onboarding / configuration / 2026-04</span>
+      <span class="stamp-sep"></span>
+      <span class="stamp-idx">01 / 05</span>
+    </div>
+    <span class="tag tag--teal">Configuration</span>
+    <h2>Hydra + Registry</h2>
+    <h3>Every knob is a YAML value. Every string resolves to a class via a registry. Combining them = your experiment.</h3>
+
+    <div class="landing-stats">
+      <div class="big-chip">
+        <span class="big-num">9</span>
+        <span class="big-label">Config groups</span>
+      </div>
+      <div class="big-chip blue">
+        <span class="big-num">13</span>
+        <span class="big-label">Registries</span>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px">
+      <p style="color:var(--text);font-size:13px;line-height:1.6">
+        Two systems, one loop. <strong>Hydra</strong> composes YAML groups at load time so every run writes a fully
+        resolved config to <span style="font-family:var(--mono);font-size:12px">experiments/runs/&lt;name&gt;/.hydra/</span>.
+        <strong>Registries</strong> resolve strings to classes at import time so a name in YAML
+        (<span style="font-family:var(--mono);font-size:12px">name: resnet50</span>) finds the right Python class.
+      </p>
+    </div>
+
+    <div class="two-col" style="margin-bottom:14px">
+      <div>
+        <h4 style="font-size:12px;font-family:var(--mono);letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px">configs/ tree</h4>
+<pre class="code teal">configs/
+&#9500;&#9472;&#9472; config.yaml        <span class="c-comment">&larr; root: default group selection</span>
+&#9500;&#9472;&#9472; dataset/           <span class="c-comment">&larr; 11 YAMLs</span>
+&#9500;&#9472;&#9472; model/             <span class="c-comment">&larr; 8 YAMLs</span>
+&#9500;&#9472;&#9472; trainer/           <span class="c-comment">&larr; 7 YAMLs (6 fine-tune strategies)</span>
+&#9500;&#9472;&#9472; augmentation/      <span class="c-comment">&larr; 3 YAMLs (light / medium / heavy)</span>
+&#9500;&#9472;&#9472; evaluation/        <span class="c-comment">&larr; 4 YAMLs</span>
+&#9500;&#9472;&#9472; compression/       <span class="c-comment">&larr; 5 YAMLs</span>
+&#9500;&#9472;&#9472; inference/         <span class="c-comment">&larr; 3 YAMLs</span>
+&#9500;&#9472;&#9472; assessment/        <span class="c-comment">&larr; 1 YAML</span>
+&#9492;&#9472;&#9472; experiment/        <span class="c-comment">&larr; multi-group overrides</span></pre>
+      </div>
+      <div class="flex flex-col gap-12">
+        <div class="card">
+          <h4>What Hydra does</h4>
+          <ul>
+            <li>Reads <code>configs/config.yaml</code> and follows the <code>defaults:</code> list.</li>
+            <li>Picks one file from each group. Produces one merged config tree.</li>
+            <li>CLI overrides mutate that tree before code runs.</li>
+            <li>Writes the final tree into <code>.hydra/</code> next to the checkpoint.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h4>What the registry does</h4>
+          <ul>
+            <li>13 registries in <code>dms.registry</code>. One per extension type.</li>
+            <li>Each registry is a dict: string name &rarr; class.</li>
+            <li>A class joins by decorator: <code>@metric_registry.register("my_metric")</code>.</li>
+            <li>Registration fires when the module is imported.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="action-bar teal mt-auto">
+      <div class="action-text">
+        If you can write a YAML file, you can run an experiment. No code changes required.
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 2. GROUPS ==================== -->
+  <section class="slide" id="groups">
+    <div class="slide-stamp">
+      <span>onboarding / configuration / 2026-04</span>
+      <span class="stamp-sep"></span>
+      <span class="stamp-idx">02 / 05</span>
+    </div>
+    <span class="tag tag--blue">Groups / 01</span>
+    <h2>Nine groups, one file per variant</h2>
+    <h3>Each subdirectory of configs/ is a group. You pick one file from each.</h3>
+
+    <div style="margin-bottom:14px">
+      <table class="groups">
+        <thead>
+          <tr>
+            <th style="width:120px">Group</th>
+            <th>Files</th>
+            <th style="width:260px">Controls</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="g-name">dataset</td>
+            <td class="g-files">dmd, statefarm, kaggle_ddd, yawdd, roboflow_dms, hikvision, oem_raqeeb, oem_raqeeb_full, merged_raqeeb_statefarm, merged_raqeeb_opensource, merged_raqeeb_dmd</td>
+            <td class="g-controls">data paths, dataset name, task</td>
+          </tr>
+          <tr>
+            <td class="g-name">model</td>
+            <td class="g-files">mobilenetv3_large, resnet50, efficientnet_b0, vit_small, convnext_tiny, videomae_base, efficientformerv2_s, yolo26_n</td>
+            <td class="g-controls">backbone, temporal, head</td>
+          </tr>
+          <tr>
+            <td class="g-name">trainer</td>
+            <td class="g-files">default, temporal, finetune_frozen, finetune_full, finetune_progressive, finetune_lora, finetune_bitfit, finetune_head_to_toe</td>
+            <td class="g-controls">epochs, LR, optimizer, scheduler, fine-tune strategy</td>
+          </tr>
+          <tr>
+            <td class="g-name">augmentation</td>
+            <td class="g-files">light, medium, heavy</td>
+            <td class="g-controls">sample + batch augmentations</td>
+          </tr>
+          <tr>
+            <td class="g-name">evaluation</td>
+            <td class="g-files">default, quick, two_stage, video_rules</td>
+            <td class="g-controls">metrics, visualizers, analyzers</td>
+          </tr>
+          <tr>
+            <td class="g-name">compression</td>
+            <td class="g-files">ptq_int8, qat_int8, prune_unstructured, prune_structured, distillation</td>
+            <td class="g-controls">compression method + params</td>
+          </tr>
+          <tr>
+            <td class="g-name">inference</td>
+            <td class="g-files">sliding_window, face_pipeline, clip_sampling</td>
+            <td class="g-controls">inference pipeline shape</td>
+          </tr>
+          <tr>
+            <td class="g-name">assessment</td>
+            <td class="g-files">model_candidates</td>
+            <td class="g-controls">multi-model benchmark config</td>
+          </tr>
+          <tr>
+            <td class="g-name">experiment</td>
+            <td class="g-files" style="color:var(--text-muted);font-style:italic">(overrides combining groups)</td>
+            <td class="g-controls">full experiment presets</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="two-col" style="margin-bottom:14px">
+      <div>
+        <h4 style="font-size:12px;font-family:var(--mono);letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px">configs/config.yaml</h4>
+<pre class="code blue"><span class="c-comment"># configs/config.yaml</span>
+<span class="c-key">defaults</span>:
+  - <span class="c-key">dataset</span>: <span class="c-str">dmd</span>
+  - <span class="c-key">model</span>: <span class="c-str">mobilenetv3_large</span>
+  - <span class="c-key">trainer</span>: <span class="c-str">default</span>
+  - <span class="c-key">augmentation</span>: <span class="c-str">light</span>
+  - <span class="c-key">evaluation</span>: <span class="c-str">default</span></pre>
+      </div>
+      <div class="card">
+        <h4>How one file per group is picked</h4>
+        <ul>
+          <li>Each line under <code>defaults:</code> names a group and a file stem.</li>
+          <li>Stem <code>dmd</code> means load <code>configs/dataset/dmd.yaml</code>.</li>
+          <li>Merged top-down. Later entries win on key collisions.</li>
+          <li>CLI overrides run after the merge; they touch the merged tree.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="action-bar blue mt-auto">
+      <div class="action-text">
+        <strong>Output directory template.</strong> Runs land at
+        <code style="font-family:var(--mono);background:var(--bg-elevated);padding:1px 5px;border-radius:3px">experiments/runs/{model.name}/</code>.
+        The <code style="font-family:var(--mono);background:var(--bg-elevated);padding:1px 5px;border-radius:3px">.hydra/</code>
+        subfolder inside each run is the full composed config &mdash; use it to reproduce experiments months later.
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 3. OVERRIDES ==================== -->
+  <section class="slide" id="overrides">
+    <div class="slide-stamp">
+      <span>onboarding / configuration / 2026-04</span>
+      <span class="stamp-sep"></span>
+      <span class="stamp-idx">03 / 05</span>
+    </div>
+    <span class="tag tag--amber">Overrides / 02</span>
+    <h2>key= / key.sub= / +key=</h2>
+    <h3>Three forms. Silently different results.</h3>
+
+    <div class="form-grid" style="margin-bottom:12px">
+
+      <div class="form-card">
+        <div>
+          <div class="form-title">Form 1</div>
+          <div class="form-sub">Swap group</div>
+          <div style="margin-top:6px">
+            <code style="font-family:var(--mono);font-size:11.5px;background:var(--bg-elevated);padding:2px 6px;border-radius:3px;color:var(--text)">key=value</code>
+          </div>
+        </div>
+        <div class="form-right">
+<pre class="code amber">python scripts/training/train.py <span class="c-key">model</span>=<span class="c-str">resnet50</span></pre>
+          <div class="form-effect">
+            <strong>Effect:</strong> loads <code style="font-family:var(--mono);font-size:11.5px;background:var(--bg-elevated);padding:1px 4px;border-radius:3px">configs/model/resnet50.yaml</code>
+            instead of the default <code style="font-family:var(--mono);font-size:11.5px;background:var(--bg-elevated);padding:1px 4px;border-radius:3px">mobilenetv3_large.yaml</code>. Whole group replaced.
+          </div>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <div>
+          <div class="form-title">Form 2</div>
+          <div class="form-sub">Edit leaf</div>
+          <div style="margin-top:6px">
+            <code style="font-family:var(--mono);font-size:11.5px;background:var(--bg-elevated);padding:2px 6px;border-radius:3px;color:var(--text)">key.sub=value</code>
+          </div>
+        </div>
+        <div class="form-right">
+<pre class="code amber">python scripts/training/train.py <span class="c-key">trainer.epochs</span>=<span class="c-num">10</span> <span class="c-key">trainer.optimizer.lr</span>=<span class="c-num">3e-4</span></pre>
+          <div class="form-effect">
+            <strong>Effect:</strong> still uses the default <code style="font-family:var(--mono);font-size:11.5px;background:var(--bg-elevated);padding:1px 4px;border-radius:3px">trainer/default.yaml</code>,
+            but overrides two leaf values inside.
+          </div>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <div>
+          <div class="form-title">Form 3</div>
+          <div class="form-sub">Add key</div>
+          <div style="margin-top:6px">
+            <code style="font-family:var(--mono);font-size:11.5px;background:var(--bg-elevated);padding:2px 6px;border-radius:3px;color:var(--text)">+key=value</code>
+          </div>
+        </div>
+        <div class="form-right">
+<pre class="code amber">python scripts/training/train.py <span class="c-kw">+</span><span class="c-key">trainer.my_new_flag</span>=<span class="c-str">true</span></pre>
+          <div class="form-effect">
+            <strong>Effect:</strong> adds a new key that did not exist in the YAML. Without <code style="font-family:var(--mono);font-size:11.5px;background:var(--bg-elevated);padding:1px 4px;border-radius:3px">+</code>,
+            Hydra raises on unknown keys &mdash; that is the safety. The <code style="font-family:var(--mono);font-size:11.5px;background:var(--bg-elevated);padding:1px 4px;border-radius:3px">+</code> waives it.
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <h4 style="font-size:12px;font-family:var(--mono);letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px">Combined example</h4>
+<pre class="code amber" style="margin-bottom:14px">python scripts/training/train.py \
+    <span class="c-key">model</span>=<span class="c-str">resnet50</span> \
+    <span class="c-key">dataset</span>=<span class="c-str">statefarm</span> \
+    <span class="c-key">trainer</span>=<span class="c-str">finetune_lora</span> \
+    <span class="c-key">trainer.epochs</span>=<span class="c-num">10</span> <span class="c-key">trainer.optimizer.lr</span>=<span class="c-num">3e-4</span> \
+    <span class="c-kw">+</span><span class="c-key">trainer.log_every</span>=<span class="c-num">50</span></pre>
+
+    <div class="action-bar amber mt-auto">
+      <div class="action-text">
+        <strong>Caveat.</strong> Using the wrong form does not error &mdash; it just runs a config that is subtly
+        different from what you meant. Bad runs blamed on bugs are often one of these three.
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 4. REGISTRIES ==================== -->
+  <section class="slide" id="registries">
+    <div class="slide-stamp">
+      <span>onboarding / configuration / 2026-04</span>
+      <span class="stamp-sep"></span>
+      <span class="stamp-idx">04 / 05</span>
+    </div>
+    <span class="tag tag--purple">Registries / 03</span>
+    <h2>Subclass &rarr; decorate &rarr; import &rarr; reference</h2>
+    <h3>Four steps. Every extensible thing in DMS works the same way.</h3>
+
+    <div class="two-col-wide-left" style="margin-bottom:14px">
+      <div>
+        <ol class="steps">
+          <li>
+            Subclass the base: <code>class MyMetric(BaseMetric):</code>
+            <div class="step-note">Required class attrs enforced via <code>__init_subclass__</code>.</div>
+          </li>
+          <li>
+            Decorate: <code>@metric_registry.register("my_metric")</code>
+            <div class="step-note">The string key is what YAML references.</div>
+          </li>
+          <li>
+            Import: add to <code>src/dms/evaluation/metrics/__init__.py</code>
+            <div class="step-note">Registration fires on import. No import = no entry.</div>
+          </li>
+          <li>
+            Reference: put <code>"my_metric"</code> in a YAML or CLI override.
+            <div class="step-note">Hydra then pulls the class back out of the registry by name.</div>
+          </li>
+        </ol>
+      </div>
+      <div>
+        <h4 style="font-size:12px;font-family:var(--mono);letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px">Full example &mdash; a metric</h4>
+<pre class="code purple"><span class="c-kw">from</span> dms.evaluation.metrics.base <span class="c-kw">import</span> BaseMetric, MetricResult
+<span class="c-kw">from</span> dms.registry <span class="c-kw">import</span> metric_registry
+
+
+<span class="c-fn">@metric_registry.register(<span class="c-str">"precision_at_recall"</span>)</span>
+<span class="c-kw">class</span> <span class="c-fn">PrecisionAtRecall</span>(BaseMetric):
+    name = <span class="c-str">"precision_at_recall"</span>
+    requires = [<span class="c-str">"predicted_labels"</span>, <span class="c-str">"true_labels"</span>]
+    higher_is_better = <span class="c-kw">True</span>
+
+    <span class="c-kw">def</span> <span class="c-fn">compute</span>(self, predictions) -&gt; MetricResult:
+        ...
+
+    <span class="c-kw">def</span> <span class="c-fn">format</span>(self, result) -&gt; dict:
+        ...</pre>
+      </div>
+    </div>
+
+    <h4 style="font-size:12px;font-family:var(--mono);letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px">Registry roster &mdash; 13 total</h4>
+    <div class="registry-grid" style="margin-bottom:14px">
+      <div class="reg-row"><span class="reg-name">backbone</span><span class="reg-desc">backbone networks</span><span class="reg-count">8 registered</span></div>
+      <div class="reg-row"><span class="reg-name">temporal</span><span class="reg-desc">mean_pool, lstm, tcn, transformer</span><span class="reg-count">4 registered</span></div>
+      <div class="reg-row"><span class="reg-name">head</span><span class="reg-desc">classification heads</span><span class="reg-count">&mdash;</span></div>
+      <div class="reg-row"><span class="reg-name">dataset</span><span class="reg-desc">dataset adapters</span><span class="reg-count">10 registered</span></div>
+      <div class="reg-row"><span class="reg-name">loss</span><span class="reg-desc">loss function classes</span><span class="reg-count">&mdash;</span></div>
+      <div class="reg-row"><span class="reg-name">metric</span><span class="reg-desc">evaluation metrics</span><span class="reg-count">&mdash;</span></div>
+      <div class="reg-row"><span class="reg-name">visualizer</span><span class="reg-desc">visualization generators</span><span class="reg-count">&mdash;</span></div>
+      <div class="reg-row"><span class="reg-name">analyzer</span><span class="reg-desc">analysis report generators</span><span class="reg-count">&mdash;</span></div>
+      <div class="reg-row"><span class="reg-name">compressor</span><span class="reg-desc">model compression methods</span><span class="reg-count">&mdash;</span></div>
+      <div class="reg-row"><span class="reg-name">fine_tune</span><span class="reg-desc">fine-tune strategies</span><span class="reg-count">6 registered</span></div>
+      <div class="reg-row"><span class="reg-name">optimizer</span><span class="reg-desc">optimizer classes</span><span class="reg-count">&mdash;</span></div>
+      <div class="reg-row"><span class="reg-name">scheduler</span><span class="reg-desc">LR scheduler classes</span><span class="reg-count">&mdash;</span></div>
+      <div class="reg-row"><span class="reg-name">callback</span><span class="reg-desc">training callback classes</span><span class="reg-count">&mdash;</span></div>
+    </div>
+
+    <div class="action-bar purple mt-auto">
+      <div class="action-text">
+        Registrations fire at import time. If you add a class but forget to import it from the package
+        <code style="font-family:var(--mono);background:var(--bg-elevated);padding:1px 5px;border-radius:3px">__init__.py</code>,
+        the registry will not see it and the YAML lookup will fail with
+        <code style="font-family:var(--mono);background:var(--bg-elevated);padding:1px 5px;border-radius:3px">KeyError: 'my_metric'</code>.
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 5. CATALOG ==================== -->
+  <section class="slide" id="catalog">
+    <div class="slide-stamp">
+      <span>onboarding / configuration / 2026-04</span>
+      <span class="stamp-sep"></span>
+      <span class="stamp-idx">05 / 05</span>
+    </div>
+    <span class="tag tag--accent">Catalog / 04</span>
+    <h2>python -m dms.registry list all</h2>
+    <h3>Your catalog of parts. Underused.</h3>
+
+    <div class="two-col" style="margin-bottom:14px">
+      <div>
+        <h4 style="font-size:12px;font-family:var(--mono);letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px">Command + filters</h4>
+<pre class="code accent">python -m dms.registry list <span class="c-str">all</span>
+python -m dms.registry list <span class="c-str">datasets</span>
+python -m dms.registry list <span class="c-str">backbones</span>
+python -m dms.registry list <span class="c-str">metrics</span>
+python -m dms.registry list <span class="c-str">fine_tune</span></pre>
+      </div>
+      <div>
+        <h4 style="font-size:12px;font-family:var(--mono);letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px">Sample output</h4>
+<pre class="code accent">datasets (<span class="c-num">10</span>):
+  dmd, driveact, hikvision, kaggle_ddd, oem_raqeeb,
+  raqeeb_events, roboflow_dms, statefarm, synthetic, yawdd
+
+backbones (<span class="c-num">8</span>):
+  mobilenetv3_large, resnet50, efficientnet_b0, vit_small,
+  convnext_tiny, videomae_base, efficientformerv2_s, yolo26_n
+
+fine_tune (<span class="c-num">6</span>):
+  frozen_backbone, full, progressive, lora, bitfit, head_to_toe</pre>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:14px">
+      <h4>When to use it</h4>
+      <ul class="bullets">
+        <li>Before writing a YAML override &mdash; <em>does <code>foo</code> exist?</em></li>
+        <li>Before asking <em>do we have X?</em> on Slack.</li>
+        <li>Before duplicating an adapter / metric / strategy that might already be registered.</li>
+      </ul>
+    </div>
+
+    <div class="summary-cards" style="margin-bottom:14px">
+      <div class="summary-card" data-accent="green">
+        <div class="label">Groups</div>
+        <div class="value" style="color:var(--accent)">9</div>
+        <div class="detail">one file per variant</div>
+      </div>
+      <div class="summary-card" data-accent="blue">
+        <div class="label">Registries</div>
+        <div class="value" style="color:var(--accent-2)">13</div>
+        <div class="detail">string &rarr; class</div>
+      </div>
+      <div class="summary-card" data-accent="purple">
+        <div class="label">Override forms</div>
+        <div class="value" style="color:var(--purple)">3</div>
+        <div class="detail">swap / edit / add</div>
+      </div>
+      <div class="summary-card" data-accent="amber">
+        <div class="label">API gotchas</div>
+        <div class="value" style="color:var(--accent-3)">31</div>
+        <div class="detail">CLAUDE.md &sect;8</div>
+      </div>
+    </div>
+
+    <div class="action-bar mt-auto">
+      <div class="action-text">
+        <strong>Habit.</strong> Run this command before every experiment. It is faster than <code style="font-family:var(--mono);background:var(--bg-elevated);padding:1px 5px;border-radius:3px">grep</code>
+        for &ldquo;what is available right now.&rdquo;
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const navLinks = document.querySelectorAll('nav a[href^="#"]');
+    const counter = document.getElementById('slideCounter');
+    const total = slides.length;
+
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          const idx = Array.from(slides).indexOf(e.target);
+          counter.textContent = (idx + 1) + ' / ' + total;
+          const id = e.target.id;
+          navLinks.forEach((a) => {
+            a.classList.toggle('active', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, { threshold: 0.5 });
+
+    slides.forEach((s) => io.observe(s));
+  </script>
+
+</body>
+</html>
