@@ -342,7 +342,7 @@ h4 { font-size: 13px; font-weight: 600; margin-bottom: 6px }
     </div>
     <span class="tag tag--accent">Occupancy Counts &mdash; Driver &amp; Passenger Detection</span>
     <h2>Occupancy Counts &mdash; Driver &amp; Passenger Detection</h2>
-    <h3>Detection models scored on 626 Hikvision and 40 OEM Raqeeb frames. Driver = binary (≥ 1 detection). Passenger = max(0, n − 1). No re-inference; cached predictions only.</h3>
+    <h3>Detection models scored on 626 Hikvision Alerts and 40 OEM Raqeeb frames. v2 methodology: cabin ROI filter, driver = largest box in ROI, passenger = remaining in-ROI boxes.</h3>
     
     <div class="stat-grid intro-stats">
       <div class="stat stat--accent">
@@ -370,23 +370,23 @@ h4 { font-size: 13px; font-weight: 600; margin-bottom: 6px }
     <div class="notes-grid">
       <div class="note-card green">
         <div class="note-label">Driver — binary</div>
-        <h4>Is there a driver?</h4>
-        <p>Predicted positive when ≥ 1 detection lands in the frame. <code>Recall</code> is the metric — Hikvision GT is 625 / 626 positives so accuracy saturates; misses are what matter.</p>
+        <h4>Largest box inside cabin ROI</h4>
+        <p>Predicted positive when at least one detection survives the cabin ROI filter. The largest such box is labelled the driver, the rest are passengers. <code>recall</code> matters more than accuracy: Hikvision GT is 625 / 626 positives.</p>
       </div>
       <div class="note-card blue">
         <div class="note-label">Passenger count</div>
-        <h4>How many besides the driver?</h4>
-        <p>Predicted as <code>max(0, n_detections − 1)</code>. <code>MAE</code> + exact-match + within-1 reported. Confusion matrix shows where each detector under- or over-counts.</p>
+        <h4>Remaining in-ROI boxes</h4>
+        <p>Predicted as <code>n_in_roi − 1</code> (or 0 if no in-ROI box). <code>MAE</code>, exact-match, within-1 reported. Confusion matrix shows where each detector under- or over-counts.</p>
       </div>
       <div class="note-card amber">
-        <div class="note-label">Two detector families</div>
-        <h4>Face vs. person boxes</h4>
-        <p>Face counts miss occluded passengers. Person counts pick up driver arms / mirror reflections as bodies. Both rendered side-by-side.</p>
+        <div class="note-label">Cabin ROI filter</div>
+        <h4>Outside-vehicle detections dropped</h4>
+        <p>Per-dataset rectangle in frame fractions: top 10% (windshield) and outermost 3–4% strips trimmed. Pedestrians visible through windows are excluded. Drop rate logged per detector.</p>
       </div>
     </div>
 
     <div class="action-bar blue">
-      <div class="action-text"><strong>Source.</strong> Predictions are cached <code>detections.parquet</code> from the face-person bootstrap experiments. No re-inference run for this evaluation — same boxes, new metric.</div>
+      <div class="action-text"><strong>v2 methodology.</strong> Boxes outside a per-dataset cabin ROI are dropped before counting; the largest surviving box is treated as the driver. No re-inference: cached <code>detections.parquet</code> files are scored under the new rule.</div>
     </div>
     
   </section>
@@ -405,8 +405,8 @@ h4 { font-size: 13px; font-weight: 600; margin-bottom: 6px }
       <div class="legend">
         <div class="item"><span class="fam-dot mediapipe"></span> Face detector</div>
         <div class="item"><span class="fam-dot detection"></span> Person detector</div>
-        <div class="item"><code>Driver</code> = at least 1 detection in frame</div>
-        <div class="item"><code>Passenger</code> = max(0, n_detections − 1)</div>
+        <div class="item"><code>Driver</code> = largest box inside cabin ROI</div>
+        <div class="item"><code>Passenger</code> = other in-ROI boxes</div>
         <div class="item"><code>±1</code> = predicted count within 1 of truth</div>
       </div>
     
@@ -441,12 +441,12 @@ h4 { font-size: 13px; font-weight: 600; margin-bottom: 6px }
               <div class="cell-counts">P 0.998 &middot; R 0.998</div>
             </td>
             <td class="num" data-delta="pos-strong">
-              <div class="cell-acc">0.145</div>
-              <div class="cell-counts">rmse 0.440</div>
+              <div class="cell-acc">0.144</div>
+              <div class="cell-counts">rmse 0.438</div>
             </td>
             <td class="num" data-delta="pos-mid">
-              <div class="cell-acc">0.869</div>
-              <div class="cell-counts">544 / 626</div>
+              <div class="cell-acc">0.871</div>
+              <div class="cell-counts">545 / 626</div>
             </td>
             <td class="num" data-delta="pos-strong">
               <div class="cell-acc">0.990</div>
@@ -469,21 +469,23 @@ h4 { font-size: 13px; font-weight: 600; margin-bottom: 6px }
               <div class="cell-counts">P 0.998 &middot; R 1.000</div>
             </td>
             <td class="num" data-delta="pos-strong">
-              <div class="cell-acc">0.188</div>
-              <div class="cell-counts">rmse 0.527</div>
+              <div class="cell-acc">0.171</div>
+              <div class="cell-counts">rmse 0.498</div>
             </td>
-            <td class="num" data-delta="pos-weak">
-              <div class="cell-acc">0.848</div>
-              <div class="cell-counts">531 / 626</div>
+            <td class="num" data-delta="pos-mid">
+              <div class="cell-acc">0.859</div>
+              <div class="cell-counts">538 / 626</div>
             </td>
             <td class="num" data-delta="pos-strong">
-              <div class="cell-acc">0.970</div>
-              <div class="cell-counts">607 / 626</div>
+              <div class="cell-acc">0.976</div>
+              <div class="cell-counts">611 / 626</div>
             </td>
           </tr>
         </tbody>
         </table>
       </div>
+      <h4 style="margin-top:14px;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted)">ROI drop rates</h4>
+      <div class="legend" style="background:var(--bg-card)"><span class="chip"><strong>yolov12l-face</strong>: 1 / 920 boxes (0.11%) dropped outside ROI</span><span class="chip"><strong>yolo11x</strong>: 13 / 1024 boxes (1.27%) dropped outside ROI</span></div>
 
       <h4 style="margin-top:18px;font-size:12px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted)">Passenger count confusion (truth × predicted)</h4>
       <div class="cm-grid">
@@ -497,7 +499,7 @@ h4 { font-size: 13px; font-weight: 600; margin-bottom: 6px }
             <thead>
               <tr><th class="cm-h cm-corner">truth ↓ / pred →</th><th class="cm-h">0</th><th class="cm-h">1</th><th class="cm-h">2</th><th class="cm-h">3</th><th class="cm-h">4+</th><th class="cm-h">Σ</th></tr>
             </thead>
-            <tbody><tr><th class="cm-h">0</th><td class="cm-c cm-diag">425</td><td class="cm-c cm-off">18</td><td class="cm-c cm-off">3</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-total">446</td></tr><tr><th class="cm-h">1</th><td class="cm-c cm-off">22</td><td class="cm-c cm-diag">77</td><td class="cm-c cm-off">3</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-off">1</td><td class="cm-total">103</td></tr><tr><th class="cm-h">2</th><td class="cm-c cm-zero">0</td><td class="cm-c cm-off">8</td><td class="cm-c cm-diag">17</td><td class="cm-c cm-off">3</td><td class="cm-c cm-zero">0</td><td class="cm-total">28</td></tr><tr><th class="cm-h">3</th><td class="cm-c cm-zero">0</td><td class="cm-c cm-off">2</td><td class="cm-c cm-off">17</td><td class="cm-c cm-diag">25</td><td class="cm-c cm-off">5</td><td class="cm-total">49</td></tr><tr><th class="cm-h">4+</th><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-total">0</td></tr></tbody>
+            <tbody><tr><th class="cm-h">0</th><td class="cm-c cm-diag">426</td><td class="cm-c cm-off">17</td><td class="cm-c cm-off">3</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-total">446</td></tr><tr><th class="cm-h">1</th><td class="cm-c cm-off">22</td><td class="cm-c cm-diag">77</td><td class="cm-c cm-off">3</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-off">1</td><td class="cm-total">103</td></tr><tr><th class="cm-h">2</th><td class="cm-c cm-zero">0</td><td class="cm-c cm-off">8</td><td class="cm-c cm-diag">17</td><td class="cm-c cm-off">3</td><td class="cm-c cm-zero">0</td><td class="cm-total">28</td></tr><tr><th class="cm-h">3</th><td class="cm-c cm-zero">0</td><td class="cm-c cm-off">2</td><td class="cm-c cm-off">17</td><td class="cm-c cm-diag">25</td><td class="cm-c cm-off">5</td><td class="cm-total">49</td></tr><tr><th class="cm-h">4+</th><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-total">0</td></tr></tbody>
           </table>
         </div>
         
@@ -510,14 +512,14 @@ h4 { font-size: 13px; font-weight: 600; margin-bottom: 6px }
             <thead>
               <tr><th class="cm-h cm-corner">truth ↓ / pred →</th><th class="cm-h">0</th><th class="cm-h">1</th><th class="cm-h">2</th><th class="cm-h">3</th><th class="cm-h">4+</th><th class="cm-h">Σ</th></tr>
             </thead>
-            <tbody><tr><th class="cm-h">0</th><td class="cm-c cm-diag">403</td><td class="cm-c cm-off">34</td><td class="cm-c cm-off">7</td><td class="cm-c cm-off">1</td><td class="cm-c cm-off">1</td><td class="cm-total">446</td></tr><tr><th class="cm-h">1</th><td class="cm-c cm-off">4</td><td class="cm-c cm-diag">78</td><td class="cm-c cm-off">16</td><td class="cm-c cm-off">4</td><td class="cm-c cm-off">1</td><td class="cm-total">103</td></tr><tr><th class="cm-h">2</th><td class="cm-c cm-zero">0</td><td class="cm-c cm-off">2</td><td class="cm-c cm-diag">18</td><td class="cm-c cm-off">8</td><td class="cm-c cm-zero">0</td><td class="cm-total">28</td></tr><tr><th class="cm-h">3</th><td class="cm-c cm-zero">0</td><td class="cm-c cm-off">1</td><td class="cm-c cm-off">5</td><td class="cm-c cm-diag">32</td><td class="cm-c cm-off">11</td><td class="cm-total">49</td></tr><tr><th class="cm-h">4+</th><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-total">0</td></tr></tbody>
+            <tbody><tr><th class="cm-h">0</th><td class="cm-c cm-diag">409</td><td class="cm-c cm-off">30</td><td class="cm-c cm-off">5</td><td class="cm-c cm-off">1</td><td class="cm-c cm-off">1</td><td class="cm-total">446</td></tr><tr><th class="cm-h">1</th><td class="cm-c cm-off">5</td><td class="cm-c cm-diag">79</td><td class="cm-c cm-off">15</td><td class="cm-c cm-off">3</td><td class="cm-c cm-off">1</td><td class="cm-total">103</td></tr><tr><th class="cm-h">2</th><td class="cm-c cm-zero">0</td><td class="cm-c cm-off">2</td><td class="cm-c cm-diag">18</td><td class="cm-c cm-off">8</td><td class="cm-c cm-zero">0</td><td class="cm-total">28</td></tr><tr><th class="cm-h">3</th><td class="cm-c cm-zero">0</td><td class="cm-c cm-off">1</td><td class="cm-c cm-off">5</td><td class="cm-c cm-diag">32</td><td class="cm-c cm-off">11</td><td class="cm-total">49</td></tr><tr><th class="cm-h">4+</th><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-total">0</td></tr></tbody>
           </table>
         </div>
         
       </div>
 
       <div class="action-bar amber">
-        <div class="action-text"><strong>Driver detection saturates</strong> at ≥ 0.998 recall — both detectors find the driver in nearly every frame. Passenger MAE is where the detectors split: the face detector under-counts less often than the person detector, which sometimes over-counts when an arm crosses the cabin centreline.</div>
+        <div class="action-text"><strong>Driver detection saturates</strong> at ≥ 0.998 recall — both detectors find a person in the cabin ROI for nearly every frame. Passenger MAE is where the detectors split: the face detector under-counts less often than the person detector, which sometimes over-counts when an arm crosses the cabin centreline. ROI drop rate is low (≤ 1.3%) — outside-vehicle detections are rare on this camera mount.</div>
       </div>
     
   </section>
@@ -539,8 +541,8 @@ h4 { font-size: 13px; font-weight: 600; margin-bottom: 6px }
       <div class="legend">
         <div class="item"><span class="fam-dot mediapipe"></span> Face detector</div>
         <div class="item"><span class="fam-dot detection"></span> Person detector</div>
-        <div class="item"><code>Driver</code> = at least 1 detection in frame</div>
-        <div class="item"><code>Passenger</code> = max(0, n_detections − 1)</div>
+        <div class="item"><code>Driver</code> = largest box inside cabin ROI</div>
+        <div class="item"><code>Passenger</code> = other in-ROI boxes</div>
         <div class="item"><code>±1</code> = predicted count within 1 of truth</div>
       </div>
     
@@ -659,16 +661,16 @@ h4 { font-size: 13px; font-weight: 600; margin-bottom: 6px }
               <div class="cell-counts">P 0.981 &middot; R 1.000</div>
             </td>
             <td class="num" data-delta="pos-tiny">
-              <div class="cell-acc">0.796</div>
-              <div class="cell-counts">rmse 1.147</div>
+              <div class="cell-acc">0.741</div>
+              <div class="cell-counts">rmse 1.106</div>
             </td>
             <td class="num" data-delta="neg-tiny">
-              <div class="cell-acc">0.389</div>
-              <div class="cell-counts">21 / 54</div>
+              <div class="cell-acc">0.426</div>
+              <div class="cell-counts">23 / 54</div>
             </td>
             <td class="num" data-delta="pos-mid">
-              <div class="cell-acc">0.870</div>
-              <div class="cell-counts">47 / 54</div>
+              <div class="cell-acc">0.889</div>
+              <div class="cell-counts">48 / 54</div>
             </td>
           </tr>
         </tbody>
@@ -701,8 +703,8 @@ h4 { font-size: 13px; font-weight: 600; margin-bottom: 6px }
       <div class="legend">
         <div class="item"><span class="fam-dot mediapipe"></span> Face detector</div>
         <div class="item"><span class="fam-dot detection"></span> Person detector</div>
-        <div class="item"><code>Driver</code> = at least 1 detection in frame</div>
-        <div class="item"><code>Passenger</code> = max(0, n_detections − 1)</div>
+        <div class="item"><code>Driver</code> = largest box inside cabin ROI</div>
+        <div class="item"><code>Passenger</code> = other in-ROI boxes</div>
         <div class="item"><code>±1</code> = predicted count within 1 of truth</div>
       </div>
     
@@ -793,12 +795,12 @@ h4 { font-size: 13px; font-weight: 600; margin-bottom: 6px }
               <div class="cell-counts">P 1.000 &middot; R 0.975</div>
             </td>
             <td class="num" data-delta="pos-weak">
-              <div class="cell-acc">0.450</div>
-              <div class="cell-counts">rmse 0.775</div>
+              <div class="cell-acc">0.475</div>
+              <div class="cell-counts">rmse 0.791</div>
             </td>
             <td class="num" data-delta="pos-tiny">
-              <div class="cell-acc">0.625</div>
-              <div class="cell-counts">25 / 40</div>
+              <div class="cell-acc">0.600</div>
+              <div class="cell-counts">24 / 40</div>
             </td>
             <td class="num" data-delta="pos-mid">
               <div class="cell-acc">0.925</div>
@@ -849,12 +851,12 @@ h4 { font-size: 13px; font-weight: 600; margin-bottom: 6px }
               <div class="cell-counts">P 1.000 &middot; R 1.000</div>
             </td>
             <td class="num" data-delta="pos-weak">
-              <div class="cell-acc">0.550</div>
-              <div class="cell-counts">rmse 0.866</div>
+              <div class="cell-acc">0.525</div>
+              <div class="cell-counts">rmse 0.851</div>
             </td>
             <td class="num" data-delta="pos-tiny">
-              <div class="cell-acc">0.550</div>
-              <div class="cell-counts">22 / 40</div>
+              <div class="cell-acc">0.575</div>
+              <div class="cell-counts">23 / 40</div>
             </td>
             <td class="num" data-delta="pos-mid">
               <div class="cell-acc">0.900</div>
@@ -904,13 +906,13 @@ h4 { font-size: 13px; font-weight: 600; margin-bottom: 6px }
               <div class="cell-acc">1.000</div>
               <div class="cell-counts">P 1.000 &middot; R 1.000</div>
             </td>
-            <td class="num" data-delta="pos-tiny">
-              <div class="cell-acc">0.625</div>
-              <div class="cell-counts">rmse 0.987</div>
+            <td class="num" data-delta="pos-weak">
+              <div class="cell-acc">0.600</div>
+              <div class="cell-counts">rmse 0.975</div>
             </td>
             <td class="num" data-delta="pos-tiny">
-              <div class="cell-acc">0.525</div>
-              <div class="cell-counts">21 / 40</div>
+              <div class="cell-acc">0.550</div>
+              <div class="cell-counts">22 / 40</div>
             </td>
             <td class="num" data-delta="pos-mid">
               <div class="cell-acc">0.875</div>
@@ -933,16 +935,16 @@ h4 { font-size: 13px; font-weight: 600; margin-bottom: 6px }
               <div class="cell-counts">P 1.000 &middot; R 1.000</div>
             </td>
             <td class="num" data-delta="neg-tiny">
-              <div class="cell-acc">0.850</div>
-              <div class="cell-counts">rmse 1.245</div>
+              <div class="cell-acc">0.825</div>
+              <div class="cell-counts">rmse 1.214</div>
             </td>
             <td class="num" data-delta="neg-tiny">
               <div class="cell-acc">0.450</div>
               <div class="cell-counts">18 / 40</div>
             </td>
             <td class="num" data-delta="pos-weak">
-              <div class="cell-acc">0.750</div>
-              <div class="cell-counts">30 / 40</div>
+              <div class="cell-acc">0.775</div>
+              <div class="cell-counts">31 / 40</div>
             </td>
           </tr>
         
@@ -1015,7 +1017,7 @@ h4 { font-size: 13px; font-weight: 600; margin-bottom: 6px }
             <thead>
               <tr><th class="cm-h cm-corner">truth ↓ / pred →</th><th class="cm-h">0</th><th class="cm-h">1</th><th class="cm-h">2</th><th class="cm-h">3</th><th class="cm-h">Σ</th></tr>
             </thead>
-            <tbody><tr><th class="cm-h">0</th><td class="cm-c cm-diag">14</td><td class="cm-c cm-off">2</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-total">16</td></tr><tr><th class="cm-h">1</th><td class="cm-c cm-off">5</td><td class="cm-c cm-diag">7</td><td class="cm-c cm-off">1</td><td class="cm-c cm-zero">0</td><td class="cm-total">13</td></tr><tr><th class="cm-h">2</th><td class="cm-c cm-off">2</td><td class="cm-c cm-off">3</td><td class="cm-c cm-diag">4</td><td class="cm-c cm-off">1</td><td class="cm-total">10</td></tr><tr><th class="cm-h">3</th><td class="cm-c cm-zero">0</td><td class="cm-c cm-off">1</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-total">1</td></tr></tbody>
+            <tbody><tr><th class="cm-h">0</th><td class="cm-c cm-diag">14</td><td class="cm-c cm-off">2</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-total">16</td></tr><tr><th class="cm-h">1</th><td class="cm-c cm-off">5</td><td class="cm-c cm-diag">7</td><td class="cm-c cm-off">1</td><td class="cm-c cm-zero">0</td><td class="cm-total">13</td></tr><tr><th class="cm-h">2</th><td class="cm-c cm-off">2</td><td class="cm-c cm-off">4</td><td class="cm-c cm-diag">3</td><td class="cm-c cm-off">1</td><td class="cm-total">10</td></tr><tr><th class="cm-h">3</th><td class="cm-c cm-zero">0</td><td class="cm-c cm-off">1</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-total">1</td></tr></tbody>
           </table>
         </div>
         
@@ -1041,7 +1043,7 @@ h4 { font-size: 13px; font-weight: 600; margin-bottom: 6px }
             <thead>
               <tr><th class="cm-h cm-corner">truth ↓ / pred →</th><th class="cm-h">0</th><th class="cm-h">1</th><th class="cm-h">2</th><th class="cm-h">3</th><th class="cm-h">Σ</th></tr>
             </thead>
-            <tbody><tr><th class="cm-h">0</th><td class="cm-c cm-diag">13</td><td class="cm-c cm-off">2</td><td class="cm-c cm-off">1</td><td class="cm-c cm-zero">0</td><td class="cm-total">16</td></tr><tr><th class="cm-h">1</th><td class="cm-c cm-off">5</td><td class="cm-c cm-diag">6</td><td class="cm-c cm-off">2</td><td class="cm-c cm-zero">0</td><td class="cm-total">13</td></tr><tr><th class="cm-h">2</th><td class="cm-c cm-off">2</td><td class="cm-c cm-off">2</td><td class="cm-c cm-diag">3</td><td class="cm-c cm-off">3</td><td class="cm-total">10</td></tr><tr><th class="cm-h">3</th><td class="cm-c cm-zero">0</td><td class="cm-c cm-off">1</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-total">1</td></tr></tbody>
+            <tbody><tr><th class="cm-h">0</th><td class="cm-c cm-diag">13</td><td class="cm-c cm-off">2</td><td class="cm-c cm-off">1</td><td class="cm-c cm-zero">0</td><td class="cm-total">16</td></tr><tr><th class="cm-h">1</th><td class="cm-c cm-off">5</td><td class="cm-c cm-diag">6</td><td class="cm-c cm-off">2</td><td class="cm-c cm-zero">0</td><td class="cm-total">13</td></tr><tr><th class="cm-h">2</th><td class="cm-c cm-off">2</td><td class="cm-c cm-off">2</td><td class="cm-c cm-diag">4</td><td class="cm-c cm-off">2</td><td class="cm-total">10</td></tr><tr><th class="cm-h">3</th><td class="cm-c cm-zero">0</td><td class="cm-c cm-off">1</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-total">1</td></tr></tbody>
           </table>
         </div>
         
@@ -1067,7 +1069,7 @@ h4 { font-size: 13px; font-weight: 600; margin-bottom: 6px }
             <thead>
               <tr><th class="cm-h cm-corner">truth ↓ / pred →</th><th class="cm-h">0</th><th class="cm-h">1</th><th class="cm-h">2</th><th class="cm-h">3</th><th class="cm-h">Σ</th></tr>
             </thead>
-            <tbody><tr><th class="cm-h">0</th><td class="cm-c cm-diag">14</td><td class="cm-c cm-off">2</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-total">16</td></tr><tr><th class="cm-h">1</th><td class="cm-c cm-off">6</td><td class="cm-c cm-diag">3</td><td class="cm-c cm-off">4</td><td class="cm-c cm-zero">0</td><td class="cm-total">13</td></tr><tr><th class="cm-h">2</th><td class="cm-c cm-off">4</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-diag">4</td><td class="cm-c cm-off">2</td><td class="cm-total">10</td></tr><tr><th class="cm-h">3</th><td class="cm-c cm-off">1</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-total">1</td></tr></tbody>
+            <tbody><tr><th class="cm-h">0</th><td class="cm-c cm-diag">14</td><td class="cm-c cm-off">2</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-total">16</td></tr><tr><th class="cm-h">1</th><td class="cm-c cm-off">6</td><td class="cm-c cm-diag">3</td><td class="cm-c cm-off">4</td><td class="cm-c cm-zero">0</td><td class="cm-total">13</td></tr><tr><th class="cm-h">2</th><td class="cm-c cm-off">4</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-diag">5</td><td class="cm-c cm-off">1</td><td class="cm-total">10</td></tr><tr><th class="cm-h">3</th><td class="cm-c cm-off">1</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-total">1</td></tr></tbody>
           </table>
         </div>
         
@@ -1080,7 +1082,7 @@ h4 { font-size: 13px; font-weight: 600; margin-bottom: 6px }
             <thead>
               <tr><th class="cm-h cm-corner">truth ↓ / pred →</th><th class="cm-h">0</th><th class="cm-h">1</th><th class="cm-h">2</th><th class="cm-h">3</th><th class="cm-h">4+</th><th class="cm-h">Σ</th></tr>
             </thead>
-            <tbody><tr><th class="cm-h">0</th><td class="cm-c cm-diag">7</td><td class="cm-c cm-off">5</td><td class="cm-c cm-off">3</td><td class="cm-c cm-off">1</td><td class="cm-c cm-zero">0</td><td class="cm-total">16</td></tr><tr><th class="cm-h">1</th><td class="cm-c cm-off">3</td><td class="cm-c cm-diag">5</td><td class="cm-c cm-off">2</td><td class="cm-c cm-off">2</td><td class="cm-c cm-off">1</td><td class="cm-total">13</td></tr><tr><th class="cm-h">2</th><td class="cm-c cm-off">1</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-diag">5</td><td class="cm-c cm-off">2</td><td class="cm-c cm-off">2</td><td class="cm-total">10</td></tr><tr><th class="cm-h">3</th><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-diag">1</td><td class="cm-c cm-zero">0</td><td class="cm-total">1</td></tr><tr><th class="cm-h">4+</th><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-total">0</td></tr></tbody>
+            <tbody><tr><th class="cm-h">0</th><td class="cm-c cm-diag">7</td><td class="cm-c cm-off">5</td><td class="cm-c cm-off">3</td><td class="cm-c cm-off">1</td><td class="cm-c cm-zero">0</td><td class="cm-total">16</td></tr><tr><th class="cm-h">1</th><td class="cm-c cm-off">3</td><td class="cm-c cm-diag">5</td><td class="cm-c cm-off">2</td><td class="cm-c cm-off">2</td><td class="cm-c cm-off">1</td><td class="cm-total">13</td></tr><tr><th class="cm-h">2</th><td class="cm-c cm-off">1</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-diag">5</td><td class="cm-c cm-off">3</td><td class="cm-c cm-off">1</td><td class="cm-total">10</td></tr><tr><th class="cm-h">3</th><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-diag">1</td><td class="cm-c cm-zero">0</td><td class="cm-total">1</td></tr><tr><th class="cm-h">4+</th><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-total">0</td></tr></tbody>
           </table>
         </div>
         
@@ -1100,7 +1102,7 @@ h4 { font-size: 13px; font-weight: 600; margin-bottom: 6px }
       </div>
 
       <div class="action-bar amber">
-        <div class="action-text"><strong>Face detectors lose driver recall</strong> on OEM (0.78–0.85) — the cabin camera angle hides faces behind the wheel. <code>rtdetr-x</code> is the worst counter (MAE 1.875) despite perfect driver recall — it over-counts in nearly every multi-occupant frame.</div>
+        <div class="action-text"><strong>Face detectors lose driver recall</strong> on OEM (0.78–0.85) — the OEM cabin angle hides faces behind the wheel, so even the largest in-ROI box ends up missing in ~6 / 40 frames. <code>rtdetr-x</code> stays at perfect driver recall but is the worst counter (MAE 1.875) — over-counts everywhere.</div>
       </div>
     
   </section>
@@ -1119,17 +1121,17 @@ h4 { font-size: 13px; font-weight: 600; margin-bottom: 6px }
       <div class="note-card blue">
         <div class="note-label">Inputs</div>
         <h4>Cached detection parquets</h4>
-        <p>One <code>detections.parquet</code> per (detector, dataset). Schema: <code>sample_id, model, class_name, x1, y1, x2, y2, conf</code>. No filtering, no re-inference.</p>
+        <p>One <code>detections.parquet</code> per (detector, dataset). Schema: <code>sample_id, model, class_name, x1, y1, x2, y2, conf</code>. No re-inference; v2 just rescores under new rules.</p>
       </div>
       <div class="note-card green">
-        <div class="note-label">Metrics</div>
-        <h4>Per-frame counts vs. integer GT</h4>
-        <p>Driver: TP/FP/FN with positive = at least one detection. Passenger: MAE, RMSE, exact-match, within-1, count confusion matrix capped at 4.</p>
+        <div class="note-label">Cabin ROI</div>
+        <h4>Per-dataset rectangle in frame fractions</h4>
+        <p>Hikvision (<code>1920×1088</code>): x ∈ [0.04, 0.97], y ∈ [0.10, 0.97]. OEM (<code>352×288</code>): x ∈ [0.04, 0.96], y ∈ [0.10, 0.94]. Box-centre inside test.</p>
       </div>
       <div class="note-card amber">
-        <div class="note-label">Caveats</div>
-        <h4>What this does not measure</h4>
-        <p>Box localisation quality (use <code>eval_vs_validation.json</code> for IoU). Passenger ID consistency across frames. Driver-vs-passenger distinction beyond "subtract 1".</p>
+        <div class="note-label">Driver assignment</div>
+        <h4>Largest box in ROI</h4>
+        <p>An earlier attempt used right-half-of-frame (LHD + rear-cam → driver right). Sample inspection showed several Hikvision mounts are steering-column face-cams where the driver is centred or slightly left. Position-agnostic <em>largest box</em> generalises across mounts; <code>driver_side</code> is recorded as a diagnostic only.</p>
       </div>
       <div class="note-card purple">
         <div class="note-label">Reproduce</div>
@@ -1137,14 +1139,14 @@ h4 { font-size: 13px; font-weight: 600; margin-bottom: 6px }
         <p><code>scripts/experiments/evaluate_occupancy_counts.py</code> writes <code>outputs/evaluation/occupancy_counts/results.json</code>. <code>build_occupancy_dashboard.py</code> renders this HTML from that file.</p>
       </div>
       <div class="note-card blue">
-        <div class="note-label">Edge cases</div>
-        <h4>The 1-frame outlier</h4>
-        <p>Hikvision has one frame with <code>driver_count = 0</code>. Any non-zero detection there is a false positive on the driver-binary metric. Deliberate — the frame is real and the detector should not silently absolve itself.</p>
+        <div class="note-label">What v2 does not fix</h4>
+        <h4>Driver mis-attribution</h4>
+        <p>If the actual driver is missed but a passenger is detected, the passenger gets labelled "driver" and counted toward driver-recall. Without a per-vehicle driver-position prior, this case is not separable from a true detection.</p>
       </div>
       <div class="note-card green">
         <div class="note-label">Heat-map buckets</div>
         <h4>Absolute, not relative</h4>
-        <p>Higher-better thresholds: 0.95 / 0.85 / 0.70 / 0.50. MAE thresholds: 0.20 / 0.40 / 0.60 / 0.80. Picked from observed range — not a baseline-relative scheme.</p>
+        <p>Higher-better thresholds: 0.95 / 0.85 / 0.70 / 0.50. MAE thresholds: 0.20 / 0.40 / 0.60 / 0.80. Picked from observed range, not baseline-relative.</p>
       </div>
     </div>
     
