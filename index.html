@@ -933,14 +933,14 @@
   <!-- SVG Lightbox -->
   <div class="lightbox" id="svgLightbox" onclick="closeLightbox()">
     <div class="lightbox-inner" onclick="event.stopPropagation()">
-      <a class="lightbox-open" href="dms_iot_architecture.svg" target="_blank" title="Open in new tab"><svg width="14"
+      <a class="lightbox-open" href="reports/dms/iot_architecture.svg" target="_blank" title="Open in new tab"><svg width="14"
           height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
           <polyline points="15 3 21 3 21 9" />
           <line x1="10" y1="14" x2="21" y2="3" />
         </svg></a>
       <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
-      <object data="dms_iot_architecture.svg" type="image/svg+xml"
+      <object data="reports/dms/iot_architecture.svg" type="image/svg+xml"
         style="width:100%;min-width:900px;aspect-ratio:1760/1100;">DMS IoT Architecture</object>
     </div>
   </div>
@@ -957,19 +957,19 @@
       {
         title: 'Hikvision DMS \u2014 OEM Quality Audit',
         desc: '619 frame images reviewed across 5 devices \u2014 68% OEM accuracy, confusion analysis, per-device breakdown',
-        file: 'hikvision_audit.html',
+        file: 'reports/hikvision/audit.html',
         type: 'report',
       },
       {
         title: 'Howen Events \u2014 OEM Quality Audit',
         desc: '525 event videos reviewed across 6 devices \u2014 OEM accuracy, confusion matrix, hidden phone analysis',
-        file: 'raqeeb_audit.html',
+        file: 'reports/raqeeb/audit.html',
         type: 'report',
       },
       {
         title: 'DMS Work Flow',
         desc: 'Three-team workflow: Data, Model, and HW — from raw footage to edge deployment',
-        file: 'workflow.html',
+        file: 'reports/dms/workflow.html',
         type: 'diagram',
       },
       {
@@ -987,7 +987,7 @@
         id: 'hikvision_deep_dive',
         title: 'Hikvision Evaluation',
         subtitle: '36 models scored against the Hikvision OEM baseline on 619 reviewed alert frames from 5 fleet devices. Rule-based pipeline, in-vehicle comparison, and fleet video compression included.',
-        file: 'summary_21Apr26.html#audit',
+        file: 'presentations/2026-04-21-hikvision-eval/summary.html#audit',
         assetsDir: '21April26',
         status: 'wip',
         tags: [
@@ -1006,31 +1006,31 @@
           {
             title: 'Hikvision OEM Quality Audit',
             desc: '619 Hikvision alert evidence frames reviewed by hand across 5 fleet devices. Per-class accuracy and per-device breakdown; the ground truth every comparison below is scored against.',
-            file: 'hikvision_audit.html',
+            file: 'reports/hikvision/audit.html',
             type: 'report',
           },
           {
             title: 'Rule-based Pipeline vs Hikvision',
             desc: 'MediaPipe (eye / yawn / head pose) + two YOLOs (phone, cigarette, seatbelt) scored against Hikvision on the same 619 reviewed frames. Per-use-case accuracy and false-alarm counts.',
-            file: 'hikvision_rulebased.html',
+            file: 'reports/hikvision/rulebased.html',
             type: 'report',
           },
           {
             title: 'Model Leaderboard \u2014 36 Models vs Hikvision OEM',
             desc: '36 models across MediaPipe, Detection, and Classification scored per use case on the same 619 reviewed frames. Capability matrix (a priori expectation), leaderboard (measured), specialist routing (one model per use case).',
-            file: 'hikvision_leaderboard_benchmark.html',
+            file: 'reports/hikvision/leaderboard.html',
             type: 'report',
           },
           {
             title: 'Custom Pipeline vs Hikvision \u2014 In-Vehicle Comparison',
             desc: 'Five driver behaviours (seatbelt, phone, eyes closed, yawning, smoking) captured simultaneously by both systems in the same vehicle; observed error modes on the custom pipeline.',
-            file: 'dms_comparison_21Apr26.html',
+            file: 'reports/dms/comparison_21Apr26.html',
             type: 'report',
           },
           {
             title: 'Fleet Video Compression',
             desc: '674 GB of H.264 1080p re-encoded to ~24 GB of SVT-AV1 480p / 2 fps \u2014 a 28\u00D7 reduction. Three encoders tested; cabin detail holds at ~4% of source bitrate. ~440 h kept across ~10 school buses + 1 PT bus.',
-            file: 'compression_pipeline_21Apr26.html',
+            file: 'reports/dms/compression.html',
             type: 'report',
           },
         ],
@@ -1039,7 +1039,7 @@
         id: 'efficientnet_eval',
         title: 'EfficientNet-B0 \u2014 Test Set Evaluation',
         subtitle: 'Fine-tuned EfficientNet-B0 vs OEM on 48 test videos across 2 devices, per-event accuracy breakdown, and 9-step preprocessing pipeline.',
-        file: '14_Apr.html',
+        file: 'presentations/2026-04-14-efficientnet/deck.html',
         assetsDir: '14April26',
         status: 'past',
         tags: [
@@ -1059,7 +1059,7 @@
         id: 'raqeeb_audit_pres',
         title: 'Howen Events \u2014 OEM vs Ground Truth vs OS implementations',
         subtitle: 'OEM accuracy audit across 528 event videos from 6 devices, false-alarm analysis, and open-source model benchmarking.',
-        file: 'raqeeb_audit_pres.html',
+        file: 'presentations/2026-04-07-raqeeb/deck.html',
         assetsDir: '7April26',
         status: 'past',
         tags: [
@@ -1080,7 +1080,7 @@
         id: 'dms_strategy',
         title: 'DMS R&D \u2014 Strategy & Roadmap',
         subtitle: 'End-to-end DMS pipeline: datasets, model architectures, edge deployment targets, and prediction demos.',
-        file: 'index2.html',
+        file: 'presentations/2026-03-31-strategy/deck.html',
         assetsDir: '31March26',
         status: 'past',
         tags: [

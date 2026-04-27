@@ -1,9 +1,9 @@
 # Dashboard Style Guide
 
 Reference for building new weekly presentation decks in `reports/dashboard/`.
-Everything here is codified from the 21 April 2026 set (`hikvision_audit.html`,
-`hikvision_rulebased.html`, `hikvision_leaderboard_benchmark.html`,
-`dms_comparison_21Apr26.html`, `compression_pipeline_21Apr26.html`). Copy one of
+Everything here is codified from the 21 April 2026 set (`reports/hikvision/audit.html`,
+`reports/hikvision/rulebased.html`, `reports/hikvision/leaderboard.html`,
+`reports/dms/comparison_21Apr26.html`, `reports/dms/compression.html`). Copy one of
 those files and edit — the CSS tokens, fonts, nav, and scroll-snap plumbing
 are already in place.
 
@@ -59,8 +59,8 @@ Ban list (replace on sight):
 ## 2. File layout
 
 One HTML file per presentation. Filename: `<topic>_<DDMonYY>.html`
-(`compression_pipeline_21Apr26.html`) or plain topic name for evergreens
-(`hikvision_rulebased.html`).
+(`reports/dms/compression.html`) or plain topic name for evergreens
+(`reports/hikvision/rulebased.html`).
 
 Skeleton (copy from any existing file):
 
@@ -335,5 +335,5 @@ re-tinting or global rewording.
 
 - Parse a `<table>` tbody and annotate every `<td>` with `data-delta`:
   see the inline Python used to build the leaderboard heat-map
-  (`hikvision_leaderboard_benchmark.html`).
+  (`reports/hikvision/leaderboard.html`).
 - Global ban-list sweep: `git grep` the §1 table terms before shipping.
