@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1500">
+  <title>Face Detector Bench &mdash; Hikvision</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0 }
+
+    :root {
+      --bg: #F8F9FB;
+      --bg-card: #FFFFFF;
+      --bg-elevated: #F0F1F4;
+      --border: #E0E2E8;
+      --text: #1A1D26;
+      --text-dim: #5A5E6E;
+      --text-muted: #8E92A0;
+      --accent: #0E9A7E;
+      --accent-dim: rgba(14, 154, 126, 0.08);
+      --accent-2: #3B6FD6;
+      --accent-2-dim: rgba(59, 111, 214, 0.08);
+      --red: #D9453E;
+      --red-dim: rgba(217, 69, 62, 0.07);
+      --orange: #C88A1A;
+      --orange-dim: rgba(200, 138, 26, 0.10);
+      --purple: #8B5CC4;
+      --purple-dim: rgba(139, 92, 196, 0.08);
+      --font: 'DM Sans', system-ui, sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+      --radius: 10px;
+    }
+
+    body {
+      background: var(--bg); color: var(--text); font-family: var(--font);
+      line-height: 1.5; -webkit-font-smoothing: antialiased;
+      padding: 32px 40px 64px; max-width: 1400px; margin: 0 auto;
+    }
+    h1 { font-size: 30px; font-weight: 700; letter-spacing: -0.025em; line-height: 1.15; }
+    h2 { font-size: 17px; font-weight: 600; letter-spacing: -0.015em;
+         margin: 32px 0 12px; padding-top: 22px; border-top: 1px solid var(--border); }
+    h3 { font-size: 12px; font-weight: 500; letter-spacing: 0.10em;
+         text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
+    p { color: var(--text-dim); margin-bottom: 8px; font-size: 14px; }
+    code { font-family: var(--mono); font-size: 12.5px; background: var(--bg-elevated);
+           padding: 1px 5px; border-radius: 3px; color: var(--text); }
+    a { color: var(--accent-2); text-decoration: none; border-bottom: 1px solid transparent; }
+    a:hover { border-bottom-color: var(--accent-2); }
+
+    .meta { font-family: var(--mono); font-size: 11px; color: var(--text-muted);
+            letter-spacing: 0.04em; margin-bottom: 22px; }
+    .lead { font-size: 14.5px; color: var(--text-dim); max-width: 940px; margin-bottom: 4px; }
+
+    .verdict {
+      background: var(--accent-dim); border: 1px solid rgba(14,154,126,0.30);
+      border-left: 3px solid var(--accent); border-radius: var(--radius);
+      padding: 14px 18px; margin: 16px 0 24px; font-size: 14px; color: var(--text);
+    }
+    .verdict strong { color: var(--accent); }
+
+    .headline {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 12px; margin: 12px 0 22px;
+    }
+    .headline .card { background: var(--bg-card); border: 1px solid var(--border);
+                      border-radius: var(--radius); padding: 14px 16px; }
+    .headline .card.pos  { border-left: 3px solid var(--accent); }
+    .headline .card.neg  { border-left: 3px solid var(--red); }
+    .headline .card.note { border-left: 3px solid var(--orange); }
+    .headline .card.info { border-left: 3px solid var(--accent-2); }
+    .headline .num { font-family: var(--mono); font-size: 26px; font-weight: 500;
+                     letter-spacing: -0.02em; line-height: 1.1; }
+    .headline .label { font-size: 11px; color: var(--text-muted);
+                       letter-spacing: 0.04em; text-transform: uppercase; margin-top: 4px; }
+    .headline .sub { font-size: 12px; color: var(--text-dim); margin-top: 6px; line-height: 1.4; }
+
+    .panel {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 14px 18px; margin-bottom: 14px;
+    }
+
+    table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+    table.tidy th, table.tidy td {
+      text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--border);
+    }
+    table.tidy th { font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase;
+                    color: var(--text-muted); font-weight: 500; background: var(--bg-elevated); }
+    table.tidy td.num { font-family: var(--mono); font-size: 11.5px; text-align: right; }
+    table.tidy td.label { font-weight: 500; }
+    table.tidy tr.row-pos td { background: rgba(14,154,126,0.05); }
+    table.tidy tr.row-warn td { background: rgba(217,69,62,0.05); }
+    table.tidy tr.row-note td { background: rgba(200,138,26,0.04); }
+    table.tidy tr.section td {
+      background: var(--bg-elevated); font-size: 10.5px; color: var(--text-muted);
+      letter-spacing: 0.06em; text-transform: uppercase; padding: 8px 10px; font-weight: 500;
+    }
+
+    .pill { display: inline-block; padding: 1px 7px; border-radius: 12px;
+            font-size: 10px; font-family: var(--mono); font-weight: 500;
+            letter-spacing: 0.04em; text-transform: uppercase; }
+    .pill.pos  { color: var(--accent); background: var(--accent-dim); }
+    .pill.warn { color: var(--red); background: var(--red-dim); }
+    .pill.note { color: var(--orange); background: var(--orange-dim); }
+    .pill.info { color: var(--accent-2); background: var(--accent-2-dim); }
+    .pill.muted { color: var(--text-muted); background: var(--bg-elevated); }
+
+    .bar-cell { display: flex; align-items: center; gap: 8px; }
+    .bar { display: inline-block; height: 8px; border-radius: 2px; vertical-align: middle; }
+    .bar.r { background: var(--accent); }
+    .bar.r-low { background: var(--red); }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    ul.tight { padding-left: 18px; font-size: 13px; color: var(--text-dim); }
+    ul.tight li { margin-bottom: 4px; }
+    ul.tight li code { font-size: 12px; }
+    ul.tight li strong { color: var(--text); }
+
+    .footer { margin-top: 36px; padding-top: 14px; border-top: 1px solid var(--border);
+              font-size: 11px; color: var(--text-muted); font-family: var(--mono);
+              letter-spacing: 0.04em; }
+  </style>
+</head>
+
+<body>
+
+  <h1>Face Detector Bench &mdash; Hikvision</h1>
+  <p class="lead">
+    11 face detectors evaluated against the 54-image, 112-face-box bootstrap-validated GT for Hikvision.
+    Greedy IoU&ge;0.5 matching by descending confidence, same scoring formula across detectors.
+    Goal: pick the replacement for the <code>FaceCropExtractor</code>'s OpenCV backend.
+  </p>
+  <div class="meta">
+    GT experiments/face_person_validation/hikvision/annotations.coco.json &middot;
+    SCRIPT scripts/experiments/bench_face_detectors_hikvision.py &middot;
+    HARDWARE RTX 3060 Ti &middot; GENERATED 2026-04-26
+  </div>
+
+  <!-- ============== HEADLINE NUMBERS ============== -->
+  <div class="headline">
+    <div class="card neg">
+      <div class="num">33.9%</div>
+      <div class="label">Current production recall</div>
+      <div class="sub">OpenCV DNN SSD weights are missing in our cv2 install &mdash; <code>FaceCropExtractor</code> is silently on the Haar cascade fallback. Catches 1 in 3 cabin faces.</div>
+    </div>
+    <div class="card pos">
+      <div class="num">+58 pt</div>
+      <div class="label">Recall headroom</div>
+      <div class="sub">Top detector reaches 92% recall with perfect precision. The earlier 28.4% Hikvision fallback rate could plausibly drop below 5%.</div>
+    </div>
+    <div class="card pos">
+      <div class="num">5 ms</div>
+      <div class="label">Cheapest acceptable swap</div>
+      <div class="sub">InsightFace SCRFD-2.5G hits R=91.1%, P=99.0%, F1=0.949 at 5 ms / frame on RTX 3060 Ti.</div>
+    </div>
+    <div class="card info">
+      <div class="num">11 / 14</div>
+      <div class="label">Detectors evaluated</div>
+      <div class="sub">9 succeeded, 1 load failure (OpenCV DNN), 1 already in repo. 3 additional candidates listed below for future expansion.</div>
+    </div>
+  </div>
+
+  <!-- ============== TL;DR ============== -->
+  <div class="verdict">
+    <strong>Recommendation.</strong> Replace the <code>FaceCropExtractor</code> default from <code>"opencv"</code>
+    to a SCRFD or YOLO-face backend. Three roughly equivalent winners
+    (<code>insightface_buffalo_l</code>, <code>yolov11n_face</code>, <code>yolov12l_face</code>)
+    all clear F1=0.95+. <strong>Pick <code>insightface_buffalo_l</code></strong> &mdash; perfect precision,
+    92% recall, 7 ms, the package is already installed (<code>insightface 0.7.3</code>), weights
+    download automatically. The current production setup catches only one face in three.
+  </div>
+
+  <!-- ============== MAIN TABLE ============== -->
+  <h2>Per-detector results &mdash; sorted by F1</h2>
+
+  <div class="panel" style="padding:0">
+    <table class="tidy">
+      <thead>
+        <tr>
+          <th style="width:22%">Detector</th>
+          <th class="num">TP</th>
+          <th class="num">FP</th>
+          <th class="num">FN</th>
+          <th class="num">Recall</th>
+          <th class="num">Precision</th>
+          <th class="num">F1</th>
+          <th class="num">Inf&nbsp;(ms)</th>
+          <th>Read</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="section"><td colspan="9">Top tier &mdash; F1 &ge; 0.95, recall &ge; 90%</td></tr>
+
+        <tr class="row-pos">
+          <td class="label"><code>insightface_buffalo_l</code><div style="font-size:10.5px;color:var(--text-muted)">SCRFD-10G + RetinaFace</div></td>
+          <td class="num">103</td>
+          <td class="num">0</td>
+          <td class="num">9</td>
+          <td class="num">92.0%</td>
+          <td class="num">100%</td>
+          <td class="num"><strong>0.958</strong></td>
+          <td class="num">7.1</td>
+          <td><span class="pill pos">Recommend</span> Perfect precision, fast, weights auto-download. Already installed.</td>
+        </tr>
+        <tr class="row-pos">
+          <td class="label"><code>yolov11n_face</code><div style="font-size:10.5px;color:var(--text-muted)">AdamCodd HF, WIDERFACE</div></td>
+          <td class="num">103</td>
+          <td class="num">0</td>
+          <td class="num">9</td>
+          <td class="num">92.0%</td>
+          <td class="num">100%</td>
+          <td class="num"><strong>0.958</strong></td>
+          <td class="num">10.6</td>
+          <td><span class="pill pos">Tied #1</span> Identical TP/FP/FN to buffalo_l. Slightly slower; nano model so even smaller weights.</td>
+        </tr>
+        <tr class="row-pos">
+          <td class="label"><code>yolov12l_face</code><div style="font-size:10.5px;color:var(--text-muted)">Bootstrap v3 face detector</div></td>
+          <td class="num">107</td>
+          <td class="num">5</td>
+          <td class="num">5</td>
+          <td class="num">95.5%</td>
+          <td class="num">95.5%</td>
+          <td class="num">0.955</td>
+          <td class="num">22.0</td>
+          <td><span class="pill info">Highest recall</span> Catches 4 more faces but also 5 false positives. Already used by face/person bootstrap pipeline.</td>
+        </tr>
+
+        <tr class="section"><td colspan="9">Acceptable tier &mdash; F1 0.93+, viable alternates</td></tr>
+
+        <tr class="row-pos">
+          <td class="label"><code>insightface_buffalo_sc</code><div style="font-size:10.5px;color:var(--text-muted)">SCRFD-500M</div></td>
+          <td class="num">102</td>
+          <td class="num">1</td>
+          <td class="num">10</td>
+          <td class="num">91.1%</td>
+          <td class="num">99.0%</td>
+          <td class="num">0.949</td>
+          <td class="num">11.1</td>
+          <td><span class="pill info">Smallest</span> Mobile-grade weights (~1.4MB ONNX). Useful if memory is tight.</td>
+        </tr>
+        <tr class="row-pos">
+          <td class="label"><code>insightface_buffalo_s</code><div style="font-size:10.5px;color:var(--text-muted)">SCRFD-2.5G</div></td>
+          <td class="num">102</td>
+          <td class="num">1</td>
+          <td class="num">10</td>
+          <td class="num">91.1%</td>
+          <td class="num">99.0%</td>
+          <td class="num">0.949</td>
+          <td class="num">5.1</td>
+          <td><span class="pill info">Fastest acceptable</span> 5 ms is the speed floor; F1 within 0.01 of best. Good edge-device pick.</td>
+        </tr>
+        <tr>
+          <td class="label"><code>yolov8_face</code><div style="font-size:10.5px;color:var(--text-muted)">arnabdhar HF</div></td>
+          <td class="num">100</td>
+          <td class="num">2</td>
+          <td class="num">12</td>
+          <td class="num">89.3%</td>
+          <td class="num">98.0%</td>
+          <td class="num">0.935</td>
+          <td class="num">8.5</td>
+          <td><span class="pill muted">OK</span> Slightly behind YOLOv11n-face equivalent; no clear advantage.</td>
+        </tr>
+
+        <tr class="section"><td colspan="9">Mediocre tier &mdash; missing too many cabin faces</td></tr>
+
+        <tr class="row-note">
+          <td class="label"><code>mediapipe_full_range</code><div style="font-size:10.5px;color:var(--text-muted)">FaceDetection model_selection=1</div></td>
+          <td class="num">63</td>
+          <td class="num">6</td>
+          <td class="num">49</td>
+          <td class="num">56.3%</td>
+          <td class="num">91.3%</td>
+          <td class="num">0.696</td>
+          <td class="num">5.8</td>
+          <td><span class="pill note">Half-blind</span> Misses ~44% of cabin faces &mdash; not enough for production despite the speed.</td>
+        </tr>
+        <tr class="row-note">
+          <td class="label"><code>mediapipe_facemesh</code><div style="font-size:10.5px;color:var(--text-muted)">CURRENTLY used by eye_state</div></td>
+          <td class="num">40</td>
+          <td class="num">1</td>
+          <td class="num">72</td>
+          <td class="num">35.7%</td>
+          <td class="num">97.6%</td>
+          <td class="num">0.523</td>
+          <td class="num">4.9</td>
+          <td><span class="pill warn">Used in pipeline</span> Eye_state and mediapipe detectors rely on this; recall is poor on cabin angles.</td>
+        </tr>
+        <tr class="row-note">
+          <td class="label"><code>mediapipe_short_range</code><div style="font-size:10.5px;color:var(--text-muted)">FaceDetection model_selection=0</div></td>
+          <td class="num">41</td>
+          <td class="num">8</td>
+          <td class="num">71</td>
+          <td class="num">36.6%</td>
+          <td class="num">83.7%</td>
+          <td class="num">0.509</td>
+          <td class="num">2.7</td>
+          <td><span class="pill note">Short-range</span> Designed for &le;2m subject distance; cabin distance is OK but model is less robust.</td>
+        </tr>
+
+        <tr class="section"><td colspan="9">Current production &mdash; what's actually running today</td></tr>
+
+        <tr class="row-warn">
+          <td class="label"><code>opencv_haar</code><div style="font-size:10.5px;color:var(--text-muted)">CURRENT FaceCropExtractor fallback</div></td>
+          <td class="num">38</td>
+          <td class="num">39</td>
+          <td class="num">74</td>
+          <td class="num">33.9%</td>
+          <td class="num">49.4%</td>
+          <td class="num">0.402</td>
+          <td class="num">30.9</td>
+          <td><span class="pill warn">In production</span> 2001-era frontal-only cascade. Half its detections are false positives. Slowest in the bench.</td>
+        </tr>
+        <tr class="row-warn">
+          <td class="label"><code>opencv_dnn</code><div style="font-size:10.5px;color:var(--text-muted)">res10_300x300_ssd</div></td>
+          <td class="num">&mdash;</td>
+          <td class="num">&mdash;</td>
+          <td class="num">&mdash;</td>
+          <td class="num">&mdash;</td>
+          <td class="num">&mdash;</td>
+          <td class="num">&mdash;</td>
+          <td class="num">&mdash;</td>
+          <td><span class="pill warn">Load failed</span> Caffe weights not packaged with our cv2 install &mdash; <em>this is why production silently uses Haar</em>.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ============== KEY FINDINGS ============== -->
+  <h2>Three things this bench changes</h2>
+
+  <div class="grid-2">
+    <div class="panel" style="border-left:3px solid var(--red)">
+      <h3>Production was on Haar all along</h3>
+      <p>
+        <code>FaceCropExtractor</code> tries to load <code>res10_300x300_ssd_iter_140000.caffemodel</code>
+        from the OpenCV install dir. Those weights ship with some opencv-contrib builds but not ours.
+        The class falls back to Haar without raising &mdash; the <code>logger.info</code> is the only signal.
+        So the 28.4% Hikvision fallback rate measured earlier is a Haar-cascade-on-cabin-frames result,
+        not the 2014 SSD model. A modern detector lifts recall by ~58 percentage points.
+      </p>
+    </div>
+
+    <div class="panel" style="border-left:3px solid var(--accent)">
+      <h3>The bootstrap pipeline already validated this</h3>
+      <p>
+        <code>yolov12l_face</code> (which the face/person bootstrap experiment uses) lands at F1=0.955
+        here too &mdash; consistent with the OEM bootstrap result (23.1% &rarr; 2.2% missed-face rate).
+        Either of <code>buffalo_l</code> / <code>yolov11n_face</code> / <code>yolov12l_face</code>
+        would do. <code>buffalo_l</code> wins on perfect precision; <code>yolov12l_face</code> wins on
+        max recall but has 5 FPs to <code>buffalo_l</code>'s 0.
+      </p>
+    </div>
+
+    <div class="panel" style="border-left:3px solid var(--orange)">
+      <h3>MediaPipe FaceMesh is the wrong tool for face detection</h3>
+      <p>
+        <code>eye_state</code> and <code>mediapipe</code> detectors use FaceMesh internally for face
+        localization. FaceMesh's recall is 35.7% on cabin frames &mdash; only marginally better than Haar.
+        The eye-closed and EAR signals these detectors emit are accurate <em>when</em> a face is
+        located, but they're effectively missing 64% of the time. Worth wiring them to the same
+        upstream face detector instead of running their own FaceMesh per frame.
+      </p>
+    </div>
+
+    <div class="panel" style="border-left:3px solid var(--accent-2)">
+      <h3>Speed is not the bottleneck</h3>
+      <p>
+        Best F1 (<code>buffalo_l</code>) runs at 7 ms / frame on a desktop GPU; SCRFD-2.5G at 5 ms.
+        For a 30 fps pipeline that's 15&ndash;21% of the frame budget &mdash; well within real-time.
+        Even on a Jetson Orin Nano (~3-5&times; slower depending on TensorRT), we're at 25&ndash;35 ms,
+        still &lt;1 frame at 30 fps. The Haar cascade is actually the slowest in the bench at 31 ms,
+        for a 60-pt-worse F1.
+      </p>
+    </div>
+  </div>
+
+  <!-- ============== CANDIDATES NOT YET BENCHED ============== -->
+  <h2>Candidates surfaced from HF / GitHub but not yet evaluated</h2>
+  <div class="panel">
+    <p>
+      All from the search; weights would need to be downloaded. Listed in priority order if the user
+      wants more data points.
+    </p>
+    <table class="tidy">
+      <thead>
+        <tr>
+          <th>Source</th>
+          <th>Model</th>
+          <th>Why interesting</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>HuggingFace</td>
+          <td><a href="https://huggingface.co/akanametov/yolo-face">akanametov/yolo-face</a> (n / s / m sizes)</td>
+          <td>YOLOv12-face nano / small / medium siblings of the v12l we already use. Speed-quality tradeoff curve.</td>
+          <td><span class="pill muted">Not run</span></td>
+        </tr>
+        <tr>
+          <td>HuggingFace</td>
+          <td><a href="https://huggingface.co/qualcomm/YOLOv11-Detection">qualcomm/YOLOv11-Detection</a></td>
+          <td>Qualcomm-optimized variant; matters if we deploy to mobile / edge SoCs.</td>
+          <td><span class="pill muted">Not run</span></td>
+        </tr>
+        <tr>
+          <td>HuggingFace</td>
+          <td><a href="https://huggingface.co/pitangent-ds/YOLOv8-human-detection-thermal">pitangent-ds/YOLOv8-human-detection-thermal</a></td>
+          <td>Thermal-image fine-tune. Cabin IR is grayscale, not thermal &mdash; would need verification on Hikvision IR frames specifically.</td>
+          <td><span class="pill muted">Speculative</span></td>
+        </tr>
+        <tr>
+          <td>GitHub</td>
+          <td><a href="https://github.com/lindevs/yolov8-face">lindevs/yolov8-face</a></td>
+          <td>Pre-trained YOLOv8-face checkpoints; alternative to arnabdhar's model.</td>
+          <td><span class="pill muted">Not run</span></td>
+        </tr>
+        <tr>
+          <td>HuggingFace</td>
+          <td><a href="https://huggingface.co/Ultralytics/YOLO11">Ultralytics/YOLO11</a> (with custom face head)</td>
+          <td>Official Ultralytics YOLO11 backbone, requires fine-tuning a face-detection head &mdash; not a drop-in.</td>
+          <td><span class="pill muted">Requires training</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="margin-top:8px;font-size:12.5px">
+      <strong>No DMS / dashcam fine-tuned face detectors found in public registries.</strong> The closest analogs
+      are general-purpose face detectors (WIDERFACE-trained) or thermal-image variants. The cabin-specific
+      training distribution doesn't appear to exist as a published model &mdash; everyone uses general detectors
+      and adds task heads on top.
+    </p>
+  </div>
+
+  <!-- ============== NEXT STEPS ============== -->
+  <h2>Next steps</h2>
+  <div class="panel">
+    <ol style="padding-left:20px;font-size:13.5px;color:var(--text-dim);line-height:1.7">
+      <li>
+        <strong>Wire <code>FaceCropExtractor</code> to use <code>insightface</code>.</strong> The class
+        already supports this (line 5 of <code>face_crop.py</code>). One-line config change at
+        construction site in <code>multi_pipeline.py</code>.
+      </li>
+      <li>
+        <strong>Re-run the leaderboard.</strong> Expect the 28.4% fallback rate measured earlier to
+        drop to single digits. Per the per-model contamination audit, this should fix the worst
+        contamination (mosesb_mobilevitv2's 6&times; gap) by handing those 178 frames real face
+        crops instead of full cabin frames.
+      </li>
+      <li>
+        <strong>Wire eye_state, head_pose, gaze, mediapipe to share the new face crops.</strong>
+        These detectors currently run their own FaceMesh / no-detection logic. With a shared
+        detector at 92% recall, their effective recall ceiling lifts too &mdash; and we save the
+        per-frame redundant face-detection passes.
+      </li>
+      <li>
+        <strong>Defer driver-vs-passenger filtering to a separate step.</strong> The bootstrap
+        module's <code>derive_face_category</code> handles this via center-in-box containment.
+        Apply it after detection but before the classifier inputs.
+      </li>
+    </ol>
+  </div>
+
+  <!-- ============== METHODOLOGY ============== -->
+  <h2>Methodology</h2>
+  <div class="panel">
+    <ul class="tight" style="margin-top:0">
+      <li><strong>GT</strong>: 54 Hikvision frames hand-reviewed in the face/person bootstrap pipeline; 112 face boxes in COCO format at <code>experiments/face_person_validation/hikvision/annotations.coco.json</code>.</li>
+      <li><strong>Matching</strong>: greedy by descending confidence, IoU&ge;0.5 with each GT face. Each GT can match at most one prediction; unmatched predictions are FPs, unmatched GTs are FNs.</li>
+      <li><strong>Inference</strong>: single image at a time, no batching, GPU when available (RTX 3060 Ti). Mean time excludes the warm-up frame.</li>
+      <li><strong>Default thresholds</strong>: each detector at its package default (or conf=0.25 for ultralytics YOLO). Tuning per detector could shift the precision/recall tradeoff but not the F1 ranking.</li>
+      <li><strong>Source artifacts</strong>: <code>outputs/leaderboards/hikvision_face_detector_bench.csv</code> (per-frame), <code>outputs/leaderboards/hikvision_face_detector_bench_summary.csv</code> (per-detector aggregates).</li>
+    </ul>
+  </div>
+
+  <div class="footer">
+    GENERATED 2026-04-26 &middot;
+    SCRIPT scripts/experiments/bench_face_detectors_hikvision.py &middot;
+    GT 54 frames / 112 face boxes (bootstrap-validated) &middot;
+    SEE-ALSO face_crop_fallback_26Apr26.html &middot; face_crop_fallback_rescored_26Apr26.html
+  </div>
+
+</body>
+</html>

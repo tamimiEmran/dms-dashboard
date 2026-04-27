@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1600">
+  <title>Face-Crop Fallback Audit &mdash; Hikvision Leaderboard</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0 }
+
+    :root {
+      --bg: #F8F9FB;
+      --bg-card: #FFFFFF;
+      --bg-elevated: #F0F1F4;
+      --border: #E0E2E8;
+      --text: #1A1D26;
+      --text-dim: #5A5E6E;
+      --text-muted: #8E92A0;
+      --accent: #0E9A7E;
+      --accent-dim: rgba(14, 154, 126, 0.08);
+      --accent-2: #3B6FD6;
+      --red: #D9453E;
+      --red-dim: rgba(217, 69, 62, 0.07);
+      --orange: #C88A1A;
+      --orange-dim: rgba(200, 138, 26, 0.10);
+      --purple: #8B5CC4;
+      --purple-dim: rgba(139, 92, 196, 0.08);
+      --font: 'DM Sans', system-ui, sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+      --radius: 10px;
+      --radius-sm: 6px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      padding: 32px 40px 64px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      line-height: 1.15;
+      margin-bottom: 4px;
+    }
+
+    h2 {
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: -0.015em;
+      margin: 32px 0 12px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+    }
+
+    h3 {
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    p { color: var(--text-dim); margin-bottom: 8px; font-size: 14px; }
+    code { font-family: var(--mono); font-size: 12.5px; background: var(--bg-elevated); padding: 1px 5px; border-radius: 3px; color: var(--text); }
+    a { color: var(--accent-2); text-decoration: none; border-bottom: 1px solid transparent; }
+    a:hover { border-bottom-color: var(--accent-2); }
+
+    .meta {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+      margin-bottom: 24px;
+    }
+
+    .headline {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin: 16px 0 24px;
+    }
+
+    .headline .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+    }
+
+    .headline .card.warn { border-left: 3px solid var(--red); }
+    .headline .card.note { border-left: 3px solid var(--orange); }
+    .headline .card.ok   { border-left: 3px solid var(--accent); }
+
+    .headline .num {
+      font-family: var(--mono);
+      font-size: 28px;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      color: var(--text);
+    }
+
+    .headline .label {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+
+    .headline .sub {
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-top: 6px;
+      line-height: 1.4;
+    }
+
+    .panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      margin-bottom: 16px;
+    }
+
+    .panel.callout-warn  { background: var(--red-dim); border-color: rgba(217,69,62,0.25); }
+    .panel.callout-note  { background: var(--orange-dim); border-color: rgba(200,138,26,0.30); }
+    .panel.callout-info  { background: var(--accent-dim); border-color: rgba(14,154,126,0.25); }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    table.tidy th, table.tidy td {
+      text-align: left;
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    table.tidy th {
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 500;
+      background: var(--bg-elevated);
+    }
+    table.tidy td { vertical-align: top; }
+    table.tidy td.num { font-family: var(--mono); font-size: 12px; text-align: right; }
+    table.tidy tr.row-warn td { background: rgba(217,69,62,0.04); }
+    table.tidy tr.row-note td { background: rgba(200,138,26,0.05); }
+    table.tidy tr.row-ok td   { background: rgba(14,154,126,0.04); }
+
+    .pill {
+      display: inline-block;
+      padding: 1px 7px;
+      border-radius: 12px;
+      font-size: 10.5px;
+      font-family: var(--mono);
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .pill.warn { color: var(--red); background: var(--red-dim); }
+    .pill.note { color: var(--orange); background: var(--orange-dim); }
+    .pill.ok   { color: var(--accent); background: var(--accent-dim); }
+    .pill.muted { color: var(--text-muted); background: var(--bg-elevated); }
+
+    .delta-bar {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--mono);
+      font-size: 11.5px;
+    }
+    .delta-bar .arrow { color: var(--text-muted); }
+    .delta-bar .delta-warn { color: var(--red); font-weight: 500; }
+    .delta-bar .delta-note { color: var(--orange); font-weight: 500; }
+    .delta-bar .delta-ok   { color: var(--accent); }
+
+    .legend {
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-top: 6px;
+    }
+    .legend .pill { margin-right: 8px; }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    ul.tight { padding-left: 18px; font-size: 13.5px; color: var(--text-dim); }
+    ul.tight li { margin-bottom: 4px; }
+    ul.tight li code { font-size: 12px; }
+
+    .footer {
+      margin-top: 40px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--text-muted);
+      font-family: var(--mono);
+      letter-spacing: 0.04em;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Face-Crop Fallback Audit</h1>
+  <p style="font-size:15px;color:var(--text-dim);max-width:880px">
+    How often does the Hikvision leaderboard's face-cropped detector pipeline silently fall back to the full cabin frame
+    when face detection fails &mdash; and which leaderboard rows are contaminated by it?
+  </p>
+  <div class="meta">
+    DATASET hikvision &middot; N=626 review-curated frames &middot; PROXY gaze_l2cs_net (run 20260420T161120Z) &middot;
+    GENERATED 2026-04-26
+  </div>
+
+  <!-- ============== HEADLINE NUMBERS ============== -->
+  <div class="headline">
+    <div class="card warn">
+      <div class="num">28.4%</div>
+      <div class="label">Frames using fallback</div>
+      <div class="sub">178 of 626 Hikvision frames had no face crop available; the shared <code>CropProvider</code> silently returned the full cabin frame.</div>
+    </div>
+    <div class="card note">
+      <div class="num">10 / 37</div>
+      <div class="label">Models affected</div>
+      <div class="sub">Every detector that declares <code>CropSpec.FACE</code> shares the same fallback fate, frame-for-frame.</div>
+    </div>
+    <div class="card warn">
+      <div class="num">6&times;</div>
+      <div class="label">Worst-case skew</div>
+      <div class="sub"><code>mosesb_mobilevitv2</code> fires fatigue at <strong>14% on face crops</strong> vs <strong>95% on fallback</strong> &mdash; a per-class metric heavily polluted by the fallback path.</div>
+    </div>
+    <div class="card note">
+      <div class="num">3</div>
+      <div class="label">Output-saturated rows</div>
+      <div class="sub">All three <code>teen_d_*</code> classifiers emit <code>prob = 1.0</code> on every frame &mdash; their leaderboard numbers are noise regardless of crop.</div>
+    </div>
+  </div>
+
+  <!-- ============== TL;DR ============== -->
+  <div class="panel callout-info">
+    <h3>TL;DR</h3>
+    <ul class="tight" style="color:var(--text)">
+      <li>The <code>CropSpec</code> declarations are correct: every face-trained model asks for <code>FACE</code>; every distractedness/full-frame model asks for <code>FULL</code>.</li>
+      <li>The exposure is the <strong>silent fallback</strong> in <code>multi_pipeline.py:85-90</code> &mdash; when the shared <code>FaceCropExtractor</code> finds no face, <code>CropSpec.FACE</code> resolves to the full frame, and the classifier inferences proceed without any flag in the leaderboard CSV.</li>
+      <li>For the 178 fallback frames, drowsiness ViTs / SigLIP2 / MobileViT models received a 1920&times;1080 cabin frame. Some respond with low-confidence (chbh7051 ViT), some respond with very high confidence (mosesb_mobilevitv2, doze_guard) &mdash; both directions distort the per-class metrics on the leaderboard.</li>
+    </ul>
+  </div>
+
+  <!-- ============== CROSS-VALIDATION ============== -->
+  <h2>Three independent face-detection signals, three different answers</h2>
+  <p>
+    The shared <code>FaceCropExtractor</code> (used by every <code>CropSpec.FACE</code> consumer)
+    doesn't directly expose its success rate, so we triangulate three signals from the wide.csv files:
+  </p>
+
+  <div class="panel">
+    <table class="tidy">
+      <thead>
+        <tr>
+          <th>Signal</th>
+          <th>What it measures</th>
+          <th>Source</th>
+          <th class="num">Failure rate</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>gaze__face_available</code></td>
+          <td>Crop received by gaze detector was &le;512 px (heuristic for "real face crop, not fallback frame")</td>
+          <td><code>gaze_detector.py:260</code></td>
+          <td class="num">28.4%</td>
+        </tr>
+        <tr>
+          <td><code>eye_state__face_detected</code></td>
+          <td>MediaPipe FaceMesh succeeded on the full cabin frame</td>
+          <td><code>eye_state_detector.py</code> internal</td>
+          <td class="num">27.5%</td>
+        </tr>
+        <tr>
+          <td><code>mediapipe__meta__face_detected</code></td>
+          <td>MediaPipe FaceMesh succeeded on the full cabin frame (separate detector instance)</td>
+          <td><code>mediapipe_detector.py</code></td>
+          <td class="num">27.5%</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p style="margin-top:12px">
+      Headline rates agree (~28%) but the signals disagree on <em>which</em> frames fail: only <strong>7.5%</strong>
+      of frames have all three signals failing simultaneously, and <strong>48.4%</strong> of frames have at least one signal failing.
+      The <code>FaceCropExtractor</code> (gaze proxy) and MediaPipe FaceMesh (eye_state &amp; mediapipe) are
+      genuinely different detectors and miss different subsets of the frames.
+    </p>
+    <p style="margin-top:6px">
+      <strong>For the leaderboard:</strong> only the <code>FaceCropExtractor</code> result matters &mdash; it's the one that
+      decides what crop a face-trained classifier receives. Hence the gaze size-heuristic is used as the proxy below.
+    </p>
+  </div>
+
+  <!-- ============== PER-MODEL TABLE ============== -->
+  <h2>Per-model contamination &mdash; fatigue / distraction class on Hikvision</h2>
+  <p>
+    For each face-cropped detector, the table reports its primary class on Hikvision, the mean
+    <code>prob</code> and <code>fires</code> rate stratified by whether the frame had a real face crop or
+    fell back to the full frame. The <strong>delta</strong> column is fallback minus face: positive numbers mean the
+    model fires <em>more</em> on fallback frames (false-positive risk), negative means it fires <em>less</em>
+    (recall risk). Matching <code>--metric f1</code> values on the live leaderboard mix both regimes.
+  </p>
+
+  <div class="panel" style="padding:0">
+    <table class="tidy">
+      <thead>
+        <tr>
+          <th>Model</th>
+          <th>Class</th>
+          <th class="num">Prob (face)</th>
+          <th class="num">Prob (fallback)</th>
+          <th class="num">Fires (face)</th>
+          <th class="num">Fires (fallback)</th>
+          <th class="num">&Delta; fires</th>
+          <th>Verdict</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- specialists -->
+        <tr class="row-note">
+          <td><code>gaze_l2cs_net</code><div style="font-size:11px;color:var(--text-muted)">L2CS-Net ResNet50</div></td>
+          <td>distracted_driving</td>
+          <td class="num">&mdash;</td>
+          <td class="num">&mdash;</td>
+          <td class="num">74.3%</td>
+          <td class="num">96.6%</td>
+          <td class="num"><span class="delta-warn">+22.3 pt</span></td>
+          <td><span class="pill note">FP risk</span> Yaw/pitch on full cabin frames trip threshold &gt;30&deg;.</td>
+        </tr>
+        <tr>
+          <td><code>head_pose_6drepnet</code><div style="font-size:11px;color:var(--text-muted)">6DRepNet</div></td>
+          <td>distracted_driving</td>
+          <td class="num">&mdash;</td>
+          <td class="num">&mdash;</td>
+          <td class="num">49.8%</td>
+          <td class="num">59.0%</td>
+          <td class="num"><span class="delta-note">+9.2 pt</span></td>
+          <td><span class="pill ok">Mild</span> Same-direction bias, smaller magnitude.</td>
+        </tr>
+
+        <!-- drowsiness classifiers -->
+        <tr class="row-warn">
+          <td><code>classifier_mosesb_mobilevitv2</code><div style="font-size:11px;color:var(--text-muted)">MobileViT-v2 drowsy</div></td>
+          <td>fatigue</td>
+          <td class="num">0.159</td>
+          <td class="num">0.904</td>
+          <td class="num">14.3%</td>
+          <td class="num">94.9%</td>
+          <td class="num"><span class="delta-warn">+80.6 pt</span></td>
+          <td><span class="pill warn">Severe</span> Confidently fires drowsy on full cabin; precision tanks.</td>
+        </tr>
+        <tr class="row-note">
+          <td><code>classifier_doze_guard</code><div style="font-size:11px;color:var(--text-muted)">SigLIP2 RLDD</div></td>
+          <td>fatigue</td>
+          <td class="num">0.910</td>
+          <td class="num">0.975</td>
+          <td class="num">91.3%</td>
+          <td class="num">97.8%</td>
+          <td class="num"><span class="delta-note">+6.5 pt</span></td>
+          <td><span class="pill note">FP-leaning</span> Already fires on most frames; fallback is even more confident.</td>
+        </tr>
+        <tr>
+          <td><code>classifier_chbh7051_v2</code><div style="font-size:11px;color:var(--text-muted)">drowsy classifier</div></td>
+          <td>fatigue</td>
+          <td class="num">0.551</td>
+          <td class="num">0.427</td>
+          <td class="num">54.7%</td>
+          <td class="num">41.6%</td>
+          <td class="num"><span class="delta-ok">&minus;13.1 pt</span></td>
+          <td><span class="pill ok">Recall risk</span> Modest under-fire on fallback; bias goes the other way.</td>
+        </tr>
+        <tr>
+          <td><code>classifier_chbh7051_vit</code><div style="font-size:11px;color:var(--text-muted)">RLDD ViT-base</div></td>
+          <td>fatigue</td>
+          <td class="num">0.145</td>
+          <td class="num">0.020</td>
+          <td class="num">11.8%</td>
+          <td class="num">1.7%</td>
+          <td class="num"><span class="delta-ok">&minus;10.1 pt</span></td>
+          <td><span class="pill ok">Recall risk</span> Model "knows something is off" on full cabin &mdash; outputs near-zero confidence.</td>
+        </tr>
+        <tr>
+          <td><code>classifier_mosesb_yolo_cls</code><div style="font-size:11px;color:var(--text-muted)">YOLOv11x-cls binary</div></td>
+          <td>fatigue</td>
+          <td class="num">0.357</td>
+          <td class="num">0.406</td>
+          <td class="num">25.2%</td>
+          <td class="num">19.1%</td>
+          <td class="num"><span class="delta-ok">&minus;6.1 pt</span></td>
+          <td><span class="pill ok">Mild</span> Probabilities cluster around the 0.5 threshold; small effect on fires.</td>
+        </tr>
+
+        <!-- saturated models -->
+        <tr class="row-note">
+          <td><code>classifier_teen_d_mobilenetv2</code><div style="font-size:11px;color:var(--text-muted)">teen_d MobileNetV2</div></td>
+          <td>fatigue</td>
+          <td class="num">1.000</td>
+          <td class="num">1.000</td>
+          <td class="num">100.0%</td>
+          <td class="num">100.0%</td>
+          <td class="num"><span class="delta-ok">0.0 pt</span></td>
+          <td><span class="pill warn">Saturated</span> Outputs <code>prob=1.0</code> on every frame &mdash; not a fallback issue.</td>
+        </tr>
+        <tr class="row-note">
+          <td><code>classifier_teen_d_resnet18</code><div style="font-size:11px;color:var(--text-muted)">teen_d ResNet18</div></td>
+          <td>fatigue</td>
+          <td class="num">1.000</td>
+          <td class="num">1.000</td>
+          <td class="num">100.0%</td>
+          <td class="num">100.0%</td>
+          <td class="num"><span class="delta-ok">0.0 pt</span></td>
+          <td><span class="pill warn">Saturated</span> Same as above.</td>
+        </tr>
+        <tr class="row-note">
+          <td><code>classifier_teen_d_cnn_48</code><div style="font-size:11px;color:var(--text-muted)">teen_d custom CNN</div></td>
+          <td>fatigue</td>
+          <td class="num">1.000</td>
+          <td class="num">1.000</td>
+          <td class="num">100.0%</td>
+          <td class="num">100.0%</td>
+          <td class="num"><span class="delta-ok">0.0 pt</span></td>
+          <td><span class="pill warn">Saturated</span> Same as above.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="legend">
+    <span class="pill warn">Severe</span> fallback contamination drives a class-level metric off by &gt;50 pt.
+    <span class="pill note">FP risk</span> fallback inflates fires but classifier still has signal on faces.
+    <span class="pill ok">Mild / Recall risk</span> small or opposite-direction effect.
+    <span class="pill warn">Saturated</span> model is broken independent of the crop.
+  </div>
+
+  <!-- ============== ROOT CAUSE ============== -->
+  <h2>Root cause &mdash; the silent fallback in <code>CropProvider</code></h2>
+
+  <div class="panel">
+    <p style="margin-bottom:10px">
+      <code>src/dms/inference/multi_pipeline.py:85-90</code>:
+    </p>
+    <pre style="font-family:var(--mono);font-size:12px;line-height:1.6;background:var(--bg-elevated);padding:14px 16px;border-radius:6px;white-space:pre-wrap">if spec is CropSpec.FACE:
+    if not faces:
+        crop = self._frame      <span style="color:var(--red)"># &larr; silent fallback to full frame</span>
+    else:
+        crop = faces[0][0]</pre>
+
+    <p style="margin-top:14px">
+      The fallback is intentional &mdash; it preserves the &quot;every detector returns something for every frame&quot;
+      contract, which keeps downstream fusion simple. But the fallback flag stays inside per-detector metadata
+      (<code>head_pose__face_available</code>, <code>gaze__face_available</code>, etc.), and the <strong>scoring layer
+      doesn't read it</strong>. Predictions made on the fallback frame are scored identically to face-cropped predictions.
+    </p>
+
+    <p style="margin-top:8px">
+      The asymmetry per detector is also worth flagging:
+    </p>
+    <ul class="tight" style="margin-top:6px">
+      <li><code>head_pose</code> always reports <code>face_available = 1.0</code> (line 46-48 of <code>head_pose_detector.py</code>: &ldquo;the detector itself has no way to tell a face crop from a fallback frame &mdash; the pipeline's own face-detection metadata is the source of truth&rdquo;).</li>
+      <li><code>gaze</code> reports <code>face_available</code> via a size heuristic (<code>max(h,w) &le; 512</code>) &mdash; useful proxy because Hikvision frames are always &gt;512.</li>
+      <li><code>classifier_*</code> detectors don't surface <code>face_available</code> at all in their wide.csv. They blindly inferred without the fallback flag making it into the leaderboard.</li>
+    </ul>
+  </div>
+
+  <!-- ============== RECOMMENDATIONS ============== -->
+  <h2>Recommended fixes</h2>
+
+  <div class="grid-2">
+    <div class="panel">
+      <h3>Short-term &mdash; rescore</h3>
+      <p>
+        Re-pivot the leaderboard with a face-only filter for <code>CropSpec.FACE</code> models:
+      </p>
+      <pre style="font-family:var(--mono);font-size:11.5px;line-height:1.55;background:var(--bg-elevated);padding:12px 14px;border-radius:6px;white-space:pre-wrap">df = pd.merge(model_tidy,
+              gaze_proxy[['sample_id', 'face_avail']],
+              on='sample_id')
+df = df[df.face_avail &gt; 0]    # face-only
+metric = compute(df.preds, df.gt)</pre>
+      <p style="margin-top:8px;font-size:12.5px">
+        No new inference required &mdash; the wide.csv files already contain everything; only the metric pivot changes.
+      </p>
+    </div>
+
+    <div class="panel">
+      <h3>Medium-term &mdash; surface the flag</h3>
+      <p>
+        Add <code>face_available</code> to the <code>BaseDetector</code> contract, populated by <code>CropProvider</code>
+        when it hands a <code>CropSpec.FACE</code> consumer the fallback frame. Then either:
+      </p>
+      <ul class="tight" style="margin-top:6px">
+        <li>the metric layer drops <code>face_available == False</code> rows for face-trained models, or</li>
+        <li>the pipeline returns <code>None</code> for those frames (matching how MediaPipe handles &ldquo;no face&rdquo; today).</li>
+      </ul>
+      <p style="margin-top:8px;font-size:12.5px">
+        Either path makes the no-silent-failure rule from <code>CLAUDE.md</code> apply at the metric layer too,
+        not just at the detector layer.
+      </p>
+    </div>
+
+    <div class="panel">
+      <h3>Independently &mdash; investigate the saturated rows</h3>
+      <p>
+        The three <code>teen_d_*</code> classifiers always emit <code>prob = 1.0</code>. Likely root causes
+        (in priority order):
+      </p>
+      <ul class="tight" style="margin-top:6px">
+        <li>preprocessing mismatch &mdash; the upstream training pipeline used a normalization the wrapper isn't applying.</li>
+        <li>checkpoint head transplant issue &mdash; the head-preservation fix in <code>build_composed_from_pretrained</code> (<code>CLAUDE.md</code> &sect;8 item 31) may have edge-cased these specific weights.</li>
+        <li>label-mapping inversion &mdash; the binary head's class indices are swapped vs the registered <code>class_mapping</code>.</li>
+      </ul>
+    </div>
+
+    <div class="panel">
+      <h3>Why this matters for OEM deployment</h3>
+      <p>
+        On OEM cabin frames (which we expect to <em>also</em> have ~28% face-detection failures during night /
+        IR / occlusion conditions), a fatigue model that silently fires at 95% on full-cabin frames will drown
+        the alert system in false positives. The Hikvision audit gives us the early read on which
+        candidate models are robust to face-detection failures and which are fragile.
+      </p>
+    </div>
+  </div>
+
+  <!-- ============== APPENDIX: METHOD ============== -->
+  <h2>Appendix &mdash; methodology</h2>
+  <div class="panel">
+    <h3>How fallback frames were identified</h3>
+    <ol style="padding-left:20px;font-size:13.5px;color:var(--text-dim);line-height:1.7">
+      <li>Read the latest <code>gaze_l2cs_net__*__wide.csv</code> from <code>outputs/leaderboards/hikvision/predictions/</code> (run <code>20260420T161120Z</code>, n=626).</li>
+      <li>Use <code>gaze__face_available</code> as the per-frame proxy: 1.0 means the detector received a crop &le;512 px (real face); 0.0 means it received the full frame (fallback). This is the size heuristic in <code>gaze_detector.py:260</code>.</li>
+      <li>For each <code>CropSpec.FACE</code> model, read the latest run's wide.csv and inner-join on <code>sample_id</code>. Verified all 10 models share identical 448 face / 178 fallback splits &mdash; expected because they all consume the same shared <code>CropProvider</code> cache.</li>
+      <li>Per canonical class, compute mean of <code>prob</code> column and <code>fires</code> rate stratified by face_available.</li>
+      <li>Cross-validate with two independent FaceMesh signals (<code>eye_state__face_detected</code>, <code>mediapipe__meta__face_detected</code>); agreement is on the headline rate (~28%) but not on which frames fail.</li>
+    </ol>
+    <h3 style="margin-top:14px">Caveats</h3>
+    <ul class="tight">
+      <li>The gaze size-heuristic catches the cache's fallback path correctly but won't catch failures where the cache returned a small crop that still wasn't a real face. Without the ground-truth face-detection log, this is the best in-band proxy.</li>
+      <li>Per-frame ground truth for &ldquo;is this driver actually fatigued&rdquo; isn't joined here &mdash; that requires the GT loader and is out of scope for this audit. The metrics on the leaderboard remain valid <em>as configured</em>; what this audit shows is that the leaderboard is mixing two distinct evaluation regimes (face vs fallback) without distinguishing them.</li>
+      <li>The proxy run is from 2026-04-20 16:11 UTC; classifier wide.csv files used in the per-class numbers are also from 2026-04-20 (see run_id per row). Frame-set parity is guaranteed because the leaderboard fixes <code>HIKVISION_MANIFEST</code> globally.</li>
+    </ul>
+  </div>
+
+  <div class="footer">
+    GENERATED 2026-04-26 &middot; SOURCE outputs/leaderboards/hikvision/predictions/*__wide.csv &middot;
+    PROXY gaze_l2cs_net__20260420T161120Z &middot;
+    SCRIPT face_crop_fallback_audit (inline, not committed)
+  </div>
+
+</body>
+</html>

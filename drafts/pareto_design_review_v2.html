@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1280">
+  <title>Pareto chart redesign &mdash; v2 (use-case x-axis)</title>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #F8F9FB;
+      --bg-card: #FFFFFF;
+      --bg-elevated: #F0F1F4;
+      --border: #E0E2E8;
+      --text: #1A1D26;
+      --text-dim: #5A5E6E;
+      --text-muted: #8E92A0;
+      --accent: #0E9A7E;
+      --accent-2: #3B6FD6;
+      --red: #D85D5D;
+      --font: 'DM Sans', system-ui, sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+      --radius: 10px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      padding: 48px 56px 56px;
+    }
+
+    h1 {
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      margin-bottom: 10px;
+    }
+
+    .framing {
+      font-size: 14px;
+      color: var(--text-dim);
+      max-width: 880px;
+      margin-bottom: 36px;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px 24px 18px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+      margin-bottom: 28px;
+    }
+
+    .eyebrow {
+      font-size: 10px;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-family: var(--mono);
+      margin-bottom: 6px;
+    }
+
+    .design-title {
+      font-size: 19px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      margin-bottom: 6px;
+    }
+
+    .intent {
+      font-size: 13px;
+      color: var(--text-dim);
+      max-width: 880px;
+      margin-bottom: 14px;
+    }
+
+    .chart {
+      width: 100%;
+      min-height: 460px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Pareto chart redesign &mdash; v2 (use-case x-axis)</h1>
+  <p class="framing">All three designs share x = use case (ordered by lift achieved). Choose which best communicates which models drove improvement on which classes.</p>
+
+  <div class="card">
+    <div class="eyebrow">Option A</div>
+    <div class="design-title">Slopegraph &mdash; Ensemble (n=5) vs. Hikvision OEM</div>
+    <p class="intent">Two literal lines &mdash; the final ensemble vs. the OEM baseline &mdash; with sign-aware delta bars at every use case. Green bars mean we beat OEM, red means we still trail. The model name routed to each class sits below the tick.</p>
+    <div id="optA-chart" class="chart"></div>
+  </div>
+
+  <div class="card">
+    <div class="eyebrow">Option B</div>
+    <div class="design-title">Dumbbell &mdash; n=1 baseline &rarr; n=5 final, colored by driver model</div>
+    <p class="intent">Each use case gets a vertical dumbbell: the gray dot is what one model alone could do; the dark dot is the final ensemble. The connecting bar is colored by the model whose addition delivered the lift, with OEM shown as a green diamond for reference.</p>
+    <div id="optB-chart" class="chart"></div>
+  </div>
+
+  <div class="card">
+    <div class="eyebrow">Option C</div>
+    <div class="design-title">Layered wave &mdash; all 5 ensemble lines + OEM</div>
+    <p class="intent">Every step of the ensemble (n=1 to n=5) is plotted on top of the OEM baseline. Lines fade from light to dark blue as more models are added; the n=5 line and the OEM line are emphasized so the final &quot;us vs. them&quot; comparison stays visible.</p>
+    <div id="optC-chart" class="chart"></div>
+  </div>
+
+  <script>
+    // ---------- DATA (verified against PARETO_DATA on line 793 of source) ----------
+    const OEM = {
+      distracted_driving: 0.683,
+      eating_drinking:    0.500,
+      fatigue:            0.888,
+      phone_usage:        0.752,
+      seatbelt:           0.858,
+    };
+
+    // per_class_acc keyed by n (1..5)
+    const PERCLASS = {
+      1: { distracted_driving: 0.500, eating_drinking: 0.588, fatigue: 0.500, phone_usage: 0.783, seatbelt: 0.500 },
+      2: { distracted_driving: 0.500, eating_drinking: 0.588, fatigue: 0.500, phone_usage: 0.783, seatbelt: 0.796 },
+      3: { distracted_driving: 0.500, eating_drinking: 0.588, fatigue: 0.792, phone_usage: 0.783, seatbelt: 0.796 },
+      4: { distracted_driving: 0.602, eating_drinking: 0.588, fatigue: 0.792, phone_usage: 0.783, seatbelt: 0.796 },
+      5: { distracted_driving: 0.602, eating_drinking: 0.591, fatigue: 0.792, phone_usage: 0.783, seatbelt: 0.796 },
+    };
+
+    // Final routing at n=5
+    const FINAL_ROUTING = {
+      distracted_driving: 'classifier_followb1ind1y_mnv3',
+      eating_drinking:    'yolov8x',
+      fatigue:            'mediapipe',
+      phone_usage:        'rtdetr_x',
+      seatbelt:           'yolo_soham',
+    };
+
+    // Driver model per class: the model whose addition produced the lift.
+    // phone_usage has no lift -> driver is null.
+    const DRIVER = {
+      phone_usage:        null,
+      eating_drinking:    'yolov8x',
+      distracted_driving: 'classifier_followb1ind1y_mnv3',
+      fatigue:            'mediapipe',
+      seatbelt:           'yolo_soham',
+    };
+
+    // X-axis order: by lift achieved, ascending.
+    const ORDER = ['phone_usage', 'eating_drinking', 'distracted_driving', 'fatigue', 'seatbelt'];
+
+    const LABELS = {
+      phone_usage:        'Phone usage',
+      eating_drinking:    'Eating/drinking',
+      distracted_driving: 'Distracted driving',
+      fatigue:            'Fatigue',
+      seatbelt:           'Seatbelt',
+    };
+
+    // Distinct color per driver model (used in Option B legend + bars)
+    const MODEL_COLORS = {
+      yolo_soham:                     '#C2528B', // pink-magenta
+      mediapipe:                      '#E07A2C', // orange
+      classifier_followb1ind1y_mnv3:  '#7A4FC9', // purple
+      yolov8x:                        '#0E8A9A', // teal
+      rtdetr_x:                       '#C88A1A', // amber (used in Option A annotations only)
+    };
+
+    // ---------- COMMON PLOTLY OPTIONS ----------
+    const COMMON_CONFIG = { displayModeBar: false, responsive: true };
+
+    const COMMON_HOVER = {
+      bgcolor: '#1A1D26',
+      bordercolor: '#0E9A7E',
+      font: { family: 'JetBrains Mono, monospace', size: 12, color: '#E8EAF0' },
+    };
+
+    const COMMON_FONT = {
+      family: 'DM Sans, system-ui, sans-serif',
+      size: 12,
+      color: '#5A5E6E',
+    };
+
+    const X_LABELS = ORDER.map(c => LABELS[c]);
+
+    // ============================================================
+    // OPTION A — SLOPEGRAPH: Ensemble (n=5) vs OEM with delta bars
+    // ============================================================
+    (function buildOptionA() {
+      const ensembleY = ORDER.map(c => PERCLASS[5][c] * 100);
+      const oemY      = ORDER.map(c => OEM[c] * 100);
+
+      // Vertical delta shapes: green if ensemble >= OEM, red otherwise.
+      const deltaShapes = ORDER.map((c, i) => {
+        const ens = PERCLASS[5][c] * 100;
+        const oem = OEM[c] * 100;
+        const positive = ens >= oem;
+        return {
+          type: 'line',
+          xref: 'x', yref: 'y',
+          x0: i, x1: i,
+          y0: oem, y1: ens,
+          line: {
+            color: positive ? '#1FA974' : '#D85D5D',
+            width: 5,
+          },
+          layer: 'below',
+        };
+      });
+
+      // Routing annotations (model name) below each tick.
+      const routingAnnotations = ORDER.map((c, i) => ({
+        x: i, y: 0,
+        xref: 'x', yref: 'paper',
+        xanchor: 'center', yanchor: 'top',
+        text: '<span style="font-family:JetBrains Mono,monospace;font-size:10px;color:#8E92A0">'
+              + FINAL_ROUTING[c] + '</span>',
+        showarrow: false,
+        yshift: -34,
+      }));
+
+      // Delta value annotations (in points) next to each delta bar.
+      const deltaAnnotations = ORDER.map((c, i) => {
+        const ens = PERCLASS[5][c] * 100;
+        const oem = OEM[c] * 100;
+        const d = ens - oem;
+        const positive = d >= 0;
+        const sign = positive ? '+' : '';
+        return {
+          x: i, y: (ens + oem) / 2,
+          xref: 'x', yref: 'y',
+          xanchor: 'left', yanchor: 'middle',
+          xshift: 8,
+          text: '<b style="color:' + (positive ? '#1FA974' : '#D85D5D') + '">'
+                + sign + d.toFixed(1) + 'pts</b>',
+          showarrow: false,
+          font: { size: 11 },
+        };
+      });
+
+      const traces = [
+        {
+          name: 'Hikvision OEM',
+          type: 'scatter',
+          mode: 'lines+markers',
+          x: X_LABELS,
+          y: oemY,
+          line: { color: '#0E9A7E', width: 2 },
+          marker: { color: '#0E9A7E', size: 14, line: { color: '#FFFFFF', width: 2 } },
+          hovertemplate: '<b>%{x}</b><br>OEM: %{y:.1f}%<extra></extra>',
+        },
+        {
+          name: 'Ensemble (n=5)',
+          type: 'scatter',
+          mode: 'lines+markers',
+          x: X_LABELS,
+          y: ensembleY,
+          line: { color: '#3B6FD6', width: 2 },
+          marker: { color: '#3B6FD6', size: 14, line: { color: '#FFFFFF', width: 2 } },
+          hovertemplate: '<b>%{x}</b><br>Ensemble: %{y:.1f}%<extra></extra>',
+        },
+      ];
+
+      const layout = {
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(240,241,244,0.4)',
+        margin: { l: 64, r: 28, t: 28, b: 96 },
+        font: COMMON_FONT,
+        hoverlabel: COMMON_HOVER,
+        height: 460,
+        legend: {
+          orientation: 'h',
+          x: 0, y: 1.12,
+          xanchor: 'left', yanchor: 'bottom',
+          bgcolor: 'rgba(0,0,0,0)',
+        },
+        xaxis: {
+          type: 'category',
+          categoryorder: 'array',
+          categoryarray: X_LABELS,
+          tickfont: { size: 12, color: '#1A1D26' },
+          gridcolor: '#E0E2E8',
+          zerolinecolor: '#E0E2E8',
+        },
+        yaxis: {
+          title: { text: 'Accuracy (%)', font: { size: 12 } },
+          range: [30, 100],
+          ticksuffix: '%',
+          gridcolor: '#E0E2E8',
+          zerolinecolor: '#E0E2E8',
+        },
+        shapes: deltaShapes,
+        annotations: [
+          ...routingAnnotations,
+          ...deltaAnnotations,
+          {
+            x: 0, y: 1, xref: 'paper', yref: 'paper',
+            xanchor: 'left', yanchor: 'top',
+            text: '<span style="font-size:10px;color:#8E92A0">Vertical bar = ensemble &minus; OEM at each use case (green: ahead, red: behind)</span>',
+            showarrow: false,
+            yshift: 28,
+          },
+          {
+            x: 0, y: 0, xref: 'paper', yref: 'paper',
+            xanchor: 'left', yanchor: 'top',
+            text: '<span style="font-family:JetBrains Mono,monospace;font-size:9.5px;letter-spacing:0.05em;text-transform:uppercase;color:#8E92A0">Routed model</span>',
+            showarrow: false,
+            yshift: -18,
+          },
+        ],
+      };
+
+      Plotly.newPlot('optA-chart', traces, layout, COMMON_CONFIG);
+    })();
+
+    // ============================================================
+    // OPTION B — DUMBBELL per use case, colored by driver model
+    // ============================================================
+    (function buildOptionB() {
+      // Categorical x-axis. We treat positions 0..N-1 as numeric so we can
+      // offset the OEM diamond marker without overlapping the dumbbell.
+      // Tradeoff: using a numeric axis with custom tick labels keeps the
+      // x-offset trick available; visually it's identical to a categorical axis.
+      const positions = ORDER.map((_, i) => i);
+      const oemOffset = 0.18;
+
+      const n1Y  = ORDER.map(c => PERCLASS[1][c] * 100);
+      const n5Y  = ORDER.map(c => PERCLASS[5][c] * 100);
+      const oemY = ORDER.map(c => OEM[c] * 100);
+
+      // Connecting "lift" bars colored by driver model. phone_usage gets
+      // no shape (no lift). All other classes get one vertical bar.
+      const liftShapes = ORDER.map((c, i) => {
+        const driver = DRIVER[c];
+        if (!driver) return null;
+        const y0 = PERCLASS[1][c] * 100;
+        const y1 = PERCLASS[5][c] * 100;
+        return {
+          type: 'line',
+          xref: 'x', yref: 'y',
+          x0: i, x1: i,
+          y0: y0, y1: y1,
+          line: { color: MODEL_COLORS[driver], width: 7 },
+          layer: 'below',
+        };
+      }).filter(Boolean);
+
+      // Lift annotation above each dumbbell.
+      const liftAnnotations = ORDER.map((c, i) => {
+        const lift = (PERCLASS[5][c] - PERCLASS[1][c]) * 100;
+        const text = (DRIVER[c] === null)
+          ? '<span style="color:#8E92A0">&mdash;</span>'
+          : '<b style="color:#1A1D26">+' + lift.toFixed(1) + 'pts</b>';
+        const top = Math.max(PERCLASS[5][c], PERCLASS[1][c]) * 100;
+        return {
+          x: i, y: top,
+          xref: 'x', yref: 'y',
+          xanchor: 'center', yanchor: 'bottom',
+          yshift: 14,
+          text: text,
+          showarrow: false,
+          font: { size: 11 },
+        };
+      });
+
+      // Trace 1: n=1 baseline dot (light gray). Edge of the dumbbell.
+      const traceN1 = {
+        name: 'n=1 baseline',
+        type: 'scatter',
+        mode: 'markers',
+        x: positions,
+        y: n1Y,
+        marker: { color: '#B0B5C2', size: 13, line: { color: '#FFFFFF', width: 2 } },
+        hovertemplate: '<b>%{customdata}</b><br>n=1: %{y:.1f}%<extra></extra>',
+        customdata: ORDER.map(c => LABELS[c]),
+      };
+
+      // Trace 2: n=5 final dot (dark blue). Other edge of the dumbbell.
+      const traceN5 = {
+        name: 'n=5 final',
+        type: 'scatter',
+        mode: 'markers',
+        x: positions,
+        y: n5Y,
+        marker: { color: '#1F4FB6', size: 15, line: { color: '#FFFFFF', width: 2 } },
+        hovertemplate: '<b>%{customdata}</b><br>n=5: %{y:.1f}%<extra></extra>',
+        customdata: ORDER.map(c => LABELS[c]),
+      };
+
+      // Trace 3: OEM marker (green diamond), offset slightly to the right.
+      const traceOEM = {
+        name: 'Hikvision OEM',
+        type: 'scatter',
+        mode: 'markers',
+        x: positions.map(p => p + oemOffset),
+        y: oemY,
+        marker: {
+          color: '#0E9A7E',
+          symbol: 'diamond',
+          size: 12,
+          line: { color: '#FFFFFF', width: 1.5 },
+        },
+        hovertemplate: '<b>%{customdata}</b><br>OEM: %{y:.1f}%<extra></extra>',
+        customdata: ORDER.map(c => LABELS[c]),
+      };
+
+      // Driver-model legend traces (invisible markers, just for legend entries).
+      const driverLegend = ['yolo_soham', 'mediapipe', 'classifier_followb1ind1y_mnv3', 'yolov8x'].map(m => ({
+        name: m + ' (driver)',
+        type: 'scatter',
+        mode: 'lines',
+        x: [null], y: [null],
+        line: { color: MODEL_COLORS[m], width: 7 },
+        showlegend: true,
+        hoverinfo: 'skip',
+      }));
+
+      const traces = [traceN1, traceN5, traceOEM, ...driverLegend];
+
+      const layout = {
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(240,241,244,0.4)',
+        margin: { l: 64, r: 28, t: 56, b: 64 },
+        font: COMMON_FONT,
+        hoverlabel: COMMON_HOVER,
+        height: 480,
+        legend: {
+          orientation: 'h',
+          x: 0, y: 1.10,
+          xanchor: 'left', yanchor: 'bottom',
+          bgcolor: 'rgba(0,0,0,0)',
+          font: { size: 11 },
+        },
+        xaxis: {
+          tickmode: 'array',
+          tickvals: positions,
+          ticktext: X_LABELS,
+          range: [-0.5, ORDER.length - 0.5 + 0.3],
+          tickfont: { size: 12, color: '#1A1D26' },
+          gridcolor: '#E0E2E8',
+          zerolinecolor: '#E0E2E8',
+        },
+        yaxis: {
+          title: { text: 'Accuracy (%)', font: { size: 12 } },
+          range: [30, 100],
+          ticksuffix: '%',
+          gridcolor: '#E0E2E8',
+          zerolinecolor: '#E0E2E8',
+        },
+        shapes: liftShapes,
+        annotations: liftAnnotations,
+      };
+
+      Plotly.newPlot('optB-chart', traces, layout, COMMON_CONFIG);
+    })();
+
+    // ============================================================
+    // OPTION C — LAYERED WAVE: all 5 ensemble lines + OEM
+    // ============================================================
+    (function buildOptionC() {
+      // Light -> dark blue gradient for n=1..5
+      const NCOLORS = {
+        1: '#A8C5F0',
+        2: '#7AA5E5',
+        3: '#5285D8',
+        4: '#3164C2',
+        5: '#1A3E8F',
+      };
+
+      const ensembleTraces = [1, 2, 3, 4, 5].map(n => {
+        const isFinal = (n === 5);
+        return {
+          name: 'Ensemble n=' + n + (isFinal ? ' (final)' : ''),
+          type: 'scatter',
+          mode: 'lines+markers',
+          x: X_LABELS,
+          y: ORDER.map(c => PERCLASS[n][c] * 100),
+          line: { color: NCOLORS[n], width: isFinal ? 2.8 : 1.5 },
+          marker: {
+            color: NCOLORS[n],
+            size: isFinal ? 11 : 7,
+            line: { color: '#FFFFFF', width: isFinal ? 1.5 : 1 },
+          },
+          customdata: Array(ORDER.length).fill(n),
+          hovertemplate: '<b>%{x}</b><br>n=%{customdata}: %{y:.1f}%<extra></extra>',
+        };
+      });
+
+      const oemTrace = {
+        name: 'Hikvision OEM',
+        type: 'scatter',
+        mode: 'lines+markers',
+        x: X_LABELS,
+        y: ORDER.map(c => OEM[c] * 100),
+        line: { color: '#0E9A7E', width: 3 },
+        marker: { color: '#0E9A7E', size: 12, line: { color: '#FFFFFF', width: 1.5 } },
+        hovertemplate: '<b>%{x}</b><br>OEM: %{y:.1f}%<extra></extra>',
+      };
+
+      const traces = [...ensembleTraces, oemTrace];
+
+      const layout = {
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(240,241,244,0.4)',
+        margin: { l: 64, r: 28, t: 56, b: 56 },
+        font: COMMON_FONT,
+        hoverlabel: COMMON_HOVER,
+        height: 470,
+        legend: {
+          orientation: 'h',
+          x: 0, y: 1.10,
+          xanchor: 'left', yanchor: 'bottom',
+          bgcolor: 'rgba(0,0,0,0)',
+          font: { size: 11 },
+        },
+        xaxis: {
+          type: 'category',
+          categoryorder: 'array',
+          categoryarray: X_LABELS,
+          tickfont: { size: 12, color: '#1A1D26' },
+          gridcolor: '#E0E2E8',
+          zerolinecolor: '#E0E2E8',
+        },
+        yaxis: {
+          title: { text: 'Accuracy (%)', font: { size: 12 } },
+          range: [30, 100],
+          ticksuffix: '%',
+          gridcolor: '#E0E2E8',
+          zerolinecolor: '#E0E2E8',
+        },
+      };
+
+      Plotly.newPlot('optC-chart', traces, layout, COMMON_CONFIG);
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1600">
+  <title>Face-Only Rescored Leaderboard &mdash; Hikvision</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0 }
+
+    :root {
+      --bg: #F8F9FB;
+      --bg-card: #FFFFFF;
+      --bg-elevated: #F0F1F4;
+      --border: #E0E2E8;
+      --text: #1A1D26;
+      --text-dim: #5A5E6E;
+      --text-muted: #8E92A0;
+      --accent: #0E9A7E;
+      --accent-dim: rgba(14, 154, 126, 0.08);
+      --accent-2: #3B6FD6;
+      --accent-2-dim: rgba(59, 111, 214, 0.08);
+      --red: #D9453E;
+      --red-dim: rgba(217, 69, 62, 0.07);
+      --orange: #C88A1A;
+      --orange-dim: rgba(200, 138, 26, 0.10);
+      --purple: #8B5CC4;
+      --purple-dim: rgba(139, 92, 196, 0.08);
+      --font: 'DM Sans', system-ui, sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+      --radius: 10px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      padding: 32px 40px 64px;
+      max-width: 1500px;
+      margin: 0 auto;
+    }
+
+    h1 { font-size: 32px; font-weight: 700; letter-spacing: -0.025em; line-height: 1.15; }
+    h2 {
+      font-size: 18px; font-weight: 600; letter-spacing: -0.015em;
+      margin: 36px 0 12px; padding-top: 24px; border-top: 1px solid var(--border);
+    }
+    h3 {
+      font-size: 12px; font-weight: 500; letter-spacing: 0.10em;
+      text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px;
+    }
+    p { color: var(--text-dim); margin-bottom: 8px; font-size: 14px; }
+    code { font-family: var(--mono); font-size: 12.5px; background: var(--bg-elevated); padding: 1px 5px; border-radius: 3px; color: var(--text); }
+    a { color: var(--accent-2); text-decoration: none; border-bottom: 1px solid transparent; }
+    a:hover { border-bottom-color: var(--accent-2); }
+
+    .meta {
+      font-family: var(--mono); font-size: 11px; color: var(--text-muted);
+      letter-spacing: 0.04em; margin-bottom: 24px;
+    }
+
+    .lead {
+      font-size: 15px; color: var(--text-dim); max-width: 920px; margin-bottom: 12px;
+    }
+
+    .verdict {
+      background: var(--purple-dim); border: 1px solid rgba(139,92,196,0.30);
+      border-left: 3px solid var(--purple); border-radius: var(--radius);
+      padding: 14px 18px; margin: 16px 0 24px;
+      font-size: 14px; color: var(--text);
+    }
+    .verdict strong { color: var(--purple); }
+
+    .headline {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 12px; margin: 16px 0 24px;
+    }
+    .headline .card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 16px 18px;
+    }
+    .headline .card.pos { border-left: 3px solid var(--accent); }
+    .headline .card.neg { border-left: 3px solid var(--red); }
+    .headline .card.note { border-left: 3px solid var(--orange); }
+    .headline .card.info { border-left: 3px solid var(--accent-2); }
+    .headline .num {
+      font-family: var(--mono); font-size: 28px; font-weight: 500;
+      letter-spacing: -0.02em; line-height: 1.1;
+    }
+    .headline .label {
+      font-size: 11.5px; color: var(--text-muted);
+      letter-spacing: 0.04em; text-transform: uppercase; margin-top: 4px;
+    }
+    .headline .sub {
+      font-size: 12px; color: var(--text-dim); margin-top: 6px; line-height: 1.4;
+    }
+
+    .panel {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 16px 20px; margin-bottom: 16px;
+    }
+    .panel.callout-warn  { background: var(--red-dim); border-color: rgba(217,69,62,0.25); }
+    .panel.callout-note  { background: var(--orange-dim); border-color: rgba(200,138,26,0.30); }
+    .panel.callout-info  { background: var(--accent-dim); border-color: rgba(14,154,126,0.25); }
+    .panel.callout-purple { background: var(--purple-dim); border-color: rgba(139,92,196,0.30); }
+
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    table.tidy th, table.tidy td {
+      text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border);
+    }
+    table.tidy th {
+      font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--text-muted); font-weight: 500; background: var(--bg-elevated);
+    }
+    table.tidy td.num { font-family: var(--mono); font-size: 12px; text-align: right; }
+    table.tidy td.label { font-weight: 500; }
+    table.tidy tr.row-warn td { background: rgba(217,69,62,0.04); }
+    table.tidy tr.row-note td { background: rgba(200,138,26,0.05); }
+    table.tidy tr.row-pos  td { background: rgba(14,154,126,0.04); }
+    table.tidy tr.section td {
+      background: var(--bg-elevated); font-size: 11px; color: var(--text-muted);
+      letter-spacing: 0.06em; text-transform: uppercase; padding: 10px;
+      font-weight: 500;
+    }
+
+    .pill {
+      display: inline-block; padding: 1px 7px; border-radius: 12px;
+      font-size: 10.5px; font-family: var(--mono); font-weight: 500;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .pill.warn { color: var(--red); background: var(--red-dim); }
+    .pill.note { color: var(--orange); background: var(--orange-dim); }
+    .pill.pos  { color: var(--accent); background: var(--accent-dim); }
+    .pill.info { color: var(--accent-2); background: var(--accent-2-dim); }
+    .pill.muted { color: var(--text-muted); background: var(--bg-elevated); }
+
+    .delta-pos  { color: var(--accent); font-weight: 500; }
+    .delta-neg  { color: var(--red); font-weight: 500; }
+    .delta-flat { color: var(--text-muted); }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    ul.tight { padding-left: 18px; font-size: 13.5px; color: var(--text-dim); }
+    ul.tight li { margin-bottom: 4px; }
+    ul.tight li code { font-size: 12px; }
+    ul.tight li strong { color: var(--text); }
+
+    .chart {
+      display: flex; align-items: stretch; height: 22px; gap: 2px;
+      font-family: var(--mono); font-size: 10.5px;
+    }
+    .chart .bar { display: flex; align-items: center; padding: 0 6px; color: white; }
+    .chart .bar.gt { background: var(--accent-2); }
+    .chart .bar.fb { background: var(--red); }
+    .chart .bar.empty { background: var(--bg-elevated); color: var(--text-muted); }
+
+    .subtle { font-size: 12px; color: var(--text-muted); margin-top: 4px; font-style: italic; }
+
+    .footer {
+      margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--border);
+      font-size: 11px; color: var(--text-muted); font-family: var(--mono);
+      letter-spacing: 0.04em;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Face-Only Rescored Leaderboard</h1>
+  <p class="lead">
+    Recomputed precision / recall / F1 for every <code>CropSpec.FACE</code> detector on Hikvision review GT,
+    splitting the 626 frames into the 448 with face crops and the 178 with full-frame fallback.
+    The question: <em>is the silent face-detection fallback actually the reason these models score badly?</em>
+  </p>
+  <div class="meta">
+    DATASET hikvision_review_gt &middot; N=626 frames (448 face, 178 fallback) &middot;
+    PROXY gaze_l2cs_net__20260420T161120Z &middot; SOURCE outputs/leaderboards/hikvision/predictions/*.tidy.csv &middot;
+    GENERATED 2026-04-26
+  </div>
+
+  <!-- ============== HEADLINE NUMBERS ============== -->
+  <div class="headline">
+    <div class="card info">
+      <div class="num">+1.1 pt</div>
+      <div class="label">Median F1 gain (face-only)</div>
+      <div class="sub">Across drowsiness classifiers' fatigue class. The fallback fix is real but not dramatic at the F1 layer.</div>
+    </div>
+    <div class="card neg">
+      <div class="num">&minus;5.7 pt</div>
+      <div class="label">Worst F1 regression</div>
+      <div class="sub"><code>gaze_l2cs_net</code> distracted_driving F1 drops 0.558&nbsp;&rarr;&nbsp;0.501. Face-only is <em>worse</em> &mdash; explained below.</div>
+    </div>
+    <div class="card note">
+      <div class="num">+16 pt</div>
+      <div class="label">GT distribution shift</div>
+      <div class="sub">Fallback frames are 52% distracted_driving GT vs 36% in face frames. The two regimes test different distributions.</div>
+    </div>
+    <div class="card neg">
+      <div class="num">3</div>
+      <div class="label">Saturated models unfixed</div>
+      <div class="sub">All <code>teen_d_*</code> classifiers still fire 100% on face-only too &mdash; rescoring confirms the saturation is structural.</div>
+    </div>
+  </div>
+
+  <!-- ============== TL;DR ============== -->
+  <div class="verdict">
+    <strong>Verdict.</strong> Fallback contamination is a real bug but <em>not the dominant explanation</em> for the bad
+    fatigue numbers. Filtering to face-only frames moves the leaderboard F1 by &plusmn;1&ndash;2 points for most
+    drowsiness classifiers &mdash; not enough to change any model ranking. The bigger issues exposed by this
+    rescore are <strong>(a) tiny GT support</strong> (only 27/626 fatigue positives), <strong>(b) systematic
+    GT-distribution skew</strong> between face-cropped and fallback subsets, and <strong>(c) three saturated
+    classifiers</strong> that are broken regardless of crop. The fallback fix is worth doing for correctness &mdash;
+    but it won't make a good model out of a bad one.
+  </div>
+
+  <!-- ============== SIDE-BY-SIDE TABLE ============== -->
+  <h2>Original vs face-only vs fallback-only F1, per (model, class)</h2>
+  <p>
+    Only rows with non-zero fires or non-zero support are shown. <code>n</code> = frames in regime,
+    <code>support</code> = positive GT count, <code>fires</code> = predicted-positive count.
+    Models that emit zero predictions for a class are omitted.
+  </p>
+
+  <div class="panel" style="padding:0">
+    <table class="tidy">
+      <thead>
+        <tr>
+          <th>Model</th>
+          <th>Class</th>
+          <th class="num">All&nbsp;F1</th>
+          <th class="num">Face&nbsp;F1</th>
+          <th class="num">FBack&nbsp;F1</th>
+          <th class="num">&Delta;face<br>(face&minus;all)</th>
+          <th>Support<br>all&nbsp;/&nbsp;face&nbsp;/&nbsp;fb</th>
+          <th>Fires<br>all&nbsp;/&nbsp;face&nbsp;/&nbsp;fb</th>
+          <th>Read</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="section"><td colspan="9">Specialists &mdash; rule-based detectors with face-crop input</td></tr>
+
+        <tr class="row-note">
+          <td class="label"><code>gaze_l2cs_net</code></td>
+          <td>distracted_driving</td>
+          <td class="num">0.558</td>
+          <td class="num">0.501</td>
+          <td class="num">0.664</td>
+          <td class="num"><span class="delta-neg">&minus;5.7 pt</span></td>
+          <td class="num">255 / 162 / 93</td>
+          <td class="num">505 / 333 / 172</td>
+          <td><span class="pill warn">Face-only worse</span> Fallback regime is enriched in distracted GT and gaze fires on most full-cabin frames &mdash; the leaderboard F1 was inflated by easy-positives.</td>
+        </tr>
+        <tr class="row-note">
+          <td class="label"><code>head_pose_6drepnet</code></td>
+          <td>distracted_driving</td>
+          <td class="num">0.453</td>
+          <td class="num">0.400</td>
+          <td class="num">0.556</td>
+          <td class="num"><span class="delta-neg">&minus;5.3 pt</span></td>
+          <td class="num">255 / 162 / 93</td>
+          <td class="num">328 / 223 / 105</td>
+          <td><span class="pill warn">Face-only worse</span> Same pattern as gaze &mdash; full cabin frames trigger high yaw/pitch; happens to align with the distracted GT label on those frames.</td>
+        </tr>
+        <tr>
+          <td class="label"><code>head_pose_6drepnet</code></td>
+          <td>fatigue</td>
+          <td class="num">0.056</td>
+          <td class="num">0.060</td>
+          <td class="num">0.042</td>
+          <td class="num"><span class="delta-pos">+0.4 pt</span></td>
+          <td class="num">27 / 22 / 5</td>
+          <td class="num">187 / 144 / 43</td>
+          <td><span class="pill muted">Noise</span> Both regimes &lt;0.1 F1 &mdash; head_pose's "droop pitch" is not a reliable fatigue signal here.</td>
+        </tr>
+
+        <tr class="section"><td colspan="9">Drowsiness classifiers &mdash; face-trained</td></tr>
+
+        <tr class="row-pos">
+          <td class="label"><code>classifier_chbh7051_vit</code></td>
+          <td>fatigue</td>
+          <td class="num">0.096</td>
+          <td class="num">0.107</td>
+          <td class="num">0.000</td>
+          <td class="num"><span class="delta-pos">+1.1 pt</span></td>
+          <td class="num">27 / 22 / 5</td>
+          <td class="num">56 / 53 / 3</td>
+          <td><span class="pill pos">Tiny gain</span> ViT correctly produces near-zero confidence on fallback frames &mdash; model "knows" something is off.</td>
+        </tr>
+        <tr>
+          <td class="label"><code>classifier_chbh7051_v2</code></td>
+          <td>fatigue</td>
+          <td class="num">0.092</td>
+          <td class="num">0.090</td>
+          <td class="num">0.101</td>
+          <td class="num"><span class="delta-flat">&minus;0.2 pt</span></td>
+          <td class="num">27 / 22 / 5</td>
+          <td class="num">319 / 245 / 74</td>
+          <td><span class="pill muted">Flat</span> Fires roughly equally in both regimes; fallback fix doesn't change anything.</td>
+        </tr>
+        <tr class="row-pos">
+          <td class="label"><code>classifier_doze_guard</code></td>
+          <td>fatigue</td>
+          <td class="num">0.079</td>
+          <td class="num">0.088</td>
+          <td class="num">0.056</td>
+          <td class="num"><span class="delta-pos">+0.9 pt</span></td>
+          <td class="num">27 / 22 / 5</td>
+          <td class="num">583 / 409 / 174</td>
+          <td><span class="pill pos">Tiny gain</span> SigLIP2 fires at 98% on fallback (full cabin) &mdash; almost-everything-is-drowsy. Removing those raises precision a hair.</td>
+        </tr>
+        <tr>
+          <td class="label"><code>classifier_mosesb_mobilevitv2</code></td>
+          <td>fatigue</td>
+          <td class="num">0.054</td>
+          <td class="num">0.047</td>
+          <td class="num">0.057</td>
+          <td class="num"><span class="delta-flat">&minus;0.7 pt</span></td>
+          <td class="num">27 / 22 / 5</td>
+          <td class="num">233 / 64 / 169</td>
+          <td><span class="pill muted">Surprising flat</span> MobileViT fires 95% on fallback but those happen to include 5/5 of the fallback fatigue support &mdash; the high recall offsets the precision drop in the mixed-regime F1.</td>
+        </tr>
+        <tr class="row-pos">
+          <td class="label"><code>classifier_mosesb_yolo_cls</code></td>
+          <td>fatigue</td>
+          <td class="num">0.034</td>
+          <td class="num">0.044</td>
+          <td class="num">0.000</td>
+          <td class="num"><span class="delta-pos">+1.0 pt</span></td>
+          <td class="num">27 / 22 / 5</td>
+          <td class="num">147 / 113 / 34</td>
+          <td><span class="pill pos">Tiny gain</span> Removes 34 false-positive fires from the score.</td>
+        </tr>
+
+        <tr class="section"><td colspan="9">Saturated &mdash; output is constant prob=1.0; fallback fix doesn't help</td></tr>
+
+        <tr class="row-warn">
+          <td class="label"><code>classifier_teen_d_mobilenetv2</code></td>
+          <td>fatigue</td>
+          <td class="num">0.083</td>
+          <td class="num">0.094</td>
+          <td class="num">0.055</td>
+          <td class="num"><span class="delta-pos">+1.1 pt</span></td>
+          <td class="num">27 / 22 / 5</td>
+          <td class="num">626 / 448 / 178</td>
+          <td><span class="pill warn">Saturated</span> Fires on every single frame (P=0.043, R=1.0). The "improvement" is just because the face subset has more positives.</td>
+        </tr>
+        <tr class="row-warn">
+          <td class="label"><code>classifier_teen_d_resnet18</code></td>
+          <td>fatigue</td>
+          <td class="num">0.083</td>
+          <td class="num">0.094</td>
+          <td class="num">0.055</td>
+          <td class="num"><span class="delta-pos">+1.1 pt</span></td>
+          <td class="num">27 / 22 / 5</td>
+          <td class="num">626 / 448 / 178</td>
+          <td><span class="pill warn">Saturated</span> Identical pattern.</td>
+        </tr>
+        <tr class="row-warn">
+          <td class="label"><code>classifier_teen_d_cnn_48</code></td>
+          <td>fatigue</td>
+          <td class="num">0.083</td>
+          <td class="num">0.094</td>
+          <td class="num">0.055</td>
+          <td class="num"><span class="delta-pos">+1.1 pt</span></td>
+          <td class="num">27 / 22 / 5</td>
+          <td class="num">626 / 448 / 178</td>
+          <td><span class="pill warn">Saturated</span> Identical pattern.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ============== GT DISTRIBUTION SHIFT ============== -->
+  <h2>The surprising finding &mdash; fallback frames have systematically different GT</h2>
+  <p>
+    A face-only rescore implicitly assumes that face-cropped and fallback frames are random samples
+    from the same distribution. They aren't. The fallback subset is heavily enriched in
+    <code>distracted_driving</code> (the driver looking away is precisely what causes both the face
+    detection to fail <em>and</em> the GT label to fire), and slightly depleted in <code>fatigue</code>:
+  </p>
+
+  <div class="panel">
+    <table class="tidy">
+      <thead>
+        <tr>
+          <th>Canonical class</th>
+          <th class="num">All frames<br>(n=626)</th>
+          <th class="num">Face crop<br>(n=448)</th>
+          <th class="num">Fallback<br>(n=178)</th>
+          <th class="num">&Delta; (FB&minus;face)</th>
+          <th>Read</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="row-warn">
+          <td class="label">distracted_driving</td>
+          <td class="num">40.7%<div class="subtle">255 pos</div></td>
+          <td class="num">36.2%<div class="subtle">162 pos</div></td>
+          <td class="num">52.2%<div class="subtle">93 pos</div></td>
+          <td class="num"><span class="delta-neg">+16.0 pt</span></td>
+          <td>Fallback enriched. Driver looking away &rArr; face-detection fails &rArr; this same frame is also distracted GT. Strongly correlated.</td>
+        </tr>
+        <tr>
+          <td class="label">phone_usage</td>
+          <td class="num">17.7%<div class="subtle">111 pos</div></td>
+          <td class="num">19.4%<div class="subtle">87 pos</div></td>
+          <td class="num">13.5%<div class="subtle">24 pos</div></td>
+          <td class="num"><span class="delta-pos">&minus;5.9 pt</span></td>
+          <td>Phone calls usually keep face frontal-ish; mild depletion in fallback.</td>
+        </tr>
+        <tr>
+          <td class="label">fatigue</td>
+          <td class="num">4.3%<div class="subtle">27 pos</div></td>
+          <td class="num">4.9%<div class="subtle">22 pos</div></td>
+          <td class="num">2.8%<div class="subtle">5 pos</div></td>
+          <td class="num"><span class="delta-pos">&minus;2.1 pt</span></td>
+          <td>Mild depletion. Closed-eye and yawning still detectable as faces.</td>
+        </tr>
+        <tr>
+          <td class="label">seatbelt</td>
+          <td class="num">34.7%<div class="subtle">217 pos</div></td>
+          <td class="num">33.7%<div class="subtle">151 pos</div></td>
+          <td class="num">37.1%<div class="subtle">66 pos</div></td>
+          <td class="num">+3.4 pt</td>
+          <td>Roughly even.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p style="margin-top:14px">
+      This shift explains the counterintuitive specialist regressions. <code>gaze_l2cs_net</code>'s
+      distracted_driving F1 was 0.558 across all frames; on face-only it drops to 0.501. The drop isn't
+      because the model got worse on faces &mdash; it's because the easy-positive frames (driver clearly looking
+      sideways &rarr; full cabin frame &rarr; high yaw &rarr; fires&nbsp;&amp;&nbsp;correct) have been removed from the test set.
+      The "leaderboard F1" was effectively averaging over <em>two different evaluation tasks</em> and
+      face-only isolates the harder one.
+    </p>
+  </div>
+
+  <!-- ============== WHY F1 BARELY MOVED ============== -->
+  <h2>Why didn't the F1 numbers move more?</h2>
+  <div class="grid-2">
+    <div class="panel callout-info">
+      <h3>Tiny support is the dominant constraint</h3>
+      <p>
+        Fatigue has only <strong>27 positive frames</strong> in the entire 626-frame Hikvision review set.
+        On the 178-frame fallback subset, fatigue support is <strong>5</strong>. With support that small,
+        F1 is governed by false-positive rate, which is roughly equal across both regimes for the drowsiness
+        classifiers (they fire too often everywhere). Filtering frames doesn't change that.
+      </p>
+      <p style="margin-top:6px">
+        For F1 to actually move, we'd need either (a) per-frame thresholding tuned per regime, or
+        (b) a much larger validation set where face vs fallback discrimination starts to matter at the
+        precision level.
+      </p>
+    </div>
+
+    <div class="panel callout-warn">
+      <h3>Three classifiers are saturated, not face-degraded</h3>
+      <p>
+        The <code>teen_d_*</code> family fires <code>prob = 1.0</code> on every single frame &mdash; face or fallback,
+        Hikvision or anywhere else. The earlier per-prob audit shows this clearly: their face-only
+        prob mean and fallback prob mean are both <code>1.0000</code>. This is a model-wrapper or
+        head-transplant bug, <strong>independent of the crop pipeline</strong>. The face-only F1 lift
+        (0.083 &rarr; 0.094) is purely a numerator artifact: the face-only subset has higher fatigue
+        prevalence (4.9% vs 4.3%), so a 100%-fires classifier's recall-bounded F1 goes up.
+      </p>
+    </div>
+
+    <div class="panel callout-note">
+      <h3>The mosesb_mobilevitv2 paradox</h3>
+      <p>
+        From the earlier audit: this model fires fatigue at <strong>14% on face crops</strong> but
+        <strong>95% on fallback</strong> &mdash; the most extreme prob skew of any model.
+        Yet its F1 barely moves (0.054 &rarr; 0.047). Why?
+      </p>
+      <p style="margin-top:6px">
+        Because the 178 fallback frames contain <strong>5/27 = 19%</strong> of all fatigue positives,
+        and the model's 95% fire rate on fallback catches all 5. That contribution to recall almost
+        exactly offsets the precision damage from the 169 false-positive fires. The mixed-regime F1 is
+        the average of "model is dumb but rights" and "model is correct but cautious." Face-only
+        removes both effects together &mdash; net change is small.
+      </p>
+    </div>
+
+    <div class="panel callout-purple">
+      <h3>The real lessons</h3>
+      <ul class="tight" style="margin-top:0">
+        <li><strong>Crop fidelity matters at the prediction layer</strong> (huge prob skew per the
+        earlier audit) but the F1 metric is too coarse to surface it on a 27-positive validation set.</li>
+        <li><strong>Models that handle fallback gracefully are not necessarily better models</strong> &mdash;
+        chbh7051 ViT correctly low-confidences the full cabin, but its face-only F1 (0.107) is still
+        too low to deploy.</li>
+        <li><strong>The leaderboard ranking is mostly driven by saturation and threshold choice</strong>,
+        not by whether the model received a face crop. The fallback fix is a correctness fix, not
+        a leaderboard-ranking fix.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ============== UPDATED RECOMMENDATIONS ============== -->
+  <h2>Updated recommendations</h2>
+  <div class="panel">
+    <ol style="padding-left:20px;font-size:13.5px;color:var(--text-dim);line-height:1.8">
+      <li>
+        <strong>Treat the fallback fix as a correctness/honesty issue, not a metric fix.</strong>
+        The leaderboard should mark <code>n_face_only</code> alongside <code>n_frames</code> and provide
+        a face-only metric column. Persisting both numbers gives reviewers visibility without breaking
+        existing comparisons.
+      </li>
+      <li>
+        <strong>Investigate the teen_d saturation bug independently.</strong> Three classifiers in the
+        same family all output prob=1.0 &mdash; that's almost certainly a preprocessing or head-transplant
+        issue at the wrapper layer (see <code>build_composed_from_pretrained</code>'s torchvision
+        branch). Worth a focused debug session.
+      </li>
+      <li>
+        <strong>Expand the Hikvision validation set's positive support.</strong> 27 fatigue positives is
+        too few to discriminate good models from bad ones at the F1 layer. Targeting say 100&ndash;200
+        positives per class would let face-only vs all-frames metric deltas reach significance.
+      </li>
+      <li>
+        <strong>For the field test, prioritize models robust to face-detection failure.</strong>
+        chbh7051 ViT's "low-confidence on fallback" behavior is the right failure mode for production
+        &mdash; better to underfire than to false-alarm a sleepy driver. mosesb_mobilevitv2 and
+        doze_guard's "fire-on-everything-when-uncertain" pattern is the wrong failure mode for an
+        OEM alert system.
+      </li>
+    </ol>
+  </div>
+
+  <div class="footer">
+    GENERATED 2026-04-26 &middot;
+    SCORING formula matches <code>scripts/experiments/build_model_leaderboard.py:_compute_metrics</code> &middot;
+    DATA outputs/leaderboards/hikvision/face_only_rescore.json &middot;
+    SEE-ALSO face_crop_fallback_26Apr26.html (prediction-level audit)
+  </div>
+
+</body>
+</html>

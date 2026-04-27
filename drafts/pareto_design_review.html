@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1920">
+  <title>Pareto chart redesign &mdash; 3 options</title>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0 }
+
+    :root {
+      --bg: #F8F9FB;
+      --bg-card: #FFFFFF;
+      --bg-elevated: #F0F1F4;
+      --border: #E0E2E8;
+      --text: #1A1D26;
+      --text-dim: #5A5E6E;
+      --text-muted: #8E92A0;
+      --accent: #0E9A7E;
+      --accent-dim: rgba(14, 154, 126, 0.08);
+      --accent-strong: rgba(14, 154, 126, 0.18);
+      --accent-2: #3B6FD6;
+      --accent-2-dim: rgba(59, 111, 214, 0.08);
+      --accent-3: #C88A1A;
+      --accent-3-dim: rgba(200, 138, 26, 0.08);
+      --red: #D9453E;
+      --red-dim: rgba(217, 69, 62, 0.07);
+      --red-strong: rgba(217, 69, 62, 0.14);
+      --purple: #8B5CC4;
+      --purple-dim: rgba(139, 92, 196, 0.08);
+      --teal: #0E8A9A;
+      --teal-dim: rgba(14, 138, 154, 0.08);
+      --font: 'DM Sans', system-ui, sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+      --radius: 10px;
+      --radius-sm: 6px
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      padding: 48px 56px 64px;
+    }
+
+    h1 { font-size: 36px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.15 }
+    h2 { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 4px }
+    h3 { font-size: 13px; font-weight: 400; color: var(--text-dim); margin-bottom: 12px }
+
+    .page-header {
+      max-width: 1100px;
+      margin-bottom: 28px;
+    }
+    .page-header .subtitle {
+      font-size: 15px;
+      color: var(--text-dim);
+      margin-top: 10px;
+      max-width: 880px;
+    }
+    .page-header .meta {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 12px;
+      font-family: var(--mono);
+    }
+
+    .tag {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 600;
+      font-family: var(--mono);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+    .tag--accent { background: var(--accent-dim); color: var(--accent) }
+    .tag--blue   { background: var(--accent-2-dim); color: var(--accent-2) }
+    .tag--amber  { background: var(--accent-3-dim); color: var(--accent-3) }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px 26px 26px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+      margin-bottom: 28px;
+    }
+
+    .card .design-intent {
+      font-size: 13.5px;
+      color: var(--text-dim);
+      margin-top: 6px;
+      margin-bottom: 18px;
+      max-width: 920px;
+    }
+
+    .legend-row {
+      display: flex;
+      gap: 22px;
+      align-items: center;
+      margin-bottom: 12px;
+      font-size: 12px;
+      color: var(--text-dim);
+      flex-wrap: wrap;
+    }
+    .legend-row .swatch {
+      display: inline-block;
+      width: 20px;
+      height: 3px;
+      border-radius: 2px;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+    .legend-row .swatch.dashed {
+      height: 0;
+      border-top: 2px dashed var(--accent);
+    }
+
+    /* Option 1: small multiples */
+    .smallmult-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
+    }
+    @media (max-width: 1280px) {
+      .smallmult-grid { grid-template-columns: repeat(3, 1fr) }
+    }
+    @media (max-width: 800px) {
+      .smallmult-grid { grid-template-columns: repeat(2, 1fr) }
+    }
+    .smallmult-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 12px 8px;
+    }
+    .smallmult-panel .panel-title {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: -0.01em;
+      margin-bottom: 4px;
+    }
+    .panel-badge {
+      display: inline-block;
+      font-size: 10.5px;
+      font-family: var(--mono);
+      padding: 2px 7px;
+      border-radius: 4px;
+      margin-bottom: 6px;
+      letter-spacing: 0.02em;
+    }
+    .panel-badge--good {
+      background: var(--accent-dim);
+      color: var(--accent);
+    }
+    .panel-badge--bad {
+      background: var(--red-dim);
+      color: var(--red);
+    }
+    .smallmult-chart {
+      width: 100%;
+      height: 220px;
+    }
+
+    .chart-fullwidth {
+      width: 100%;
+      height: 460px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="page-header">
+    <h1>Pareto chart redesign &mdash; 3 options</h1>
+    <p class="subtitle">
+      Three alternative visualizations of the same ensemble-growth data, framed for a manager review.
+      Each option re-imagines the existing Pareto chart so the audience can see <em>how each newly
+      added model improves overall performance and improves each use case specifically</em>. Pick the
+      one whose narrative reads most cleanly at a glance.
+    </p>
+    <div class="meta">
+      Source data &middot; PARETO_DATA from hikvision_leaderboard_benchmark_summary.html &middot;
+      Hikvision OEM mean = 73.62%
+    </div>
+  </header>
+
+  <!-- ============================================================ -->
+  <!-- OPTION 1 -->
+  <!-- ============================================================ -->
+  <section class="card">
+    <span class="tag tag--blue">Option 1</span>
+    <h2>Per-class small multiples</h2>
+    <p class="design-intent">
+      Five panels &mdash; one per use case &mdash; each comparing the ensemble's accuracy across
+      n&nbsp;=&nbsp;1..5 against the Hikvision OEM baseline for that specific class.
+      Shared 0&ndash;100% y-axis so heights stay comparable across panels.
+      A badge under each title states whether the ensemble eventually beats OEM, and by how much
+      it trails when it doesn't.
+    </p>
+
+    <div class="legend-row">
+      <span><span class="swatch" style="background:#3B6FD6"></span>Ensemble accuracy (n=1..5)</span>
+      <span><span class="swatch" style="background:#0E9A7E"></span>Hikvision OEM baseline</span>
+      <span style="color:var(--text-muted); font-size:11.5px">
+        Shaded fill: green when ensemble &ge; OEM at n=5, red when below
+      </span>
+    </div>
+
+    <div id="opt1-grid" class="smallmult-grid"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- OPTION 2 -->
+  <!-- ============================================================ -->
+  <section class="card">
+    <span class="tag tag--accent">Option 2</span>
+    <h2>Mean trajectory with per-step "what improved" annotations</h2>
+    <p class="design-intent">
+      A single chart showing the ensemble's mean accuracy versus the Hikvision OEM baseline.
+      At every marker, an annotation calls out which model was added at that step and which
+      use case it lifted (with the per-class point-delta). The reader can instantly see which
+      addition delivered which capability.
+    </p>
+
+    <div class="legend-row">
+      <span><span class="swatch" style="background:#3B6FD6"></span>Ensemble mean accuracy</span>
+      <span><span class="swatch" style="background:#0E9A7E"></span>Hikvision OEM baseline (73.62%)</span>
+    </div>
+
+    <div id="opt2-chart" class="chart-fullwidth"></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- OPTION 3 -->
+  <!-- ============================================================ -->
+  <section class="card">
+    <span class="tag tag--amber">Option 3</span>
+    <h2>Mean vs. worst-class accuracy &mdash; "the floor rises"</h2>
+    <p class="design-intent">
+      Same mean line, but paired with a second line showing the worst-performing use case at
+      each step. The gap between mean and floor narrows as the ensemble grows &mdash; the
+      strongest evidence that adding models doesn't just lift the average, it eliminates
+      catastrophic per-class failures.
+    </p>
+
+    <div class="legend-row">
+      <span><span class="swatch" style="background:#3B6FD6"></span>Mean accuracy</span>
+      <span><span class="swatch" style="background:#C88A1A"></span>Worst-class accuracy</span>
+      <span><span class="swatch dashed"></span>Hikvision OEM baseline</span>
+    </div>
+
+    <div id="opt3-chart" class="chart-fullwidth"></div>
+  </section>
+
+  <script>
+    // -----------------------------------------------------------------
+    // PARETO_DATA — copied verbatim from
+    //   reports/dashboard/hikvision_leaderboard_benchmark_summary.html (line 793)
+    // -----------------------------------------------------------------
+    const PARETO_DATA = {"hikvision_mean_acc": 0.7362, "hikvision_per_class": {"distracted_driving": 0.683, "eating_drinking": 0.5, "fatigue": 0.888, "phone_usage": 0.752, "seatbelt": 0.858}, "classes": ["distracted_driving", "eating_drinking", "fatigue", "phone_usage", "seatbelt"], "combos": [{"n": 1, "mean_acc": 0.5743, "models": ["rtdetr_x"], "routing": {"distracted_driving": "rtdetr_x", "eating_drinking": "rtdetr_x", "fatigue": "rtdetr_x", "phone_usage": "rtdetr_x", "seatbelt": "rtdetr_x"}, "per_class_acc": {"distracted_driving": 0.5, "eating_drinking": 0.588, "fatigue": 0.5, "phone_usage": 0.783, "seatbelt": 0.5}, "total_params_m": 65.5, "total_size_mb": 130, "total_gflops": 222.5}, {"n": 2, "mean_acc": 0.6336, "models": ["rtdetr_x", "yolo_soham"], "routing": {"distracted_driving": "rtdetr_x", "eating_drinking": "rtdetr_x", "fatigue": "rtdetr_x", "phone_usage": "rtdetr_x", "seatbelt": "yolo_soham"}, "per_class_acc": {"distracted_driving": 0.5, "eating_drinking": 0.588, "fatigue": 0.5, "phone_usage": 0.783, "seatbelt": 0.796}, "total_params_m": 68.1, "total_size_mb": 136, "total_gflops": 229.0}, {"n": 3, "mean_acc": 0.6919, "models": ["mediapipe", "rtdetr_x", "yolo_soham"], "routing": {"distracted_driving": "rtdetr_x", "eating_drinking": "rtdetr_x", "fatigue": "mediapipe", "phone_usage": "rtdetr_x", "seatbelt": "yolo_soham"}, "per_class_acc": {"distracted_driving": 0.5, "eating_drinking": 0.588, "fatigue": 0.792, "phone_usage": 0.783, "seatbelt": 0.796}, "total_params_m": 69.1, "total_size_mb": 138, "total_gflops": 229.1}, {"n": 4, "mean_acc": 0.7124, "models": ["classifier_followb1ind1y_mnv3", "mediapipe", "rtdetr_x", "yolo_soham"], "routing": {"distracted_driving": "classifier_followb1ind1y_mnv3", "eating_drinking": "rtdetr_x", "fatigue": "mediapipe", "phone_usage": "rtdetr_x", "seatbelt": "yolo_soham"}, "per_class_acc": {"distracted_driving": 0.602, "eating_drinking": 0.588, "fatigue": 0.792, "phone_usage": 0.783, "seatbelt": 0.796}, "total_params_m": 74.5, "total_size_mb": 160, "total_gflops": 229.3}, {"n": 5, "mean_acc": 0.7129, "models": ["classifier_followb1ind1y_mnv3", "mediapipe", "rtdetr_x", "yolo_soham", "yolov8x"], "routing": {"distracted_driving": "classifier_followb1ind1y_mnv3", "eating_drinking": "yolov8x", "fatigue": "mediapipe", "phone_usage": "rtdetr_x", "seatbelt": "yolo_soham"}, "per_class_acc": {"distracted_driving": 0.602, "eating_drinking": 0.591, "fatigue": 0.792, "phone_usage": 0.783, "seatbelt": 0.796}, "total_params_m": 142.7, "total_size_mb": 290, "total_gflops": 487.1}]};
+
+    // -----------------------------------------------------------------
+    // Shared layout primitives
+    // -----------------------------------------------------------------
+    const COLOR_BLUE   = '#3B6FD6';   // ensemble line (matches source)
+    const COLOR_GREEN  = '#0E9A7E';   // OEM baseline (matches source)
+    const COLOR_AMBER  = '#C88A1A';   // worst-class line (Option 3)
+    const COLOR_GRID   = '#E0E2E8';
+    const COLOR_TEXT   = '#5A5E6E';
+    const COLOR_MUTED  = '#8E92A0';
+
+    const HOVER_LABEL = {
+      bgcolor: '#1A1D26',
+      bordercolor: '#0E9A7E',
+      font: { family: 'JetBrains Mono, monospace', size: 12, color: '#FFFFFF' },
+      align: 'left',
+      namelength: -1,
+    };
+
+    const FONT_DEFAULT = { family: 'DM Sans, system-ui, sans-serif', size: 12, color: COLOR_TEXT };
+
+    const PLOTLY_CFG = { displayModeBar: false, responsive: true };
+
+    const xs = PARETO_DATA.combos.map(d => d.n);                       // [1..5]
+    const meanY = PARETO_DATA.combos.map(d => d.mean_acc * 100);       // [57.43, 63.36, 69.19, 71.24, 71.29]
+    const hikY = PARETO_DATA.hikvision_mean_acc * 100;                 // 73.62
+
+    // -----------------------------------------------------------------
+    // Small DOM helper — used to build Option 1 panels without innerHTML.
+    // -----------------------------------------------------------------
+    function el(tag, opts) {
+      opts = opts || {};
+      const node = document.createElement(tag);
+      if (opts.className) node.className = opts.className;
+      if (opts.id) node.id = opts.id;
+      if (opts.text != null) node.textContent = opts.text;
+      if (opts.style) {
+        for (const k of Object.keys(opts.style)) node.style[k] = opts.style[k];
+      }
+      return node;
+    }
+
+    // -----------------------------------------------------------------
+    // OPTION 1 — Per-class small multiples
+    // -----------------------------------------------------------------
+    // For each class, build a 2-line panel (ensemble vs. OEM baseline),
+    // shared 0..100 y-axis, with a fill between the two traces.
+    //
+    // Edge case / tradeoff:
+    //   Plotly's `fill: 'tonexty'` uses a single fillcolor for an entire trace —
+    //   it cannot natively switch between green-above-OEM and red-below-OEM
+    //   on the same span. To stay self-contained and avoid bespoke polygon
+    //   construction, we tint the fill once per panel based on whether the
+    //   ensemble at n=5 finishes above or below OEM. The colored badge in the
+    //   panel header reinforces the verdict, so the fill is a supporting
+    //   element rather than a per-segment signal.
+    function buildOption1() {
+      const grid = document.getElementById('opt1-grid');
+      const classes = PARETO_DATA.classes;
+      const xRange = [0.7, 5.3];
+
+      classes.forEach((cls) => {
+        const ensembleY = PARETO_DATA.combos.map(d => d.per_class_acc[cls] * 100);
+        const oemVal = PARETO_DATA.hikvision_per_class[cls] * 100;
+        const oemLine = xs.map(_ => oemVal);
+        const maxEns = Math.max(...ensembleY);
+        const beatsOem = maxEns >= oemVal;
+        const finishAboveOem = ensembleY[ensembleY.length - 1] >= oemVal;
+
+        // Build panel DOM (no innerHTML)
+        const panel = el('div', { className: 'smallmult-panel' });
+        panel.appendChild(el('div', { className: 'panel-title', text: cls }));
+
+        if (beatsOem) {
+          panel.appendChild(el('span', {
+            className: 'panel-badge panel-badge--good',
+            text: '✓ beats OEM',
+          }));
+        } else {
+          const trailBy = (oemVal - maxEns).toFixed(1);
+          panel.appendChild(el('span', {
+            className: 'panel-badge panel-badge--bad',
+            text: '⚠ trails OEM by ' + trailBy + 'pts',
+          }));
+        }
+
+        const chartDiv = el('div', {
+          className: 'smallmult-chart',
+          id: 'opt1-panel-' + cls,
+        });
+        panel.appendChild(chartDiv);
+        grid.appendChild(panel);
+
+        // Trace 1: OEM baseline (drawn first so 'tonexty' on trace 2 fills toward it).
+        const oemTrace = {
+          x: xs, y: oemLine,
+          mode: 'lines',
+          name: 'Hikvision OEM',
+          line: { color: COLOR_GREEN, width: 1.5, dash: 'dash' },
+          hovertemplate: '<b>OEM ' + cls + '</b>  ' + oemVal.toFixed(1) + '%<extra></extra>',
+          showlegend: false,
+        };
+
+        // Trace 2: ensemble accuracy. Fill toward the previous trace (the OEM line).
+        // Tradeoff documented above: single fill color per panel.
+        const fillColor = finishAboveOem
+          ? 'rgba(14, 154, 126, 0.14)'   // green tint
+          : 'rgba(217, 69, 62, 0.12)';   // red tint
+        const ensembleTrace = {
+          x: xs, y: ensembleY,
+          mode: 'lines+markers',
+          name: 'Ensemble',
+          line: { color: COLOR_BLUE, width: 2 },
+          marker: { size: 7, color: COLOR_BLUE, line: { color: 'white', width: 1.5 } },
+          fill: 'tonexty',
+          fillcolor: fillColor,
+          hovertemplate: '<b>n=%{x}</b>  ' + cls + '  %{y:.1f}%<extra></extra>',
+          showlegend: false,
+        };
+
+        const layout = {
+          paper_bgcolor: 'rgba(0,0,0,0)',
+          plot_bgcolor: 'rgba(240,241,244,0.4)',
+          margin: { l: 38, r: 8, t: 6, b: 32 },
+          font: FONT_DEFAULT,
+          xaxis: {
+            range: xRange,
+            dtick: 1,
+            gridcolor: COLOR_GRID,
+            zerolinecolor: COLOR_GRID,
+            tickfont: { size: 10, color: COLOR_MUTED },
+            title: { text: 'n', font: { size: 10, color: COLOR_MUTED }, standoff: 4 },
+          },
+          yaxis: {
+            range: [0, 100],
+            tickvals: [0, 25, 50, 75, 100],
+            ticksuffix: '%',
+            gridcolor: COLOR_GRID,
+            zerolinecolor: COLOR_GRID,
+            tickfont: { size: 10, color: COLOR_MUTED },
+          },
+          hoverlabel: HOVER_LABEL,
+          showlegend: false,
+        };
+
+        Plotly.newPlot(chartDiv, [oemTrace, ensembleTrace], layout, PLOTLY_CFG);
+      });
+    }
+
+    // -----------------------------------------------------------------
+    // OPTION 2 — Single chart, mean line + step annotations of "what improved"
+    // -----------------------------------------------------------------
+    // For each step n>=2, compute which class changed and by how much.
+    // Edge case: dataset has at most one class change per step. If multiple
+    // ever changed, we'd surface them all in the annotation text (multi-line).
+    function buildOption2() {
+      const annotations = [];
+      const combos = PARETO_DATA.combos;
+
+      // Right-edge OEM label (matches source style).
+      annotations.push({
+        x: 5.45, y: hikY, xanchor: 'right', yanchor: 'bottom',
+        text: 'Hikvision OEM · ' + hikY.toFixed(1) + '%',
+        showarrow: false, font: { color: COLOR_GREEN, size: 11 },
+      });
+
+      // n=1 baseline annotation
+      annotations.push({
+        x: 1, y: meanY[0],
+        ax: 0, ay: -56,
+        xanchor: 'center', yanchor: 'bottom',
+        text: '<b>+rtdetr_x</b><br><span style="color:#8E92A0">starting point</span>',
+        showarrow: true, arrowhead: 0, arrowwidth: 1, arrowcolor: COLOR_MUTED,
+        font: { color: COLOR_TEXT, size: 11, family: 'DM Sans, system-ui, sans-serif' },
+        align: 'center',
+        bgcolor: 'rgba(255,255,255,0.92)',
+        bordercolor: COLOR_GRID, borderwidth: 1, borderpad: 4,
+      });
+
+      for (let i = 1; i < combos.length; i++) {
+        const prev = combos[i - 1];
+        const curr = combos[i];
+        // Detect newly added model
+        const addedModel = curr.models.find(m => !prev.models.includes(m)) || '?';
+        // Detect class deltas (>= 0.05 pts to suppress floating-point noise)
+        const classChanges = [];
+        for (const cls of PARETO_DATA.classes) {
+          const d = (curr.per_class_acc[cls] - prev.per_class_acc[cls]) * 100;
+          if (Math.abs(d) >= 0.05) {
+            classChanges.push({ cls: cls, delta: d });
+          }
+        }
+        const changesText = classChanges.length === 0
+          ? '<span style="color:#8E92A0">no per-class change</span>'
+          : classChanges.map(c =>
+              c.cls + ' (<b style="color:#0E9A7E">+' + c.delta.toFixed(1) + 'pts</b>)'
+            ).join('<br>');
+
+        annotations.push({
+          x: curr.n, y: meanY[i],
+          ax: 0, ay: -64,
+          xanchor: 'center', yanchor: 'bottom',
+          text: '<b>+' + addedModel + '</b><br>' + changesText,
+          showarrow: true, arrowhead: 0, arrowwidth: 1, arrowcolor: COLOR_MUTED,
+          font: { color: COLOR_TEXT, size: 11, family: 'DM Sans, system-ui, sans-serif' },
+          align: 'center',
+          bgcolor: 'rgba(255,255,255,0.92)',
+          bordercolor: COLOR_GRID, borderwidth: 1, borderpad: 4,
+        });
+      }
+
+      const layout = {
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(240,241,244,0.4)',
+        margin: { l: 64, r: 28, t: 80, b: 52 },
+        font: FONT_DEFAULT,
+        xaxis: {
+          title: { text: 'Number of models', font: { size: 12 } },
+          dtick: 1, range: [0.5, 5.6],
+          gridcolor: COLOR_GRID, zerolinecolor: COLOR_GRID,
+        },
+        yaxis: {
+          title: { text: 'Mean accuracy (%)', font: { size: 12 } },
+          range: [40, 100],
+          ticksuffix: '%',
+          gridcolor: COLOR_GRID, zerolinecolor: COLOR_GRID,
+        },
+        shapes: [{
+          type: 'line',
+          x0: 0.5, x1: 5.6,
+          y0: hikY, y1: hikY,
+          line: { color: COLOR_GREEN, dash: 'dash', width: 1.5 },
+        }],
+        annotations: annotations,
+        hoverlabel: HOVER_LABEL,
+        showlegend: false,
+      };
+
+      const trace = {
+        x: xs, y: meanY,
+        mode: 'lines+markers',
+        name: 'Ensemble mean',
+        line: { color: COLOR_BLUE, width: 2.2 },
+        marker: { size: 13, color: COLOR_BLUE, line: { color: 'white', width: 2 } },
+        hovertemplate: '<b>n=%{x}</b>  mean %{y:.2f}%<extra></extra>',
+      };
+
+      Plotly.newPlot('opt2-chart', [trace], layout, PLOTLY_CFG);
+    }
+
+    // -----------------------------------------------------------------
+    // OPTION 3 — Mean vs. min (worst-class accuracy)
+    // -----------------------------------------------------------------
+    // worst-class trajectory should be: 50.0, 50.0, 50.0, 58.8, 59.1
+    function buildOption3() {
+      const minY = PARETO_DATA.combos.map(d => {
+        const vals = PARETO_DATA.classes.map(c => d.per_class_acc[c] * 100);
+        return Math.min(...vals);
+      });
+
+      const meanTrace = {
+        x: xs, y: meanY,
+        mode: 'lines+markers',
+        name: 'Mean accuracy',
+        line: { color: COLOR_BLUE, width: 2.2 },
+        marker: { size: 12, color: COLOR_BLUE, line: { color: 'white', width: 2 } },
+        hovertemplate: '<b>n=%{x}</b>  mean %{y:.2f}%<extra></extra>',
+      };
+
+      const minTrace = {
+        x: xs, y: minY,
+        mode: 'lines+markers',
+        name: 'Worst-class accuracy',
+        line: { color: COLOR_AMBER, width: 2.2 },
+        marker: { size: 12, color: COLOR_AMBER, line: { color: 'white', width: 2 } },
+        hovertemplate: '<b>n=%{x}</b>  worst-class %{y:.2f}%<extra></extra>',
+      };
+
+      const annotations = [
+        // OEM right-edge label
+        {
+          x: 5.45, y: hikY, xanchor: 'right', yanchor: 'bottom',
+          text: 'Hikvision OEM · ' + hikY.toFixed(1) + '%',
+          showarrow: false, font: { color: COLOR_GREEN, size: 11 },
+        },
+        // Floor-rises callout at n=4
+        {
+          x: 4, y: minY[3],
+          ax: 36, ay: 44,
+          xanchor: 'left', yanchor: 'top',
+          text: '<b>floor rises +8.8pts</b><br><span style="color:#8E92A0">distracted_driving fix<br>via classifier_followb1ind1y_mnv3</span>',
+          showarrow: true, arrowhead: 2, arrowwidth: 1, arrowcolor: COLOR_AMBER,
+          font: { color: COLOR_TEXT, size: 11, family: 'DM Sans, system-ui, sans-serif' },
+          align: 'left',
+          bgcolor: 'rgba(255,255,255,0.95)',
+          bordercolor: COLOR_AMBER, borderwidth: 1, borderpad: 6,
+        },
+      ];
+
+      const layout = {
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(240,241,244,0.4)',
+        margin: { l: 64, r: 28, t: 24, b: 52 },
+        font: FONT_DEFAULT,
+        xaxis: {
+          title: { text: 'Number of models', font: { size: 12 } },
+          dtick: 1, range: [0.5, 5.6],
+          gridcolor: COLOR_GRID, zerolinecolor: COLOR_GRID,
+        },
+        yaxis: {
+          title: { text: 'Accuracy (%)', font: { size: 12 } },
+          range: [30, 100],
+          ticksuffix: '%',
+          gridcolor: COLOR_GRID, zerolinecolor: COLOR_GRID,
+        },
+        shapes: [{
+          type: 'line',
+          x0: 0.5, x1: 5.6,
+          y0: hikY, y1: hikY,
+          line: { color: COLOR_GREEN, dash: 'dash', width: 1.5 },
+        }],
+        annotations: annotations,
+        hoverlabel: HOVER_LABEL,
+        legend: {
+          orientation: 'h',
+          x: 0, y: 1.08,
+          xanchor: 'left', yanchor: 'bottom',
+          font: { size: 11, color: COLOR_TEXT },
+          bgcolor: 'rgba(0,0,0,0)',
+        },
+      };
+
+      Plotly.newPlot('opt3-chart', [meanTrace, minTrace], layout, PLOTLY_CFG);
+    }
+
+    // -----------------------------------------------------------------
+    // Build all three on load
+    // -----------------------------------------------------------------
+    buildOption1();
+    buildOption2();
+    buildOption3();
+  </script>
+
+</body>
+</html>
