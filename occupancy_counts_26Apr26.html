@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=1920">
-  <title>Occupancy Counts &mdash; Driver &amp; Passenger Detection</title>
+  <title>Occupancy Counts &mdash; Hikvision</title>
   <link
     href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap"
     rel="stylesheet">
@@ -27,7 +27,6 @@
   --accent-3-dim: rgba(200, 138, 26, 0.08);
   --red: #D9453E;
   --red-dim: rgba(217, 69, 62, 0.07);
-  --red-strong: rgba(217, 69, 62, 0.14);
   --purple: #8B5CC4;
   --purple-dim: rgba(139, 92, 196, 0.08);
   --teal: #0E8A9A;
@@ -39,7 +38,6 @@
 }
 
 html { scroll-snap-type: y mandatory; scroll-behavior: smooth }
-
 body {
   background: var(--bg);
   color: var(--text);
@@ -55,9 +53,8 @@ body {
   display: flex;
   flex-direction: column;
   padding: 64px 56px 28px;
-  position: relative
+  position: relative;
 }
-
 .slide::before {
   content: '';
   position: absolute;
@@ -79,7 +76,6 @@ nav {
   height: 44px;
   gap: 4px
 }
-
 nav a {
   color: var(--text-muted);
   text-decoration: none;
@@ -90,12 +86,7 @@ nav a {
   border-radius: 20px;
   transition: all 0.2s
 }
-
-nav a:hover, nav a.active {
-  color: var(--text);
-  background: var(--bg-elevated)
-}
-
+nav a:hover, nav a.active { color: var(--text); background: var(--bg-elevated) }
 nav .slide-counter {
   margin-left: auto;
   color: var(--text-muted);
@@ -104,8 +95,8 @@ nav .slide-counter {
 }
 
 h1 { font-size: 48px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.15 }
-h2 { font-size: 24px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 4px }
-h3 { font-size: 13px; font-weight: 400; color: var(--text-dim); margin-bottom: 16px }
+h2 { font-size: 26px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 4px }
+h3 { font-size: 13px; font-weight: 400; color: var(--text-dim); margin-bottom: 18px }
 h4 { font-size: 13px; font-weight: 600; margin-bottom: 6px }
 
 .tag {
@@ -122,9 +113,6 @@ h4 { font-size: 13px; font-weight: 600; margin-bottom: 6px }
 .tag--accent { background: var(--accent-dim); color: var(--accent) }
 .tag--blue   { background: var(--accent-2-dim); color: var(--accent-2) }
 .tag--amber  { background: var(--accent-3-dim); color: var(--accent-3) }
-.tag--red    { background: var(--red-dim); color: var(--red) }
-.tag--purple { background: var(--purple-dim); color: var(--purple) }
-.tag--teal   { background: var(--teal-dim); color: var(--teal) }
 
 .slide-stamp {
   position: absolute;
@@ -137,64 +125,78 @@ h4 { font-size: 13px; font-weight: 600; margin-bottom: 6px }
   color: var(--text-muted);
   font-weight: 500;
 }
-.slide-stamp .stamp-sep {
-  width: 24px; height: 1px;
-  background: var(--border);
-}
+.slide-stamp .stamp-sep { width: 24px; height: 1px; background: var(--border) }
 
-.title-slide { justify-content: center; align-items: flex-start; padding-left: 90px }
-.title-slide .subtitle { font-size: 17px; color: var(--text-dim); font-weight: 400; margin-top: 8px; max-width: 880px }
-.title-slide .meta { font-size: 12px; color: var(--text-muted); margin-top: 20px; font-family: var(--mono) }
-.title-slide::after {
-  content: '';
-  position: absolute;
-  top: -120px; right: -80px;
-  width: 600px; height: 600px;
-  background: radial-gradient(circle, rgba(14, 154, 126, 0.06) 0%, transparent 70%);
-  pointer-events: none
+/* ----- Pipeline / methodology slide ----- */
+.pipe-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 22px;
 }
-
-.stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 14px }
-.stat {
-  background: var(--bg-card); border: 1px solid var(--border);
-  border-radius: var(--radius-sm); padding: 12px 14px
-}
-.stat .label { font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 4px }
-.stat .value { font-family: var(--mono); font-size: 18px; font-weight: 500; color: var(--text) }
-.stat .sub { font-size: 11px; color: var(--text-dim); margin-top: 2px }
-
-.intro-stats .stat {
-  padding: 18px 18px 16px;
+.pipe-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 18px;
   position: relative;
   overflow: hidden;
-  border-width: 1px;
 }
-.intro-stats .stat::before {
-  content: '';
-  position: absolute; inset: 0 auto 0 0;
-  width: 3px;
+.pipe-card::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
 }
-.intro-stats .stat .value {
-  font-size: 36px; font-weight: 600; letter-spacing: -0.02em; line-height: 1;
-  margin: 4px 0 8px;
+.pipe-card.green::before { background: var(--accent) }
+.pipe-card.amber::before { background: var(--accent-3) }
+.pipe-card.blue::before  { background: var(--accent-2) }
+.pipe-card .step {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 700;
+  margin-bottom: 6px;
 }
-.intro-stats .stat .label { color: var(--text-dim); font-weight: 700 }
-.intro-stats .stat--accent { background: color-mix(in srgb, var(--accent) 6%, var(--bg-card)); border-color: color-mix(in srgb, var(--accent) 30%, var(--border)) }
-.intro-stats .stat--accent::before { background: var(--accent) }
-.intro-stats .stat--accent .value { color: var(--accent) }
-.intro-stats .stat--accent .label { color: var(--accent) }
-.intro-stats .stat--blue { background: color-mix(in srgb, var(--accent-2) 6%, var(--bg-card)); border-color: color-mix(in srgb, var(--accent-2) 30%, var(--border)) }
-.intro-stats .stat--blue::before { background: var(--accent-2) }
-.intro-stats .stat--blue .value { color: var(--accent-2) }
-.intro-stats .stat--blue .label { color: var(--accent-2) }
-.intro-stats .stat--amber { background: color-mix(in srgb, var(--accent-3) 7%, var(--bg-card)); border-color: color-mix(in srgb, var(--accent-3) 32%, var(--border)) }
-.intro-stats .stat--amber::before { background: var(--accent-3) }
-.intro-stats .stat--amber .value { color: var(--accent-3) }
-.intro-stats .stat--amber .label { color: var(--accent-3) }
-.intro-stats .stat--purple { background: color-mix(in srgb, var(--purple) 7%, var(--bg-card)); border-color: color-mix(in srgb, var(--purple) 30%, var(--border)) }
-.intro-stats .stat--purple::before { background: var(--purple) }
-.intro-stats .stat--purple .value { color: var(--purple) }
-.intro-stats .stat--purple .label { color: var(--purple) }
+.pipe-card.green .step { color: var(--accent) }
+.pipe-card.amber .step { color: var(--accent-3) }
+.pipe-card.blue .step  { color: var(--accent-2) }
+.pipe-card h4 { font-size: 16px; font-weight: 600; margin-bottom: 6px }
+.pipe-card p { font-size: 12.5px; color: var(--text-dim); line-height: 1.5 }
+.pipe-card p code {
+  font-family: var(--mono); font-size: 11.5px;
+  background: var(--bg-elevated); padding: 1px 5px;
+  border-radius: 3px; color: var(--text)
+}
+
+.example-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-top: 4px;
+}
+.example-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  display: flex; flex-direction: column;
+}
+.example-card img {
+  width: 100%;
+  display: block;
+  aspect-ratio: 1920 / 1088;
+  object-fit: cover;
+}
+.example-card .body { padding: 12px 14px 14px }
+.example-card .label {
+  font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--text-muted); font-weight: 600; margin-bottom: 4px;
+}
+.example-card .caption { font-size: 12.5px; color: var(--text); line-height: 1.45 }
+.example-card .caption code {
+  font-family: var(--mono); font-size: 11.5px;
+  background: var(--bg-elevated); padding: 1px 5px;
+  border-radius: 3px; color: var(--text)
+}
 
 .action-bar {
   display: flex; align-items: flex-start; gap: 8px;
@@ -206,38 +208,94 @@ h4 { font-size: 13px; font-weight: 600; margin-bottom: 6px }
   font-size: 12.5px;
   margin-top: 14px;
 }
-.action-bar.red { border-left-color: var(--red) }
 .action-bar.amber { border-left-color: var(--accent-3) }
-.action-bar.blue { border-left-color: var(--accent-2) }
-.action-bar.purple { border-left-color: var(--purple) }
+.action-bar.blue  { border-left-color: var(--accent-2) }
 .action-bar .action-text { color: var(--text); flex: 1 }
 .action-bar .action-text strong { font-weight: 600 }
 
+/* ----- Results: KPI cards ----- */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-bottom: 18px;
+}
+.kpi-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px 16px;
+  position: relative;
+  overflow: hidden;
+}
+.kpi-card::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+}
+.kpi-card.green { background: color-mix(in srgb, var(--accent) 6%, var(--bg-card)); border-color: color-mix(in srgb, var(--accent) 30%, var(--border)) }
+.kpi-card.green::before { background: var(--accent) }
+.kpi-card.blue  { background: color-mix(in srgb, var(--accent-2) 6%, var(--bg-card)); border-color: color-mix(in srgb, var(--accent-2) 30%, var(--border)) }
+.kpi-card.blue::before  { background: var(--accent-2) }
+
+.kpi-card .kpi-label {
+  font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+  font-weight: 700; margin-bottom: 6px;
+}
+.kpi-card.green .kpi-label { color: var(--accent) }
+.kpi-card.blue  .kpi-label { color: var(--accent-2) }
+.kpi-card .kpi-name {
+  font-family: var(--mono);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.kpi-card .kpi-value {
+  font-family: var(--mono);
+  font-size: 36px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  margin: 6px 0 8px;
+}
+.kpi-card.green .kpi-value { color: var(--accent) }
+.kpi-card.blue  .kpi-value { color: var(--accent-2) }
+.kpi-card .kpi-detail { font-size: 12px; color: var(--text-dim) }
+.kpi-card .kpi-detail .pill {
+  font-family: var(--mono); font-size: 11px;
+  background: var(--bg-elevated); padding: 1px 6px;
+  border-radius: 3px; margin: 0 3px;
+}
+
+/* ----- Results: leaderboard table ----- */
 .lb-wrap {
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   overflow: hidden;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-  margin-top: 6px;
 }
-.lb { width: 100%; border-collapse: collapse; font-size: 12.5px }
-.lb th, .lb td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top }
+.lb { width: 100%; border-collapse: collapse; font-size: 13px }
+.lb th, .lb td { padding: 10px 14px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top }
 .lb thead th {
   font-weight: 600; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase;
   color: var(--text-muted); background: var(--bg-elevated);
   border-bottom: 2px solid var(--border)
 }
 .lb th.num, .lb td.num { text-align: center }
-.lb th.model, .lb td.model { min-width: 240px; max-width: 320px }
-.lb td.model .name { font-family: var(--mono); font-size: 12.5px; font-weight: 500; color: var(--text); word-break: break-all }
-.lb td.model .fam { font-size: 10px; font-family: var(--mono); letter-spacing: 0.06em; color: var(--text-muted); text-transform: uppercase; margin-top: 2px }
+.lb th.model, .lb td.model { min-width: 280px }
+.lb td.model .name { font-family: var(--mono); font-size: 13px; font-weight: 500; color: var(--text) }
+.lb td.model .fam {
+  font-size: 10px; font-family: var(--mono);
+  letter-spacing: 0.06em; color: var(--text-muted);
+  text-transform: uppercase; margin-top: 3px;
+}
 
 .fam-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 5px; vertical-align: baseline }
 .fam-dot.mediapipe { background: var(--accent-2) }
 .fam-dot.detection { background: var(--accent-3) }
 
-.cell-acc { font-family: var(--mono); font-size: 14px; font-weight: 500; color: var(--text) }
+.cell-acc { font-family: var(--mono); font-size: 15px; font-weight: 500; color: var(--text) }
 .cell-counts { font-family: var(--mono); font-size: 10.5px; color: var(--text-muted); margin-top: 4px }
 
 .lb td.num { transition: background-color .15s ease }
@@ -249,26 +307,15 @@ h4 { font-size: 13px; font-weight: 600; margin-bottom: 6px }
 .lb td.num[data-delta="neg-weak"]   { background: color-mix(in srgb, var(--red) 9%,  var(--bg-card)) }
 .lb td.num[data-delta="neg-mid"]    { background: color-mix(in srgb, var(--red) 14%, var(--bg-card)) }
 .lb td.num[data-delta="neg-strong"] { background: color-mix(in srgb, var(--red) 20%, var(--bg-card)) }
-.lb td.num[data-delta="zero"]       { background: var(--bg-elevated) }
-.lb td.num[data-delta="na"] {
-  background: repeating-linear-gradient(-45deg,
-    var(--bg-card) 0 7px, var(--bg-elevated) 7px 8px);
-}
 .lb td.num[data-delta^="pos-"] .cell-acc { color: var(--accent) }
 .lb td.num[data-delta^="neg-"] .cell-acc { color: var(--red) }
 .lb td.num[data-delta$="-strong"] .cell-acc,
 .lb td.num[data-delta$="-mid"]    .cell-acc { font-weight: 600 }
-.lb td.num[data-delta="na"] .cell-acc { color: var(--text-muted); font-style: italic }
-
 .lb thead th.num + th.num,
 .lb tbody td.num + td.num { border-left: 1px solid var(--border) }
 
-.lb thead th.metric-driver { color: var(--accent) }
-.lb thead th.metric-pax    { color: var(--accent-2) }
-.lb thead th.metric-meta   { color: var(--text-muted) }
-
 .legend {
-  display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 10px;
+  display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 12px;
   padding: 10px 12px;
   background: var(--bg-elevated);
   border-radius: var(--radius-sm);
@@ -276,181 +323,153 @@ h4 { font-size: 13px; font-weight: 600; margin-bottom: 6px }
   font-size: 12px; color: var(--text-dim)
 }
 .legend .item { display: flex; align-items: center; gap: 6px }
-.legend .item code {
+.legend code {
   font-family: var(--mono); font-size: 11px;
   background: var(--bg-card); padding: 1px 5px; border-radius: 3px;
   color: var(--text); border: 1px solid var(--border)
 }
-
-.cm-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 8px }
-.cm-grid.three { grid-template-columns: repeat(3, 1fr) }
-.cm-card {
-  background: var(--bg-card); border: 1px solid var(--border);
-  border-radius: var(--radius-sm); padding: 12px 14px;
-}
-.cm-title { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 12px }
-.cm-title .cm-name { font-family: var(--mono); font-weight: 600; color: var(--text) }
-.cm-title .cm-frames { margin-left: auto; color: var(--text-muted); font-family: var(--mono); font-size: 10.5px }
-.cm { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 11px }
-.cm th, .cm td { padding: 4px 6px; text-align: center; border: 1px solid var(--border) }
-.cm th.cm-h { background: var(--bg-elevated); color: var(--text-muted); font-weight: 600 }
-.cm th.cm-corner { font-size: 9.5px; letter-spacing: 0.04em; color: var(--text-muted) }
-.cm td.cm-c { color: var(--text-dim) }
-.cm td.cm-c.cm-zero { color: var(--text-muted); opacity: 0.4 }
-.cm td.cm-c.cm-diag { background: color-mix(in srgb, var(--accent) 14%, var(--bg-card)); color: var(--accent); font-weight: 600 }
-.cm td.cm-c.cm-off  { background: color-mix(in srgb, var(--red) 7%, var(--bg-card)); color: var(--red) }
-.cm td.cm-total { background: var(--bg-elevated); color: var(--text-dim) }
-
-.note-card {
-  background: var(--bg-card); border: 1px solid var(--border);
-  border-radius: var(--radius-sm); padding: 14px 16px
-}
-.note-card .note-label { font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; font-weight: 600; margin-bottom: 6px }
-.note-card.amber .note-label { color: var(--accent-3) }
-.note-card.blue .note-label { color: var(--accent-2) }
-.note-card.green .note-label { color: var(--accent) }
-.note-card.purple .note-label { color: var(--purple) }
-.note-card h4 { font-size: 14px; font-weight: 600; margin-bottom: 6px }
-.note-card p { font-size: 12.5px; color: var(--text-dim); line-height: 1.5 }
-.note-card p code {
-  font-family: var(--mono); font-size: 11.5px;
-  background: var(--bg-elevated); padding: 1px 5px;
-  border-radius: 3px; color: var(--text)
-}
-
-.notes-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 10px }
 </style>
 </head>
 <body>
 
   <nav>
     <a href="index.html" style="color:var(--text-muted);font-size:10px;margin-right:6px;opacity:0.7">&larr; Home</a>
-    <a href="#intro" class="active">Overview</a>
-    <a href="#hik-full">Hikvision 626</a>
-    <a href="#hik-subset">Hikvision 54</a>
-    <a href="#oem">OEM Raqeeb</a>
-    <a href="#methodology">Methodology</a>
-    <span class="slide-counter" id="slideCounter">1 / 5</span>
+    <a href="#methodology" class="active">Methodology</a>
+    <a href="#results">Results</a>
+    <span class="slide-counter" id="slideCounter">1 / 2</span>
   </nav>
     
 
-  <section class="slide" id="intro">
+  <section class="slide" id="methodology">
     <div class="slide-stamp">
-      <span>occupancy / detection / 2026-04</span>
+      <span>occupancy / methodology / 2026-04</span>
       <span class="stamp-sep"></span>
-      <span class="stamp-idx">01 / 05</span>
+      <span class="stamp-idx">01 / 02</span>
     </div>
-    <span class="tag tag--accent">Occupancy Counts &mdash; Driver &amp; Passenger Detection</span>
-    <h2>Occupancy Counts &mdash; Driver &amp; Passenger Detection</h2>
-    <h3>Detection models scored on 626 Hikvision Alerts and 40 OEM Raqeeb frames. v2 methodology: cabin ROI filter, driver = largest box in ROI, passenger = remaining in-ROI boxes.</h3>
+    <span class="tag tag--blue">Methodology</span>
+    <h2>Pipeline &amp; Cabin ROI</h2>
+    <h3>Three steps. Same rule applies to face and person detectors.</h3>
     
-    <div class="stat-grid intro-stats">
-      <div class="stat stat--accent">
-        <div class="label">Detectors evaluated</div>
-        <div class="value">9</div>
-        <div class="sub">YOLO v8/v9/v10/v11/v12/v26 &middot; RT-DETR &middot; SCRFD</div>
+    <div class="pipe-grid">
+      <div class="pipe-card amber">
+        <div class="step">Step 1 / Detect</div>
+        <h4>Run face / person detector</h4>
+        <p>Every detection is a bounding box around a candidate occupant in the frame.</p>
       </div>
-      <div class="stat stat--blue">
-        <div class="label">Datasets</div>
-        <div class="value">2</div>
-        <div class="sub">Hikvision Alerts &middot; OEM Raqeeb fleet</div>
+      <div class="pipe-card green">
+        <div class="step">Step 2 / Filter</div>
+        <h4>Cabin ROI test</h4>
+        <p>Drop boxes whose centre lies outside the cabin region. Windshield and side-window areas are excluded.</p>
       </div>
-      <div class="stat stat--amber">
-        <div class="label">Hikvision Alerts</div>
-        <div class="value">626</div>
-        <div class="sub">integer count GT &middot; driver + passenger</div>
-      </div>
-      <div class="stat stat--purple">
-        <div class="label">OEM val set</div>
-        <div class="value">40</div>
-        <div class="sub">human-reviewed bbox annotations &rarr; counts</div>
+      <div class="pipe-card blue">
+        <div class="step">Step 3 / Assign</div>
+        <h4>Largest box in the cabin = driver</h4>
+        <p>The largest surviving box becomes the driver. The rest are passengers. If nothing survives, the driver is missing.</p>
       </div>
     </div>
 
-    <div class="notes-grid">
-      <div class="note-card green">
-        <div class="note-label">Driver — binary</div>
-        <h4>Largest box inside cabin ROI</h4>
-        <p>Predicted positive when at least one detection survives the cabin ROI filter. The largest such box is labelled the driver, the rest are passengers. <code>recall</code> matters more than accuracy: Hikvision GT is 625 / 626 positives.</p>
+    <div class="example-grid">
+      <div class="example-card">
+        <img src="assets/occupancy_counts/01_lone_driver.png" alt="Lone driver example">
+        <div class="body">
+          <div class="label">Example 01 / Lone driver</div>
+          <div class="caption">One person in the cabin. Counted as driver. No passengers.</div>
+        </div>
       </div>
-      <div class="note-card blue">
-        <div class="note-label">Passenger count</div>
-        <h4>Remaining in-ROI boxes</h4>
-        <p>Predicted as <code>n_in_roi − 1</code> (or 0 if no in-ROI box). <code>MAE</code>, exact-match, within-1 reported. Confusion matrix shows where each detector under- or over-counts.</p>
+      <div class="example-card">
+        <img src="assets/occupancy_counts/02_multi_occupant.png" alt="Multi-occupant example">
+        <div class="body">
+          <div class="label">Example 02 / Multi-occupant</div>
+          <div class="caption">Four people in the cabin. The largest (right) is the driver; the other three are passengers.</div>
+        </div>
       </div>
-      <div class="note-card amber">
-        <div class="note-label">Cabin ROI filter</div>
-        <h4>Outside-vehicle detections dropped</h4>
-        <p>Per-dataset rectangle in frame fractions: top 10% (windshield) and outermost 3–4% strips trimmed. Pedestrians visible through windows are excluded. Drop rate logged per detector.</p>
+      <div class="example-card">
+        <img src="assets/occupancy_counts/03_roi_drop.png" alt="ROI drop example">
+        <div class="body">
+          <div class="label">Example 03 / ROI drop</div>
+          <div class="caption">Three detections, but two fall outside the cabin and are dropped. Only the in-cabin one is counted.</div>
+        </div>
       </div>
     </div>
 
     <div class="action-bar blue">
-      <div class="action-text"><strong>v2 methodology.</strong> Boxes outside a per-dataset cabin ROI are dropped before counting; the largest surviving box is treated as the driver. No re-inference: cached <code>detections.parquet</code> files are scored under the new rule.</div>
+      <div class="action-text"><strong>Why "largest" rather than position-based:</strong> camera mounts vary across the fleet, so the driver doesn't always appear on the same side. Largest box generalises &mdash; the driver is closest to the camera in every layout.</div>
+    </div>
+
+    <div class="action-bar amber">
+      <div class="action-text"><strong>Known failure:</strong> this pipeline fails when there's a passenger but the driver is outside the vehicle &mdash; the passenger gets labelled "driver" and the count for passengers drops by one. Further experimentation required to tackle this issue.</div>
     </div>
     
   </section>
     
-  <section class="slide" id="hik-full">
+
+  <section class="slide" id="results">
     <div class="slide-stamp">
-      <span>occupancy / hikvision / 2026-04</span>
+      <span>occupancy / results / 2026-04</span>
       <span class="stamp-sep"></span>
-      <span class="stamp-idx">02 / 05</span>
+      <span class="stamp-idx">02 / 02</span>
     </div>
-    <span class="tag tag--blue">Hikvision &mdash; Full Alert Set (626 frames)</span>
-    <h2>Hikvision &mdash; Full Alert Set (626 frames)</h2>
-    <h3>Two detectors with full coverage. Driver recall ≥ 0.998 for both. Face detector edges out person detector on passenger MAE.</h3>
+    <span class="tag tag--accent">Results</span>
+    <h2>Hikvision Occupancy Leaderboard</h2>
+    <h3>Driver recall and passenger-presence accuracy on 626 Hikvision Alerts.</h3>
     
-      
+    
+    <div class="kpi-grid">
+      <div class="kpi-card green">
+        <div class="kpi-label">Best driver recall</div>
+        <div class="kpi-name"><span class="fam-dot detection"></span>yolov9e</div>
+        <div class="kpi-value">1.000</div>
+        <div class="kpi-detail">
+          tp <span class="pill">625</span>
+          fn <span class="pill">0</span>
+          of <span class="pill">625</span> driver-positive frames
+        </div>
+      </div>
+      <div class="kpi-card blue">
+        <div class="kpi-label">Best passenger detection (binary)</div>
+        <div class="kpi-name"><span class="fam-dot detection"></span>yolov9e</div>
+        <div class="kpi-value">0.947</div>
+        <div class="kpi-detail">
+          sensitivity <span class="pill">0.961</span>
+          specificity <span class="pill">0.933</span>
+          on <span class="pill">626 frames</span>
+        </div>
+      </div>
+    </div>
+    
+    
       <div class="legend">
         <div class="item"><span class="fam-dot mediapipe"></span> Face detector</div>
         <div class="item"><span class="fam-dot detection"></span> Person detector</div>
-        <div class="item"><code>Driver</code> = largest box inside cabin ROI</div>
-        <div class="item"><code>Passenger</code> = other in-ROI boxes</div>
-        <div class="item"><code>±1</code> = predicted count within 1 of truth</div>
+        <div class="item"><code>Driver recall</code> = TP / (TP + FN) on the 625 driver-positive frames</div>
+        <div class="item"><code>Passenger acc.</code> = (sens + spec) / 2 vs. has-passenger / no-passenger GT</div>
       </div>
+    
     
       <div class="lb-wrap">
         <table class="lb">
-          
-        <thead>
-          <tr>
-            <th class="model">Detector</th>
-            <th class="num metric-meta">Frames</th>
-            <th class="num metric-driver">Driver Recall</th>
-            <th class="num metric-driver">Driver F1</th>
-            <th class="num metric-pax">Passenger MAE</th>
-            <th class="num metric-pax">Passenger Exact</th>
-            <th class="num metric-pax">Passenger ±1</th>
-          </tr>
-        </thead>
-
+          <thead>
+            <tr>
+              <th class="model">Detector</th>
+              <th class="num">Frames</th>
+              <th class="num">Driver recall</th>
+              <th class="num">Passenger accuracy</th>
+            </tr>
+          </thead>
           <tbody>
           <tr>
             <td class="model">
-              <div class="name"><span class="fam-dot mediapipe"></span>yolov12l-face</div>
-              <div class="fam">FACE &middot; FULL</div>
+              <div class="name"><span class="fam-dot detection"></span>yolov9e</div>
+              <div class="fam">PERSON &middot; FULL</div>
             </td>
             <td class="num"><div class="cell-acc" style="font-size:12px">626</div></td>
             <td class="num" data-delta="pos-strong">
-              <div class="cell-acc">0.998</div>
-              <div class="cell-counts">tp 624 &middot; fp 1 &middot; fn 1</div>
-            </td>
-            <td class="num" data-delta="pos-strong">
-              <div class="cell-acc">0.998</div>
-              <div class="cell-counts">P 0.998 &middot; R 0.998</div>
-            </td>
-            <td class="num" data-delta="pos-strong">
-              <div class="cell-acc">0.144</div>
-              <div class="cell-counts">rmse 0.438</div>
+              <div class="cell-acc">1.000</div>
+              <div class="cell-counts">tp 625 &middot; fn 0 of 625</div>
             </td>
             <td class="num" data-delta="pos-mid">
-              <div class="cell-acc">0.871</div>
-              <div class="cell-counts">545 / 626</div>
-            </td>
-            <td class="num" data-delta="pos-strong">
-              <div class="cell-acc">0.990</div>
-              <div class="cell-counts">620 / 626</div>
+              <div class="cell-acc">0.947</div>
+              <div class="cell-counts">sens 0.961 &middot; spec 0.933</div>
             </td>
           </tr>
         
@@ -462,692 +481,179 @@ h4 { font-size: 13px; font-weight: 600; margin-bottom: 6px }
             <td class="num"><div class="cell-acc" style="font-size:12px">626</div></td>
             <td class="num" data-delta="pos-strong">
               <div class="cell-acc">1.000</div>
-              <div class="cell-counts">tp 625 &middot; fp 1 &middot; fn 0</div>
-            </td>
-            <td class="num" data-delta="pos-strong">
-              <div class="cell-acc">0.999</div>
-              <div class="cell-counts">P 0.998 &middot; R 1.000</div>
-            </td>
-            <td class="num" data-delta="pos-strong">
-              <div class="cell-acc">0.171</div>
-              <div class="cell-counts">rmse 0.498</div>
+              <div class="cell-counts">tp 625 &middot; fn 0 of 625</div>
             </td>
             <td class="num" data-delta="pos-mid">
-              <div class="cell-acc">0.859</div>
-              <div class="cell-counts">538 / 626</div>
-            </td>
-            <td class="num" data-delta="pos-strong">
-              <div class="cell-acc">0.976</div>
-              <div class="cell-counts">611 / 626</div>
-            </td>
-          </tr>
-        </tbody>
-        </table>
-      </div>
-      <h4 style="margin-top:14px;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted)">ROI drop rates</h4>
-      <div class="legend" style="background:var(--bg-card)"><span class="chip"><strong>yolov12l-face</strong>: 1 / 920 boxes (0.11%) dropped outside ROI</span><span class="chip"><strong>yolo11x</strong>: 13 / 1024 boxes (1.27%) dropped outside ROI</span></div>
-
-      <h4 style="margin-top:18px;font-size:12px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted)">Passenger count confusion (truth × predicted)</h4>
-      <div class="cm-grid">
-        
-        <div class="cm-card">
-          <div class="cm-title">
-            <span class="fam-dot mediapipe"></span><span class="cm-name">yolov12l-face</span>
-            <span class="cm-frames">626 frames</span>
-          </div>
-          <table class="cm">
-            <thead>
-              <tr><th class="cm-h cm-corner">truth ↓ / pred →</th><th class="cm-h">0</th><th class="cm-h">1</th><th class="cm-h">2</th><th class="cm-h">3</th><th class="cm-h">4+</th><th class="cm-h">Σ</th></tr>
-            </thead>
-            <tbody><tr><th class="cm-h">0</th><td class="cm-c cm-diag">426</td><td class="cm-c cm-off">17</td><td class="cm-c cm-off">3</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-total">446</td></tr><tr><th class="cm-h">1</th><td class="cm-c cm-off">22</td><td class="cm-c cm-diag">77</td><td class="cm-c cm-off">3</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-off">1</td><td class="cm-total">103</td></tr><tr><th class="cm-h">2</th><td class="cm-c cm-zero">0</td><td class="cm-c cm-off">8</td><td class="cm-c cm-diag">17</td><td class="cm-c cm-off">3</td><td class="cm-c cm-zero">0</td><td class="cm-total">28</td></tr><tr><th class="cm-h">3</th><td class="cm-c cm-zero">0</td><td class="cm-c cm-off">2</td><td class="cm-c cm-off">17</td><td class="cm-c cm-diag">25</td><td class="cm-c cm-off">5</td><td class="cm-total">49</td></tr><tr><th class="cm-h">4+</th><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-total">0</td></tr></tbody>
-          </table>
-        </div>
-        
-        <div class="cm-card">
-          <div class="cm-title">
-            <span class="fam-dot detection"></span><span class="cm-name">yolo11x</span>
-            <span class="cm-frames">626 frames</span>
-          </div>
-          <table class="cm">
-            <thead>
-              <tr><th class="cm-h cm-corner">truth ↓ / pred →</th><th class="cm-h">0</th><th class="cm-h">1</th><th class="cm-h">2</th><th class="cm-h">3</th><th class="cm-h">4+</th><th class="cm-h">Σ</th></tr>
-            </thead>
-            <tbody><tr><th class="cm-h">0</th><td class="cm-c cm-diag">409</td><td class="cm-c cm-off">30</td><td class="cm-c cm-off">5</td><td class="cm-c cm-off">1</td><td class="cm-c cm-off">1</td><td class="cm-total">446</td></tr><tr><th class="cm-h">1</th><td class="cm-c cm-off">5</td><td class="cm-c cm-diag">79</td><td class="cm-c cm-off">15</td><td class="cm-c cm-off">3</td><td class="cm-c cm-off">1</td><td class="cm-total">103</td></tr><tr><th class="cm-h">2</th><td class="cm-c cm-zero">0</td><td class="cm-c cm-off">2</td><td class="cm-c cm-diag">18</td><td class="cm-c cm-off">8</td><td class="cm-c cm-zero">0</td><td class="cm-total">28</td></tr><tr><th class="cm-h">3</th><td class="cm-c cm-zero">0</td><td class="cm-c cm-off">1</td><td class="cm-c cm-off">5</td><td class="cm-c cm-diag">32</td><td class="cm-c cm-off">11</td><td class="cm-total">49</td></tr><tr><th class="cm-h">4+</th><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-total">0</td></tr></tbody>
-          </table>
-        </div>
-        
-      </div>
-
-      <div class="action-bar amber">
-        <div class="action-text"><strong>Driver detection saturates</strong> at ≥ 0.998 recall — both detectors find a person in the cabin ROI for nearly every frame. Passenger MAE is where the detectors split: the face detector under-counts less often than the person detector, which sometimes over-counts when an arm crosses the cabin centreline. ROI drop rate is low (≤ 1.3%) — outside-vehicle detections are rare on this camera mount.</div>
-      </div>
-    
-  </section>
-    
-  <section class="slide" id="hik-subset">
-    <div class="slide-stamp">
-      <span>occupancy / hikvision-subset / 2026-04</span>
-      <span class="stamp-sep"></span>
-      <span class="stamp-idx">03 / 05</span>
-    </div>
-    <span class="tag tag--amber">Hikvision &mdash; 54-frame Validation Subset</span>
-    <h2>Hikvision &mdash; 54-frame Validation Subset</h2>
-    <h3>Stress-test slice (over-samples multi-occupant frames). Includes two extra detectors that only ran on this subset.</h3>
-    
-      <p style="font-size:12.5px;color:var(--text-dim);margin-bottom:6px">
-        Same 54 frames, four detectors. The full-coverage detectors (<code>yolo11x</code>, <code>yolov12l-face</code>) appear with a <code>(54-frame)</code> suffix so the comparison is apples-to-apples against the val_probe-only models (<code>yolo26x</code>, <code>scrfd_buffalo_l</code>).
-      </p>
-      
-      <div class="legend">
-        <div class="item"><span class="fam-dot mediapipe"></span> Face detector</div>
-        <div class="item"><span class="fam-dot detection"></span> Person detector</div>
-        <div class="item"><code>Driver</code> = largest box inside cabin ROI</div>
-        <div class="item"><code>Passenger</code> = other in-ROI boxes</div>
-        <div class="item"><code>±1</code> = predicted count within 1 of truth</div>
-      </div>
-    
-      <div class="lb-wrap">
-        <table class="lb">
-          
-        <thead>
-          <tr>
-            <th class="model">Detector</th>
-            <th class="num metric-meta">Frames</th>
-            <th class="num metric-driver">Driver Recall</th>
-            <th class="num metric-driver">Driver F1</th>
-            <th class="num metric-pax">Passenger MAE</th>
-            <th class="num metric-pax">Passenger Exact</th>
-            <th class="num metric-pax">Passenger ±1</th>
-          </tr>
-        </thead>
-
-          <tbody>
-          <tr>
-            <td class="model">
-              <div class="name"><span class="fam-dot mediapipe"></span>scrfd_buffalo_l</div>
-              <div class="fam">FACE &middot; SUBSET</div><div class="fam">ran only on 54-frame validation subset</div>
-            </td>
-            <td class="num"><div class="cell-acc" style="font-size:12px">54</div></td>
-            <td class="num" data-delta="pos-strong">
-              <div class="cell-acc">1.000</div>
-              <div class="cell-counts">tp 53 &middot; fp 1 &middot; fn 0</div>
-            </td>
-            <td class="num" data-delta="pos-strong">
-              <div class="cell-acc">0.991</div>
-              <div class="cell-counts">P 0.981 &middot; R 1.000</div>
-            </td>
-            <td class="num" data-delta="pos-mid">
-              <div class="cell-acc">0.333</div>
-              <div class="cell-counts">rmse 0.609</div>
-            </td>
-            <td class="num" data-delta="pos-tiny">
-              <div class="cell-acc">0.685</div>
-              <div class="cell-counts">37 / 54</div>
-            </td>
-            <td class="num" data-delta="pos-strong">
-              <div class="cell-acc">0.981</div>
-              <div class="cell-counts">53 / 54</div>
-            </td>
-          </tr>
-        
-          <tr>
-            <td class="model">
-              <div class="name"><span class="fam-dot mediapipe"></span>yolov12l-face (54-frame)</div>
-              <div class="fam">FACE &middot; SUBSET</div><div class="fam">same parquet, scored on 54-frame validation subset for parity</div>
-            </td>
-            <td class="num"><div class="cell-acc" style="font-size:12px">54</div></td>
-            <td class="num" data-delta="pos-strong">
-              <div class="cell-acc">1.000</div>
-              <div class="cell-counts">tp 53 &middot; fp 1 &middot; fn 0</div>
-            </td>
-            <td class="num" data-delta="pos-strong">
-              <div class="cell-acc">0.991</div>
-              <div class="cell-counts">P 0.981 &middot; R 1.000</div>
-            </td>
-            <td class="num" data-delta="pos-weak">
-              <div class="cell-acc">0.463</div>
-              <div class="cell-counts">rmse 0.733</div>
-            </td>
-            <td class="num" data-delta="pos-tiny">
-              <div class="cell-acc">0.574</div>
-              <div class="cell-counts">31 / 54</div>
-            </td>
-            <td class="num" data-delta="pos-strong">
-              <div class="cell-acc">0.963</div>
-              <div class="cell-counts">52 / 54</div>
-            </td>
-          </tr>
-        
-          <tr>
-            <td class="model">
-              <div class="name"><span class="fam-dot detection"></span>yolo26x</div>
-              <div class="fam">PERSON &middot; SUBSET</div><div class="fam">ran only on 54-frame validation subset</div>
-            </td>
-            <td class="num"><div class="cell-acc" style="font-size:12px">54</div></td>
-            <td class="num" data-delta="pos-strong">
-              <div class="cell-acc">1.000</div>
-              <div class="cell-counts">tp 53 &middot; fp 1 &middot; fn 0</div>
-            </td>
-            <td class="num" data-delta="pos-strong">
-              <div class="cell-acc">0.991</div>
-              <div class="cell-counts">P 0.981 &middot; R 1.000</div>
-            </td>
-            <td class="num" data-delta="pos-weak">
-              <div class="cell-acc">0.444</div>
-              <div class="cell-counts">rmse 0.770</div>
-            </td>
-            <td class="num" data-delta="pos-tiny">
-              <div class="cell-acc">0.611</div>
-              <div class="cell-counts">33 / 54</div>
-            </td>
-            <td class="num" data-delta="pos-strong">
-              <div class="cell-acc">0.963</div>
-              <div class="cell-counts">52 / 54</div>
-            </td>
-          </tr>
-        
-          <tr>
-            <td class="model">
-              <div class="name"><span class="fam-dot detection"></span>yolo11x (54-frame)</div>
-              <div class="fam">PERSON &middot; SUBSET</div><div class="fam">same parquet, scored on 54-frame validation subset for parity</div>
-            </td>
-            <td class="num"><div class="cell-acc" style="font-size:12px">54</div></td>
-            <td class="num" data-delta="pos-strong">
-              <div class="cell-acc">1.000</div>
-              <div class="cell-counts">tp 53 &middot; fp 1 &middot; fn 0</div>
-            </td>
-            <td class="num" data-delta="pos-strong">
-              <div class="cell-acc">0.991</div>
-              <div class="cell-counts">P 0.981 &middot; R 1.000</div>
-            </td>
-            <td class="num" data-delta="pos-tiny">
-              <div class="cell-acc">0.741</div>
-              <div class="cell-counts">rmse 1.106</div>
-            </td>
-            <td class="num" data-delta="neg-tiny">
-              <div class="cell-acc">0.426</div>
-              <div class="cell-counts">23 / 54</div>
-            </td>
-            <td class="num" data-delta="pos-mid">
-              <div class="cell-acc">0.889</div>
-              <div class="cell-counts">48 / 54</div>
-            </td>
-          </tr>
-        </tbody>
-        </table>
-      </div>
-
-      <div class="action-bar blue">
-        <div class="action-text"><strong>Subset is harder than the full set.</strong> Passenger MAE jumps for every detector — the validation subset over-samples multi-occupant frames (the regime the bootstrap workflow flags for human review). Use these numbers for stress-testing, not as a representative score.</div>
-      </div>
-    
-  </section>
-    
-  <section class="slide" id="oem">
-    <div class="slide-stamp">
-      <span>occupancy / oem-raqeeb / 2026-04</span>
-      <span class="stamp-sep"></span>
-      <span class="stamp-idx">04 / 05</span>
-    </div>
-    <span class="tag tag--purple">OEM Raqeeb &mdash; 40-frame Validation Probe</span>
-    <h2>OEM Raqeeb &mdash; 40-frame Validation Probe</h2>
-    <h3>Nine detectors scored against count GT derived from the human-reviewed COCO file. Probe-scale, not a benchmark.</h3>
-    
-      <p style="font-size:12.5px;color:var(--text-dim);margin-bottom:6px">
-        Truth derived from the 40-frame human-reviewed COCO file
-        (<code>experiments/face_person_validation/oem_raqeeb_full/annotations.coco.json</code>).
-        Every frame has driver_count = 1; passenger_count comes from <code>n_person − 1</code>.
-        Sample size is small — read this as a probe, not a benchmark.
-      </p>
-      
-      <div class="legend">
-        <div class="item"><span class="fam-dot mediapipe"></span> Face detector</div>
-        <div class="item"><span class="fam-dot detection"></span> Person detector</div>
-        <div class="item"><code>Driver</code> = largest box inside cabin ROI</div>
-        <div class="item"><code>Passenger</code> = other in-ROI boxes</div>
-        <div class="item"><code>±1</code> = predicted count within 1 of truth</div>
-      </div>
-    
-      <div class="lb-wrap">
-        <table class="lb">
-          
-        <thead>
-          <tr>
-            <th class="model">Detector</th>
-            <th class="num metric-meta">Frames</th>
-            <th class="num metric-driver">Driver Recall</th>
-            <th class="num metric-driver">Driver F1</th>
-            <th class="num metric-pax">Passenger MAE</th>
-            <th class="num metric-pax">Passenger Exact</th>
-            <th class="num metric-pax">Passenger ±1</th>
-          </tr>
-        </thead>
-
-          <tbody>
-          <tr>
-            <td class="model">
-              <div class="name"><span class="fam-dot mediapipe"></span>scrfd_buffalo_l</div>
-              <div class="fam">FACE &middot; SUBSET</div><div class="fam">full-dataset run, filtered to 40-frame subset</div>
-            </td>
-            <td class="num"><div class="cell-acc" style="font-size:12px">40</div></td>
-            <td class="num" data-delta="pos-weak">
-              <div class="cell-acc">0.775</div>
-              <div class="cell-counts">tp 31 &middot; fp 0 &middot; fn 9</div>
-            </td>
-            <td class="num" data-delta="pos-mid">
-              <div class="cell-acc">0.873</div>
-              <div class="cell-counts">P 1.000 &middot; R 0.775</div>
-            </td>
-            <td class="num" data-delta="pos-tiny">
-              <div class="cell-acc">0.700</div>
-              <div class="cell-counts">rmse 1.072</div>
-            </td>
-            <td class="num" data-delta="pos-tiny">
-              <div class="cell-acc">0.500</div>
-              <div class="cell-counts">20 / 40</div>
-            </td>
-            <td class="num" data-delta="pos-weak">
-              <div class="cell-acc">0.825</div>
-              <div class="cell-counts">33 / 40</div>
-            </td>
-          </tr>
-        
-          <tr>
-            <td class="model">
-              <div class="name"><span class="fam-dot mediapipe"></span>yolov12l-face</div>
-              <div class="fam">FACE &middot; SUBSET</div><div class="fam">full-dataset run, filtered to 40-frame subset</div>
-            </td>
-            <td class="num"><div class="cell-acc" style="font-size:12px">40</div></td>
-            <td class="num" data-delta="pos-mid">
-              <div class="cell-acc">0.850</div>
-              <div class="cell-counts">tp 34 &middot; fp 0 &middot; fn 6</div>
-            </td>
-            <td class="num" data-delta="pos-mid">
-              <div class="cell-acc">0.919</div>
-              <div class="cell-counts">P 1.000 &middot; R 0.850</div>
-            </td>
-            <td class="num" data-delta="pos-tiny">
-              <div class="cell-acc">0.725</div>
-              <div class="cell-counts">rmse 1.061</div>
-            </td>
-            <td class="num" data-delta="neg-tiny">
-              <div class="cell-acc">0.450</div>
-              <div class="cell-counts">18 / 40</div>
-            </td>
-            <td class="num" data-delta="pos-mid">
-              <div class="cell-acc">0.850</div>
-              <div class="cell-counts">34 / 40</div>
-            </td>
-          </tr>
-        
-          <tr>
-            <td class="model">
-              <div class="name"><span class="fam-dot detection"></span>yolo26x</div>
-              <div class="fam">PERSON &middot; SUBSET</div>
-            </td>
-            <td class="num"><div class="cell-acc" style="font-size:12px">40</div></td>
-            <td class="num" data-delta="pos-strong">
-              <div class="cell-acc">0.975</div>
-              <div class="cell-counts">tp 39 &middot; fp 0 &middot; fn 1</div>
-            </td>
-            <td class="num" data-delta="pos-strong">
-              <div class="cell-acc">0.987</div>
-              <div class="cell-counts">P 1.000 &middot; R 0.975</div>
-            </td>
-            <td class="num" data-delta="pos-weak">
-              <div class="cell-acc">0.475</div>
-              <div class="cell-counts">rmse 0.791</div>
-            </td>
-            <td class="num" data-delta="pos-tiny">
-              <div class="cell-acc">0.600</div>
-              <div class="cell-counts">24 / 40</div>
-            </td>
-            <td class="num" data-delta="pos-mid">
-              <div class="cell-acc">0.925</div>
-              <div class="cell-counts">37 / 40</div>
-            </td>
-          </tr>
-        
-          <tr>
-            <td class="model">
-              <div class="name"><span class="fam-dot detection"></span>yolov10x</div>
-              <div class="fam">PERSON &middot; SUBSET</div>
-            </td>
-            <td class="num"><div class="cell-acc" style="font-size:12px">40</div></td>
-            <td class="num" data-delta="pos-strong">
-              <div class="cell-acc">0.975</div>
-              <div class="cell-counts">tp 39 &middot; fp 0 &middot; fn 1</div>
-            </td>
-            <td class="num" data-delta="pos-strong">
-              <div class="cell-acc">0.987</div>
-              <div class="cell-counts">P 1.000 &middot; R 0.975</div>
-            </td>
-            <td class="num" data-delta="pos-weak">
-              <div class="cell-acc">0.500</div>
-              <div class="cell-counts">rmse 0.806</div>
-            </td>
-            <td class="num" data-delta="pos-tiny">
-              <div class="cell-acc">0.575</div>
-              <div class="cell-counts">23 / 40</div>
-            </td>
-            <td class="num" data-delta="pos-mid">
-              <div class="cell-acc">0.925</div>
-              <div class="cell-counts">37 / 40</div>
-            </td>
-          </tr>
-        
-          <tr>
-            <td class="model">
-              <div class="name"><span class="fam-dot detection"></span>yolov8x</div>
-              <div class="fam">PERSON &middot; SUBSET</div>
-            </td>
-            <td class="num"><div class="cell-acc" style="font-size:12px">40</div></td>
-            <td class="num" data-delta="pos-strong">
-              <div class="cell-acc">1.000</div>
-              <div class="cell-counts">tp 40 &middot; fp 0 &middot; fn 0</div>
-            </td>
-            <td class="num" data-delta="pos-strong">
-              <div class="cell-acc">1.000</div>
-              <div class="cell-counts">P 1.000 &middot; R 1.000</div>
-            </td>
-            <td class="num" data-delta="pos-weak">
-              <div class="cell-acc">0.525</div>
-              <div class="cell-counts">rmse 0.851</div>
-            </td>
-            <td class="num" data-delta="pos-tiny">
-              <div class="cell-acc">0.575</div>
-              <div class="cell-counts">23 / 40</div>
-            </td>
-            <td class="num" data-delta="pos-mid">
-              <div class="cell-acc">0.900</div>
-              <div class="cell-counts">36 / 40</div>
+              <div class="cell-acc">0.945</div>
+              <div class="cell-counts">sens 0.972 &middot; spec 0.917</div>
             </td>
           </tr>
         
           <tr>
             <td class="model">
               <div class="name"><span class="fam-dot detection"></span>yolo12x</div>
-              <div class="fam">PERSON &middot; SUBSET</div>
+              <div class="fam">PERSON &middot; FULL</div>
             </td>
-            <td class="num"><div class="cell-acc" style="font-size:12px">40</div></td>
+            <td class="num"><div class="cell-acc" style="font-size:12px">626</div></td>
             <td class="num" data-delta="pos-strong">
-              <div class="cell-acc">0.975</div>
-              <div class="cell-counts">tp 39 &middot; fp 0 &middot; fn 1</div>
-            </td>
-            <td class="num" data-delta="pos-strong">
-              <div class="cell-acc">0.987</div>
-              <div class="cell-counts">P 1.000 &middot; R 0.975</div>
-            </td>
-            <td class="num" data-delta="pos-weak">
-              <div class="cell-acc">0.575</div>
-              <div class="cell-counts">rmse 0.851</div>
-            </td>
-            <td class="num" data-delta="pos-tiny">
-              <div class="cell-acc">0.500</div>
-              <div class="cell-counts">20 / 40</div>
+              <div class="cell-acc">1.000</div>
+              <div class="cell-counts">tp 625 &middot; fn 0 of 625</div>
             </td>
             <td class="num" data-delta="pos-mid">
-              <div class="cell-acc">0.925</div>
-              <div class="cell-counts">37 / 40</div>
+              <div class="cell-acc">0.944</div>
+              <div class="cell-counts">sens 0.956 &middot; spec 0.933</div>
             </td>
           </tr>
         
           <tr>
             <td class="model">
-              <div class="name"><span class="fam-dot detection"></span>yolov9e</div>
-              <div class="fam">PERSON &middot; SUBSET</div>
+              <div class="name"><span class="fam-dot mediapipe"></span>scrfd_buffalo_l</div>
+              <div class="fam">FACE &middot; FULL</div>
             </td>
-            <td class="num"><div class="cell-acc" style="font-size:12px">40</div></td>
+            <td class="num"><div class="cell-acc" style="font-size:12px">626</div></td>
             <td class="num" data-delta="pos-strong">
-              <div class="cell-acc">1.000</div>
-              <div class="cell-counts">tp 40 &middot; fp 0 &middot; fn 0</div>
-            </td>
-            <td class="num" data-delta="pos-strong">
-              <div class="cell-acc">1.000</div>
-              <div class="cell-counts">P 1.000 &middot; R 1.000</div>
-            </td>
-            <td class="num" data-delta="pos-weak">
-              <div class="cell-acc">0.600</div>
-              <div class="cell-counts">rmse 0.975</div>
-            </td>
-            <td class="num" data-delta="pos-tiny">
-              <div class="cell-acc">0.550</div>
-              <div class="cell-counts">22 / 40</div>
+              <div class="cell-acc">0.998</div>
+              <div class="cell-counts">tp 624 &middot; fn 1 of 625</div>
             </td>
             <td class="num" data-delta="pos-mid">
-              <div class="cell-acc">0.875</div>
-              <div class="cell-counts">35 / 40</div>
+              <div class="cell-acc">0.938</div>
+              <div class="cell-counts">sens 0.883 &middot; spec 0.993</div>
             </td>
           </tr>
         
           <tr>
             <td class="model">
-              <div class="name"><span class="fam-dot detection"></span>yolo11x</div>
-              <div class="fam">PERSON &middot; SUBSET</div>
+              <div class="name"><span class="fam-dot detection"></span>yolov10x</div>
+              <div class="fam">PERSON &middot; FULL</div>
             </td>
-            <td class="num"><div class="cell-acc" style="font-size:12px">40</div></td>
+            <td class="num"><div class="cell-acc" style="font-size:12px">626</div></td>
             <td class="num" data-delta="pos-strong">
               <div class="cell-acc">1.000</div>
-              <div class="cell-counts">tp 40 &middot; fp 0 &middot; fn 0</div>
+              <div class="cell-counts">tp 625 &middot; fn 0 of 625</div>
             </td>
+            <td class="num" data-delta="pos-mid">
+              <div class="cell-acc">0.932</div>
+              <div class="cell-counts">sens 0.956 &middot; spec 0.908</div>
+            </td>
+          </tr>
+        
+          <tr>
+            <td class="model">
+              <div class="name"><span class="fam-dot detection"></span>yolo26x</div>
+              <div class="fam">PERSON &middot; FULL</div>
+            </td>
+            <td class="num"><div class="cell-acc" style="font-size:12px">626</div></td>
             <td class="num" data-delta="pos-strong">
               <div class="cell-acc">1.000</div>
-              <div class="cell-counts">P 1.000 &middot; R 1.000</div>
+              <div class="cell-counts">tp 625 &middot; fn 0 of 625</div>
             </td>
-            <td class="num" data-delta="neg-tiny">
-              <div class="cell-acc">0.825</div>
-              <div class="cell-counts">rmse 1.214</div>
+            <td class="num" data-delta="pos-mid">
+              <div class="cell-acc">0.928</div>
+              <div class="cell-counts">sens 0.978 &middot; spec 0.879</div>
             </td>
-            <td class="num" data-delta="neg-tiny">
-              <div class="cell-acc">0.450</div>
-              <div class="cell-counts">18 / 40</div>
+          </tr>
+        
+          <tr>
+            <td class="model">
+              <div class="name"><span class="fam-dot detection"></span>yolov8x</div>
+              <div class="fam">PERSON &middot; FULL</div>
             </td>
-            <td class="num" data-delta="pos-weak">
-              <div class="cell-acc">0.775</div>
-              <div class="cell-counts">31 / 40</div>
+            <td class="num"><div class="cell-acc" style="font-size:12px">626</div></td>
+            <td class="num" data-delta="pos-strong">
+              <div class="cell-acc">1.000</div>
+              <div class="cell-counts">tp 625 &middot; fn 0 of 625</div>
+            </td>
+            <td class="num" data-delta="pos-mid">
+              <div class="cell-acc">0.919</div>
+              <div class="cell-counts">sens 0.956 &middot; spec 0.883</div>
+            </td>
+          </tr>
+        
+          <tr>
+            <td class="model">
+              <div class="name"><span class="fam-dot mediapipe"></span>yolov12l-face</div>
+              <div class="fam">FACE &middot; FULL</div>
+            </td>
+            <td class="num"><div class="cell-acc" style="font-size:12px">626</div></td>
+            <td class="num" data-delta="pos-strong">
+              <div class="cell-acc">0.998</div>
+              <div class="cell-counts">tp 624 &middot; fn 1 of 625</div>
+            </td>
+            <td class="num" data-delta="pos-mid">
+              <div class="cell-acc">0.916</div>
+              <div class="cell-counts">sens 0.878 &middot; spec 0.955</div>
+            </td>
+          </tr>
+        
+          <tr>
+            <td class="model">
+              <div class="name"><span class="fam-dot mediapipe"></span>scrfd_buffalo_s</div>
+              <div class="fam">FACE &middot; FULL</div>
+            </td>
+            <td class="num"><div class="cell-acc" style="font-size:12px">626</div></td>
+            <td class="num" data-delta="pos-strong">
+              <div class="cell-acc">0.998</div>
+              <div class="cell-counts">tp 624 &middot; fn 1 of 625</div>
+            </td>
+            <td class="num" data-delta="pos-mid">
+              <div class="cell-acc">0.916</div>
+              <div class="cell-counts">sens 0.839 &middot; spec 0.993</div>
             </td>
           </tr>
         
           <tr>
             <td class="model">
               <div class="name"><span class="fam-dot detection"></span>rtdetr-x</div>
-              <div class="fam">PERSON &middot; SUBSET</div>
+              <div class="fam">PERSON &middot; FULL</div>
             </td>
-            <td class="num"><div class="cell-acc" style="font-size:12px">40</div></td>
+            <td class="num"><div class="cell-acc" style="font-size:12px">626</div></td>
             <td class="num" data-delta="pos-strong">
               <div class="cell-acc">1.000</div>
-              <div class="cell-counts">tp 40 &middot; fp 0 &middot; fn 0</div>
+              <div class="cell-counts">tp 625 &middot; fn 0 of 625</div>
             </td>
+            <td class="num" data-delta="pos-mid">
+              <div class="cell-acc">0.910</div>
+              <div class="cell-counts">sens 0.978 &middot; spec 0.843</div>
+            </td>
+          </tr>
+        
+          <tr>
+            <td class="model">
+              <div class="name"><span class="fam-dot detection"></span>dfine_l</div>
+              <div class="fam">PERSON &middot; FULL</div>
+            </td>
+            <td class="num"><div class="cell-acc" style="font-size:12px">626</div></td>
             <td class="num" data-delta="pos-strong">
               <div class="cell-acc">1.000</div>
-              <div class="cell-counts">P 1.000 &middot; R 1.000</div>
+              <div class="cell-counts">tp 625 &middot; fn 0 of 625</div>
             </td>
-            <td class="num" data-delta="neg-mid">
-              <div class="cell-acc">1.875</div>
-              <div class="cell-counts">rmse 2.465</div>
+            <td class="num" data-delta="pos-mid">
+              <div class="cell-acc">0.885</div>
+              <div class="cell-counts">sens 0.994 &middot; spec 0.776</div>
             </td>
-            <td class="num" data-delta="neg-weak">
-              <div class="cell-acc">0.225</div>
-              <div class="cell-counts">9 / 40</div>
+          </tr>
+        
+          <tr>
+            <td class="model">
+              <div class="name"><span class="fam-dot mediapipe"></span>mediapipe_face</div>
+              <div class="fam">FACE &middot; FULL</div>
+            </td>
+            <td class="num"><div class="cell-acc" style="font-size:12px">626</div></td>
+            <td class="num" data-delta="pos-mid">
+              <div class="cell-acc">0.904</div>
+              <div class="cell-counts">tp 565 &middot; fn 60 of 625</div>
             </td>
             <td class="num" data-delta="pos-tiny">
-              <div class="cell-acc">0.525</div>
-              <div class="cell-counts">21 / 40</div>
+              <div class="cell-acc">0.569</div>
+              <div class="cell-counts">sens 0.139 &middot; spec 1.000</div>
             </td>
           </tr>
         </tbody>
         </table>
       </div>
-
-      <h4 style="margin-top:18px;font-size:12px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted)">Passenger count confusion (truth × predicted)</h4>
-      <div class="cm-grid three">
-        
-        <div class="cm-card">
-          <div class="cm-title">
-            <span class="fam-dot mediapipe"></span><span class="cm-name">scrfd_buffalo_l</span>
-            <span class="cm-frames">40 frames</span>
-          </div>
-          <table class="cm">
-            <thead>
-              <tr><th class="cm-h cm-corner">truth ↓ / pred →</th><th class="cm-h">0</th><th class="cm-h">1</th><th class="cm-h">2</th><th class="cm-h">3</th><th class="cm-h">Σ</th></tr>
-            </thead>
-            <tbody><tr><th class="cm-h">0</th><td class="cm-c cm-diag">16</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-total">16</td></tr><tr><th class="cm-h">1</th><td class="cm-c cm-off">10</td><td class="cm-c cm-diag">3</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-total">13</td></tr><tr><th class="cm-h">2</th><td class="cm-c cm-off">6</td><td class="cm-c cm-off">3</td><td class="cm-c cm-diag">1</td><td class="cm-c cm-zero">0</td><td class="cm-total">10</td></tr><tr><th class="cm-h">3</th><td class="cm-c cm-off">1</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-total">1</td></tr></tbody>
-          </table>
-        </div>
-        
-        <div class="cm-card">
-          <div class="cm-title">
-            <span class="fam-dot mediapipe"></span><span class="cm-name">yolov12l-face</span>
-            <span class="cm-frames">40 frames</span>
-          </div>
-          <table class="cm">
-            <thead>
-              <tr><th class="cm-h cm-corner">truth ↓ / pred →</th><th class="cm-h">0</th><th class="cm-h">1</th><th class="cm-h">2</th><th class="cm-h">3</th><th class="cm-h">Σ</th></tr>
-            </thead>
-            <tbody><tr><th class="cm-h">0</th><td class="cm-c cm-diag">14</td><td class="cm-c cm-off">2</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-total">16</td></tr><tr><th class="cm-h">1</th><td class="cm-c cm-off">8</td><td class="cm-c cm-diag">3</td><td class="cm-c cm-off">2</td><td class="cm-c cm-zero">0</td><td class="cm-total">13</td></tr><tr><th class="cm-h">2</th><td class="cm-c cm-off">5</td><td class="cm-c cm-off">4</td><td class="cm-c cm-diag">1</td><td class="cm-c cm-zero">0</td><td class="cm-total">10</td></tr><tr><th class="cm-h">3</th><td class="cm-c cm-off">1</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-total">1</td></tr></tbody>
-          </table>
-        </div>
-        
-        <div class="cm-card">
-          <div class="cm-title">
-            <span class="fam-dot detection"></span><span class="cm-name">yolo26x</span>
-            <span class="cm-frames">40 frames</span>
-          </div>
-          <table class="cm">
-            <thead>
-              <tr><th class="cm-h cm-corner">truth ↓ / pred →</th><th class="cm-h">0</th><th class="cm-h">1</th><th class="cm-h">2</th><th class="cm-h">3</th><th class="cm-h">Σ</th></tr>
-            </thead>
-            <tbody><tr><th class="cm-h">0</th><td class="cm-c cm-diag">14</td><td class="cm-c cm-off">2</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-total">16</td></tr><tr><th class="cm-h">1</th><td class="cm-c cm-off">5</td><td class="cm-c cm-diag">7</td><td class="cm-c cm-off">1</td><td class="cm-c cm-zero">0</td><td class="cm-total">13</td></tr><tr><th class="cm-h">2</th><td class="cm-c cm-off">2</td><td class="cm-c cm-off">4</td><td class="cm-c cm-diag">3</td><td class="cm-c cm-off">1</td><td class="cm-total">10</td></tr><tr><th class="cm-h">3</th><td class="cm-c cm-zero">0</td><td class="cm-c cm-off">1</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-total">1</td></tr></tbody>
-          </table>
-        </div>
-        
-        <div class="cm-card">
-          <div class="cm-title">
-            <span class="fam-dot detection"></span><span class="cm-name">yolov10x</span>
-            <span class="cm-frames">40 frames</span>
-          </div>
-          <table class="cm">
-            <thead>
-              <tr><th class="cm-h cm-corner">truth ↓ / pred →</th><th class="cm-h">0</th><th class="cm-h">1</th><th class="cm-h">2</th><th class="cm-h">3</th><th class="cm-h">Σ</th></tr>
-            </thead>
-            <tbody><tr><th class="cm-h">0</th><td class="cm-c cm-diag">11</td><td class="cm-c cm-off">5</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-total">16</td></tr><tr><th class="cm-h">1</th><td class="cm-c cm-off">4</td><td class="cm-c cm-diag">7</td><td class="cm-c cm-off">2</td><td class="cm-c cm-zero">0</td><td class="cm-total">13</td></tr><tr><th class="cm-h">2</th><td class="cm-c cm-off">2</td><td class="cm-c cm-off">2</td><td class="cm-c cm-diag">5</td><td class="cm-c cm-off">1</td><td class="cm-total">10</td></tr><tr><th class="cm-h">3</th><td class="cm-c cm-zero">0</td><td class="cm-c cm-off">1</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-total">1</td></tr></tbody>
-          </table>
-        </div>
-        
-        <div class="cm-card">
-          <div class="cm-title">
-            <span class="fam-dot detection"></span><span class="cm-name">yolov8x</span>
-            <span class="cm-frames">40 frames</span>
-          </div>
-          <table class="cm">
-            <thead>
-              <tr><th class="cm-h cm-corner">truth ↓ / pred →</th><th class="cm-h">0</th><th class="cm-h">1</th><th class="cm-h">2</th><th class="cm-h">3</th><th class="cm-h">Σ</th></tr>
-            </thead>
-            <tbody><tr><th class="cm-h">0</th><td class="cm-c cm-diag">13</td><td class="cm-c cm-off">2</td><td class="cm-c cm-off">1</td><td class="cm-c cm-zero">0</td><td class="cm-total">16</td></tr><tr><th class="cm-h">1</th><td class="cm-c cm-off">5</td><td class="cm-c cm-diag">6</td><td class="cm-c cm-off">2</td><td class="cm-c cm-zero">0</td><td class="cm-total">13</td></tr><tr><th class="cm-h">2</th><td class="cm-c cm-off">2</td><td class="cm-c cm-off">2</td><td class="cm-c cm-diag">4</td><td class="cm-c cm-off">2</td><td class="cm-total">10</td></tr><tr><th class="cm-h">3</th><td class="cm-c cm-zero">0</td><td class="cm-c cm-off">1</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-total">1</td></tr></tbody>
-          </table>
-        </div>
-        
-        <div class="cm-card">
-          <div class="cm-title">
-            <span class="fam-dot detection"></span><span class="cm-name">yolo12x</span>
-            <span class="cm-frames">40 frames</span>
-          </div>
-          <table class="cm">
-            <thead>
-              <tr><th class="cm-h cm-corner">truth ↓ / pred →</th><th class="cm-h">0</th><th class="cm-h">1</th><th class="cm-h">2</th><th class="cm-h">3</th><th class="cm-h">Σ</th></tr>
-            </thead>
-            <tbody><tr><th class="cm-h">0</th><td class="cm-c cm-diag">14</td><td class="cm-c cm-off">2</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-total">16</td></tr><tr><th class="cm-h">1</th><td class="cm-c cm-off">7</td><td class="cm-c cm-diag">4</td><td class="cm-c cm-off">2</td><td class="cm-c cm-zero">0</td><td class="cm-total">13</td></tr><tr><th class="cm-h">2</th><td class="cm-c cm-off">2</td><td class="cm-c cm-off">6</td><td class="cm-c cm-diag">2</td><td class="cm-c cm-zero">0</td><td class="cm-total">10</td></tr><tr><th class="cm-h">3</th><td class="cm-c cm-zero">0</td><td class="cm-c cm-off">1</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-total">1</td></tr></tbody>
-          </table>
-        </div>
-        
-        <div class="cm-card">
-          <div class="cm-title">
-            <span class="fam-dot detection"></span><span class="cm-name">yolov9e</span>
-            <span class="cm-frames">40 frames</span>
-          </div>
-          <table class="cm">
-            <thead>
-              <tr><th class="cm-h cm-corner">truth ↓ / pred →</th><th class="cm-h">0</th><th class="cm-h">1</th><th class="cm-h">2</th><th class="cm-h">3</th><th class="cm-h">Σ</th></tr>
-            </thead>
-            <tbody><tr><th class="cm-h">0</th><td class="cm-c cm-diag">14</td><td class="cm-c cm-off">2</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-total">16</td></tr><tr><th class="cm-h">1</th><td class="cm-c cm-off">6</td><td class="cm-c cm-diag">3</td><td class="cm-c cm-off">4</td><td class="cm-c cm-zero">0</td><td class="cm-total">13</td></tr><tr><th class="cm-h">2</th><td class="cm-c cm-off">4</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-diag">5</td><td class="cm-c cm-off">1</td><td class="cm-total">10</td></tr><tr><th class="cm-h">3</th><td class="cm-c cm-off">1</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-total">1</td></tr></tbody>
-          </table>
-        </div>
-        
-        <div class="cm-card">
-          <div class="cm-title">
-            <span class="fam-dot detection"></span><span class="cm-name">yolo11x</span>
-            <span class="cm-frames">40 frames</span>
-          </div>
-          <table class="cm">
-            <thead>
-              <tr><th class="cm-h cm-corner">truth ↓ / pred →</th><th class="cm-h">0</th><th class="cm-h">1</th><th class="cm-h">2</th><th class="cm-h">3</th><th class="cm-h">4+</th><th class="cm-h">Σ</th></tr>
-            </thead>
-            <tbody><tr><th class="cm-h">0</th><td class="cm-c cm-diag">7</td><td class="cm-c cm-off">5</td><td class="cm-c cm-off">3</td><td class="cm-c cm-off">1</td><td class="cm-c cm-zero">0</td><td class="cm-total">16</td></tr><tr><th class="cm-h">1</th><td class="cm-c cm-off">3</td><td class="cm-c cm-diag">5</td><td class="cm-c cm-off">2</td><td class="cm-c cm-off">2</td><td class="cm-c cm-off">1</td><td class="cm-total">13</td></tr><tr><th class="cm-h">2</th><td class="cm-c cm-off">1</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-diag">5</td><td class="cm-c cm-off">3</td><td class="cm-c cm-off">1</td><td class="cm-total">10</td></tr><tr><th class="cm-h">3</th><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-diag">1</td><td class="cm-c cm-zero">0</td><td class="cm-total">1</td></tr><tr><th class="cm-h">4+</th><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-total">0</td></tr></tbody>
-          </table>
-        </div>
-        
-        <div class="cm-card">
-          <div class="cm-title">
-            <span class="fam-dot detection"></span><span class="cm-name">rtdetr-x</span>
-            <span class="cm-frames">40 frames</span>
-          </div>
-          <table class="cm">
-            <thead>
-              <tr><th class="cm-h cm-corner">truth ↓ / pred →</th><th class="cm-h">0</th><th class="cm-h">1</th><th class="cm-h">2</th><th class="cm-h">3</th><th class="cm-h">4+</th><th class="cm-h">Σ</th></tr>
-            </thead>
-            <tbody><tr><th class="cm-h">0</th><td class="cm-c cm-diag">7</td><td class="cm-c cm-off">5</td><td class="cm-c cm-off">1</td><td class="cm-c cm-off">3</td><td class="cm-c cm-zero">0</td><td class="cm-total">16</td></tr><tr><th class="cm-h">1</th><td class="cm-c cm-zero">0</td><td class="cm-c cm-diag">1</td><td class="cm-c cm-off">4</td><td class="cm-c cm-off">2</td><td class="cm-c cm-off">6</td><td class="cm-total">13</td></tr><tr><th class="cm-h">2</th><td class="cm-c cm-zero">0</td><td class="cm-c cm-off">1</td><td class="cm-c cm-diag">1</td><td class="cm-c cm-off">2</td><td class="cm-c cm-off">6</td><td class="cm-total">10</td></tr><tr><th class="cm-h">3</th><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-off">1</td><td class="cm-total">1</td></tr><tr><th class="cm-h">4+</th><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-c cm-zero">0</td><td class="cm-total">0</td></tr></tbody>
-          </table>
-        </div>
-        
-      </div>
-
-      <div class="action-bar amber">
-        <div class="action-text"><strong>Face detectors lose driver recall</strong> on OEM (0.78–0.85) — the OEM cabin angle hides faces behind the wheel, so even the largest in-ROI box ends up missing in ~6 / 40 frames. <code>rtdetr-x</code> stays at perfect driver recall but is the worst counter (MAE 1.875) — over-counts everywhere.</div>
-      </div>
     
-  </section>
-    
-  <section class="slide" id="methodology">
-    <div class="slide-stamp">
-      <span>occupancy / methodology / 2026-04</span>
-      <span class="stamp-sep"></span>
-      <span class="stamp-idx">05 / 05</span>
-    </div>
-    <span class="tag tag--teal">Methodology &mdash; What's Counted, What Isn't</span>
-    <h2>Methodology &mdash; What's Counted, What Isn't</h2>
-    <h3>Inputs, metrics, caveats, and how to reproduce.</h3>
-    
-    <div class="notes-grid">
-      <div class="note-card blue">
-        <div class="note-label">Inputs</div>
-        <h4>Cached detection parquets</h4>
-        <p>One <code>detections.parquet</code> per (detector, dataset). Schema: <code>sample_id, model, class_name, x1, y1, x2, y2, conf</code>. No re-inference; v2 just rescores under new rules.</p>
-      </div>
-      <div class="note-card green">
-        <div class="note-label">Cabin ROI</div>
-        <h4>Per-dataset rectangle in frame fractions</h4>
-        <p>Hikvision (<code>1920×1088</code>): x ∈ [0.04, 0.97], y ∈ [0.10, 0.97]. OEM (<code>352×288</code>): x ∈ [0.04, 0.96], y ∈ [0.10, 0.94]. Box-centre inside test.</p>
-      </div>
-      <div class="note-card amber">
-        <div class="note-label">Driver assignment</div>
-        <h4>Largest box in ROI</h4>
-        <p>An earlier attempt used right-half-of-frame (LHD + rear-cam → driver right). Sample inspection showed several Hikvision mounts are steering-column face-cams where the driver is centred or slightly left. Position-agnostic <em>largest box</em> generalises across mounts; <code>driver_side</code> is recorded as a diagnostic only.</p>
-      </div>
-      <div class="note-card purple">
-        <div class="note-label">Reproduce</div>
-        <h4>Two scripts</h4>
-        <p><code>scripts/experiments/evaluate_occupancy_counts.py</code> writes <code>outputs/evaluation/occupancy_counts/results.json</code>. <code>build_occupancy_dashboard.py</code> renders this HTML from that file.</p>
-      </div>
-      <div class="note-card blue">
-        <div class="note-label">What v2 does not fix</h4>
-        <h4>Driver mis-attribution</h4>
-        <p>If the actual driver is missed but a passenger is detected, the passenger gets labelled "driver" and counted toward driver-recall. Without a per-vehicle driver-position prior, this case is not separable from a true detection.</p>
-      </div>
-      <div class="note-card green">
-        <div class="note-label">Heat-map buckets</div>
-        <h4>Absolute, not relative</h4>
-        <p>Higher-better thresholds: 0.95 / 0.85 / 0.70 / 0.50. MAE thresholds: 0.20 / 0.40 / 0.60 / 0.80. Picked from observed range, not baseline-relative.</p>
-      </div>
+    <div class="action-bar amber">
+      <div class="action-text"><strong>Different metrics for different reasons.</strong> Driver GT is 625 / 1 — accuracy collapses to a single binary specificity outcome, so recall is the meaningful column (did we find the driver in the 625 frames that have one?). Passenger GT is 446 / 180 — class-balanced enough that (sens + spec) / 2 actually ranks detectors.</div>
     </div>
     
   </section>
