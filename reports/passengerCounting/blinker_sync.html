@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1920">
+<title>Mirror glance &times; CAN-bus blinker</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0 }
+
+  :root {
+    --bg: #F8F9FB;
+    --bg-card: #FFFFFF;
+    --bg-elevated: #F0F1F4;
+    --border: #E0E2E8;
+    --text: #1A1D26;
+    --text-dim: #5A5E6E;
+    --text-muted: #8E92A0;
+    --accent: #0E9A7E;
+    --accent-dim: rgba(14, 154, 126, 0.08);
+    --accent-2: #3B6FD6;
+    --accent-2-dim: rgba(59, 111, 214, 0.08);
+    --accent-3: #C88A1A;
+    --accent-3-dim: rgba(200, 138, 26, 0.08);
+    --red: #D9453E;
+    --font: 'DM Sans', system-ui, sans-serif;
+    --mono: 'JetBrains Mono', monospace;
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+
+  html { scroll-snap-type: y mandatory; scroll-behavior: smooth }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    line-height: 1.5;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    background-image: radial-gradient(circle, rgba(26,29,38,0.035) 1px, transparent 1px);
+    background-size: 22px 22px;
+    background-position: 0 0;
+  }
+
+  .slide {
+    min-height: 100vh;
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    padding: 64px 56px 28px;
+    position: relative;
+  }
+  .slide::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, var(--border) 20%, var(--border) 80%, transparent 100%);
+  }
+
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1000;
+    background: rgba(248, 249, 251, 0.90);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 40px;
+    height: 44px;
+    gap: 4px;
+  }
+  nav a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    padding: 5px 12px;
+    border-radius: 20px;
+    transition: all 0.2s;
+  }
+  nav a:hover, nav a.active { color: var(--text); background: var(--bg-elevated) }
+  nav .slide-counter {
+    margin-left: auto;
+    color: var(--text-muted);
+    font-size: 11px;
+    font-family: var(--mono);
+  }
+
+  .slide-stamp {
+    position: absolute;
+    top: 20px; right: 56px;
+    font-family: var(--mono);
+    font-size: 9.5px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .slide-stamp .stamp-sep { width: 24px; height: 1px; background: var(--border) }
+  .slide-stamp .stamp-idx { color: var(--text-dim); font-weight: 500 }
+
+  h2 { font-size: 24px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 4px }
+  h3 { font-size: 13px; font-weight: 400; color: var(--text-dim); margin-bottom: 16px; max-width: 880px }
+
+  .num { font-family: var(--mono); font-feature-settings: "tnum" 1 }
+
+  .tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    font-family: var(--mono);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 4px;
+    margin-bottom: 6px;
+  }
+  .tag--accent { background: var(--accent-dim); color: var(--accent) }
+  .tag--amber  { background: var(--accent-3-dim); color: var(--accent-3) }
+
+  .action-bar {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 10px 14px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    font-size: 12.5px;
+    margin-top: auto;
+  }
+  .action-bar.amber { border-left-color: var(--accent-3) }
+  .action-bar .action-text { color: var(--text); flex: 1 }
+  .action-bar .action-text strong { font-weight: 600 }
+
+  /* === Mirror-glance specific === */
+  .dual-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    flex: 1;
+    align-items: stretch;
+  }
+  .clip-block {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 0;
+  }
+  .clip-block-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 6px;
+  }
+  .clip-block-header .clip-title { font-size: 13px; font-weight: 600 }
+  .clip-block-header .clip-time { font-size: 11.5px; color: var(--text-muted) }
+
+  .video-frame {
+    background: #000;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .video-frame video {
+    width: 100%;
+    height: auto;
+    max-height: 380px;
+    object-fit: contain;
+    display: block;
+  }
+
+  .leds {
+    display: flex;
+    justify-content: center;
+    gap: 44px;
+    padding: 4px 0 2px;
+  }
+  .led { display: flex; flex-direction: column; align-items: center; gap: 4px }
+  .led .arrow {
+    width: 40px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 34px;
+    line-height: 1;
+    color: var(--border);
+    transition: color 0.08s linear, text-shadow 0.08s linear;
+  }
+  .led.on .arrow {
+    color: var(--accent-3);
+    text-shadow: 0 0 12px rgba(200, 138, 26, 0.55);
+    animation: blink 0.6s steps(2, start) infinite;
+  }
+  @keyframes blink {
+    0%, 49% { opacity: 1 }
+    50%, 100% { opacity: 0.32 }
+  }
+  .led .label {
+    font-family: var(--mono);
+    font-size: 9.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .led.on .label { color: var(--accent-3) }
+
+  .timeline-wrap {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 14px 4px;
+  }
+  .timeline-wrap svg { display: block; width: 100% }
+
+  .clip-block .action-bar { margin-top: auto }
+
+  .axis-label { font-size: 10px; fill: var(--text-muted); font-family: var(--mono); letter-spacing: 0.04em }
+  .axis-tick { stroke: var(--border); stroke-width: 1 }
+  .clip-window { fill: rgba(14, 154, 126, 0.13); stroke: rgba(14, 154, 126, 0.55); stroke-width: 1.25 }
+  .glance-label {
+    fill: var(--accent);
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+  }
+  .row-bg { fill: var(--bg-elevated) }
+  .row-on-l, .row-on-r { fill: var(--accent-3) }
+  .row-label {
+    font-size: 10px;
+    fill: var(--text-muted);
+    font-family: var(--mono);
+    font-weight: 700;
+  }
+  .cursor { stroke: var(--text); stroke-width: 1.25 }
+  .cursor-dot { fill: var(--text) }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="../../reports/dashboard/index.html">&larr; Home</a>
+  <a href="#overview" class="active">Overview</a>
+  <span class="slide-counter" id="slideCounter">1 / 1</span>
+</nav>
+
+
+<section class="slide" id="overview">
+  <div class="slide-stamp">
+    <span>mirror-glance / blinker / 2026-04</span>
+    <span class="stamp-sep"></span>
+    <span class="stamp-idx">01 / 01</span>
+  </div>
+
+  <span class="tag tag--accent">Glance Evaluation</span>
+  <h2>Mirror glance &times; CAN-bus blinker</h2>
+  <h3>Two detected mirror-check moments synced with the vehicle&apos;s turn-signal telemetry. <span class="num">6 sec</span> of footage each (<span class="num">3 sec</span> preceding context, then <span class="num">3 sec</span> glance). Highlighted region marks where the gaze classifier fired.</h3>
+
+  <div class="dual-grid">
+    
+    <div class="clip-block">
+      <div class="clip-block-header">
+        <span class="clip-title">RIGHT mirror check</span>
+        <span class="clip-time num">15:15:46</span>
+      </div>
+
+      <div class="video-frame">
+        <video id="video-right" src="../../assets/28April26/rightGoodExample_ctx.mp4" autoplay loop muted playsinline controls></video>
+      </div>
+
+      <div class="leds">
+        <div class="led" id="led-l-right">
+          <div class="arrow">&#9664;</div>
+          <div class="label">LEFT</div>
+        </div>
+        <div class="led" id="led-r-right">
+          <div class="arrow">&#9654;</div>
+          <div class="label">RIGHT</div>
+        </div>
+      </div>
+
+      <div class="timeline-wrap">
+        <svg viewBox="0 0 820 130" preserveAspectRatio="xMidYMid meet">
+          <rect class="clip-window" x="599.47" y="26" width="56.84" height="66"></rect>
+          <rect class="row-bg" x="50.00" y="30" width="720.00" height="18" rx="4"></rect><rect class="row-bg" x="50.00" y="70" width="720.00" height="18" rx="4"></rect>
+          <rect class="row-on-l" x="703.13" y="30" width="64.59" height="18" rx="3"></rect><rect class="row-on-r" x="510.00" y="70" width="113.76" height="18" rx="3"></rect>
+          <text class="row-label" x="40" y="43.0" text-anchor="end">L</text><text class="row-label" x="40" y="83.0" text-anchor="end">R</text>
+          <line class="axis-tick" x1="50.00" y1="100" x2="50.00" y2="106"></line><text class="axis-label" x="50.00" y="118" text-anchor="middle">-30s</text><line class="axis-tick" x1="144.74" y1="100" x2="144.74" y2="106"></line><text class="axis-label" x="144.74" y="118" text-anchor="middle">-25s</text><line class="axis-tick" x1="239.47" y1="100" x2="239.47" y2="106"></line><text class="axis-label" x="239.47" y="118" text-anchor="middle">-20s</text><line class="axis-tick" x1="334.21" y1="100" x2="334.21" y2="106"></line><text class="axis-label" x="334.21" y="118" text-anchor="middle">-15s</text><line class="axis-tick" x1="428.95" y1="100" x2="428.95" y2="106"></line><text class="axis-label" x="428.95" y="118" text-anchor="middle">-10s</text><line class="axis-tick" x1="523.68" y1="100" x2="523.68" y2="106"></line><text class="axis-label" x="523.68" y="118" text-anchor="middle">-5s</text><line class="axis-tick" x1="618.42" y1="100" x2="618.42" y2="106"></line><text class="axis-label" x="618.42" y="118" text-anchor="middle">0s</text><line class="axis-tick" x1="713.16" y1="100" x2="713.16" y2="106"></line><text class="axis-label" x="713.16" y="118" text-anchor="middle">+5s</text>
+          <text class="glance-label" x="627.89" y="22" text-anchor="middle">GLANCE DETECTION</text>
+          <line class="cursor" id="cursor-right" x1="618.42" y1="22" x2="618.42" y2="96"></line><circle class="cursor-dot" id="cursor-dot-right" cx="618.42" cy="22" r="3.5"></circle>
+        </svg>
+      </div>
+
+      <div class="action-bar">
+        <div class="action-text">
+          <strong>Right blinker on at <span class='num'>-5.7s</span>, off at <span class='num'>+0.5s</span>.</strong> Glance overlaps the active-signal window. Detection corroborated by telemetry.
+        </div>
+      </div>
+    </div>
+    
+    <div class="clip-block">
+      <div class="clip-block-header">
+        <span class="clip-title">LEFT mirror check</span>
+        <span class="clip-time num">15:16:13</span>
+      </div>
+
+      <div class="video-frame">
+        <video id="video-left" src="../../assets/28April26/leftGoodexample_ctx.mp4" autoplay loop muted playsinline controls></video>
+      </div>
+
+      <div class="leds">
+        <div class="led" id="led-l-left">
+          <div class="arrow">&#9664;</div>
+          <div class="label">LEFT</div>
+        </div>
+        <div class="led" id="led-r-left">
+          <div class="arrow">&#9654;</div>
+          <div class="label">RIGHT</div>
+        </div>
+      </div>
+
+      <div class="timeline-wrap">
+        <svg viewBox="0 0 820 130" preserveAspectRatio="xMidYMid meet">
+          <rect class="clip-window" x="618.42" y="26" width="56.84" height="66"></rect>
+          <rect class="row-bg" x="50.00" y="30" width="720.00" height="18" rx="4"></rect><rect class="row-bg" x="50.00" y="70" width="720.00" height="18" rx="4"></rect>
+          <rect class="row-on-l" x="191.56" y="30" width="75.92" height="18" rx="3"></rect><rect class="row-on-r" x="51.52" y="70" width="60.67" height="18" rx="3"></rect>
+          <text class="row-label" x="40" y="43.0" text-anchor="end">L</text><text class="row-label" x="40" y="83.0" text-anchor="end">R</text>
+          <line class="axis-tick" x1="50.00" y1="100" x2="50.00" y2="106"></line><text class="axis-label" x="50.00" y="118" text-anchor="middle">-30s</text><line class="axis-tick" x1="144.74" y1="100" x2="144.74" y2="106"></line><text class="axis-label" x="144.74" y="118" text-anchor="middle">-25s</text><line class="axis-tick" x1="239.47" y1="100" x2="239.47" y2="106"></line><text class="axis-label" x="239.47" y="118" text-anchor="middle">-20s</text><line class="axis-tick" x1="334.21" y1="100" x2="334.21" y2="106"></line><text class="axis-label" x="334.21" y="118" text-anchor="middle">-15s</text><line class="axis-tick" x1="428.95" y1="100" x2="428.95" y2="106"></line><text class="axis-label" x="428.95" y="118" text-anchor="middle">-10s</text><line class="axis-tick" x1="523.68" y1="100" x2="523.68" y2="106"></line><text class="axis-label" x="523.68" y="118" text-anchor="middle">-5s</text><line class="axis-tick" x1="618.42" y1="100" x2="618.42" y2="106"></line><text class="axis-label" x="618.42" y="118" text-anchor="middle">0s</text><line class="axis-tick" x1="713.16" y1="100" x2="713.16" y2="106"></line><text class="axis-label" x="713.16" y="118" text-anchor="middle">+5s</text>
+          <text class="glance-label" x="646.84" y="22" text-anchor="middle">GLANCE DETECTION</text>
+          <line class="cursor" id="cursor-left" x1="618.42" y1="22" x2="618.42" y2="96"></line><circle class="cursor-dot" id="cursor-dot-left" cx="618.42" cy="22" r="3.5"></circle>
+        </svg>
+      </div>
+
+      <div class="action-bar amber">
+        <div class="action-text">
+          <strong>No blinker active in the glance window.</strong> Left signal last pulsed at <span class='num'>-22s</span>. Detection not corroborated &mdash; routine glance or gaze-classifier false positive.
+        </div>
+      </div>
+    </div>
+    
+  </div>
+</section>
+
+
+<script>
+"use strict";
+const DATA = [{"id":"right","label":"RIGHT mirror check","video":"clips_v2/rightGoodExample_ctx.mp4","clip_start_local":"15:15:46","duration_sec":3.0,"pre_context_sec":3.0,"glance_extend_before_sec":1.0,"glance_extend_after_sec":-1.0,"verdict":{"type":"correct","headline_html":"Right blinker on at <span class='num'>-5.7s</span>, off at <span class='num'>+0.5s</span>.","detail_html":"Glance overlaps the active-signal window. Detection corroborated by telemetry."},"blinker":[{"t":-29.918,"l":0,"r":0},{"t":-29.715,"l":0,"r":0},{"t":-29.513,"l":0,"r":0},{"t":-29.307,"l":0,"r":0},{"t":-29.12,"l":0,"r":0},{"t":-28.917,"l":0,"r":0},{"t":-28.713,"l":0,"r":0},{"t":-28.528,"l":0,"r":0},{"t":-28.307,"l":0,"r":0},{"t":-28.125,"l":0,"r":0},{"t":-27.91,"l":0,"r":0},{"t":-27.723,"l":0,"r":0},{"t":-27.517,"l":0,"r":0},{"t":-27.315,"l":0,"r":0},{"t":-27.125,"l":0,"r":0},{"t":-26.923,"l":0,"r":0},{"t":-26.722,"l":0,"r":0},{"t":-26.518,"l":0,"r":0},{"t":-26.315,"l":0,"r":0},{"t":-26.113,"l":0,"r":0},{"t":-25.925,"l":0,"r":0},{"t":-25.703,"l":0,"r":0},{"t":-25.517,"l":0,"r":0},{"t":-25.318,"l":0,"r":0},{"t":-25.116,"l":0,"r":0},{"t":-24.913,"l":0,"r":0},{"t":-24.71,"l":0,"r":0},{"t":-24.524,"l":0,"r":0},{"t":-24.324,"l":0,"r":0},{"t":-24.106,"l":0,"r":0},{"t":-23.902,"l":0,"r":0},{"t":-23.715,"l":0,"r":0},{"t":-23.527,"l":0,"r":0},{"t":-23.321,"l":0,"r":0},{"t":-23.116,"l":0,"r":0},{"t":-22.917,"l":0,"r":0},{"t":-22.712,"l":0,"r":0},{"t":-22.524,"l":0,"r":0},{"t":-22.32,"l":0,"r":0},{"t":-22.118,"l":0,"r":0},{"t":-21.911,"l":0,"r":0},{"t":-21.714,"l":0,"r":0},{"t":-21.514,"l":0,"r":0},{"t":-21.325,"l":0,"r":0},{"t":-21.123,"l":0,"r":0},{"t":-20.919,"l":0,"r":0},{"t":-20.717,"l":0,"r":0},{"t":-20.527,"l":0,"r":0},{"t":-20.308,"l":0,"r":0},{"t":-20.121,"l":0,"r":0},{"t":-19.915,"l":0,"r":0},{"t":-19.728,"l":0,"r":0},{"t":-19.505,"l":0,"r":0},{"t":-19.316,"l":0,"r":0},{"t":-19.125,"l":0,"r":0},{"t":-18.92,"l":0,"r":0},{"t":-18.719,"l":0,"r":0},{"t":-18.517,"l":0,"r":0},{"t":-18.312,"l":0,"r":0},{"t":-18.113,"l":0,"r":0},{"t":-17.927,"l":0,"r":0},{"t":-17.723,"l":0,"r":0},{"t":-17.505,"l":0,"r":0},{"t":-17.317,"l":0,"r":0},{"t":-17.116,"l":0,"r":0},{"t":-16.913,"l":0,"r":0},{"t":-16.727,"l":0,"r":0},{"t":-16.526,"l":0,"r":0},{"t":-16.325,"l":0,"r":0},{"t":-16.122,"l":0,"r":0},{"t":-15.917,"l":0,"r":0},{"t":-15.714,"l":0,"r":0},{"t":-15.527,"l":0,"r":0},{"t":-15.31,"l":0,"r":0},{"t":-15.121,"l":0,"r":0},{"t":-14.92,"l":0,"r":0},{"t":-14.715,"l":0,"r":0},{"t":-14.51,"l":0,"r":0},{"t":-14.324,"l":0,"r":0},{"t":-14.12,"l":0,"r":0},{"t":-13.918,"l":0,"r":0},{"t":-13.716,"l":0,"r":0},{"t":-13.517,"l":0,"r":0},{"t":-13.315,"l":0,"r":0},{"t":-13.115,"l":0,"r":0},{"t":-12.914,"l":0,"r":0},{"t":-12.71,"l":0,"r":0},{"t":-12.507,"l":0,"r":0},{"t":-12.321,"l":0,"r":0},{"t":-12.119,"l":0,"r":0},{"t":-11.918,"l":0,"r":0},{"t":-11.718,"l":0,"r":0},{"t":-11.515,"l":0,"r":0},{"t":-11.311,"l":0,"r":0},{"t":-11.126,"l":0,"r":0},{"t":-10.924,"l":0,"r":0},{"t":-10.707,"l":0,"r":0},{"t":-10.521,"l":0,"r":0},{"t":-10.318,"l":0,"r":0},{"t":-10.116,"l":0,"r":0},{"t":-9.913,"l":0,"r":0},{"t":-9.724,"l":0,"r":0},{"t":-9.505,"l":0,"r":0},{"t":-9.318,"l":0,"r":0},{"t":-9.116,"l":0,"r":0},{"t":-8.915,"l":0,"r":0},{"t":-8.727,"l":0,"r":0},{"t":-8.524,"l":0,"r":0},{"t":-8.321,"l":0,"r":0},{"t":-8.116,"l":0,"r":0},{"t":-7.915,"l":0,"r":0},{"t":-7.725,"l":0,"r":0},{"t":-7.525,"l":0,"r":0},{"t":-7.322,"l":0,"r":0},{"t":-7.105,"l":0,"r":0},{"t":-6.92,"l":0,"r":0},{"t":-6.704,"l":0,"r":0},{"t":-6.517,"l":0,"r":0},{"t":-6.316,"l":0,"r":0},{"t":-6.113,"l":0,"r":0},{"t":-5.926,"l":0,"r":0},{"t":-5.722,"l":0,"r":1},{"t":-5.506,"l":0,"r":1},{"t":-5.317,"l":0,"r":1},{"t":-5.114,"l":0,"r":1},{"t":-4.914,"l":0,"r":1},{"t":-4.711,"l":0,"r":1},{"t":-4.522,"l":0,"r":1},{"t":-4.321,"l":0,"r":1},{"t":-4.119,"l":0,"r":1},{"t":-3.916,"l":0,"r":1},{"t":-3.728,"l":0,"r":1},{"t":-3.526,"l":0,"r":1},{"t":-3.324,"l":0,"r":1},{"t":-3.123,"l":0,"r":1},{"t":-2.92,"l":0,"r":1},{"t":-2.719,"l":0,"r":1},{"t":-2.518,"l":0,"r":1},{"t":-2.316,"l":0,"r":1},{"t":-2.114,"l":0,"r":1},{"t":-1.916,"l":0,"r":1},{"t":-1.714,"l":0,"r":1},{"t":-1.512,"l":0,"r":1},{"t":-1.325,"l":0,"r":1},{"t":-1.125,"l":0,"r":1},{"t":-0.906,"l":0,"r":1},{"t":-0.719,"l":0,"r":1},{"t":-0.515,"l":0,"r":1},{"t":-0.324,"l":0,"r":1},{"t":-0.121,"l":0,"r":1},{"t":0.08,"l":0,"r":1},{"t":0.282,"l":0,"r":1},{"t":0.482,"l":0,"r":0},{"t":0.685,"l":0,"r":0},{"t":0.874,"l":0,"r":0},{"t":1.075,"l":0,"r":0},{"t":1.276,"l":0,"r":0},{"t":1.48,"l":0,"r":0},{"t":1.682,"l":0,"r":0},{"t":1.886,"l":0,"r":0},{"t":2.088,"l":0,"r":0},{"t":2.276,"l":0,"r":0},{"t":2.477,"l":0,"r":0},{"t":2.691,"l":0,"r":0},{"t":2.876,"l":0,"r":0},{"t":3.092,"l":0,"r":0},{"t":3.28,"l":0,"r":0},{"t":3.481,"l":0,"r":0},{"t":3.696,"l":0,"r":0},{"t":3.883,"l":0,"r":0},{"t":4.084,"l":0,"r":0},{"t":4.287,"l":0,"r":0},{"t":4.471,"l":1,"r":0},{"t":4.674,"l":1,"r":0},{"t":4.878,"l":1,"r":0},{"t":5.079,"l":1,"r":0},{"t":5.281,"l":1,"r":0},{"t":5.484,"l":1,"r":0},{"t":5.684,"l":1,"r":0},{"t":5.885,"l":1,"r":0},{"t":6.086,"l":1,"r":0},{"t":6.275,"l":1,"r":0},{"t":6.492,"l":1,"r":0},{"t":6.677,"l":1,"r":0},{"t":6.879,"l":1,"r":0},{"t":7.081,"l":1,"r":0},{"t":7.285,"l":1,"r":0},{"t":7.474,"l":1,"r":0},{"t":7.679,"l":1,"r":0},{"t":7.88,"l":1,"r":0}],"window_before":30.0,"window_after":5.0,"slide_idx":"01","slide_total":"02"},{"id":"left","label":"LEFT mirror check","video":"clips_v2/leftGoodexample_ctx.mp4","clip_start_local":"15:16:13","duration_sec":3.0,"pre_context_sec":3.0,"verdict":{"type":"issue","headline_html":"No blinker active in the glance window.","detail_html":"Left signal last pulsed at <span class='num'>-22s</span>. Detection not corroborated &mdash; routine glance or gaze-classifier false positive."},"blinker":[{"t":-29.92,"l":0,"r":1},{"t":-29.719,"l":0,"r":1},{"t":-29.518,"l":0,"r":1},{"t":-29.316,"l":0,"r":1},{"t":-29.114,"l":0,"r":1},{"t":-28.916,"l":0,"r":1},{"t":-28.714,"l":0,"r":1},{"t":-28.512,"l":0,"r":1},{"t":-28.325,"l":0,"r":1},{"t":-28.125,"l":0,"r":1},{"t":-27.906,"l":0,"r":1},{"t":-27.719,"l":0,"r":1},{"t":-27.515,"l":0,"r":1},{"t":-27.324,"l":0,"r":1},{"t":-27.121,"l":0,"r":1},{"t":-26.92,"l":0,"r":1},{"t":-26.718,"l":0,"r":1},{"t":-26.518,"l":0,"r":0},{"t":-26.315,"l":0,"r":0},{"t":-26.126,"l":0,"r":0},{"t":-25.925,"l":0,"r":0},{"t":-25.724,"l":0,"r":0},{"t":-25.52,"l":0,"r":0},{"t":-25.318,"l":0,"r":0},{"t":-25.114,"l":0,"r":0},{"t":-24.912,"l":0,"r":0},{"t":-24.724,"l":0,"r":0},{"t":-24.523,"l":0,"r":0},{"t":-24.309,"l":0,"r":0},{"t":-24.124,"l":0,"r":0},{"t":-23.908,"l":0,"r":0},{"t":-23.72,"l":0,"r":0},{"t":-23.519,"l":0,"r":0},{"t":-23.304,"l":0,"r":0},{"t":-23.117,"l":0,"r":0},{"t":-22.916,"l":0,"r":0},{"t":-22.713,"l":0,"r":0},{"t":-22.529,"l":1,"r":0},{"t":-22.326,"l":1,"r":0},{"t":-22.122,"l":1,"r":0},{"t":-21.921,"l":1,"r":0},{"t":-21.719,"l":1,"r":0},{"t":-21.516,"l":1,"r":0},{"t":-21.316,"l":1,"r":0},{"t":-21.115,"l":1,"r":0},{"t":-20.914,"l":1,"r":0},{"t":-20.725,"l":1,"r":0},{"t":-20.508,"l":1,"r":0},{"t":-20.323,"l":1,"r":0},{"t":-20.121,"l":1,"r":0},{"t":-19.919,"l":1,"r":0},{"t":-19.715,"l":1,"r":0},{"t":-19.526,"l":1,"r":0},{"t":-19.321,"l":1,"r":0},{"t":-19.12,"l":1,"r":0},{"t":-18.915,"l":1,"r":0},{"t":-18.711,"l":1,"r":0},{"t":-18.522,"l":1,"r":0},{"t":-18.321,"l":0,"r":0},{"t":-18.117,"l":0,"r":0},{"t":-17.926,"l":0,"r":0},{"t":-17.706,"l":0,"r":0},{"t":-17.516,"l":0,"r":0},{"t":-17.328,"l":0,"r":0},{"t":-17.124,"l":0,"r":0},{"t":-16.917,"l":0,"r":0},{"t":-16.712,"l":0,"r":0},{"t":-16.523,"l":0,"r":0},{"t":-16.317,"l":0,"r":0},{"t":-16.129,"l":0,"r":0},{"t":-15.907,"l":0,"r":0},{"t":-15.722,"l":0,"r":0},{"t":-15.517,"l":0,"r":0},{"t":-15.314,"l":0,"r":0},{"t":-15.113,"l":0,"r":0},{"t":-14.926,"l":0,"r":0},{"t":-14.722,"l":0,"r":0},{"t":-14.519,"l":0,"r":0},{"t":-14.315,"l":0,"r":0},{"t":-14.128,"l":0,"r":0},{"t":-13.911,"l":0,"r":0},{"t":-13.707,"l":0,"r":0},{"t":-13.521,"l":0,"r":0},{"t":-13.316,"l":0,"r":0},{"t":-13.129,"l":0,"r":0},{"t":-12.927,"l":0,"r":0},{"t":-12.706,"l":0,"r":0},{"t":-12.508,"l":0,"r":0},{"t":-12.321,"l":0,"r":0},{"t":-12.103,"l":0,"r":0},{"t":-11.92,"l":0,"r":0},{"t":-11.72,"l":0,"r":0},{"t":-11.529,"l":0,"r":0},{"t":-11.31,"l":0,"r":0},{"t":-11.107,"l":0,"r":0},{"t":-10.902,"l":0,"r":0},{"t":-10.715,"l":0,"r":0},{"t":-10.512,"l":0,"r":0},{"t":-10.31,"l":0,"r":0},{"t":-10.11,"l":0,"r":0},{"t":-9.924,"l":0,"r":0},{"t":-9.722,"l":0,"r":0},{"t":-9.521,"l":0,"r":0},{"t":-9.317,"l":0,"r":0},{"t":-9.116,"l":0,"r":0},{"t":-8.914,"l":0,"r":0},{"t":-8.727,"l":0,"r":0},{"t":-8.526,"l":0,"r":0},{"t":-8.306,"l":0,"r":0},{"t":-8.12,"l":0,"r":0},{"t":-7.917,"l":0,"r":0},{"t":-7.715,"l":0,"r":0},{"t":-7.529,"l":0,"r":0},{"t":-7.314,"l":0,"r":0},{"t":-7.113,"l":0,"r":0},{"t":-6.912,"l":0,"r":0},{"t":-6.724,"l":0,"r":0},{"t":-6.509,"l":0,"r":0},{"t":-6.324,"l":0,"r":0},{"t":-6.104,"l":0,"r":0},{"t":-5.916,"l":0,"r":0},{"t":-5.728,"l":0,"r":0},{"t":-5.525,"l":0,"r":0},{"t":-5.307,"l":0,"r":0},{"t":-5.119,"l":0,"r":0},{"t":-4.92,"l":0,"r":0},{"t":-4.719,"l":0,"r":0},{"t":-4.514,"l":0,"r":0},{"t":-4.312,"l":0,"r":0},{"t":-4.111,"l":0,"r":0},{"t":-3.909,"l":0,"r":0},{"t":-3.723,"l":0,"r":0},{"t":-3.522,"l":0,"r":0},{"t":-3.319,"l":0,"r":0},{"t":-3.113,"l":0,"r":0},{"t":-2.913,"l":0,"r":0},{"t":-2.713,"l":0,"r":0},{"t":-2.523,"l":0,"r":0},{"t":-2.306,"l":0,"r":0},{"t":-2.118,"l":0,"r":0},{"t":-1.915,"l":0,"r":0},{"t":-1.715,"l":0,"r":0},{"t":-1.516,"l":0,"r":0},{"t":-1.314,"l":0,"r":0},{"t":-1.115,"l":0,"r":0},{"t":-0.913,"l":0,"r":0},{"t":-0.725,"l":0,"r":0},{"t":-0.521,"l":0,"r":0},{"t":-0.321,"l":0,"r":0},{"t":-0.12,"l":0,"r":0},{"t":0.1,"l":0,"r":0},{"t":0.285,"l":0,"r":0},{"t":0.486,"l":0,"r":0},{"t":0.674,"l":0,"r":0},{"t":0.876,"l":0,"r":0},{"t":1.079,"l":0,"r":0},{"t":1.294,"l":0,"r":0},{"t":1.481,"l":0,"r":0},{"t":1.685,"l":0,"r":0},{"t":1.887,"l":0,"r":0},{"t":2.086,"l":0,"r":0},{"t":2.288,"l":0,"r":0},{"t":2.473,"l":0,"r":0},{"t":2.69,"l":0,"r":0},{"t":2.874,"l":0,"r":0},{"t":3.093,"l":0,"r":0},{"t":3.278,"l":0,"r":0},{"t":3.482,"l":0,"r":0},{"t":3.684,"l":0,"r":0},{"t":3.886,"l":0,"r":0},{"t":4.089,"l":0,"r":0},{"t":4.277,"l":0,"r":0},{"t":4.479,"l":0,"r":0},{"t":4.682,"l":0,"r":0},{"t":4.886,"l":0,"r":0},{"t":5.085,"l":0,"r":0},{"t":5.287,"l":0,"r":0},{"t":5.49,"l":0,"r":0},{"t":5.676,"l":0,"r":0},{"t":5.876,"l":0,"r":0},{"t":6.091,"l":0,"r":0},{"t":6.277,"l":0,"r":0},{"t":6.477,"l":0,"r":0},{"t":6.693,"l":0,"r":0},{"t":6.882,"l":0,"r":0},{"t":7.083,"l":0,"r":0},{"t":7.286,"l":0,"r":0},{"t":7.474,"l":0,"r":0},{"t":7.677,"l":0,"r":0},{"t":7.879,"l":0,"r":0}],"window_before":30.0,"window_after":5.0,"slide_idx":"02","slide_total":"02"}];
+const SVG_W = 820, SVG_PADX = 50, INNER_W = 720;
+
+function xOf(t, t0, t1) {
+  return SVG_PADX + (t - t0) / (t1 - t0) * INNER_W;
+}
+
+DATA.forEach(function(d) {
+  const t0 = -d.window_before;
+  const t1 = d.duration_sec + d.window_after;
+  const video = document.getElementById("video-" + d.id);
+  const ledL = document.getElementById("led-l-" + d.id);
+  const ledR = document.getElementById("led-r-" + d.id);
+  const cursor = document.getElementById("cursor-" + d.id);
+  const cursorDot = document.getElementById("cursor-dot-" + d.id);
+
+  function stateAt(tRel) {
+    let lo = 0, hi = d.blinker.length - 1, best = 0;
+    while (lo <= hi) {
+      const mid = (lo + hi) >> 1;
+      if (d.blinker[mid].t <= tRel) { best = mid; lo = mid + 1; }
+      else { hi = mid - 1; }
+    }
+    return d.blinker[best];
+  }
+
+  // Map video.currentTime to clip-relative time. With pre_context_sec=3, the
+  // video plays 0..6, but in clip-relative time that's -3..+3 (glance at 0).
+  function update() {
+    const tRel = video.currentTime - (d.pre_context_sec || 0);
+    const cx = xOf(tRel, t0, t1);
+    cursor.setAttribute("x1", cx);
+    cursor.setAttribute("x2", cx);
+    cursorDot.setAttribute("cx", cx);
+    const s = stateAt(tRel);
+    ledL.classList.toggle("on", !!s.l);
+    ledR.classList.toggle("on", !!s.r);
+  }
+  video.addEventListener("timeupdate", update);
+  video.addEventListener("loadedmetadata", update);
+  update();
+});
+
+// Slide-counter + active-nav update on scroll, matching the dashboard pattern.
+(function() {
+  const slides = Array.from(document.querySelectorAll(".slide"));
+  const counter = document.getElementById("slideCounter");
+  const navLinks = Array.from(document.querySelectorAll("nav a[href^='#']"));
+  if (!counter || !slides.length) return;
+  const obs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) {
+        const idx = slides.indexOf(e.target);
+        counter.textContent = (idx + 1) + " / " + slides.length;
+        navLinks.forEach(function(a) {
+          a.classList.toggle("active", a.getAttribute("href") === "#" + e.target.id);
+        });
+      }
+    });
+  }, { threshold: 0.5 });
+  slides.forEach(function(s) { obs.observe(s) });
+})();
+</script>
+</body>
+</html>

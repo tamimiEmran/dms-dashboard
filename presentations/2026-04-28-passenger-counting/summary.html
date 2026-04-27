@@ -1,0 +1,1251 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+  28 Apr 2026 — Passenger Counting + new use case + Model Lift
+  Native concatenation of three source decks (no iframes):
+    1. drafts/occupancy_counts_26Apr26.html   (cabin ROI methodology + leaderboard)
+    2. reports/passengerCounting/blinker_sync.html (mirror glance × CAN-bus blinker)
+    3. drafts/pareto_slopegraph.html          (ensemble n=5 vs Hikvision OEM lift)
+
+  All 3 originals share the same design tokens (DM Sans + JetBrains Mono + same
+  CSS variables). Their unique class names live side-by-side in the merged style
+  block below; pareto's classes are scoped under .pareto-section to avoid any
+  conflict with the others' .card / h1 styling.
+-->
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1920">
+  <title>28 Apr — Passenger Counting + new use case + Model Lift</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #F8F9FB;
+      --bg-card: #FFFFFF;
+      --bg-elevated: #F0F1F4;
+      --border: #E0E2E8;
+      --text: #1A1D26;
+      --text-dim: #5A5E6E;
+      --text-muted: #8E92A0;
+      --accent: #0E9A7E;
+      --accent-dim: rgba(14, 154, 126, 0.08);
+      --accent-strong: rgba(14, 154, 126, 0.18);
+      --accent-2: #3B6FD6;
+      --accent-2-dim: rgba(59, 111, 214, 0.08);
+      --accent-3: #C88A1A;
+      --accent-3-dim: rgba(200, 138, 26, 0.08);
+      --red: #D9453E;
+      --red-dim: rgba(217, 69, 62, 0.07);
+      --purple: #8B5CC4;
+      --purple-dim: rgba(139, 92, 196, 0.08);
+      --teal: #0E8A9A;
+      --teal-dim: rgba(14, 138, 154, 0.08);
+      --font: 'DM Sans', system-ui, sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+      --radius: 10px;
+      --radius-sm: 6px;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      line-height: 1.5;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      background-image: radial-gradient(circle, rgba(26,29,38,0.035) 1px, transparent 1px);
+      background-size: 22px 22px;
+      background-position: 0 0;
+      padding-top: 44px;
+    }
+
+    /* === OUTER DECK NAV === */
+    nav.outer-nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 2000;
+      background: rgba(248, 249, 251, 0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 40px;
+      height: 44px;
+      gap: 4px;
+    }
+    nav.outer-nav a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      padding: 5px 12px;
+      border-radius: 20px;
+      transition: all 0.2s;
+    }
+    nav.outer-nav a:hover, nav.outer-nav a.active {
+      color: var(--text);
+      background: var(--bg-elevated);
+    }
+    nav.outer-nav .deck-title {
+      flex: 1;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: -0.01em;
+    }
+    nav.outer-nav .slide-counter {
+      color: var(--text-muted);
+      font-size: 11px;
+      font-family: var(--mono);
+    }
+
+    /* ========================================================
+       === Slide layout shared by occupancy + mirror sections ===
+       ======================================================== */
+    section.slide {
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      padding: 64px 56px 28px;
+      position: relative;
+      border-top: 1px solid var(--border);
+    }
+    section.slide::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, var(--border) 20%, var(--border) 80%, transparent 100%);
+    }
+
+    h2 { font-size: 26px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 4px }
+    h3 { font-size: 13px; font-weight: 400; color: var(--text-dim); margin-bottom: 18px; max-width: 880px }
+    h4 { font-size: 13px; font-weight: 600; margin-bottom: 6px }
+
+    .num { font-family: var(--mono); font-feature-settings: "tnum" 1 }
+
+    .tag {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 600;
+      font-family: var(--mono);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin-bottom: 6px;
+    }
+    .tag--accent { background: var(--accent-dim); color: var(--accent) }
+    .tag--blue   { background: var(--accent-2-dim); color: var(--accent-2) }
+    .tag--amber  { background: var(--accent-3-dim); color: var(--accent-3) }
+
+    .slide-stamp {
+      position: absolute;
+      top: 56px; right: 56px;
+      display: flex; align-items: center; gap: 10px;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .slide-stamp .stamp-sep { width: 24px; height: 1px; background: var(--border) }
+    .slide-stamp .stamp-idx { color: var(--text-dim); font-weight: 500 }
+
+    .action-bar {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 10px 14px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-size: 12.5px;
+      margin-top: 14px;
+    }
+    .action-bar.amber { border-left-color: var(--accent-3) }
+    .action-bar.blue  { border-left-color: var(--accent-2) }
+    .action-bar .action-text { color: var(--text); flex: 1 }
+    .action-bar .action-text strong { font-weight: 600 }
+
+    /* ============================================
+       === Occupancy-specific: pipe / examples / kpi / leaderboard ===
+       ============================================ */
+    .pipe-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+    .pipe-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      position: relative;
+      overflow: hidden;
+    }
+    .pipe-card::before {
+      content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+    }
+    .pipe-card.green::before { background: var(--accent) }
+    .pipe-card.amber::before { background: var(--accent-3) }
+    .pipe-card.blue::before  { background: var(--accent-2) }
+    .pipe-card .step {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .pipe-card.green .step { color: var(--accent) }
+    .pipe-card.amber .step { color: var(--accent-3) }
+    .pipe-card.blue .step  { color: var(--accent-2) }
+    .pipe-card h4 { font-size: 16px; font-weight: 600; margin-bottom: 6px }
+    .pipe-card p { font-size: 12.5px; color: var(--text-dim); line-height: 1.5 }
+    .pipe-card p code {
+      font-family: var(--mono); font-size: 11.5px;
+      background: var(--bg-elevated); padding: 1px 5px;
+      border-radius: 3px; color: var(--text)
+    }
+
+    .example-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 4px;
+    }
+    .example-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      display: flex; flex-direction: column;
+    }
+    .example-card img {
+      width: 100%;
+      display: block;
+      aspect-ratio: 1920 / 1088;
+      object-fit: cover;
+    }
+    .example-card .body { padding: 12px 14px 14px }
+    .example-card .label {
+      font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--text-muted); font-weight: 600; margin-bottom: 4px;
+    }
+    .example-card .caption { font-size: 12.5px; color: var(--text); line-height: 1.45 }
+    .example-card .caption code {
+      font-family: var(--mono); font-size: 11.5px;
+      background: var(--bg-elevated); padding: 1px 5px;
+      border-radius: 3px; color: var(--text)
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+    .kpi-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px 16px;
+      position: relative;
+      overflow: hidden;
+    }
+    .kpi-card::before {
+      content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+    }
+    .kpi-card.green { background: color-mix(in srgb, var(--accent) 6%, var(--bg-card)); border-color: color-mix(in srgb, var(--accent) 30%, var(--border)) }
+    .kpi-card.green::before { background: var(--accent) }
+    .kpi-card.blue  { background: color-mix(in srgb, var(--accent-2) 6%, var(--bg-card)); border-color: color-mix(in srgb, var(--accent-2) 30%, var(--border)) }
+    .kpi-card.blue::before  { background: var(--accent-2) }
+    .kpi-card .kpi-label {
+      font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+      font-weight: 700; margin-bottom: 6px;
+    }
+    .kpi-card.green .kpi-label { color: var(--accent) }
+    .kpi-card.blue  .kpi-label { color: var(--accent-2) }
+    .kpi-card .kpi-name {
+      font-family: var(--mono);
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .kpi-card .kpi-value {
+      font-family: var(--mono);
+      font-size: 36px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      line-height: 1;
+      margin: 6px 0 8px;
+    }
+    .kpi-card.green .kpi-value { color: var(--accent) }
+    .kpi-card.blue  .kpi-value { color: var(--accent-2) }
+    .kpi-card .kpi-detail { font-size: 12px; color: var(--text-dim) }
+    .kpi-card .kpi-detail .pill {
+      font-family: var(--mono); font-size: 11px;
+      background: var(--bg-elevated); padding: 1px 6px;
+      border-radius: 3px; margin: 0 3px;
+    }
+
+    .lb-wrap {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+    .lb { width: 100%; border-collapse: collapse; font-size: 13px }
+    .lb th, .lb td { padding: 10px 14px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top }
+    .lb thead th {
+      font-weight: 600; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--text-muted); background: var(--bg-elevated);
+      border-bottom: 2px solid var(--border)
+    }
+    .lb th.num, .lb td.num { text-align: center }
+    .lb th.model, .lb td.model { min-width: 280px }
+    .lb td.model .name { font-family: var(--mono); font-size: 13px; font-weight: 500; color: var(--text) }
+    .lb td.model .fam {
+      font-size: 10px; font-family: var(--mono);
+      letter-spacing: 0.06em; color: var(--text-muted);
+      text-transform: uppercase; margin-top: 3px;
+    }
+    .fam-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 5px; vertical-align: baseline }
+    .fam-dot.mediapipe { background: var(--accent-2) }
+    .fam-dot.detection { background: var(--accent-3) }
+    .cell-acc { font-family: var(--mono); font-size: 15px; font-weight: 500; color: var(--text) }
+    .cell-counts { font-family: var(--mono); font-size: 10.5px; color: var(--text-muted); margin-top: 4px }
+    .lb td.num { transition: background-color .15s ease }
+    .lb td.num[data-delta="pos-tiny"]   { background: color-mix(in srgb, var(--accent) 7%,  var(--bg-card)) }
+    .lb td.num[data-delta="pos-weak"]   { background: color-mix(in srgb, var(--accent) 14%, var(--bg-card)) }
+    .lb td.num[data-delta="pos-mid"]    { background: color-mix(in srgb, var(--accent) 24%, var(--bg-card)) }
+    .lb td.num[data-delta="pos-strong"] { background: color-mix(in srgb, var(--accent) 36%, var(--bg-card)) }
+    .lb td.num[data-delta="neg-tiny"]   { background: color-mix(in srgb, var(--red) 5%,  var(--bg-card)) }
+    .lb td.num[data-delta="neg-weak"]   { background: color-mix(in srgb, var(--red) 9%,  var(--bg-card)) }
+    .lb td.num[data-delta="neg-mid"]    { background: color-mix(in srgb, var(--red) 14%, var(--bg-card)) }
+    .lb td.num[data-delta="neg-strong"] { background: color-mix(in srgb, var(--red) 20%, var(--bg-card)) }
+    .lb td.num[data-delta^="pos-"] .cell-acc { color: var(--accent) }
+    .lb td.num[data-delta^="neg-"] .cell-acc { color: var(--red) }
+    .lb td.num[data-delta$="-strong"] .cell-acc,
+    .lb td.num[data-delta$="-mid"]    .cell-acc { font-weight: 600 }
+    .lb thead th.num + th.num,
+    .lb tbody td.num + td.num { border-left: 1px solid var(--border) }
+
+    .legend {
+      display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 12px;
+      padding: 10px 12px;
+      background: var(--bg-elevated);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      font-size: 12px; color: var(--text-dim)
+    }
+    .legend .item { display: flex; align-items: center; gap: 6px }
+    .legend code {
+      font-family: var(--mono); font-size: 11px;
+      background: var(--bg-card); padding: 1px 5px; border-radius: 3px;
+      color: var(--text); border: 1px solid var(--border)
+    }
+
+    /* ============================================
+       === Mirror-glance specific (from blinker_sync.html) ===
+       ============================================ */
+    .dual-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+      flex: 1;
+      align-items: stretch;
+    }
+    .clip-block {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-width: 0;
+    }
+    .clip-block-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 6px;
+    }
+    .clip-block-header .clip-title { font-size: 13px; font-weight: 600 }
+    .clip-block-header .clip-time { font-size: 11.5px; color: var(--text-muted) }
+
+    .video-frame {
+      background: #000;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .video-frame video {
+      width: 100%;
+      height: auto;
+      max-height: 380px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .leds {
+      display: flex;
+      justify-content: center;
+      gap: 44px;
+      padding: 4px 0 2px;
+    }
+    .led { display: flex; flex-direction: column; align-items: center; gap: 4px }
+    .led .arrow {
+      width: 40px; height: 40px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 34px;
+      line-height: 1;
+      color: var(--border);
+      transition: color 0.08s linear, text-shadow 0.08s linear;
+    }
+    .led.on .arrow {
+      color: var(--accent-3);
+      text-shadow: 0 0 12px rgba(200, 138, 26, 0.55);
+      animation: blink 0.6s steps(2, start) infinite;
+    }
+    @keyframes blink {
+      0%, 49% { opacity: 1 }
+      50%, 100% { opacity: 0.32 }
+    }
+    .led .label {
+      font-family: var(--mono);
+      font-size: 9.5px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .led.on .label { color: var(--accent-3) }
+
+    .timeline-wrap {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 14px 4px;
+    }
+    .timeline-wrap svg { display: block; width: 100% }
+
+    .clip-block .action-bar { margin-top: auto }
+
+    .axis-label { font-size: 10px; fill: var(--text-muted); font-family: var(--mono); letter-spacing: 0.04em }
+    .axis-tick { stroke: var(--border); stroke-width: 1 }
+    .clip-window { fill: rgba(14, 154, 126, 0.13); stroke: rgba(14, 154, 126, 0.55); stroke-width: 1.25 }
+    .glance-label {
+      fill: var(--accent);
+      font-family: var(--mono);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+    }
+    .row-bg { fill: var(--bg-elevated) }
+    .row-on-l, .row-on-r { fill: var(--accent-3) }
+    .row-label {
+      font-size: 10px;
+      fill: var(--text-muted);
+      font-family: var(--mono);
+      font-weight: 700;
+    }
+    .cursor { stroke: var(--text); stroke-width: 1.25 }
+    .cursor-dot { fill: var(--text) }
+
+    /* ============================================
+       === Slopegraph (from pareto_slopegraph.html) — scoped under .pareto-section ===
+       ============================================ */
+    .pareto-section { padding: 48px 56px 56px; border-top: 1px solid var(--border); position: relative; }
+    .pareto-section::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, var(--border) 20%, var(--border) 80%, transparent 100%);
+    }
+    .pareto-section h1 { font-size: 32px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; margin-bottom: 10px; }
+    .pareto-section .framing { font-size: 14px; color: var(--text-dim); max-width: 880px; margin-bottom: 36px; }
+    .pareto-section .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px 24px 18px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+    .pareto-section .eyebrow {
+      font-size: 10px;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-family: var(--mono);
+      margin-bottom: 6px;
+    }
+    .pareto-section .design-title {
+      font-size: 19px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      margin-bottom: 6px;
+    }
+    .pareto-section .intent {
+      font-size: 13px;
+      color: var(--text-dim);
+      max-width: 880px;
+      margin-bottom: 14px;
+    }
+    .pareto-section .chart { width: 100%; min-height: 460px; }
+
+    .pareto-section .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .pareto-section .kpi {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px 20px;
+      text-align: center;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+    .pareto-section .kpi--accent {
+      border: 1.5px solid var(--accent);
+      background: var(--accent-dim);
+    }
+    .pareto-section .kpi--v2 {
+      border: 1.5px solid #C88A1A;
+      background: rgba(200, 138, 26, 0.08);
+    }
+    .pareto-section .kpi--v2 .kpi-label { color: #C88A1A; }
+    .pareto-section .kpi--v2 .kpi-value { color: #C88A1A; }
+    .pareto-section .kpi-label {
+      font-size: 10px;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-family: var(--mono);
+      margin-bottom: 10px;
+    }
+    .pareto-section .kpi--accent .kpi-label { color: var(--accent); }
+    .pareto-section .kpi-value {
+      font-family: var(--mono);
+      font-size: 40px;
+      font-weight: 500;
+      color: var(--text);
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+    .pareto-section .kpi--accent .kpi-value { color: var(--accent); }
+    .pareto-section .kpi-delta {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 500;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+    .pareto-section .kpi-delta--neg { color: var(--red); }
+    .pareto-section .kpi-delta--pos { color: var(--accent); }
+    .pareto-section .kpi-sub {
+      font-size: 11px;
+      color: var(--text-dim);
+      margin-top: 10px;
+    }
+    .pareto-section .why-card {
+      margin-top: 24px;
+      border-left: 4px solid #C88A1A;
+    }
+    .pareto-section .why-card h3 {
+      font-size: 19px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      margin-bottom: 4px;
+      color: var(--text);
+      max-width: none;
+    }
+    .pareto-section .why-card .lede {
+      font-size: 14px;
+      color: var(--text-dim);
+      margin-bottom: 18px;
+      max-width: 880px;
+    }
+    .pareto-section .why-list {
+      list-style: none;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+    .pareto-section .why-list li {
+      padding: 14px 16px;
+      background: rgba(200, 138, 26, 0.05);
+      border: 1px solid rgba(200, 138, 26, 0.18);
+      border-radius: 8px;
+    }
+    .pareto-section .why-list strong {
+      display: block;
+      font-weight: 600;
+      color: #1A1D26;
+      font-size: 13.5px;
+      margin-bottom: 6px;
+    }
+    .pareto-section .why-list p {
+      font-size: 12.5px;
+      color: var(--text-dim);
+      line-height: 1.55;
+    }
+    .pareto-section .why-card .takeaway {
+      font-size: 13.5px;
+      color: var(--text);
+      padding: 12px 14px;
+      background: var(--bg-elevated);
+      border-radius: 8px;
+      border-left: 3px solid var(--accent);
+    }
+    .pareto-section .why-card .takeaway strong { color: var(--accent); font-weight: 600; }
+
+    @media (max-width: 980px) {
+      .pareto-section .why-list { grid-template-columns: 1fr; }
+      .pareto-section .kpi-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+
+<body>
+
+<nav class="outer-nav">
+  <a href="../../index.html">&larr; Home</a>
+  <a href="#occupancy" class="active">Occupancy</a>
+  <a href="#mirror">Mirror Glance</a>
+  <a href="#slopegraph">Model Lift</a>
+  <span class="deck-title">Passenger Counting + new use case + Model Lift</span>
+  <span class="slide-counter" id="outerCounter">1 / 3</span>
+</nav>
+
+<!-- ============================================
+     SECTION 1 / OCCUPANCY (2 slides from occupancy_counts_26Apr26.html)
+     ============================================ -->
+
+<section class="slide" id="occupancy">
+  <div class="slide-stamp">
+    <span>occupancy / methodology / 2026-04</span>
+    <span class="stamp-sep"></span>
+    <span class="stamp-idx">01 / 02</span>
+  </div>
+  <span class="tag tag--blue">Methodology</span>
+  <h2>Pipeline &amp; Cabin ROI</h2>
+  <h3>Three steps. Same rule applies to face and person detectors.</h3>
+
+  <div class="pipe-grid">
+    <div class="pipe-card amber">
+      <div class="step">Step 1 / Detect</div>
+      <h4>Run face / person detector</h4>
+      <p>Every detection is a bounding box around a candidate occupant in the frame.</p>
+    </div>
+    <div class="pipe-card green">
+      <div class="step">Step 2 / Filter</div>
+      <h4>Cabin ROI test</h4>
+      <p>Drop boxes whose centre lies outside the cabin region. Windshield and side-window areas are excluded.</p>
+    </div>
+    <div class="pipe-card blue">
+      <div class="step">Step 3 / Assign</div>
+      <h4>Largest box in the cabin = driver</h4>
+      <p>The largest surviving box becomes the driver. The rest are passengers. If nothing survives, the driver is missing.</p>
+    </div>
+  </div>
+
+  <div class="example-grid">
+    <div class="example-card">
+      <img src="../../assets/occupancy_counts/01_lone_driver.png" alt="Lone driver example">
+      <div class="body">
+        <div class="label">Example 01 / Lone driver</div>
+        <div class="caption">One person in the cabin. Counted as driver. No passengers.</div>
+      </div>
+    </div>
+    <div class="example-card">
+      <img src="../../assets/occupancy_counts/02_multi_occupant.png" alt="Multi-occupant example">
+      <div class="body">
+        <div class="label">Example 02 / Multi-occupant</div>
+        <div class="caption">Four people in the cabin. The largest (right) is the driver; the other three are passengers.</div>
+      </div>
+    </div>
+    <div class="example-card">
+      <img src="../../assets/occupancy_counts/03_roi_drop.png" alt="ROI drop example">
+      <div class="body">
+        <div class="label">Example 03 / ROI drop</div>
+        <div class="caption">Three detections, but two fall outside the cabin and are dropped. Only the in-cabin one is counted.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="action-bar blue">
+    <div class="action-text"><strong>Why "largest" rather than position-based:</strong> camera mounts vary across the fleet, so the driver doesn't always appear on the same side. Largest box generalises &mdash; the driver is closest to the camera in every layout.</div>
+  </div>
+
+  <div class="action-bar amber">
+    <div class="action-text"><strong>Known failure:</strong> this pipeline fails when there's a passenger but the driver is outside the vehicle &mdash; the passenger gets labelled "driver" and the count for passengers drops by one. Further experimentation required to tackle this issue.</div>
+  </div>
+</section>
+
+
+<section class="slide" id="occupancy-results">
+  <div class="slide-stamp">
+    <span>occupancy / results / 2026-04</span>
+    <span class="stamp-sep"></span>
+    <span class="stamp-idx">02 / 02</span>
+  </div>
+  <span class="tag tag--accent">Results</span>
+  <h2>Hikvision Occupancy Leaderboard</h2>
+  <h3>Driver recall and passenger-presence accuracy on 626 Hikvision Alerts.</h3>
+
+  <div class="kpi-grid">
+    <div class="kpi-card green">
+      <div class="kpi-label">Best driver recall</div>
+      <div class="kpi-name"><span class="fam-dot detection"></span>yolov9e</div>
+      <div class="kpi-value">1.000</div>
+      <div class="kpi-detail">
+        tp <span class="pill">625</span>
+        fn <span class="pill">0</span>
+        of <span class="pill">625</span> driver-positive frames
+      </div>
+    </div>
+    <div class="kpi-card blue">
+      <div class="kpi-label">Best passenger detection (binary)</div>
+      <div class="kpi-name"><span class="fam-dot detection"></span>yolov9e</div>
+      <div class="kpi-value">0.947</div>
+      <div class="kpi-detail">
+        sensitivity <span class="pill">0.961</span>
+        specificity <span class="pill">0.933</span>
+        on <span class="pill">626 frames</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="legend">
+    <div class="item"><span class="fam-dot mediapipe"></span> Face detector</div>
+    <div class="item"><span class="fam-dot detection"></span> Person detector</div>
+    <div class="item"><code>Driver recall</code> = TP / (TP + FN) on the 625 driver-positive frames</div>
+    <div class="item"><code>Passenger acc.</code> = (sens + spec) / 2 vs. has-passenger / no-passenger GT</div>
+  </div>
+
+  <div class="lb-wrap">
+    <table class="lb">
+      <thead>
+        <tr>
+          <th class="model">Detector</th>
+          <th class="num">Frames</th>
+          <th class="num">Driver recall</th>
+          <th class="num">Passenger accuracy</th>
+          <th class="num">Size (M)</th>
+          <th class="num">TOPs @ 30fps</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="model"><div class="name"><span class="fam-dot detection"></span>yolov9e</div><div class="fam">PERSON &middot; FULL</div></td>
+          <td class="num"><div class="cell-acc" style="font-size:12px">626</div></td>
+          <td class="num" data-delta="pos-strong"><div class="cell-acc">1.000</div><div class="cell-counts">tp 625 &middot; fn 0 of 625</div></td>
+          <td class="num" data-delta="pos-mid"><div class="cell-acc">0.947</div><div class="cell-counts">sens 0.961 &middot; spec 0.933</div></td>
+          <td class="num"><div class="cell-acc" style="font-size:12px">58</div></td>
+          <td class="num"><div class="cell-acc" style="font-size:12px">5.7</div></td>
+        </tr>
+        <tr>
+          <td class="model"><div class="name"><span class="fam-dot detection"></span>yolo11x</div><div class="fam">PERSON &middot; FULL</div></td>
+          <td class="num"><div class="cell-acc" style="font-size:12px">626</div></td>
+          <td class="num" data-delta="pos-strong"><div class="cell-acc">1.000</div><div class="cell-counts">tp 625 &middot; fn 0 of 625</div></td>
+          <td class="num" data-delta="pos-mid"><div class="cell-acc">0.945</div><div class="cell-counts">sens 0.972 &middot; spec 0.917</div></td>
+          <td class="num"><div class="cell-acc" style="font-size:12px">57</div></td>
+          <td class="num"><div class="cell-acc" style="font-size:12px">5.9</div></td>
+        </tr>
+        <tr>
+          <td class="model"><div class="name"><span class="fam-dot detection"></span>yolo12x</div><div class="fam">PERSON &middot; FULL</div></td>
+          <td class="num"><div class="cell-acc" style="font-size:12px">626</div></td>
+          <td class="num" data-delta="pos-strong"><div class="cell-acc">1.000</div><div class="cell-counts">tp 625 &middot; fn 0 of 625</div></td>
+          <td class="num" data-delta="pos-mid"><div class="cell-acc">0.944</div><div class="cell-counts">sens 0.956 &middot; spec 0.933</div></td>
+          <td class="num"><div class="cell-acc" style="font-size:12px">57</div></td>
+          <td class="num"><div class="cell-acc" style="font-size:12px">6.0</div></td>
+        </tr>
+        <tr>
+          <td class="model"><div class="name"><span class="fam-dot mediapipe"></span>scrfd_buffalo_l</div><div class="fam">FACE &middot; FULL</div></td>
+          <td class="num"><div class="cell-acc" style="font-size:12px">626</div></td>
+          <td class="num" data-delta="pos-strong"><div class="cell-acc">0.998</div><div class="cell-counts">tp 624 &middot; fn 1 of 625</div></td>
+          <td class="num" data-delta="pos-mid"><div class="cell-acc">0.938</div><div class="cell-counts">sens 0.883 &middot; spec 0.993</div></td>
+          <td class="num"><div class="cell-acc" style="font-size:12px">3.5</div></td>
+          <td class="num"><div class="cell-acc" style="font-size:12px">0.17</div></td>
+        </tr>
+        <tr>
+          <td class="model"><div class="name"><span class="fam-dot detection"></span>yolov10x</div><div class="fam">PERSON &middot; FULL</div></td>
+          <td class="num"><div class="cell-acc" style="font-size:12px">626</div></td>
+          <td class="num" data-delta="pos-strong"><div class="cell-acc">1.000</div><div class="cell-counts">tp 625 &middot; fn 0 of 625</div></td>
+          <td class="num" data-delta="pos-mid"><div class="cell-acc">0.932</div><div class="cell-counts">sens 0.956 &middot; spec 0.908</div></td>
+          <td class="num"><div class="cell-acc" style="font-size:12px">30</div></td>
+          <td class="num"><div class="cell-acc" style="font-size:12px">4.8</div></td>
+        </tr>
+        <tr>
+          <td class="model"><div class="name"><span class="fam-dot detection"></span>yolo26x</div><div class="fam">PERSON &middot; FULL</div></td>
+          <td class="num"><div class="cell-acc" style="font-size:12px">626</div></td>
+          <td class="num" data-delta="pos-strong"><div class="cell-acc">1.000</div><div class="cell-counts">tp 625 &middot; fn 0 of 625</div></td>
+          <td class="num" data-delta="pos-mid"><div class="cell-acc">0.928</div><div class="cell-counts">sens 0.978 &middot; spec 0.879</div></td>
+          <td class="num"><div class="cell-acc" style="font-size:12px">57</div></td>
+          <td class="num"><div class="cell-acc" style="font-size:12px">6.0</div></td>
+        </tr>
+        <tr>
+          <td class="model"><div class="name"><span class="fam-dot detection"></span>yolov8x</div><div class="fam">PERSON &middot; FULL</div></td>
+          <td class="num"><div class="cell-acc" style="font-size:12px">626</div></td>
+          <td class="num" data-delta="pos-strong"><div class="cell-acc">1.000</div><div class="cell-counts">tp 625 &middot; fn 0 of 625</div></td>
+          <td class="num" data-delta="pos-mid"><div class="cell-acc">0.919</div><div class="cell-counts">sens 0.956 &middot; spec 0.883</div></td>
+          <td class="num"><div class="cell-acc" style="font-size:12px">68</div></td>
+          <td class="num"><div class="cell-acc" style="font-size:12px">7.7</div></td>
+        </tr>
+        <tr>
+          <td class="model"><div class="name"><span class="fam-dot mediapipe"></span>yolov12l-face</div><div class="fam">FACE &middot; FULL</div></td>
+          <td class="num"><div class="cell-acc" style="font-size:12px">626</div></td>
+          <td class="num" data-delta="pos-strong"><div class="cell-acc">0.998</div><div class="cell-counts">tp 624 &middot; fn 1 of 625</div></td>
+          <td class="num" data-delta="pos-mid"><div class="cell-acc">0.916</div><div class="cell-counts">sens 0.878 &middot; spec 0.955</div></td>
+          <td class="num"><div class="cell-acc" style="font-size:12px">26</div></td>
+          <td class="num"><div class="cell-acc" style="font-size:12px">2.7</div></td>
+        </tr>
+        <tr>
+          <td class="model"><div class="name"><span class="fam-dot mediapipe"></span>scrfd_buffalo_s</div><div class="fam">FACE &middot; FULL</div></td>
+          <td class="num"><div class="cell-acc" style="font-size:12px">626</div></td>
+          <td class="num" data-delta="pos-strong"><div class="cell-acc">0.998</div><div class="cell-counts">tp 624 &middot; fn 1 of 625</div></td>
+          <td class="num" data-delta="pos-mid"><div class="cell-acc">0.916</div><div class="cell-counts">sens 0.839 &middot; spec 0.993</div></td>
+          <td class="num"><div class="cell-acc" style="font-size:12px">0.6</div></td>
+          <td class="num"><div class="cell-acc" style="font-size:12px">0.04</div></td>
+        </tr>
+        <tr>
+          <td class="model"><div class="name"><span class="fam-dot detection"></span>rtdetr-x</div><div class="fam">PERSON &middot; FULL</div></td>
+          <td class="num"><div class="cell-acc" style="font-size:12px">626</div></td>
+          <td class="num" data-delta="pos-strong"><div class="cell-acc">1.000</div><div class="cell-counts">tp 625 &middot; fn 0 of 625</div></td>
+          <td class="num" data-delta="pos-mid"><div class="cell-acc">0.910</div><div class="cell-counts">sens 0.978 &middot; spec 0.843</div></td>
+          <td class="num"><div class="cell-acc" style="font-size:12px">67</div></td>
+          <td class="num"><div class="cell-acc" style="font-size:12px">7.0</div></td>
+        </tr>
+        <tr>
+          <td class="model"><div class="name"><span class="fam-dot detection"></span>dfine_l</div><div class="fam">PERSON &middot; FULL</div></td>
+          <td class="num"><div class="cell-acc" style="font-size:12px">626</div></td>
+          <td class="num" data-delta="pos-strong"><div class="cell-acc">1.000</div><div class="cell-counts">tp 625 &middot; fn 0 of 625</div></td>
+          <td class="num" data-delta="pos-mid"><div class="cell-acc">0.885</div><div class="cell-counts">sens 0.994 &middot; spec 0.776</div></td>
+          <td class="num"><div class="cell-acc" style="font-size:12px">25</div></td>
+          <td class="num"><div class="cell-acc" style="font-size:12px">2.7</div></td>
+        </tr>
+        <tr>
+          <td class="model"><div class="name"><span class="fam-dot mediapipe"></span>mediapipe_face</div><div class="fam">FACE &middot; FULL</div></td>
+          <td class="num"><div class="cell-acc" style="font-size:12px">626</div></td>
+          <td class="num" data-delta="pos-mid"><div class="cell-acc">0.904</div><div class="cell-counts">tp 565 &middot; fn 60 of 625</div></td>
+          <td class="num" data-delta="pos-tiny"><div class="cell-acc">0.569</div><div class="cell-counts">sens 0.139 &middot; spec 1.000</div></td>
+          <td class="num"><div class="cell-acc" style="font-size:12px">0.4</div></td>
+          <td class="num"><div class="cell-acc" style="font-size:12px">0.015</div></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="action-bar amber">
+    <div class="action-text"><strong>Different metrics for different reasons.</strong> Driver GT is 625 / 1 &mdash; accuracy collapses to a single binary specificity outcome, so recall is the meaningful column (did we find the driver in the 625 frames that have one?). Passenger GT is 446 / 180 &mdash; class-balanced enough that (sens + spec) / 2 actually ranks detectors.</div>
+  </div>
+</section>
+
+
+<!-- ============================================
+     SECTION 2 / MIRROR GLANCE (from blinker_sync.html)
+     ============================================ -->
+
+<section class="slide" id="mirror">
+  <div class="slide-stamp">
+    <span>mirror-glance / blinker / 2026-04</span>
+    <span class="stamp-sep"></span>
+    <span class="stamp-idx">01 / 01</span>
+  </div>
+
+  <span class="tag tag--accent">Glance Evaluation</span>
+  <h2>Mirror glance &times; CAN-bus blinker</h2>
+  <h3>Two detected mirror-check moments synced with the vehicle&apos;s turn-signal telemetry. <span class="num">6 sec</span> of footage each (<span class="num">3 sec</span> preceding context, then <span class="num">3 sec</span> glance). Highlighted region marks where the gaze classifier fired.</h3>
+
+  <div class="dual-grid">
+    <div class="clip-block">
+      <div class="clip-block-header">
+        <span class="clip-title">RIGHT mirror check</span>
+        <span class="clip-time num">15:15:46</span>
+      </div>
+      <div class="video-frame">
+        <video id="video-right" src="../../assets/28April26/rightGoodExample_ctx.mp4" autoplay loop muted playsinline controls></video>
+      </div>
+      <div class="leds">
+        <div class="led" id="led-l-right">
+          <div class="arrow">&#9664;</div>
+          <div class="label">LEFT</div>
+        </div>
+        <div class="led" id="led-r-right">
+          <div class="arrow">&#9654;</div>
+          <div class="label">RIGHT</div>
+        </div>
+      </div>
+      <div class="timeline-wrap">
+        <svg viewBox="0 0 820 130" preserveAspectRatio="xMidYMid meet">
+          <rect class="clip-window" x="599.47" y="26" width="56.84" height="66"></rect>
+          <rect class="row-bg" x="50.00" y="30" width="720.00" height="18" rx="4"></rect><rect class="row-bg" x="50.00" y="70" width="720.00" height="18" rx="4"></rect>
+          <rect class="row-on-l" x="703.13" y="30" width="64.59" height="18" rx="3"></rect><rect class="row-on-r" x="510.00" y="70" width="113.76" height="18" rx="3"></rect>
+          <text class="row-label" x="40" y="43.0" text-anchor="end">L</text><text class="row-label" x="40" y="83.0" text-anchor="end">R</text>
+          <line class="axis-tick" x1="50.00" y1="100" x2="50.00" y2="106"></line><text class="axis-label" x="50.00" y="118" text-anchor="middle">-30s</text><line class="axis-tick" x1="144.74" y1="100" x2="144.74" y2="106"></line><text class="axis-label" x="144.74" y="118" text-anchor="middle">-25s</text><line class="axis-tick" x1="239.47" y1="100" x2="239.47" y2="106"></line><text class="axis-label" x="239.47" y="118" text-anchor="middle">-20s</text><line class="axis-tick" x1="334.21" y1="100" x2="334.21" y2="106"></line><text class="axis-label" x="334.21" y="118" text-anchor="middle">-15s</text><line class="axis-tick" x1="428.95" y1="100" x2="428.95" y2="106"></line><text class="axis-label" x="428.95" y="118" text-anchor="middle">-10s</text><line class="axis-tick" x1="523.68" y1="100" x2="523.68" y2="106"></line><text class="axis-label" x="523.68" y="118" text-anchor="middle">-5s</text><line class="axis-tick" x1="618.42" y1="100" x2="618.42" y2="106"></line><text class="axis-label" x="618.42" y="118" text-anchor="middle">0s</text><line class="axis-tick" x1="713.16" y1="100" x2="713.16" y2="106"></line><text class="axis-label" x="713.16" y="118" text-anchor="middle">+5s</text>
+          <text class="glance-label" x="627.89" y="22" text-anchor="middle">GLANCE DETECTION</text>
+          <line class="cursor" id="cursor-right" x1="618.42" y1="22" x2="618.42" y2="96"></line><circle class="cursor-dot" id="cursor-dot-right" cx="618.42" cy="22" r="3.5"></circle>
+        </svg>
+      </div>
+      <div class="action-bar">
+        <div class="action-text">
+          <strong>Right blinker on at <span class='num'>-5.7s</span>, off at <span class='num'>+0.5s</span>.</strong> Glance overlaps the active-signal window. Detection corroborated by telemetry.
+        </div>
+      </div>
+    </div>
+
+    <div class="clip-block">
+      <div class="clip-block-header">
+        <span class="clip-title">LEFT mirror check</span>
+        <span class="clip-time num">15:16:13</span>
+      </div>
+      <div class="video-frame">
+        <video id="video-left" src="../../assets/28April26/leftGoodexample_ctx.mp4" autoplay loop muted playsinline controls></video>
+      </div>
+      <div class="leds">
+        <div class="led" id="led-l-left">
+          <div class="arrow">&#9664;</div>
+          <div class="label">LEFT</div>
+        </div>
+        <div class="led" id="led-r-left">
+          <div class="arrow">&#9654;</div>
+          <div class="label">RIGHT</div>
+        </div>
+      </div>
+      <div class="timeline-wrap">
+        <svg viewBox="0 0 820 130" preserveAspectRatio="xMidYMid meet">
+          <rect class="clip-window" x="618.42" y="26" width="56.84" height="66"></rect>
+          <rect class="row-bg" x="50.00" y="30" width="720.00" height="18" rx="4"></rect><rect class="row-bg" x="50.00" y="70" width="720.00" height="18" rx="4"></rect>
+          <rect class="row-on-l" x="191.56" y="30" width="75.92" height="18" rx="3"></rect><rect class="row-on-r" x="51.52" y="70" width="60.67" height="18" rx="3"></rect>
+          <text class="row-label" x="40" y="43.0" text-anchor="end">L</text><text class="row-label" x="40" y="83.0" text-anchor="end">R</text>
+          <line class="axis-tick" x1="50.00" y1="100" x2="50.00" y2="106"></line><text class="axis-label" x="50.00" y="118" text-anchor="middle">-30s</text><line class="axis-tick" x1="144.74" y1="100" x2="144.74" y2="106"></line><text class="axis-label" x="144.74" y="118" text-anchor="middle">-25s</text><line class="axis-tick" x1="239.47" y1="100" x2="239.47" y2="106"></line><text class="axis-label" x="239.47" y="118" text-anchor="middle">-20s</text><line class="axis-tick" x1="334.21" y1="100" x2="334.21" y2="106"></line><text class="axis-label" x="334.21" y="118" text-anchor="middle">-15s</text><line class="axis-tick" x1="428.95" y1="100" x2="428.95" y2="106"></line><text class="axis-label" x="428.95" y="118" text-anchor="middle">-10s</text><line class="axis-tick" x1="523.68" y1="100" x2="523.68" y2="106"></line><text class="axis-label" x="523.68" y="118" text-anchor="middle">-5s</text><line class="axis-tick" x1="618.42" y1="100" x2="618.42" y2="106"></line><text class="axis-label" x="618.42" y="118" text-anchor="middle">0s</text><line class="axis-tick" x1="713.16" y1="100" x2="713.16" y2="106"></line><text class="axis-label" x="713.16" y="118" text-anchor="middle">+5s</text>
+          <text class="glance-label" x="646.84" y="22" text-anchor="middle">GLANCE DETECTION</text>
+          <line class="cursor" id="cursor-left" x1="618.42" y1="22" x2="618.42" y2="96"></line><circle class="cursor-dot" id="cursor-dot-left" cx="618.42" cy="22" r="3.5"></circle>
+        </svg>
+      </div>
+      <div class="action-bar amber">
+        <div class="action-text">
+          <strong>No blinker active in the glance window.</strong> Left signal last pulsed at <span class='num'>-22s</span>. Detection not corroborated &mdash; routine glance or gaze-classifier false positive.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================
+     SECTION 3 / SLOPEGRAPH (from pareto_slopegraph.html)
+     ============================================ -->
+
+<div class="pareto-section" id="slopegraph">
+  <h1>Models Combinations vs Hikvision</h1>
+  <p class="framing">The performance of our previous approach, the enhanced version, and Hikvision across 5 use cases.</p>
+
+  <div class="kpi-row">
+    <div class="kpi kpi--accent">
+      <div class="kpi-label">Ensemble (n=5)</div>
+      <div class="kpi-value">71.3%<span class="kpi-delta kpi-delta--neg">&minus;2.3 pts</span></div>
+      <div class="kpi-sub">mean accuracy &middot; 5 use cases</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Hikvision OEM</div>
+      <div class="kpi-value">73.6%</div>
+      <div class="kpi-sub">mean accuracy &middot; 5 use cases</div>
+    </div>
+    <div class="kpi kpi--v2">
+      <div class="kpi-label">v2 (best-of routing)</div>
+      <div class="kpi-value">81.6%<span class="kpi-delta kpi-delta--pos">+10.3 pts</span></div>
+      <div class="kpi-sub">vs n=5 ensemble &middot; +8.0 pts vs OEM &middot; v2 used where it improved (4 of 5 cells)</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="eyebrow">Per-use-case slopegraph</div>
+    <div class="design-title">Ensemble (n=5) vs. Hikvision OEM</div>
+    <p class="intent">Sign-aware delta bars at every use case, with the model routed to each class shown below the tick. Use cases ordered left-to-right by lift achieved (least-improved &rarr; most-improved).</p>
+    <div id="slopegraph-chart" class="chart"></div>
+  </div>
+
+  <div class="card why-card">
+    <div class="eyebrow" style="color:#C88A1A">Why v2 works</div>
+    <h3>Four changes, layered</h3>
+    <p class="lede">Configuration only. No training, no new models.</p>
+
+    <ul class="why-list">
+      <li>
+        <strong>1. Crop to the driver.</strong>
+        <p>Ignore passenger seat, windshield, and dashboard.</p>
+      </li>
+      <li>
+        <strong>2. Lift dim areas.</strong>
+        <p>Contrast adjustment so the image is clearer.</p>
+      </li>
+      <li>
+        <strong>3. Eating fallback.</strong>
+        <p>Treat head-down + eyes-down as eating when the food is hidden behind a hand.</p>
+      </li>
+      <li>
+        <strong>4. Stricter distracted &amp; fatigue rules.</strong>
+        <p>Distracted needs head and eyes to agree. Fatigue needs eyes clearly closed, not just glancing down.</p>
+      </li>
+    </ul>
+
+  </div>
+</div>
+
+
+<script>
+// ============================================
+// === Mirror-glance interactivity (from blinker_sync.html), wrapped in IIFE ===
+// ============================================
+(function() {
+  "use strict";
+  const DATA = [{"id":"right","label":"RIGHT mirror check","video":"../../assets/28April26/rightGoodExample_ctx.mp4","clip_start_local":"15:15:46","duration_sec":3.0,"pre_context_sec":3.0,"glance_extend_before_sec":1.0,"glance_extend_after_sec":-1.0,"verdict":{"type":"correct","headline_html":"Right blinker on at <span class='num'>-5.7s</span>, off at <span class='num'>+0.5s</span>.","detail_html":"Glance overlaps the active-signal window. Detection corroborated by telemetry."},"blinker":[{"t":-29.918,"l":0,"r":0},{"t":-29.715,"l":0,"r":0},{"t":-29.513,"l":0,"r":0},{"t":-29.307,"l":0,"r":0},{"t":-29.12,"l":0,"r":0},{"t":-28.917,"l":0,"r":0},{"t":-28.713,"l":0,"r":0},{"t":-28.528,"l":0,"r":0},{"t":-28.307,"l":0,"r":0},{"t":-28.125,"l":0,"r":0},{"t":-27.91,"l":0,"r":0},{"t":-27.723,"l":0,"r":0},{"t":-27.517,"l":0,"r":0},{"t":-27.315,"l":0,"r":0},{"t":-27.125,"l":0,"r":0},{"t":-26.923,"l":0,"r":0},{"t":-26.722,"l":0,"r":0},{"t":-26.518,"l":0,"r":0},{"t":-26.315,"l":0,"r":0},{"t":-26.113,"l":0,"r":0},{"t":-25.925,"l":0,"r":0},{"t":-25.703,"l":0,"r":0},{"t":-25.517,"l":0,"r":0},{"t":-25.318,"l":0,"r":0},{"t":-25.116,"l":0,"r":0},{"t":-24.913,"l":0,"r":0},{"t":-24.71,"l":0,"r":0},{"t":-24.524,"l":0,"r":0},{"t":-24.324,"l":0,"r":0},{"t":-24.106,"l":0,"r":0},{"t":-23.902,"l":0,"r":0},{"t":-23.715,"l":0,"r":0},{"t":-23.527,"l":0,"r":0},{"t":-23.321,"l":0,"r":0},{"t":-23.116,"l":0,"r":0},{"t":-22.917,"l":0,"r":0},{"t":-22.712,"l":0,"r":0},{"t":-22.524,"l":0,"r":0},{"t":-22.32,"l":0,"r":0},{"t":-22.118,"l":0,"r":0},{"t":-21.911,"l":0,"r":0},{"t":-21.714,"l":0,"r":0},{"t":-21.514,"l":0,"r":0},{"t":-21.325,"l":0,"r":0},{"t":-21.123,"l":0,"r":0},{"t":-20.919,"l":0,"r":0},{"t":-20.717,"l":0,"r":0},{"t":-20.527,"l":0,"r":0},{"t":-20.308,"l":0,"r":0},{"t":-20.121,"l":0,"r":0},{"t":-19.915,"l":0,"r":0},{"t":-19.728,"l":0,"r":0},{"t":-19.505,"l":0,"r":0},{"t":-19.316,"l":0,"r":0},{"t":-19.125,"l":0,"r":0},{"t":-18.92,"l":0,"r":0},{"t":-18.719,"l":0,"r":0},{"t":-18.517,"l":0,"r":0},{"t":-18.312,"l":0,"r":0},{"t":-18.113,"l":0,"r":0},{"t":-17.927,"l":0,"r":0},{"t":-17.723,"l":0,"r":0},{"t":-17.505,"l":0,"r":0},{"t":-17.317,"l":0,"r":0},{"t":-17.116,"l":0,"r":0},{"t":-16.913,"l":0,"r":0},{"t":-16.727,"l":0,"r":0},{"t":-16.526,"l":0,"r":0},{"t":-16.325,"l":0,"r":0},{"t":-16.122,"l":0,"r":0},{"t":-15.917,"l":0,"r":0},{"t":-15.714,"l":0,"r":0},{"t":-15.527,"l":0,"r":0},{"t":-15.31,"l":0,"r":0},{"t":-15.121,"l":0,"r":0},{"t":-14.92,"l":0,"r":0},{"t":-14.715,"l":0,"r":0},{"t":-14.51,"l":0,"r":0},{"t":-14.324,"l":0,"r":0},{"t":-14.12,"l":0,"r":0},{"t":-13.918,"l":0,"r":0},{"t":-13.716,"l":0,"r":0},{"t":-13.517,"l":0,"r":0},{"t":-13.315,"l":0,"r":0},{"t":-13.115,"l":0,"r":0},{"t":-12.914,"l":0,"r":0},{"t":-12.71,"l":0,"r":0},{"t":-12.507,"l":0,"r":0},{"t":-12.321,"l":0,"r":0},{"t":-12.119,"l":0,"r":0},{"t":-11.918,"l":0,"r":0},{"t":-11.718,"l":0,"r":0},{"t":-11.515,"l":0,"r":0},{"t":-11.311,"l":0,"r":0},{"t":-11.126,"l":0,"r":0},{"t":-10.924,"l":0,"r":0},{"t":-10.707,"l":0,"r":0},{"t":-10.521,"l":0,"r":0},{"t":-10.318,"l":0,"r":0},{"t":-10.116,"l":0,"r":0},{"t":-9.913,"l":0,"r":0},{"t":-9.724,"l":0,"r":0},{"t":-9.505,"l":0,"r":0},{"t":-9.318,"l":0,"r":0},{"t":-9.116,"l":0,"r":0},{"t":-8.915,"l":0,"r":0},{"t":-8.727,"l":0,"r":0},{"t":-8.524,"l":0,"r":0},{"t":-8.321,"l":0,"r":0},{"t":-8.116,"l":0,"r":0},{"t":-7.915,"l":0,"r":0},{"t":-7.725,"l":0,"r":0},{"t":-7.525,"l":0,"r":0},{"t":-7.322,"l":0,"r":0},{"t":-7.105,"l":0,"r":0},{"t":-6.92,"l":0,"r":0},{"t":-6.704,"l":0,"r":0},{"t":-6.517,"l":0,"r":0},{"t":-6.316,"l":0,"r":0},{"t":-6.113,"l":0,"r":0},{"t":-5.926,"l":0,"r":0},{"t":-5.722,"l":0,"r":1},{"t":-5.506,"l":0,"r":1},{"t":-5.317,"l":0,"r":1},{"t":-5.114,"l":0,"r":1},{"t":-4.914,"l":0,"r":1},{"t":-4.711,"l":0,"r":1},{"t":-4.522,"l":0,"r":1},{"t":-4.321,"l":0,"r":1},{"t":-4.119,"l":0,"r":1},{"t":-3.916,"l":0,"r":1},{"t":-3.728,"l":0,"r":1},{"t":-3.526,"l":0,"r":1},{"t":-3.324,"l":0,"r":1},{"t":-3.123,"l":0,"r":1},{"t":-2.92,"l":0,"r":1},{"t":-2.719,"l":0,"r":1},{"t":-2.518,"l":0,"r":1},{"t":-2.316,"l":0,"r":1},{"t":-2.114,"l":0,"r":1},{"t":-1.916,"l":0,"r":1},{"t":-1.714,"l":0,"r":1},{"t":-1.512,"l":0,"r":1},{"t":-1.325,"l":0,"r":1},{"t":-1.125,"l":0,"r":1},{"t":-0.906,"l":0,"r":1},{"t":-0.719,"l":0,"r":1},{"t":-0.515,"l":0,"r":1},{"t":-0.324,"l":0,"r":1},{"t":-0.121,"l":0,"r":1},{"t":0.08,"l":0,"r":1},{"t":0.282,"l":0,"r":1},{"t":0.482,"l":0,"r":0},{"t":0.685,"l":0,"r":0},{"t":0.874,"l":0,"r":0},{"t":1.075,"l":0,"r":0},{"t":1.276,"l":0,"r":0},{"t":1.48,"l":0,"r":0},{"t":1.682,"l":0,"r":0},{"t":1.886,"l":0,"r":0},{"t":2.088,"l":0,"r":0},{"t":2.276,"l":0,"r":0},{"t":2.477,"l":0,"r":0},{"t":2.691,"l":0,"r":0},{"t":2.876,"l":0,"r":0},{"t":3.092,"l":0,"r":0},{"t":3.28,"l":0,"r":0},{"t":3.481,"l":0,"r":0},{"t":3.696,"l":0,"r":0},{"t":3.883,"l":0,"r":0},{"t":4.084,"l":0,"r":0},{"t":4.287,"l":0,"r":0},{"t":4.471,"l":1,"r":0},{"t":4.674,"l":1,"r":0},{"t":4.878,"l":1,"r":0},{"t":5.079,"l":1,"r":0},{"t":5.281,"l":1,"r":0},{"t":5.484,"l":1,"r":0},{"t":5.684,"l":1,"r":0},{"t":5.885,"l":1,"r":0},{"t":6.086,"l":1,"r":0},{"t":6.275,"l":1,"r":0},{"t":6.492,"l":1,"r":0},{"t":6.677,"l":1,"r":0},{"t":6.879,"l":1,"r":0},{"t":7.081,"l":1,"r":0},{"t":7.285,"l":1,"r":0},{"t":7.474,"l":1,"r":0},{"t":7.679,"l":1,"r":0},{"t":7.88,"l":1,"r":0}],"window_before":30.0,"window_after":5.0,"slide_idx":"01","slide_total":"02"},{"id":"left","label":"LEFT mirror check","video":"../../assets/28April26/leftGoodexample_ctx.mp4","clip_start_local":"15:16:13","duration_sec":3.0,"pre_context_sec":3.0,"verdict":{"type":"issue","headline_html":"No blinker active in the glance window.","detail_html":"Left signal last pulsed at <span class='num'>-22s</span>. Detection not corroborated &mdash; routine glance or gaze-classifier false positive."},"blinker":[{"t":-29.92,"l":0,"r":1},{"t":-29.719,"l":0,"r":1},{"t":-29.518,"l":0,"r":1},{"t":-29.316,"l":0,"r":1},{"t":-29.114,"l":0,"r":1},{"t":-28.916,"l":0,"r":1},{"t":-28.714,"l":0,"r":1},{"t":-28.512,"l":0,"r":1},{"t":-28.325,"l":0,"r":1},{"t":-28.125,"l":0,"r":1},{"t":-27.906,"l":0,"r":1},{"t":-27.719,"l":0,"r":1},{"t":-27.515,"l":0,"r":1},{"t":-27.324,"l":0,"r":1},{"t":-27.121,"l":0,"r":1},{"t":-26.92,"l":0,"r":1},{"t":-26.718,"l":0,"r":1},{"t":-26.518,"l":0,"r":0},{"t":-26.315,"l":0,"r":0},{"t":-26.126,"l":0,"r":0},{"t":-25.925,"l":0,"r":0},{"t":-25.724,"l":0,"r":0},{"t":-25.52,"l":0,"r":0},{"t":-25.318,"l":0,"r":0},{"t":-25.114,"l":0,"r":0},{"t":-24.912,"l":0,"r":0},{"t":-24.724,"l":0,"r":0},{"t":-24.523,"l":0,"r":0},{"t":-24.309,"l":0,"r":0},{"t":-24.124,"l":0,"r":0},{"t":-23.908,"l":0,"r":0},{"t":-23.72,"l":0,"r":0},{"t":-23.519,"l":0,"r":0},{"t":-23.304,"l":0,"r":0},{"t":-23.117,"l":0,"r":0},{"t":-22.916,"l":0,"r":0},{"t":-22.713,"l":0,"r":0},{"t":-22.529,"l":1,"r":0},{"t":-22.326,"l":1,"r":0},{"t":-22.122,"l":1,"r":0},{"t":-21.921,"l":1,"r":0},{"t":-21.719,"l":1,"r":0},{"t":-21.516,"l":1,"r":0},{"t":-21.316,"l":1,"r":0},{"t":-21.115,"l":1,"r":0},{"t":-20.914,"l":1,"r":0},{"t":-20.725,"l":1,"r":0},{"t":-20.508,"l":1,"r":0},{"t":-20.323,"l":1,"r":0},{"t":-20.121,"l":1,"r":0},{"t":-19.919,"l":1,"r":0},{"t":-19.715,"l":1,"r":0},{"t":-19.526,"l":1,"r":0},{"t":-19.321,"l":1,"r":0},{"t":-19.12,"l":1,"r":0},{"t":-18.915,"l":1,"r":0},{"t":-18.711,"l":1,"r":0},{"t":-18.522,"l":1,"r":0},{"t":-18.321,"l":0,"r":0},{"t":-18.117,"l":0,"r":0},{"t":-17.926,"l":0,"r":0},{"t":-17.706,"l":0,"r":0},{"t":-17.516,"l":0,"r":0},{"t":-17.328,"l":0,"r":0},{"t":-17.124,"l":0,"r":0},{"t":-16.917,"l":0,"r":0},{"t":-16.712,"l":0,"r":0},{"t":-16.523,"l":0,"r":0},{"t":-16.317,"l":0,"r":0},{"t":-16.129,"l":0,"r":0},{"t":-15.907,"l":0,"r":0},{"t":-15.722,"l":0,"r":0},{"t":-15.517,"l":0,"r":0},{"t":-15.314,"l":0,"r":0},{"t":-15.113,"l":0,"r":0},{"t":-14.926,"l":0,"r":0},{"t":-14.722,"l":0,"r":0},{"t":-14.519,"l":0,"r":0},{"t":-14.315,"l":0,"r":0},{"t":-14.128,"l":0,"r":0},{"t":-13.911,"l":0,"r":0},{"t":-13.707,"l":0,"r":0},{"t":-13.521,"l":0,"r":0},{"t":-13.316,"l":0,"r":0},{"t":-13.129,"l":0,"r":0},{"t":-12.927,"l":0,"r":0},{"t":-12.706,"l":0,"r":0},{"t":-12.508,"l":0,"r":0},{"t":-12.321,"l":0,"r":0},{"t":-12.103,"l":0,"r":0},{"t":-11.92,"l":0,"r":0},{"t":-11.72,"l":0,"r":0},{"t":-11.529,"l":0,"r":0},{"t":-11.31,"l":0,"r":0},{"t":-11.107,"l":0,"r":0},{"t":-10.902,"l":0,"r":0},{"t":-10.715,"l":0,"r":0},{"t":-10.512,"l":0,"r":0},{"t":-10.31,"l":0,"r":0},{"t":-10.11,"l":0,"r":0},{"t":-9.924,"l":0,"r":0},{"t":-9.722,"l":0,"r":0},{"t":-9.521,"l":0,"r":0},{"t":-9.317,"l":0,"r":0},{"t":-9.116,"l":0,"r":0},{"t":-8.914,"l":0,"r":0},{"t":-8.727,"l":0,"r":0},{"t":-8.526,"l":0,"r":0},{"t":-8.306,"l":0,"r":0},{"t":-8.12,"l":0,"r":0},{"t":-7.917,"l":0,"r":0},{"t":-7.715,"l":0,"r":0},{"t":-7.529,"l":0,"r":0},{"t":-7.314,"l":0,"r":0},{"t":-7.113,"l":0,"r":0},{"t":-6.912,"l":0,"r":0},{"t":-6.724,"l":0,"r":0},{"t":-6.509,"l":0,"r":0},{"t":-6.324,"l":0,"r":0},{"t":-6.104,"l":0,"r":0},{"t":-5.916,"l":0,"r":0},{"t":-5.728,"l":0,"r":0},{"t":-5.525,"l":0,"r":0},{"t":-5.307,"l":0,"r":0},{"t":-5.119,"l":0,"r":0},{"t":-4.92,"l":0,"r":0},{"t":-4.719,"l":0,"r":0},{"t":-4.514,"l":0,"r":0},{"t":-4.312,"l":0,"r":0},{"t":-4.111,"l":0,"r":0},{"t":-3.909,"l":0,"r":0},{"t":-3.723,"l":0,"r":0},{"t":-3.522,"l":0,"r":0},{"t":-3.319,"l":0,"r":0},{"t":-3.113,"l":0,"r":0},{"t":-2.913,"l":0,"r":0},{"t":-2.713,"l":0,"r":0},{"t":-2.523,"l":0,"r":0},{"t":-2.306,"l":0,"r":0},{"t":-2.118,"l":0,"r":0},{"t":-1.915,"l":0,"r":0},{"t":-1.715,"l":0,"r":0},{"t":-1.516,"l":0,"r":0},{"t":-1.314,"l":0,"r":0},{"t":-1.115,"l":0,"r":0},{"t":-0.913,"l":0,"r":0},{"t":-0.725,"l":0,"r":0},{"t":-0.521,"l":0,"r":0},{"t":-0.321,"l":0,"r":0},{"t":-0.12,"l":0,"r":0},{"t":0.1,"l":0,"r":0},{"t":0.285,"l":0,"r":0},{"t":0.486,"l":0,"r":0},{"t":0.674,"l":0,"r":0},{"t":0.876,"l":0,"r":0},{"t":1.079,"l":0,"r":0},{"t":1.294,"l":0,"r":0},{"t":1.481,"l":0,"r":0},{"t":1.685,"l":0,"r":0},{"t":1.887,"l":0,"r":0},{"t":2.086,"l":0,"r":0},{"t":2.288,"l":0,"r":0},{"t":2.473,"l":0,"r":0},{"t":2.69,"l":0,"r":0},{"t":2.874,"l":0,"r":0},{"t":3.093,"l":0,"r":0},{"t":3.278,"l":0,"r":0},{"t":3.482,"l":0,"r":0},{"t":3.684,"l":0,"r":0},{"t":3.886,"l":0,"r":0},{"t":4.089,"l":0,"r":0},{"t":4.277,"l":0,"r":0},{"t":4.479,"l":0,"r":0},{"t":4.682,"l":0,"r":0},{"t":4.886,"l":0,"r":0},{"t":5.085,"l":0,"r":0},{"t":5.287,"l":0,"r":0},{"t":5.49,"l":0,"r":0},{"t":5.676,"l":0,"r":0},{"t":5.876,"l":0,"r":0},{"t":6.091,"l":0,"r":0},{"t":6.277,"l":0,"r":0},{"t":6.477,"l":0,"r":0},{"t":6.693,"l":0,"r":0},{"t":6.882,"l":0,"r":0},{"t":7.083,"l":0,"r":0},{"t":7.286,"l":0,"r":0},{"t":7.474,"l":0,"r":0},{"t":7.677,"l":0,"r":0},{"t":7.879,"l":0,"r":0}],"window_before":30.0,"window_after":5.0,"slide_idx":"02","slide_total":"02"}];
+  const SVG_W = 820, SVG_PADX = 50, INNER_W = 720;
+
+  function xOf(t, t0, t1) {
+    return SVG_PADX + (t - t0) / (t1 - t0) * INNER_W;
+  }
+
+  DATA.forEach(function(d) {
+    const t0 = -d.window_before;
+    const t1 = d.duration_sec + d.window_after;
+    const video = document.getElementById("video-" + d.id);
+    const ledL = document.getElementById("led-l-" + d.id);
+    const ledR = document.getElementById("led-r-" + d.id);
+    const cursor = document.getElementById("cursor-" + d.id);
+    const cursorDot = document.getElementById("cursor-dot-" + d.id);
+    if (!video) return;
+
+    function stateAt(tRel) {
+      let lo = 0, hi = d.blinker.length - 1, best = 0;
+      while (lo <= hi) {
+        const mid = (lo + hi) >> 1;
+        if (d.blinker[mid].t <= tRel) { best = mid; lo = mid + 1; }
+        else { hi = mid - 1; }
+      }
+      return d.blinker[best];
+    }
+
+    function update() {
+      const tRel = video.currentTime - (d.pre_context_sec || 0);
+      const cx = xOf(tRel, t0, t1);
+      cursor.setAttribute("x1", cx);
+      cursor.setAttribute("x2", cx);
+      cursorDot.setAttribute("cx", cx);
+      const s = stateAt(tRel);
+      ledL.classList.toggle("on", !!s.l);
+      ledR.classList.toggle("on", !!s.r);
+    }
+    video.addEventListener("timeupdate", update);
+    video.addEventListener("loadedmetadata", update);
+    update();
+  });
+})();
+
+
+// ============================================
+// === Slopegraph chart (from pareto_slopegraph.html), wrapped in IIFE ===
+// ============================================
+(function() {
+  const OEM = {
+    distracted_driving: 0.683,
+    eating_drinking:    0.500,
+    fatigue:            0.888,
+    phone_usage:        0.752,
+    seatbelt:           0.858,
+  };
+  const PERCLASS = {
+    1: { distracted_driving: 0.500, eating_drinking: 0.588, fatigue: 0.500, phone_usage: 0.783, seatbelt: 0.500 },
+    2: { distracted_driving: 0.500, eating_drinking: 0.588, fatigue: 0.500, phone_usage: 0.783, seatbelt: 0.796 },
+    3: { distracted_driving: 0.500, eating_drinking: 0.588, fatigue: 0.792, phone_usage: 0.783, seatbelt: 0.796 },
+    4: { distracted_driving: 0.602, eating_drinking: 0.588, fatigue: 0.792, phone_usage: 0.783, seatbelt: 0.796 },
+    5: { distracted_driving: 0.602, eating_drinking: 0.591, fatigue: 0.792, phone_usage: 0.783, seatbelt: 0.796 },
+  };
+  const FINAL_ROUTING = {
+    distracted_driving: 'classifier_followb1ind1y_mnv3',
+    eating_drinking:    'yolov8x',
+    fatigue:            'mediapipe',
+    phone_usage:        'rtdetr_x',
+    seatbelt:           'yolo_soham',
+  };
+  const OURS_V2 = {
+    distracted_driving: 0.669,
+    eating_drinking:    0.893,
+    fatigue:            0.808,
+    phone_usage:        0.916,
+  };
+  const ORDER = ['phone_usage', 'eating_drinking', 'distracted_driving', 'fatigue', 'seatbelt'];
+  const LABELS = {
+    phone_usage:        'Phone usage',
+    eating_drinking:    'Eating/drinking',
+    distracted_driving: 'Distracted driving',
+    fatigue:            'Fatigue',
+    seatbelt:           'Seatbelt',
+  };
+  const COMMON_CONFIG = { displayModeBar: false, responsive: true };
+  const COMMON_HOVER = {
+    bgcolor: '#1A1D26',
+    bordercolor: '#0E9A7E',
+    font: { family: 'JetBrains Mono, monospace', size: 12, color: '#E8EAF0' },
+  };
+  const COMMON_FONT = {
+    family: 'DM Sans, system-ui, sans-serif',
+    size: 12,
+    color: '#5A5E6E',
+  };
+  const X_LABELS = ORDER.map(c => LABELS[c]);
+
+  function buildSlopegraph() {
+    if (typeof Plotly === 'undefined') return;
+    const ensembleY = ORDER.map(c => PERCLASS[5][c] * 100);
+    const oemY      = ORDER.map(c => OEM[c] * 100);
+    const deltaShapes = ORDER.map((c, i) => {
+      const ens = PERCLASS[5][c] * 100;
+      const oem = OEM[c] * 100;
+      const positive = ens >= oem;
+      return {
+        type: 'line', xref: 'x', yref: 'y',
+        x0: i, x1: i, y0: oem, y1: ens,
+        line: { color: positive ? '#1FA974' : '#D85D5D', width: 5 },
+        layer: 'below',
+      };
+    });
+    const routingAnnotations = ORDER.map((c, i) => ({
+      x: i, y: 0, xref: 'x', yref: 'paper',
+      xanchor: 'center', yanchor: 'top',
+      text: '<span style="font-family:JetBrains Mono,monospace;font-size:10px;color:#8E92A0">' + FINAL_ROUTING[c] + '</span>',
+      showarrow: false, yshift: -34,
+    }));
+    const oursY = ORDER.map(c => (c in OURS_V2 ? OURS_V2[c] * 100 : null));
+    const traces = [
+      {
+        name: 'Hikvision OEM', type: 'scatter', mode: 'lines+markers',
+        x: X_LABELS, y: oemY,
+        line: { color: '#0E9A7E', width: 2 },
+        marker: { color: '#0E9A7E', size: 14, line: { color: '#FFFFFF', width: 2 } },
+        hovertemplate: '<b>%{x}</b><br>OEM: %{y:.1f}%<extra></extra>',
+      },
+      {
+        name: 'Ensemble (n=5)', type: 'scatter', mode: 'lines+markers',
+        x: X_LABELS, y: ensembleY,
+        line: { color: '#3B6FD6', width: 2 },
+        marker: { color: '#3B6FD6', size: 14, line: { color: '#FFFFFF', width: 2 } },
+        hovertemplate: '<b>%{x}</b><br>Ensemble: %{y:.1f}%<extra></extra>',
+      },
+      {
+        name: 'v2 (improved cells)', type: 'scatter', mode: 'lines+markers',
+        x: X_LABELS, y: oursY, connectgaps: false,
+        line: { color: '#C88A1A', width: 2, dash: 'dot' },
+        marker: { color: '#C88A1A', size: 17, symbol: 'diamond', line: { color: '#FFFFFF', width: 2 } },
+        hovertemplate: '<b>%{x}</b><br>v2: %{y:.1f}%<extra></extra>',
+      },
+    ];
+    const layout = {
+      paper_bgcolor: 'rgba(0,0,0,0)',
+      plot_bgcolor: 'rgba(240,241,244,0.4)',
+      margin: { l: 64, r: 28, t: 28, b: 96 },
+      font: COMMON_FONT,
+      hoverlabel: COMMON_HOVER,
+      height: 460,
+      legend: {
+        orientation: 'h',
+        x: 0, y: 1.12,
+        xanchor: 'left', yanchor: 'bottom',
+        bgcolor: 'rgba(0,0,0,0)',
+      },
+      xaxis: {
+        type: 'category', categoryorder: 'array', categoryarray: X_LABELS,
+        tickfont: { size: 12, color: '#1A1D26' },
+        gridcolor: '#E0E2E8', zerolinecolor: '#E0E2E8',
+      },
+      yaxis: {
+        title: { text: 'Accuracy (%)', font: { size: 12 } },
+        range: [0, 100], ticksuffix: '%',
+        gridcolor: '#E0E2E8', zerolinecolor: '#E0E2E8',
+      },
+      shapes: deltaShapes,
+      annotations: [
+        ...routingAnnotations,
+        {
+          x: 0, y: 1, xref: 'paper', yref: 'paper',
+          xanchor: 'left', yanchor: 'top',
+          text: '<span style="font-size:10px;color:#8E92A0">Vertical bar = ensemble &minus; OEM at each use case (green: ahead, red: behind) &middot; amber diamonds: v2 (preprocessing + fusion) where it improved over n=5</span>',
+          showarrow: false, yshift: 28,
+        },
+        {
+          x: 0, y: 0, xref: 'paper', yref: 'paper',
+          xanchor: 'left', yanchor: 'top',
+          text: '<span style="font-family:JetBrains Mono,monospace;font-size:9.5px;letter-spacing:0.05em;text-transform:uppercase;color:#8E92A0">Routed model</span>',
+          showarrow: false, yshift: -18,
+        },
+      ],
+    };
+    Plotly.newPlot('slopegraph-chart', traces, layout, COMMON_CONFIG);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', buildSlopegraph);
+  } else {
+    buildSlopegraph();
+  }
+})();
+
+
+// ============================================
+// === Outer-deck nav: counter + active link sync on scroll ===
+// ============================================
+(function() {
+  const sectionMap = [
+    { id: 'occupancy', els: ['#occupancy', '#occupancy-results'] },
+    { id: 'mirror',    els: ['#mirror'] },
+    { id: 'slopegraph', els: ['#slopegraph'] },
+  ];
+  const counter = document.getElementById('outerCounter');
+  const navLinks = Array.from(document.querySelectorAll('nav.outer-nav a[href^="#"]'));
+  const allTracked = sectionMap.flatMap(s => s.els.map(sel => ({ key: s.id, el: document.querySelector(sel) }))).filter(x => x.el);
+  if (!counter || !allTracked.length) return;
+
+  const obs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) {
+        const tracked = allTracked.find(t => t.el === e.target);
+        if (!tracked) return;
+        const idx = sectionMap.findIndex(s => s.id === tracked.key);
+        counter.textContent = (idx + 1) + ' / ' + sectionMap.length;
+        navLinks.forEach(function(a) {
+          a.classList.toggle('active', a.getAttribute('href') === '#' + tracked.key);
+        });
+      }
+    });
+  }, { threshold: 0.3 });
+
+  allTracked.forEach(function(t) { obs.observe(t.el); });
+})();
+</script>
+
+</body>
+</html>

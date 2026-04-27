@@ -984,12 +984,55 @@
     // ===== PRESENTATION REGISTRY =====
     const PRESENTATIONS = [
       {
+        id: 'passenger_counting_28apr',
+        title: 'Passenger Counting + new use case + Model Lift',
+        subtitle: 'Cabin ROI for occupancy counts, mirror-glance × CAN-bus blinker telemetry, and ensemble (n=5) vs Hikvision OEM lift across 5 use cases.',
+        file: 'presentations/2026-04-28-passenger-counting/summary.html',
+        assetsDir: '28April26',
+        status: 'wip',
+        tags: [
+          { label: 'Passenger Counting', color: 'blue' },
+          { label: 'Mirror Glance', color: 'purple' },
+          { label: 'Model Lift', color: 'amber' },
+          { label: 'Ensemble', color: 'teal' },
+        ],
+        stats: [
+          { value: '3', label: 'Topics' },
+          { value: '5', label: 'Use cases' },
+          { value: 'n=5', label: 'Ensemble' },
+          { value: '28 Apr', label: 'Target' },
+        ],
+        materials: [
+          {
+            title: 'Occupancy Counts — Hikvision',
+            pillLabel: 'Occupancy',
+            desc: 'Cabin ROI pipeline + leaderboard for face/person detectors. Three steps: detect → ROI filter → assign largest as driver.',
+            file: 'drafts/occupancy_counts_26Apr26.html',
+            type: 'report',
+          },
+          {
+            title: 'Mirror Glance × CAN-bus Blinker',
+            pillLabel: 'Mirror Glance',
+            desc: 'Two detected mirror-check moments synced with vehicle turn-signal telemetry. 6 sec footage each (3 sec context + 3 sec glance).',
+            file: 'reports/passengerCounting/blinker_sync.html',
+            type: 'report',
+          },
+          {
+            title: 'Slopegraph — Ensemble (n=5) vs Hikvision OEM',
+            pillLabel: 'Slopegraph',
+            desc: 'Two lines walking across five use cases ordered by lift. Vertical bar at each tick = ensemble minus OEM (green ahead, red behind).',
+            file: 'drafts/pareto_slopegraph.html',
+            type: 'report',
+          },
+        ],
+      },
+      {
         id: 'hikvision_deep_dive',
         title: 'Hikvision Evaluation',
         subtitle: '36 models scored against the Hikvision OEM baseline on 619 reviewed alert frames from 5 fleet devices. Rule-based pipeline, in-vehicle comparison, and fleet video compression included.',
         file: 'presentations/2026-04-21-hikvision-eval/summary.html#audit',
         assetsDir: '21April26',
-        status: 'wip',
+        status: 'past',
         tags: [
           { label: 'Hikvision', color: 'amber' },
           { label: 'Leaderboard', color: 'purple' },
@@ -1005,30 +1048,35 @@
         materials: [
           {
             title: 'Hikvision OEM Quality Audit',
+            pillLabel: 'Audit',
             desc: '619 Hikvision alert evidence frames reviewed by hand across 5 fleet devices. Per-class accuracy and per-device breakdown; the ground truth every comparison below is scored against.',
             file: 'reports/hikvision/audit.html',
             type: 'report',
           },
           {
             title: 'Rule-based Pipeline vs Hikvision',
+            pillLabel: 'Rule-based',
             desc: 'MediaPipe (eye / yawn / head pose) + two YOLOs (phone, cigarette, seatbelt) scored against Hikvision on the same 619 reviewed frames. Per-use-case accuracy and false-alarm counts.',
             file: 'reports/hikvision/rulebased.html',
             type: 'report',
           },
           {
             title: 'Model Leaderboard \u2014 36 Models vs Hikvision OEM',
+            pillLabel: 'Leaderboard',
             desc: '36 models across MediaPipe, Detection, and Classification scored per use case on the same 619 reviewed frames. Capability matrix (a priori expectation), leaderboard (measured), specialist routing (one model per use case).',
             file: 'reports/hikvision/leaderboard.html',
             type: 'report',
           },
           {
             title: 'Custom Pipeline vs Hikvision \u2014 In-Vehicle Comparison',
+            pillLabel: 'In-vehicle',
             desc: 'Five driver behaviours (seatbelt, phone, eyes closed, yawning, smoking) captured simultaneously by both systems in the same vehicle; observed error modes on the custom pipeline.',
             file: 'reports/dms/comparison_21Apr26.html',
             type: 'report',
           },
           {
             title: 'Fleet Video Compression',
+            pillLabel: 'Compression',
             desc: '674 GB of H.264 1080p re-encoded to ~24 GB of SVT-AV1 480p / 2 fps \u2014 a 28\u00D7 reduction. Three encoders tested; cabin detail holds at ~4% of source bitrate. ~440 h kept across ~10 school buses + 1 PT bus.',
             file: 'reports/dms/compression.html',
             type: 'report',
@@ -1203,80 +1251,96 @@
       return html;
     }
 
+    function renderRichRow(p) {
+      const dateStr = p.date ? formatDate(p.date) : 'Date unknown';
+
+      const tagsHtml = (p.tags || []).map(t =>
+        `<span class="tag" data-color="${t.color}">${t.label}</span>`
+      ).join('');
+
+      const statsHtml = (p.stats || []).map(s => `
+        <div class="stat">
+          <div class="stat-value">${s.value}</div>
+          <div class="stat-label">${s.label}</div>
+        </div>`).join('');
+
+      const materialsHtml = (p.materials || []).map(m => {
+        const iconClass = m.type === 'diagram' ? 'diagram' : 'report';
+        const icon = m.type === 'diagram'
+          ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="8" y="14" width="7" height="7" rx="1"/><line x1="6.5" y1="10" x2="6.5" y2="14"/><line x1="17.5" y1="10" x2="17.5" y2="14"/><line x1="6.5" y1="14" x2="11.5" y2="14"/><line x1="17.5" y1="14" x2="11.5" y2="14"/></svg>`
+          : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>`;
+        const badgeClass = m.type === 'diagram' ? 'material-badge diagram' : 'material-badge';
+        const badgeText = m.type === 'diagram' ? 'Diagram' : 'Report';
+        if (m.action === 'lightbox') {
+          return `<div class="card material" style="cursor:pointer" onclick="openLightbox()"><div class="card-strip"></div><div class="card-body"><div class="material-icon ${iconClass}">${icon}</div><div class="material-info"><div class="material-title">${m.title}</div><div class="material-desc">${m.desc}</div></div><span class="${badgeClass}">${badgeText}</span></div></div>`;
+        }
+        return `<a class="card material" href="${m.file}"><div class="card-strip"></div><div class="card-body"><div class="material-icon ${iconClass}">${icon}</div><div class="material-info"><div class="material-title">${m.title}</div><div class="material-desc">${m.desc}</div></div><span class="${badgeClass}">${badgeText}</span></div></a>`;
+      }).join('');
+
+      const detailLinksHtml = (p.materials || []).map(m => {
+        const label = m.pillLabel || m.title;
+        if (m.action === 'lightbox') {
+          return `<a href="#" class="detail-link" onclick="event.preventDefault();event.stopPropagation();openLightbox();">${label}</a>`;
+        }
+        return `<a href="${m.file}" class="detail-link" onclick="event.stopPropagation();">${label}</a>`;
+      }).join('');
+
+      const isPast = p.status === 'past';
+      const isReady = !!p.file;
+      const wipClickAttrs = p.file
+        ? ` style="cursor:pointer" onclick="if(event.target.closest('a'))return;window.location.href='${p.file}'"`
+        : '';
+      const wipCardClass = (!isPast && isReady) ? 'card wip ready' : 'card wip';
+      const wipBadgeClass = isPast ? 'badge past' : (isReady ? 'badge wip ready' : 'badge wip');
+      const wipBadgeLabel = isPast ? 'Presented' : (isReady ? 'Ready' : 'Upcoming');
+
+      return `
+        <div class="upcoming-row">
+          <div class="${wipCardClass}"${wipClickAttrs}>
+            <div class="card-strip"></div>
+            <div class="card-body">
+              <div class="card-top">
+                <span class="${wipBadgeClass}">${wipBadgeLabel}</span>
+                <span class="card-date">${dateStr}</span>
+              </div>
+              <div class="card-title">${p.title}</div>
+              <div class="card-subtitle">${p.subtitle}</div>
+              <div class="card-tags">${tagsHtml}</div>
+              <div class="card-stats">${statsHtml}</div>
+              ${detailLinksHtml ? `<div class="detail-links">${detailLinksHtml}</div>` : ''}
+            </div>
+          </div>
+          ${isPast ? '' : `<div class="arrow-connector">
+            <span class="arrow-label">will include</span>
+            <div class="arrow-line"><div class="line"></div><div class="head"></div></div>
+          </div>
+          <div class="materials-grid">${materialsHtml}</div>`}
+        </div>`;
+    }
+
     function renderUpcomingSection(items) {
       let html = `<div class="section">
         <div class="section-title">Upcoming</div>
         <div class="section-subtitle">In preparation &mdash; will include the dashboards linked to the right</div>`;
-
-      items.forEach(p => {
-        const dateStr = p.date ? formatDate(p.date) : 'Date unknown';
-
-        const tagsHtml = (p.tags || []).map(t =>
-          `<span class="tag" data-color="${t.color}">${t.label}</span>`
-        ).join('');
-
-        const statsHtml = (p.stats || []).map(s => `
-          <div class="stat">
-            <div class="stat-value">${s.value}</div>
-            <div class="stat-label">${s.label}</div>
-          </div>`).join('');
-
-        // Material cards
-        const materialsHtml = (p.materials || []).map(m => {
-          const iconClass = m.type === 'diagram' ? 'diagram' : 'report';
-          const icon = m.type === 'diagram'
-            ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="8" y="14" width="7" height="7" rx="1"/><line x1="6.5" y1="10" x2="6.5" y2="14"/><line x1="17.5" y1="10" x2="17.5" y2="14"/><line x1="6.5" y1="14" x2="11.5" y2="14"/><line x1="17.5" y1="14" x2="11.5" y2="14"/></svg>`
-            : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>`;
-          const badgeClass = m.type === 'diagram' ? 'material-badge diagram' : 'material-badge';
-          const badgeText = m.type === 'diagram' ? 'Diagram' : 'Report';
-          if (m.action === 'lightbox') {
-            return `<div class="card material" style="cursor:pointer" onclick="openLightbox()"><div class="card-strip"></div><div class="card-body"><div class="material-icon ${iconClass}">${icon}</div><div class="material-info"><div class="material-title">${m.title}</div><div class="material-desc">${m.desc}</div></div><span class="${badgeClass}">${badgeText}</span></div></div>`;
-          }
-          return `<a class="card material" href="${m.file}"><div class="card-strip"></div><div class="card-body"><div class="material-icon ${iconClass}">${icon}</div><div class="material-info"><div class="material-title">${m.title}</div><div class="material-desc">${m.desc}</div></div><span class="${badgeClass}">${badgeText}</span></div></a>`;
-        }).join('');
-
-        const isReady = !!p.file;
-        const wipClickAttrs = isReady
-          ? ` style="cursor:pointer" onclick="if(event.target.closest('a'))return;window.location.href='${p.file}'"`
-          : '';
-        const wipCardClass = isReady ? 'card wip ready' : 'card wip';
-        const wipBadgeClass = isReady ? 'badge wip ready' : 'badge wip';
-        const wipBadgeLabel = isReady ? 'Ready' : 'Upcoming';
-
-        html += `
-          <div class="upcoming-row">
-            <div class="${wipCardClass}"${wipClickAttrs}>
-              <div class="card-strip"></div>
-              <div class="card-body">
-                <div class="card-top">
-                  <span class="${wipBadgeClass}">${wipBadgeLabel}</span>
-                  <span class="card-date">${dateStr}</span>
-                </div>
-                <div class="card-title">${p.title}</div>
-                <div class="card-subtitle">${p.subtitle}</div>
-                <div class="card-tags">${tagsHtml}</div>
-                <div class="card-stats">${statsHtml}</div>
-              </div>
-            </div>
-            <div class="arrow-connector">
-              <span class="arrow-label">will include</span>
-              <div class="arrow-line"><div class="line"></div><div class="head"></div></div>
-            </div>
-            <div class="materials-grid">${materialsHtml}</div>
-          </div>`;
-      });
-
+      items.forEach(p => { html += renderRichRow(p); });
       html += `</div>`;
       return html;
     }
 
     function renderPastSection(items) {
-      return `
+      const rich = items.filter(p => p.materials && p.materials.length > 0);
+      const simple = items.filter(p => !p.materials || p.materials.length === 0);
+
+      let html = `
         <div class="section">
           <div class="section-title">Past Presentations</div>
-          <div class="section-subtitle">Previously presented</div>
-          <div class="cards-grid">${items.map(p => renderCard(p)).join('')}</div>
-        </div>`;
+          <div class="section-subtitle">Previously presented</div>`;
+      rich.forEach(p => { html += renderRichRow(p); });
+      if (simple.length) {
+        html += `<div class="cards-grid">${simple.map(p => renderCard(p)).join('')}</div>`;
+      }
+      html += `</div>`;
+      return html;
     }
 
     function renderCard(p) {
