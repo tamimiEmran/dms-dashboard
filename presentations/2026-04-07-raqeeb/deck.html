@@ -572,7 +572,7 @@
 <body>
 
   <nav>
-    <a href="index.html" style="color:var(--text-muted);font-size:10px;margin-right:6px;opacity:0.7">&larr; Home</a>
+    <a href="../../index.html" style="color:var(--text-muted);font-size:10px;margin-right:6px;opacity:0.7">&larr; Home</a>
     <a href="#intro">Intro</a>
     <a href="#data">Data</a>
     <a href="#accuracy">OEM Accuracy</a>
@@ -691,7 +691,7 @@
         <!-- Pipeline descriptions -->
         <div class="flex flex-col gap-10 grow">
           <div class="pipe-row">
-            <img src="assets/pipeline/bbox.jpg" class="pipe-thumb excluded" alt="BBox">
+            <img src="../../assets/pipeline/bbox.jpg" class="pipe-thumb excluded" alt="BBox">
             <div class="pipe-body">
               <h4 style="color:var(--accent-3)">352&times;288 / 15fps <span class="tag tag--blue"
                   style="font-size:9px;padding:2px 6px;margin:0 0 0 4px">OEM EVALUATION</span></h4>
@@ -700,7 +700,7 @@
           </div>
           <hr class="divider">
           <div class="pipe-row">
-            <img src="assets/pipeline/dms_ir.jpg" class="pipe-thumb" style="border-color:var(--accent)" alt="DMS">
+            <img src="../../assets/pipeline/dms_ir.jpg" class="pipe-thumb" style="border-color:var(--accent)" alt="DMS">
             <div class="pipe-body">
               <h4 style="color:var(--accent)">352&times;288 / 10fps <span class="tag tag--blue"
                   style="font-size:9px;padding:2px 6px;margin:0 0 0 4px">OEM EVALUATION</span> <span
@@ -713,19 +713,19 @@
         </div>
         <!-- Thumbnails -->
         <div style="display:flex;gap:10px;align-items:center;flex-shrink:0">
-          <div style="text-align:center"><img src="assets/pipeline/dms_ir.jpg"
+          <div style="text-align:center"><img src="../../assets/pipeline/dms_ir.jpg"
               style="width:80px;border-radius:4px;border:1px solid var(--border)">
             <div style="font-size:10px;font-family:var(--mono);color:var(--purple);margin-top:2px">B&W (247)</div>
           </div>
-          <div style="text-align:center"><img src="assets/pipeline/dms_rgb.jpg"
+          <div style="text-align:center"><img src="../../assets/pipeline/dms_rgb.jpg"
               style="width:80px;border-radius:4px;border:1px solid var(--border)">
             <div style="font-size:10px;font-family:var(--mono);color:var(--accent-2);margin-top:2px">RGB (97)</div>
           </div>
-          <div style="text-align:center"><img src="assets/7April26/sample_ir2_before.png"
+          <div style="text-align:center"><img src="../../assets/7April26/sample_ir2_before.png"
               style="width:80px;border-radius:4px;border:1px solid var(--red);opacity:0.7">
             <div style="font-size:10px;font-family:var(--mono);color:var(--red);margin-top:2px">Before blur</div>
           </div>
-          <div style="text-align:center"><img src="assets/7April26/sample_ir2_after.png"
+          <div style="text-align:center"><img src="../../assets/7April26/sample_ir2_after.png"
               style="width:80px;border-radius:4px;border:1px solid var(--accent)">
             <div style="font-size:10px;font-family:var(--mono);color:var(--accent);margin-top:2px">After blur</div>
           </div>
@@ -1732,7 +1732,7 @@
     })();
 
     // ===== Slide navigation =====
-    const slides = document.querySelectorAll('.slide'), navLinks = document.querySelectorAll('nav a:not([href="index.html"])'), counter = document.getElementById('slideCounter');
+    const slides = document.querySelectorAll('.slide'), navLinks = document.querySelectorAll('nav a:not([href="../../index.html"])'), counter = document.getElementById('slideCounter');
     const observer = new IntersectionObserver(entries => { entries.forEach(entry => { if (entry.isIntersecting) { const id = entry.target.id; navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + id)); counter.textContent = (Array.from(slides).indexOf(entry.target) + 1) + ' / ' + slides.length } }) }, { threshold: 0.5 });
     slides.forEach(s => observer.observe(s));
     document.addEventListener('keydown', e => { const c = Array.from(slides).findIndex(s => { const r = s.getBoundingClientRect(); return r.top >= -100 && r.top <= window.innerHeight / 2 }); if (e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); if (c < slides.length - 1) slides[c + 1].scrollIntoView({ behavior: 'smooth' }) } else if (e.key === 'ArrowUp') { e.preventDefault(); if (c > 0) slides[c - 1].scrollIntoView({ behavior: 'smooth' }) } });

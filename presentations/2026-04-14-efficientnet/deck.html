@@ -516,7 +516,7 @@
 
 <body>
   <nav>
-    <a href="index.html" style="color:var(--text-muted);font-size:10px;margin-right:6px;opacity:0.7">&larr; Home</a>
+    <a href="../../index.html" style="color:var(--text-muted);font-size:10px;margin-right:6px;opacity:0.7">&larr; Home</a>
     <a href="#overview">Overview</a>
     <a href="#perclass">Per-Class</a>
     <a href="#videos">Videos</a>
@@ -748,28 +748,28 @@
     <!-- 2x2 image grid -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;flex:1">
       <div class="img-card">
-        <img src="assets/14April26/pipeline_overview.png" alt="Pipeline Overview" onclick="openLightbox(this.src)">
+        <img src="../../assets/14April26/pipeline_overview.png" alt="Pipeline Overview" onclick="openLightbox(this.src)">
         <div class="caption">
           <h4>Pipeline Overview &amp; Operational Challenges</h4>
           <p>9-step CV preprocessing pipeline from data input to augmentation. Current bottleneck: video extraction takes 3+ hours per vehicle, 6+ hours fleet-wide.</p>
         </div>
       </div>
       <div class="img-card">
-        <img src="assets/14April26/equalization_before_after.png" alt="Equalization Before/After" onclick="openLightbox(this.src)">
+        <img src="../../assets/14April26/equalization_before_after.png" alt="Equalization Before/After" onclick="openLightbox(this.src)">
         <div class="caption">
           <h4>LAB Colour Space + Histogram Equalization</h4>
           <p>Before vs after CLAHE equalization on the L-channel. Enhances contrast in low-light IR frames without altering hue or saturation.</p>
         </div>
       </div>
       <div class="img-card">
-        <img src="assets/14April26/augmentation_timing.png" alt="Augmentation Timing" onclick="openLightbox(this.src)">
+        <img src="../../assets/14April26/augmentation_timing.png" alt="Augmentation Timing" onclick="openLightbox(this.src)">
         <div class="caption">
           <h4>Augmentation Timing Breakdown</h4>
           <p>Per-augmentation processing time. Most transforms under 1ms; Random Fog (41ms) dominates the total 52.7ms pipeline.</p>
         </div>
       </div>
       <div class="img-card">
-        <img src="assets/14April26/histograms_timing.png" alt="Histograms and Timing" onclick="openLightbox(this.src)">
+        <img src="../../assets/14April26/histograms_timing.png" alt="Histograms and Timing" onclick="openLightbox(this.src)">
         <div class="caption">
           <h4>Luminance Histograms &amp; Equalization Benchmarks</h4>
           <p>L-channel distribution before vs after CLAHE (clip=2.0). CLAHE variants all under 3ms; standard histogram equalization at 70ms.</p>
@@ -945,7 +945,7 @@
     // ===== Slide counter =====
     const slides = document.querySelectorAll('.slide');
     const counter = document.getElementById('slideCounter');
-    const navLinks = document.querySelectorAll('nav a:not([href="index.html"])');
+    const navLinks = document.querySelectorAll('nav a:not([href="../../index.html"])');
     const observer = new IntersectionObserver(entries => {
       entries.forEach(e => {
         if (e.isIntersecting) {
