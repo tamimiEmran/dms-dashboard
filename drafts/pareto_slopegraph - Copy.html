@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1280">
+  <title>Slopegraph &mdash; Ensemble (n=5) vs. Hikvision OEM</title>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #F8F9FB;
+      --bg-card: #FFFFFF;
+      --bg-elevated: #F0F1F4;
+      --border: #E0E2E8;
+      --text: #1A1D26;
+      --text-dim: #5A5E6E;
+      --text-muted: #8E92A0;
+      --accent: #0E9A7E;
+      --accent-dim: rgba(14, 154, 126, 0.08);
+      --accent-2: #3B6FD6;
+      --red: #D85D5D;
+      --font: 'DM Sans', system-ui, sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+      --radius: 10px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      padding: 48px 56px 56px;
+    }
+
+    h1 {
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      margin-bottom: 10px;
+    }
+
+    .framing {
+      font-size: 14px;
+      color: var(--text-dim);
+      max-width: 880px;
+      margin-bottom: 36px;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px 24px 18px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+
+    .eyebrow {
+      font-size: 10px;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-family: var(--mono);
+      margin-bottom: 6px;
+    }
+
+    .design-title {
+      font-size: 19px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      margin-bottom: 6px;
+    }
+
+    .intent {
+      font-size: 13px;
+      color: var(--text-dim);
+      max-width: 880px;
+      margin-bottom: 14px;
+    }
+
+    .chart {
+      width: 100%;
+      min-height: 460px;
+    }
+
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .kpi {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px 20px;
+      text-align: center;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+
+    .kpi--accent {
+      border: 1.5px solid var(--accent);
+      background: var(--accent-dim);
+    }
+
+    .kpi-label {
+      font-size: 10px;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-family: var(--mono);
+      margin-bottom: 10px;
+    }
+
+    .kpi--accent .kpi-label { color: var(--accent); }
+
+    .kpi-value {
+      font-family: var(--mono);
+      font-size: 44px;
+      font-weight: 500;
+      color: var(--text);
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+
+    .kpi--accent .kpi-value { color: var(--accent); }
+
+    .kpi-delta {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 500;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+
+    .kpi-delta--neg { color: var(--red); }
+    .kpi-delta--pos { color: var(--accent); }
+
+    .kpi-sub {
+      font-size: 11px;
+      color: var(--text-dim);
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Slopegraph &mdash; Ensemble (n=5) vs. Hikvision OEM</h1>
+  <p class="framing">Two literal lines walking across the five use cases, ordered by lift achieved. The vertical bar at each tick is the gap between our final ensemble and the OEM baseline &mdash; green where we beat OEM, red where we still trail.</p>
+
+  <div class="kpi-row">
+    <div class="kpi kpi--accent">
+      <div class="kpi-label">Ensemble (n=5)</div>
+      <div class="kpi-value">71.3%<span class="kpi-delta kpi-delta--neg">&minus;2.3 pts</span></div>
+      <div class="kpi-sub">mean accuracy &middot; 5 use cases</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Hikvision OEM</div>
+      <div class="kpi-value">73.6%</div>
+      <div class="kpi-sub">mean accuracy &middot; 5 use cases</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="eyebrow">Per-use-case slopegraph</div>
+    <div class="design-title">Ensemble (n=5) vs. Hikvision OEM</div>
+    <p class="intent">Sign-aware delta bars at every use case, with the model routed to each class shown below the tick. Use cases ordered left-to-right by lift achieved (least-improved &rarr; most-improved).</p>
+    <div id="slopegraph-chart" class="chart"></div>
+  </div>
+
+  <script>
+    // ---------- DATA (verified against PARETO_DATA on line 793 of source) ----------
+    const OEM = {
+      distracted_driving: 0.683,
+      eating_drinking:    0.500,
+      fatigue:            0.888,
+      phone_usage:        0.752,
+      seatbelt:           0.858,
+    };
+
+    // per_class_acc keyed by n (1..5)
+    const PERCLASS = {
+      1: { distracted_driving: 0.500, eating_drinking: 0.588, fatigue: 0.500, phone_usage: 0.783, seatbelt: 0.500 },
+      2: { distracted_driving: 0.500, eating_drinking: 0.588, fatigue: 0.500, phone_usage: 0.783, seatbelt: 0.796 },
+      3: { distracted_driving: 0.500, eating_drinking: 0.588, fatigue: 0.792, phone_usage: 0.783, seatbelt: 0.796 },
+      4: { distracted_driving: 0.602, eating_drinking: 0.588, fatigue: 0.792, phone_usage: 0.783, seatbelt: 0.796 },
+      5: { distracted_driving: 0.602, eating_drinking: 0.591, fatigue: 0.792, phone_usage: 0.783, seatbelt: 0.796 },
+    };
+
+    // Final routing at n=5
+    const FINAL_ROUTING = {
+      distracted_driving: 'classifier_followb1ind1y_mnv3',
+      eating_drinking:    'yolov8x',
+      fatigue:            'mediapipe',
+      phone_usage:        'rtdetr_x',
+      seatbelt:           'yolo_soham',
+    };
+
+    // X-axis order: by lift achieved, ascending.
+    const ORDER = ['phone_usage', 'eating_drinking', 'distracted_driving', 'fatigue', 'seatbelt'];
+
+    const LABELS = {
+      phone_usage:        'Phone usage',
+      eating_drinking:    'Eating/drinking',
+      distracted_driving: 'Distracted driving',
+      fatigue:            'Fatigue',
+      seatbelt:           'Seatbelt',
+    };
+
+    const COMMON_CONFIG = { displayModeBar: false, responsive: true };
+
+    const COMMON_HOVER = {
+      bgcolor: '#1A1D26',
+      bordercolor: '#0E9A7E',
+      font: { family: 'JetBrains Mono, monospace', size: 12, color: '#E8EAF0' },
+    };
+
+    const COMMON_FONT = {
+      family: 'DM Sans, system-ui, sans-serif',
+      size: 12,
+      color: '#5A5E6E',
+    };
+
+    const X_LABELS = ORDER.map(c => LABELS[c]);
+
+    // ============================================================
+    // SLOPEGRAPH: Ensemble (n=5) vs OEM with delta bars
+    // ============================================================
+    (function buildSlopegraph() {
+      const ensembleY = ORDER.map(c => PERCLASS[5][c] * 100);
+      const oemY      = ORDER.map(c => OEM[c] * 100);
+
+      // Vertical delta shapes: green if ensemble >= OEM, red otherwise.
+      const deltaShapes = ORDER.map((c, i) => {
+        const ens = PERCLASS[5][c] * 100;
+        const oem = OEM[c] * 100;
+        const positive = ens >= oem;
+        return {
+          type: 'line',
+          xref: 'x', yref: 'y',
+          x0: i, x1: i,
+          y0: oem, y1: ens,
+          line: {
+            color: positive ? '#1FA974' : '#D85D5D',
+            width: 5,
+          },
+          layer: 'below',
+        };
+      });
+
+      // Routing annotations (model name) below each tick.
+      const routingAnnotations = ORDER.map((c, i) => ({
+        x: i, y: 0,
+        xref: 'x', yref: 'paper',
+        xanchor: 'center', yanchor: 'top',
+        text: '<span style="font-family:JetBrains Mono,monospace;font-size:10px;color:#8E92A0">'
+              + FINAL_ROUTING[c] + '</span>',
+        showarrow: false,
+        yshift: -34,
+      }));
+
+      const traces = [
+        {
+          name: 'Hikvision OEM',
+          type: 'scatter',
+          mode: 'lines+markers',
+          x: X_LABELS,
+          y: oemY,
+          line: { color: '#0E9A7E', width: 2 },
+          marker: { color: '#0E9A7E', size: 14, line: { color: '#FFFFFF', width: 2 } },
+          hovertemplate: '<b>%{x}</b><br>OEM: %{y:.1f}%<extra></extra>',
+        },
+        {
+          name: 'Ensemble (n=5)',
+          type: 'scatter',
+          mode: 'lines+markers',
+          x: X_LABELS,
+          y: ensembleY,
+          line: { color: '#3B6FD6', width: 2 },
+          marker: { color: '#3B6FD6', size: 14, line: { color: '#FFFFFF', width: 2 } },
+          hovertemplate: '<b>%{x}</b><br>Ensemble: %{y:.1f}%<extra></extra>',
+        },
+      ];
+
+      const layout = {
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(240,241,244,0.4)',
+        margin: { l: 64, r: 28, t: 28, b: 96 },
+        font: COMMON_FONT,
+        hoverlabel: COMMON_HOVER,
+        height: 460,
+        legend: {
+          orientation: 'h',
+          x: 0, y: 1.12,
+          xanchor: 'left', yanchor: 'bottom',
+          bgcolor: 'rgba(0,0,0,0)',
+        },
+        xaxis: {
+          type: 'category',
+          categoryorder: 'array',
+          categoryarray: X_LABELS,
+          tickfont: { size: 12, color: '#1A1D26' },
+          gridcolor: '#E0E2E8',
+          zerolinecolor: '#E0E2E8',
+        },
+        yaxis: {
+          title: { text: 'Accuracy (%)', font: { size: 12 } },
+          range: [0, 100],
+          ticksuffix: '%',
+          gridcolor: '#E0E2E8',
+          zerolinecolor: '#E0E2E8',
+        },
+        shapes: deltaShapes,
+        annotations: [
+          ...routingAnnotations,
+          {
+            x: 0, y: 1, xref: 'paper', yref: 'paper',
+            xanchor: 'left', yanchor: 'top',
+            text: '<span style="font-size:10px;color:#8E92A0">Vertical bar = ensemble &minus; OEM at each use case (green: ahead, red: behind)</span>',
+            showarrow: false,
+            yshift: 28,
+          },
+          {
+            x: 0, y: 0, xref: 'paper', yref: 'paper',
+            xanchor: 'left', yanchor: 'top',
+            text: '<span style="font-family:JetBrains Mono,monospace;font-size:9.5px;letter-spacing:0.05em;text-transform:uppercase;color:#8E92A0">Routed model</span>',
+            showarrow: false,
+            yshift: -18,
+          },
+        ],
+      };
+
+      Plotly.newPlot('slopegraph-chart', traces, layout, COMMON_CONFIG);
+    })();
+  </script>
+</body>
+</html>
