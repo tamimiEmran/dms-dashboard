@@ -529,6 +529,11 @@
       color: var(--purple);
     }
 
+    .material-icon.roadmap {
+      background: var(--accent-dim);
+      color: var(--accent);
+    }
+
     .material-info {
       flex: 1;
       min-width: 0;
@@ -563,6 +568,11 @@
     .material-badge.diagram {
       background: var(--purple-dim);
       color: var(--purple);
+    }
+
+    .material-badge.roadmap {
+      background: var(--accent-dim);
+      color: var(--accent);
     }
 
     /* ============================================
@@ -736,6 +746,52 @@
       opacity: 1;
     }
 
+    /* Roadmap hero — embedded PDF variant */
+    .hero-pdf-wrapper {
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: var(--bg-elevated);
+      aspect-ratio: 16 / 9;
+      transition: border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .hero-pdf-wrapper:hover {
+      border-color: rgba(14, 154, 126, 0.3);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.07);
+    }
+
+    .hero-pdf-wrapper object,
+    .hero-pdf-wrapper embed,
+    .hero-pdf-wrapper iframe {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    .hero-link-badge {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      font-weight: 500;
+      background: var(--accent-dim);
+      color: var(--accent);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.15s, transform 0.15s;
+    }
+
+    .hero-link-badge:hover {
+      background: rgba(14, 154, 126, 0.16);
+      transform: translateY(-1px);
+    }
+
     /* ============================================
        START-HERE — onboarding callout card
        ============================================ */
@@ -883,7 +939,34 @@
     <p>Mowasalat &middot; Driver Monitoring System</p>
   </div>
 
-  <!-- System Overview — always visible at top -->
+  <!-- Roadmap — pinned at top -->
+  <div class="hero-overview">
+    <div class="hero-card">
+      <div class="hero-strip" style="background: var(--accent);"></div>
+      <div class="hero-body">
+        <div class="hero-top">
+          <div>
+            <div class="hero-title">DMS Roadmap</div>
+            <div class="hero-subtitle">Three-phase plan &mdash; data collection &rarr; open-source model fusion (5&ndash;10 May) &rarr; Jetson Nano edge deployment + live-vehicle pilot (30 Jun, 97% target)</div>
+          </div>
+          <a class="hero-link-badge" href="docs/roadmap.pdf" target="_blank" rel="noopener">
+            Open PDF
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15 3 21 3 21 9"/>
+              <line x1="10" y1="14" x2="21" y2="3"/>
+            </svg>
+          </a>
+        </div>
+        <div class="hero-pdf-wrapper">
+          <iframe src="docs/roadmap.pdf#toolbar=0&navpanes=0&scrollbar=0&view=FitH"
+                  title="DMS Roadmap PDF"
+                  allow="fullscreen"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- System Overview -->
   <div class="hero-overview">
     <div class="hero-card">
       <div class="hero-strip"></div>
@@ -947,6 +1030,21 @@
 
   <script>
     // ===== RESOURCES REGISTRY =====
+    const MATERIAL_TYPES = {
+      report: {
+        label: 'Report',
+        icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>',
+      },
+      diagram: {
+        label: 'Diagram',
+        icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="8" y="14" width="7" height="7" rx="1"/><line x1="6.5" y1="10" x2="6.5" y2="14"/><line x1="17.5" y1="10" x2="17.5" y2="14"/><line x1="6.5" y1="14" x2="11.5" y2="14"/><line x1="17.5" y1="14" x2="11.5" y2="14"/></svg>',
+      },
+      roadmap: {
+        label: 'Roadmap',
+        icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="12" x2="21" y2="12"/><circle cx="6" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="18" cy="12" r="2" fill="currentColor"/></svg>',
+      },
+    };
+
     const RESOURCES = [
       {
         title: 'DMS Onboarding',
@@ -1374,12 +1472,11 @@
 
     function renderResourcesSection(items) {
       const cardsHtml = items.map(m => {
-        const iconClass = m.type === 'diagram' ? 'diagram' : 'report';
-        const icon = m.type === 'diagram'
-          ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="8" y="14" width="7" height="7" rx="1"/><line x1="6.5" y1="10" x2="6.5" y2="14"/><line x1="17.5" y1="10" x2="17.5" y2="14"/><line x1="6.5" y1="14" x2="11.5" y2="14"/><line x1="17.5" y1="14" x2="11.5" y2="14"/></svg>`
-          : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>`;
-        const badgeClass = m.type === 'diagram' ? 'material-badge diagram' : 'material-badge';
-        const badgeText = m.type === 'diagram' ? 'Diagram' : 'Report';
+        const t = MATERIAL_TYPES[m.type] || MATERIAL_TYPES.report;
+        const iconClass = m.type in MATERIAL_TYPES ? m.type : 'report';
+        const icon = t.icon;
+        const badgeClass = `material-badge ${iconClass === 'report' ? '' : iconClass}`.trim();
+        const badgeText = t.label;
         if (m.action === 'lightbox') {
           return `<div class="card material" style="cursor:pointer" onclick="openLightbox()"><div class="card-strip"></div><div class="card-body"><div class="material-icon ${iconClass}">${icon}</div><div class="material-info"><div class="material-title">${m.title}</div><div class="material-desc">${m.desc}</div></div><span class="${badgeClass}">${badgeText}</span></div></div>`;
         }
