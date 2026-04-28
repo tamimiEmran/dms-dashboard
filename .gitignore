@@ -4,3 +4,7 @@
 # Test/debug screenshots written to repo root by Playwright runs.
 # Legit images live under assets/ and are not affected by this.
 /*.png
+
+# Python bytecode from running scripts/test_*.py
+__pycache__/
+*.pyc
