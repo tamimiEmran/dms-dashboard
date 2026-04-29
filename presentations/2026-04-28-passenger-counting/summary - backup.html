@@ -461,11 +461,6 @@
       letter-spacing: 0.18em;
     }
     .row-bg { fill: var(--bg-elevated) }
-    .row-unavailable {
-      fill: rgba(90, 94, 110, 0.20);
-      stroke: rgba(90, 94, 110, 0.30);
-      stroke-width: 0.75;
-    }
     .row-on-l, .row-on-r { fill: var(--accent-3) }
     .row-label {
       font-size: 10px;
@@ -475,105 +470,6 @@
     }
     .cursor { stroke: var(--text); stroke-width: 1.25 }
     .cursor-dot { fill: var(--text) }
-
-    .gaze-grid {
-      display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
-      gap: 14px;
-      align-items: stretch;
-      margin-top: 4px;
-    }
-    .gaze-main, .gaze-panel, .no-signal-card, .v2-tile {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-    }
-    .gaze-main img, .gaze-panel img, .v2-tile img {
-      width: 100%;
-      display: block;
-      object-fit: cover;
-      background: #0B0D12;
-    }
-    .gaze-main img { aspect-ratio: 1280 / 800; }
-    .gaze-panel img { aspect-ratio: 1280 / 800; }
-    .gaze-panel.crop img { aspect-ratio: 1 / 1; object-fit: cover; }
-    .gaze-body, .v2-tile .body, .no-signal-card .body {
-      padding: 12px 14px 14px;
-    }
-    .gaze-label, .v2-label, .signal-label {
-      font-family: var(--mono);
-      font-size: 10px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      font-weight: 700;
-      margin-bottom: 5px;
-    }
-    .gaze-caption, .v2-caption, .signal-caption {
-      font-size: 12.5px;
-      color: var(--text);
-      line-height: 1.45;
-    }
-    .gaze-side {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-    }
-    .gaze-steps {
-      grid-column: 1 / -1;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-    }
-    .gaze-step {
-      padding: 12px 14px;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--border);
-      background: var(--bg-elevated);
-    }
-    .gaze-step b { display: block; font-size: 12.5px; margin-bottom: 5px; }
-    .gaze-step span { display: block; color: var(--text-dim); font-size: 12px; line-height: 1.4; }
-
-    .no-signal-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 14px;
-      margin-top: 6px;
-    }
-    .no-signal-card video {
-      width: 100%;
-      display: block;
-      aspect-ratio: 16 / 9;
-      object-fit: cover;
-      background: #0B0D12;
-    }
-    .signal-state {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin-top: 10px;
-    }
-    .signal-chip {
-      border-radius: 999px;
-      padding: 7px 8px;
-      background: var(--bg-elevated);
-      border: 1px solid var(--border);
-      font-family: var(--mono);
-      font-size: 10.5px;
-      text-align: center;
-      color: var(--text-dim);
-    }
-    .signal-chip.off { color: var(--red); background: var(--red-dim); border-color: rgba(217,69,62,0.20); }
-    .signal-chip.on { color: var(--accent); background: var(--accent-dim); border-color: rgba(14,154,126,0.20); }
-
-    .v2-visual-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-      margin-top: 6px;
-    }
-    .v2-tile img { aspect-ratio: 1 / 1; }
 
     /* ============================================
        === Slopegraph (from pareto_slopegraph.html) — scoped under .pareto-section ===
@@ -978,83 +874,24 @@
 
 <section class="slide" id="mirror">
   <div class="slide-stamp">
-    <span>mirror-glance / gaze pipeline / 2026-04</span>
-    <span class="stamp-sep"></span>
-    <span class="stamp-idx">01 / 03</span>
-  </div>
-
-  <span class="tag tag--blue">Gaze Detection</span>
-  <h2>How the mirror-glance detector works</h2>
-  <h3>Same idea as the standalone explainer: start with the full driver frame, crop the face, convert it into pose signals, then group frame-level decisions into a short event.</h3>
-
-  <div class="gaze-grid">
-    <div class="gaze-main">
-      <img src="../../assets/gaze_pipeline/01_full_frame.jpg" alt="Full driver camera frame">
-      <div class="gaze-body">
-        <div class="gaze-label">Input</div>
-        <div class="gaze-caption">Used the raw driver-camera frame because the mirror check is visible as a head-position change inside the cabin scene.</div>
-      </div>
-    </div>
-    <div class="gaze-side">
-      <div class="gaze-panel">
-        <img src="../../assets/gaze_pipeline/02_face_detected.jpg" alt="Driver face detected">
-        <div class="gaze-body">
-          <div class="gaze-label">Find face</div>
-          <div class="gaze-caption">Used InsightFace SCRFD because mirror checks often happen in profile view.</div>
-        </div>
-      </div>
-      <div class="gaze-panel crop">
-        <img src="../../assets/gaze_pipeline/03_face_crop.jpg" alt="Cropped driver face">
-        <div class="gaze-body">
-          <div class="gaze-label">Crop</div>
-          <div class="gaze-caption">The classifier sees the face region, not the whole cabin.</div>
-        </div>
-      </div>
-      <div class="gaze-panel">
-        <img src="../../assets/gaze_pipeline/04_landmarks_pose.jpg" alt="Landmarks and pose overlay">
-        <div class="gaze-body">
-          <div class="gaze-label">Pose</div>
-          <div class="gaze-caption">Used OpenCV solvePnP because mirror checks are mostly head-direction changes.</div>
-        </div>
-      </div>
-      <div class="gaze-panel">
-        <div class="gaze-body">
-          <div class="gaze-label">Decision</div>
-          <div class="gaze-caption">Used scikit-learn ExtraTreesClassifier to separate left mirror, right mirror, and other from box, landmark, pose, and mirror-angle features.</div>
-        </div>
-      </div>
-      <div class="gaze-steps">
-        <div class="gaze-step"><b>Frame score</b><span>Each sampled frame gets left / right / other probabilities.</span></div>
-        <div class="gaze-step"><b>Event grouping</b><span>Consecutive confident frames become one mirror-check event.</span></div>
-        <div class="gaze-step"><b>CAN context</b><span>Blinker timing is added after detection to judge whether the turn signal supports the event.</span></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-
-<section class="slide" id="mirror-can">
-  <div class="slide-stamp">
     <span>mirror-glance / blinker / 2026-04</span>
     <span class="stamp-sep"></span>
-    <span class="stamp-idx">02 / 03</span>
+    <span class="stamp-idx">01 / 01</span>
   </div>
 
   <span class="tag tag--accent">Glance Evaluation</span>
   <h2>Mirror glance &times; CAN-bus blinker</h2>
-  <h3>Two mirror-check examples where the matching turn signal is present. Video, dashboard LEDs, and CAN-bus timeline are synced; the green band marks the gaze event.</h3>
+  <h3>Two detected mirror-check moments synced with the vehicle&apos;s turn-signal telemetry. <span class="num">6 sec</span> of footage each (<span class="num">3 sec</span> preceding context, then <span class="num">3 sec</span> glance). Highlighted region marks where the gaze classifier fired.</h3>
 
   <div class="dual-grid">
     <div class="clip-block">
       <div class="clip-block-header">
-        <span class="clip-title">RIGHT mirror check / signal present</span>
+        <span class="clip-title">RIGHT mirror check</span>
         <span class="clip-time num">15:15:46</span>
       </div>
-
       <div class="video-frame">
         <video id="video-right" src="../../assets/28April26/rightGoodExample_ctx.mp4" autoplay loop muted playsinline controls></video>
       </div>
-
       <div class="leds">
         <div class="led" id="led-l-right">
           <div class="arrow">&#9664;</div>
@@ -1065,12 +902,10 @@
           <div class="label">RIGHT</div>
         </div>
       </div>
-
       <div class="timeline-wrap">
         <svg viewBox="0 0 820 130" preserveAspectRatio="xMidYMid meet">
           <rect class="clip-window" x="599.47" y="26" width="56.84" height="66"></rect>
           <rect class="row-bg" x="50.00" y="30" width="720.00" height="18" rx="4"></rect><rect class="row-bg" x="50.00" y="70" width="720.00" height="18" rx="4"></rect>
-          
           <rect class="row-on-l" x="703.13" y="30" width="64.59" height="18" rx="3"></rect><rect class="row-on-r" x="510.00" y="70" width="113.76" height="18" rx="3"></rect>
           <text class="row-label" x="40" y="43.0" text-anchor="end">L</text><text class="row-label" x="40" y="83.0" text-anchor="end">R</text>
           <line class="axis-tick" x1="50.00" y1="100" x2="50.00" y2="106"></line><text class="axis-label" x="50.00" y="118" text-anchor="middle">-30s</text><line class="axis-tick" x1="144.74" y1="100" x2="144.74" y2="106"></line><text class="axis-label" x="144.74" y="118" text-anchor="middle">-25s</text><line class="axis-tick" x1="239.47" y1="100" x2="239.47" y2="106"></line><text class="axis-label" x="239.47" y="118" text-anchor="middle">-20s</text><line class="axis-tick" x1="334.21" y1="100" x2="334.21" y2="106"></line><text class="axis-label" x="334.21" y="118" text-anchor="middle">-15s</text><line class="axis-tick" x1="428.95" y1="100" x2="428.95" y2="106"></line><text class="axis-label" x="428.95" y="118" text-anchor="middle">-10s</text><line class="axis-tick" x1="523.68" y1="100" x2="523.68" y2="106"></line><text class="axis-label" x="523.68" y="118" text-anchor="middle">-5s</text><line class="axis-tick" x1="618.42" y1="100" x2="618.42" y2="106"></line><text class="axis-label" x="618.42" y="118" text-anchor="middle">0s</text><line class="axis-tick" x1="713.16" y1="100" x2="713.16" y2="106"></line><text class="axis-label" x="713.16" y="118" text-anchor="middle">+5s</text>
@@ -1078,153 +913,48 @@
           <line class="cursor" id="cursor-right" x1="618.42" y1="22" x2="618.42" y2="96"></line><circle class="cursor-dot" id="cursor-dot-right" cx="618.42" cy="22" r="3.5"></circle>
         </svg>
       </div>
-
       <div class="action-bar">
         <div class="action-text">
           <strong>Right blinker on at <span class='num'>-5.7s</span>, off at <span class='num'>+0.5s</span>.</strong> Glance overlaps the active-signal window. Detection corroborated by telemetry.
         </div>
       </div>
     </div>
-<div class="clip-block">
-      <div class="clip-block-header">
-        <span class="clip-title">LEFT mirror check / signal present</span>
-        <span class="clip-time num">15:13:26.833</span>
-      </div>
 
-      <div class="video-frame">
-        <video id="video-left-ok" src="../../assets/28April26/correctLeft_v3.mp4" autoplay loop muted playsinline controls></video>
-      </div>
-
-      <div class="leds">
-        <div class="led" id="led-l-left-ok">
-          <div class="arrow">&#9664;</div>
-          <div class="label">LEFT</div>
-        </div>
-        <div class="led" id="led-r-left-ok">
-          <div class="arrow">&#9654;</div>
-          <div class="label">RIGHT</div>
-        </div>
-      </div>
-
-      <div class="timeline-wrap">
-        <svg viewBox="0 0 820 130" preserveAspectRatio="xMidYMid meet">
-          <rect class="clip-window" x="607.08" y="26" width="63.07" height="66"></rect>
-          <rect class="row-bg" x="50.00" y="30" width="720.00" height="18" rx="4"></rect><rect class="row-bg" x="50.00" y="70" width="720.00" height="18" rx="4"></rect>
-          <rect class="row-unavailable" x="755.89" y="30" width="14.11" height="18" rx="3"></rect><rect class="row-unavailable" x="755.89" y="70" width="14.11" height="18" rx="3"></rect>
-          <rect class="row-on-l" x="114.79" y="30" width="60.03" height="18" rx="3"></rect><rect class="row-on-l" x="374.67" y="30" width="79.64" height="18" rx="3"></rect><rect class="row-on-l" x="586.12" y="30" width="56.22" height="18" rx="3"></rect><rect class="row-on-r" x="246.53" y="70" width="68.18" height="18" rx="3"></rect><rect class="row-on-r" x="490.48" y="70" width="55.68" height="18" rx="3"></rect>
-          <text class="row-label" x="40" y="43.0" text-anchor="end">L</text><text class="row-label" x="40" y="83.0" text-anchor="end">R</text>
-          <line class="axis-tick" x1="50.00" y1="100" x2="50.00" y2="106"></line><text class="axis-label" x="50.00" y="118" text-anchor="middle">-30s</text><line class="axis-tick" x1="149.85" y1="100" x2="149.85" y2="106"></line><text class="axis-label" x="149.85" y="118" text-anchor="middle">-25s</text><line class="axis-tick" x1="249.71" y1="100" x2="249.71" y2="106"></line><text class="axis-label" x="249.71" y="118" text-anchor="middle">-20s</text><line class="axis-tick" x1="349.56" y1="100" x2="349.56" y2="106"></line><text class="axis-label" x="349.56" y="118" text-anchor="middle">-15s</text><line class="axis-tick" x1="449.42" y1="100" x2="449.42" y2="106"></line><text class="axis-label" x="449.42" y="118" text-anchor="middle">-10s</text><line class="axis-tick" x1="549.27" y1="100" x2="549.27" y2="106"></line><text class="axis-label" x="549.27" y="118" text-anchor="middle">-5s</text><line class="axis-tick" x1="649.12" y1="100" x2="649.12" y2="106"></line><text class="axis-label" x="649.12" y="118" text-anchor="middle">0s</text><line class="axis-tick" x1="748.98" y1="100" x2="748.98" y2="106"></line><text class="axis-label" x="748.98" y="118" text-anchor="middle">+5s</text>
-          <text class="glance-label" x="638.61" y="22" text-anchor="middle">GLANCE DETECTION</text>
-          <line class="cursor" id="cursor-left-ok" x1="649.12" y1="22" x2="649.12" y2="96"></line><circle class="cursor-dot" id="cursor-dot-left-ok" cx="649.12" cy="22" r="3.5"></circle>
-        </svg>
-      </div>
-
-      <div class="action-bar">
-        <div class="action-text">
-          <strong>Left blinker active during the gaze event.</strong> The matching signal overlaps the left mirror-check window. Classifier confidence <span class='num'>0.93</span>.
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-
-<section class="slide" id="mirror-nosignal">
-  <div class="slide-stamp">
-    <span>mirror-glance / no-signal examples / 2026-04</span>
-    <span class="stamp-sep"></span>
-    <span class="stamp-idx">03 / 03</span>
-  </div>
-
-  <span class="tag tag--amber">Counterexamples</span>
-  <h2>Driver turns, but the matching signal is not active</h2>
-  <h3>Two side-look examples where the gaze detector fires, but CAN-bus blinker data does not support a signaled turn at that moment.</h3>
-
-  <div class="dual-grid">
     <div class="clip-block">
       <div class="clip-block-header">
-        <span class="clip-title">LEFT head turn / no matching signal</span>
-        <span class="clip-time num">15:12:29.992</span>
+        <span class="clip-title">LEFT mirror check</span>
+        <span class="clip-time num">15:16:13</span>
       </div>
-
       <div class="video-frame">
-        <video id="video-left-miss" src="../../assets/28April26/noSignalLeftClean_v3.mp4" autoplay loop muted playsinline controls></video>
+        <video id="video-left" src="../../assets/28April26/leftGoodexample_ctx.mp4" autoplay loop muted playsinline controls></video>
       </div>
-
       <div class="leds">
-        <div class="led" id="led-l-left-miss">
+        <div class="led" id="led-l-left">
           <div class="arrow">&#9664;</div>
           <div class="label">LEFT</div>
         </div>
-        <div class="led" id="led-r-left-miss">
+        <div class="led" id="led-r-left">
           <div class="arrow">&#9654;</div>
           <div class="label">RIGHT</div>
         </div>
       </div>
-
       <div class="timeline-wrap">
         <svg viewBox="0 0 820 130" preserveAspectRatio="xMidYMid meet">
-          <rect class="clip-window" x="455.33" y="26" width="213.33" height="66"></rect>
+          <rect class="clip-window" x="618.42" y="26" width="56.84" height="66"></rect>
           <rect class="row-bg" x="50.00" y="30" width="720.00" height="18" rx="4"></rect><rect class="row-bg" x="50.00" y="70" width="720.00" height="18" rx="4"></rect>
-          
-          
+          <rect class="row-on-l" x="191.56" y="30" width="75.92" height="18" rx="3"></rect><rect class="row-on-r" x="51.52" y="70" width="60.67" height="18" rx="3"></rect>
           <text class="row-label" x="40" y="43.0" text-anchor="end">L</text><text class="row-label" x="40" y="83.0" text-anchor="end">R</text>
-          <line class="axis-tick" x1="455.33" y1="100" x2="455.33" y2="106"></line><text class="axis-label" x="455.33" y="118" text-anchor="middle">0s</text>
-          <text class="glance-label" x="562.00" y="22" text-anchor="middle">GLANCE DETECTION</text>
-          <line class="cursor" id="cursor-left-miss" x1="455.33" y1="22" x2="455.33" y2="96"></line><circle class="cursor-dot" id="cursor-dot-left-miss" cx="455.33" cy="22" r="3.5"></circle>
+          <line class="axis-tick" x1="50.00" y1="100" x2="50.00" y2="106"></line><text class="axis-label" x="50.00" y="118" text-anchor="middle">-30s</text><line class="axis-tick" x1="144.74" y1="100" x2="144.74" y2="106"></line><text class="axis-label" x="144.74" y="118" text-anchor="middle">-25s</text><line class="axis-tick" x1="239.47" y1="100" x2="239.47" y2="106"></line><text class="axis-label" x="239.47" y="118" text-anchor="middle">-20s</text><line class="axis-tick" x1="334.21" y1="100" x2="334.21" y2="106"></line><text class="axis-label" x="334.21" y="118" text-anchor="middle">-15s</text><line class="axis-tick" x1="428.95" y1="100" x2="428.95" y2="106"></line><text class="axis-label" x="428.95" y="118" text-anchor="middle">-10s</text><line class="axis-tick" x1="523.68" y1="100" x2="523.68" y2="106"></line><text class="axis-label" x="523.68" y="118" text-anchor="middle">-5s</text><line class="axis-tick" x1="618.42" y1="100" x2="618.42" y2="106"></line><text class="axis-label" x="618.42" y="118" text-anchor="middle">0s</text><line class="axis-tick" x1="713.16" y1="100" x2="713.16" y2="106"></line><text class="axis-label" x="713.16" y="118" text-anchor="middle">+5s</text>
+          <text class="glance-label" x="646.84" y="22" text-anchor="middle">GLANCE DETECTION</text>
+          <line class="cursor" id="cursor-left" x1="618.42" y1="22" x2="618.42" y2="96"></line><circle class="cursor-dot" id="cursor-dot-left" cx="618.42" cy="22" r="3.5"></circle>
         </svg>
       </div>
-
       <div class="action-bar amber">
         <div class="action-text">
-          <strong>No CAN-bus blinker active during this left-side look.</strong> Both left and right signal rows stay off in the displayed event window, so the side look is not corroborated by signal timing.
+          <strong>No blinker active in the glance window.</strong> Left signal last pulsed at <span class='num'>-22s</span>. Detection not corroborated &mdash; routine glance or gaze-classifier false positive.
         </div>
       </div>
     </div>
-<div class="clip-block">
-      <div class="clip-block-header">
-        <span class="clip-title">RIGHT head turn / no matching signal</span>
-        <span class="clip-time num">15:12:19.992</span>
-      </div>
-
-      <div class="video-frame">
-        <video id="video-right-miss" src="../../assets/28April26/noSignalRightClean_v3.mp4" autoplay loop muted playsinline controls></video>
-      </div>
-
-      <div class="leds">
-        <div class="led" id="led-l-right-miss">
-          <div class="arrow">&#9664;</div>
-          <div class="label">LEFT</div>
-        </div>
-        <div class="led" id="led-r-right-miss">
-          <div class="arrow">&#9654;</div>
-          <div class="label">RIGHT</div>
-        </div>
-      </div>
-
-      <div class="timeline-wrap">
-        <svg viewBox="0 0 820 130" preserveAspectRatio="xMidYMid meet">
-          <rect class="clip-window" x="50.00" y="26" width="581.54" height="66"></rect>
-          <rect class="row-bg" x="50.00" y="30" width="720.00" height="18" rx="4"></rect><rect class="row-bg" x="50.00" y="70" width="720.00" height="18" rx="4"></rect>
-          
-          
-          <text class="row-label" x="40" y="43.0" text-anchor="end">L</text><text class="row-label" x="40" y="83.0" text-anchor="end">R</text>
-          <line class="axis-tick" x1="603.84" y1="100" x2="603.84" y2="106"></line><text class="axis-label" x="603.84" y="118" text-anchor="middle">0s</text>
-          <text class="glance-label" x="340.77" y="22" text-anchor="middle">GLANCE DETECTION</text>
-          <line class="cursor" id="cursor-right-miss" x1="603.84" y1="22" x2="603.84" y2="96"></line><circle class="cursor-dot" id="cursor-dot-right-miss" cx="603.84" cy="22" r="3.5"></circle>
-        </svg>
-      </div>
-
-      <div class="action-bar amber">
-        <div class="action-text">
-          <strong>No CAN-bus blinker active during this right-side look.</strong> Both left and right signal rows stay off in the displayed event window, so the side look is not corroborated by signal timing.
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="action-bar amber">
-    <div class="action-text"><strong>Interpretation:</strong> head turn alone is not enough. The gaze event says "the driver looked toward the side"; the CAN-bus timeline says whether the matching turn signal supports that event.</div>
   </div>
 </section>
 
@@ -1262,55 +992,32 @@
     <div id="slopegraph-chart" class="chart"></div>
   </div>
 
+  <div class="card why-card">
+    <div class="eyebrow" style="color:#C88A1A">Why v2 works</div>
+    <h3>Four changes, layered</h3>
+    <p class="lede">Configuration only. No training, no new models.</p>
+
+    <ul class="why-list">
+      <li>
+        <strong>1. Crop to the driver.</strong>
+        <p>Ignore passenger seat, windshield, and dashboard.</p>
+      </li>
+      <li>
+        <strong>2. Lift dim areas.</strong>
+        <p>Contrast adjustment so the image is clearer.</p>
+      </li>
+      <li>
+        <strong>3. Eating fallback.</strong>
+        <p>Treat head-down + eyes-down as eating when the food is hidden behind a hand.</p>
+      </li>
+      <li>
+        <strong>4. Stricter distracted &amp; fatigue rules.</strong>
+        <p>Distracted needs head and eyes to agree. Fatigue needs eyes clearly closed, not just glancing down.</p>
+      </li>
+    </ul>
+
+  </div>
 </div>
-
-
-<section class="slide" id="v2-explanation">
-  <div class="slide-stamp">
-    <span>model lift / v2 explanation / 2026-04</span>
-    <span class="stamp-sep"></span>
-    <span class="stamp-idx">02 / 02</span>
-  </div>
-
-  <span class="tag tag--amber">Why v2 works</span>
-  <h2>Four changes, layered</h2>
-  <h3>We adjusted what the AI looks at, how clearly it sees, and what evidence it requires before sounding an alarm. Configuration only. No training, no new models.</h3>
-
-  <div class="v2-visual-grid">
-    <div class="v2-tile">
-      <img src="../../assets/why_v2_works/01_focus_driver_box.jpg" alt="Driver crop region highlighted">
-      <div class="body">
-        <div class="v2-label">1 / Focus</div>
-        <div class="v2-caption">Crop to the driver so the model stops reading the empty passenger seat, windshield, and dashboard.</div>
-      </div>
-    </div>
-    <div class="v2-tile">
-      <img src="../../assets/why_v2_works/03_crop_after_clahe.jpg" alt="Driver crop after contrast lift">
-      <div class="body">
-        <div class="v2-label">2 / Brighten</div>
-        <div class="v2-caption">Use OpenCV CLAHE after cropping so dim cabin areas lift without letting the windshield dominate.</div>
-      </div>
-    </div>
-    <div class="v2-tile">
-      <img src="../../assets/why_v2_works/04_eating_fallback.jpg" alt="Eating fallback signals">
-      <div class="body">
-        <div class="v2-label">3 / Fallback</div>
-        <div class="v2-caption">Treat eyes-down plus head-down as probably eating when food is hidden behind the hand.</div>
-      </div>
-    </div>
-    <div class="v2-tile">
-      <img src="../../assets/why_v2_works/05_distracted_gate.jpg" alt="Stricter distracted gate">
-      <div class="body">
-        <div class="v2-label">4 / Stronger evidence</div>
-        <div class="v2-caption">Distracted needs head and eyes to agree. Fatigue needs clearly closed eyes, not just a glance down.</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="action-bar amber">
-    <div class="action-text"><strong>Net effect:</strong> eating became the largest jump, distracted and fatigue improved once weak single-cue alarms were tightened, and seatbelt stayed on the original setup because it was already strong.</div>
-  </div>
-</section>
 
 
 <script>
@@ -1319,7 +1026,7 @@
 // ============================================
 (function() {
   "use strict";
-  const DATA = [{"id":"right","label":"RIGHT mirror check / signal present","video":"../../assets/28April26/rightGoodExample_ctx.mp4","clip_start_local":"15:15:46","duration_sec":3.0,"pre_context_sec":3.0,"glance_extend_before_sec":1.0,"glance_extend_after_sec":-1.0,"verdict":{"type":"correct","headline_html":"Right blinker on at <span class='num'>-5.7s</span>, off at <span class='num'>+0.5s</span>.","detail_html":"Glance overlaps the active-signal window. Detection corroborated by telemetry."},"blinker":[{"t":-29.918,"l":0,"r":0},{"t":-29.715,"l":0,"r":0},{"t":-29.513,"l":0,"r":0},{"t":-29.307,"l":0,"r":0},{"t":-29.12,"l":0,"r":0},{"t":-28.917,"l":0,"r":0},{"t":-28.713,"l":0,"r":0},{"t":-28.528,"l":0,"r":0},{"t":-28.307,"l":0,"r":0},{"t":-28.125,"l":0,"r":0},{"t":-27.91,"l":0,"r":0},{"t":-27.723,"l":0,"r":0},{"t":-27.517,"l":0,"r":0},{"t":-27.315,"l":0,"r":0},{"t":-27.125,"l":0,"r":0},{"t":-26.923,"l":0,"r":0},{"t":-26.722,"l":0,"r":0},{"t":-26.518,"l":0,"r":0},{"t":-26.315,"l":0,"r":0},{"t":-26.113,"l":0,"r":0},{"t":-25.925,"l":0,"r":0},{"t":-25.703,"l":0,"r":0},{"t":-25.517,"l":0,"r":0},{"t":-25.318,"l":0,"r":0},{"t":-25.116,"l":0,"r":0},{"t":-24.913,"l":0,"r":0},{"t":-24.71,"l":0,"r":0},{"t":-24.524,"l":0,"r":0},{"t":-24.324,"l":0,"r":0},{"t":-24.106,"l":0,"r":0},{"t":-23.902,"l":0,"r":0},{"t":-23.715,"l":0,"r":0},{"t":-23.527,"l":0,"r":0},{"t":-23.321,"l":0,"r":0},{"t":-23.116,"l":0,"r":0},{"t":-22.917,"l":0,"r":0},{"t":-22.712,"l":0,"r":0},{"t":-22.524,"l":0,"r":0},{"t":-22.32,"l":0,"r":0},{"t":-22.118,"l":0,"r":0},{"t":-21.911,"l":0,"r":0},{"t":-21.714,"l":0,"r":0},{"t":-21.514,"l":0,"r":0},{"t":-21.325,"l":0,"r":0},{"t":-21.123,"l":0,"r":0},{"t":-20.919,"l":0,"r":0},{"t":-20.717,"l":0,"r":0},{"t":-20.527,"l":0,"r":0},{"t":-20.308,"l":0,"r":0},{"t":-20.121,"l":0,"r":0},{"t":-19.915,"l":0,"r":0},{"t":-19.728,"l":0,"r":0},{"t":-19.505,"l":0,"r":0},{"t":-19.316,"l":0,"r":0},{"t":-19.125,"l":0,"r":0},{"t":-18.92,"l":0,"r":0},{"t":-18.719,"l":0,"r":0},{"t":-18.517,"l":0,"r":0},{"t":-18.312,"l":0,"r":0},{"t":-18.113,"l":0,"r":0},{"t":-17.927,"l":0,"r":0},{"t":-17.723,"l":0,"r":0},{"t":-17.505,"l":0,"r":0},{"t":-17.317,"l":0,"r":0},{"t":-17.116,"l":0,"r":0},{"t":-16.913,"l":0,"r":0},{"t":-16.727,"l":0,"r":0},{"t":-16.526,"l":0,"r":0},{"t":-16.325,"l":0,"r":0},{"t":-16.122,"l":0,"r":0},{"t":-15.917,"l":0,"r":0},{"t":-15.714,"l":0,"r":0},{"t":-15.527,"l":0,"r":0},{"t":-15.31,"l":0,"r":0},{"t":-15.121,"l":0,"r":0},{"t":-14.92,"l":0,"r":0},{"t":-14.715,"l":0,"r":0},{"t":-14.51,"l":0,"r":0},{"t":-14.324,"l":0,"r":0},{"t":-14.12,"l":0,"r":0},{"t":-13.918,"l":0,"r":0},{"t":-13.716,"l":0,"r":0},{"t":-13.517,"l":0,"r":0},{"t":-13.315,"l":0,"r":0},{"t":-13.115,"l":0,"r":0},{"t":-12.914,"l":0,"r":0},{"t":-12.71,"l":0,"r":0},{"t":-12.507,"l":0,"r":0},{"t":-12.321,"l":0,"r":0},{"t":-12.119,"l":0,"r":0},{"t":-11.918,"l":0,"r":0},{"t":-11.718,"l":0,"r":0},{"t":-11.515,"l":0,"r":0},{"t":-11.311,"l":0,"r":0},{"t":-11.126,"l":0,"r":0},{"t":-10.924,"l":0,"r":0},{"t":-10.707,"l":0,"r":0},{"t":-10.521,"l":0,"r":0},{"t":-10.318,"l":0,"r":0},{"t":-10.116,"l":0,"r":0},{"t":-9.913,"l":0,"r":0},{"t":-9.724,"l":0,"r":0},{"t":-9.505,"l":0,"r":0},{"t":-9.318,"l":0,"r":0},{"t":-9.116,"l":0,"r":0},{"t":-8.915,"l":0,"r":0},{"t":-8.727,"l":0,"r":0},{"t":-8.524,"l":0,"r":0},{"t":-8.321,"l":0,"r":0},{"t":-8.116,"l":0,"r":0},{"t":-7.915,"l":0,"r":0},{"t":-7.725,"l":0,"r":0},{"t":-7.525,"l":0,"r":0},{"t":-7.322,"l":0,"r":0},{"t":-7.105,"l":0,"r":0},{"t":-6.92,"l":0,"r":0},{"t":-6.704,"l":0,"r":0},{"t":-6.517,"l":0,"r":0},{"t":-6.316,"l":0,"r":0},{"t":-6.113,"l":0,"r":0},{"t":-5.926,"l":0,"r":0},{"t":-5.722,"l":0,"r":1},{"t":-5.506,"l":0,"r":1},{"t":-5.317,"l":0,"r":1},{"t":-5.114,"l":0,"r":1},{"t":-4.914,"l":0,"r":1},{"t":-4.711,"l":0,"r":1},{"t":-4.522,"l":0,"r":1},{"t":-4.321,"l":0,"r":1},{"t":-4.119,"l":0,"r":1},{"t":-3.916,"l":0,"r":1},{"t":-3.728,"l":0,"r":1},{"t":-3.526,"l":0,"r":1},{"t":-3.324,"l":0,"r":1},{"t":-3.123,"l":0,"r":1},{"t":-2.92,"l":0,"r":1},{"t":-2.719,"l":0,"r":1},{"t":-2.518,"l":0,"r":1},{"t":-2.316,"l":0,"r":1},{"t":-2.114,"l":0,"r":1},{"t":-1.916,"l":0,"r":1},{"t":-1.714,"l":0,"r":1},{"t":-1.512,"l":0,"r":1},{"t":-1.325,"l":0,"r":1},{"t":-1.125,"l":0,"r":1},{"t":-0.906,"l":0,"r":1},{"t":-0.719,"l":0,"r":1},{"t":-0.515,"l":0,"r":1},{"t":-0.324,"l":0,"r":1},{"t":-0.121,"l":0,"r":1},{"t":0.08,"l":0,"r":1},{"t":0.282,"l":0,"r":1},{"t":0.482,"l":0,"r":0},{"t":0.685,"l":0,"r":0},{"t":0.874,"l":0,"r":0},{"t":1.075,"l":0,"r":0},{"t":1.276,"l":0,"r":0},{"t":1.48,"l":0,"r":0},{"t":1.682,"l":0,"r":0},{"t":1.886,"l":0,"r":0},{"t":2.088,"l":0,"r":0},{"t":2.276,"l":0,"r":0},{"t":2.477,"l":0,"r":0},{"t":2.691,"l":0,"r":0},{"t":2.876,"l":0,"r":0},{"t":3.092,"l":0,"r":0},{"t":3.28,"l":0,"r":0},{"t":3.481,"l":0,"r":0},{"t":3.696,"l":0,"r":0},{"t":3.883,"l":0,"r":0},{"t":4.084,"l":0,"r":0},{"t":4.287,"l":0,"r":0},{"t":4.471,"l":1,"r":0},{"t":4.674,"l":1,"r":0},{"t":4.878,"l":1,"r":0},{"t":5.079,"l":1,"r":0},{"t":5.281,"l":1,"r":0},{"t":5.484,"l":1,"r":0},{"t":5.684,"l":1,"r":0},{"t":5.885,"l":1,"r":0},{"t":6.086,"l":1,"r":0},{"t":6.275,"l":1,"r":0},{"t":6.492,"l":1,"r":0},{"t":6.677,"l":1,"r":0},{"t":6.879,"l":1,"r":0},{"t":7.081,"l":1,"r":0},{"t":7.285,"l":1,"r":0},{"t":7.474,"l":1,"r":0},{"t":7.679,"l":1,"r":0},{"t":7.88,"l":1,"r":0}],"window_before":30.0,"window_after":5.0,"slide_idx":"01","slide_total":"02"},{"id":"left-ok","label":"LEFT mirror check / signal present","video":"../../assets/28April26/correctLeft_v3.mp4","clip_start_local":"15:13:26.833","duration_sec":1.05262,"pre_context_sec":1.9999779999999998,"glance_extend_before_sec":2.10524,"glance_extend_after_sec":0.0,"verdict":{"type":"correct","headline_html":"Left blinker active during the gaze event.","detail_html":"The matching signal overlaps the left mirror-check window. Classifier confidence <span class='num'>0.93</span>."},"blinker":[{"t":-29.947,"l":0,"r":0},{"t":-29.745,"l":0,"r":0},{"t":-29.558,"l":0,"r":0},{"t":-29.356,"l":0,"r":0},{"t":-29.159,"l":0,"r":0},{"t":-28.955,"l":0,"r":0},{"t":-28.752,"l":0,"r":0},{"t":-28.553,"l":0,"r":0},{"t":-28.35,"l":0,"r":0},{"t":-28.137,"l":0,"r":0},{"t":-27.949,"l":0,"r":0},{"t":-27.747,"l":0,"r":0},{"t":-27.547,"l":0,"r":0},{"t":-27.346,"l":0,"r":0},{"t":-27.144,"l":0,"r":0},{"t":-26.958,"l":0,"r":0},{"t":-26.756,"l":1,"r":0},{"t":-26.553,"l":1,"r":0},{"t":-26.348,"l":1,"r":0},{"t":-26.148,"l":1,"r":0},{"t":-25.96,"l":1,"r":0},{"t":-25.743,"l":1,"r":0},{"t":-25.558,"l":1,"r":0},{"t":-25.353,"l":1,"r":0},{"t":-25.15,"l":1,"r":0},{"t":-24.949,"l":1,"r":0},{"t":-24.747,"l":1,"r":0},{"t":-24.56,"l":1,"r":0},{"t":-24.358,"l":1,"r":0},{"t":-24.14,"l":1,"r":0},{"t":-23.951,"l":1,"r":0},{"t":-23.75,"l":1,"r":0},{"t":-23.546,"l":0,"r":0},{"t":-23.359,"l":0,"r":0},{"t":-23.157,"l":0,"r":0},{"t":-22.938,"l":0,"r":0},{"t":-22.747,"l":0,"r":0},{"t":-22.547,"l":0,"r":0},{"t":-22.348,"l":0,"r":0},{"t":-22.146,"l":0,"r":0},{"t":-21.959,"l":0,"r":0},{"t":-21.74,"l":0,"r":0},{"t":-21.555,"l":0,"r":0},{"t":-21.352,"l":0,"r":0},{"t":-21.15,"l":0,"r":0},{"t":-20.948,"l":0,"r":0},{"t":-20.746,"l":0,"r":0},{"t":-20.561,"l":0,"r":0},{"t":-20.358,"l":0,"r":0},{"t":-20.159,"l":0,"r":1},{"t":-19.953,"l":0,"r":1},{"t":-19.753,"l":0,"r":1},{"t":-19.55,"l":0,"r":1},{"t":-19.348,"l":0,"r":1},{"t":-19.161,"l":0,"r":1},{"t":-18.959,"l":0,"r":1},{"t":-18.754,"l":0,"r":1},{"t":-18.553,"l":0,"r":1},{"t":-18.349,"l":0,"r":1},{"t":-18.16,"l":0,"r":1},{"t":-17.959,"l":0,"r":1},{"t":-17.741,"l":0,"r":1},{"t":-17.554,"l":0,"r":1},{"t":-17.35,"l":0,"r":1},{"t":-17.149,"l":0,"r":1},{"t":-16.947,"l":0,"r":1},{"t":-16.745,"l":0,"r":1},{"t":-16.557,"l":0,"r":0},{"t":-16.339,"l":0,"r":0},{"t":-16.153,"l":0,"r":0},{"t":-15.952,"l":0,"r":0},{"t":-15.75,"l":0,"r":0},{"t":-15.547,"l":0,"r":0},{"t":-15.361,"l":0,"r":0},{"t":-15.158,"l":0,"r":0},{"t":-14.941,"l":0,"r":0},{"t":-14.755,"l":0,"r":0},{"t":-14.537,"l":0,"r":0},{"t":-14.349,"l":0,"r":0},{"t":-14.147,"l":0,"r":0},{"t":-13.946,"l":0,"r":0},{"t":-13.743,"l":1,"r":0},{"t":-13.555,"l":1,"r":0},{"t":-13.352,"l":1,"r":0},{"t":-13.151,"l":1,"r":0},{"t":-12.948,"l":1,"r":0},{"t":-12.746,"l":1,"r":0},{"t":-12.541,"l":1,"r":0},{"t":-12.353,"l":1,"r":0},{"t":-12.148,"l":1,"r":0},{"t":-11.943,"l":1,"r":0},{"t":-11.753,"l":1,"r":0},{"t":-11.547,"l":1,"r":0},{"t":-11.359,"l":1,"r":0},{"t":-11.154,"l":1,"r":0},{"t":-10.949,"l":1,"r":0},{"t":-10.745,"l":1,"r":0},{"t":-10.556,"l":1,"r":0},{"t":-10.35,"l":1,"r":0},{"t":-10.146,"l":1,"r":0},{"t":-9.958,"l":1,"r":0},{"t":-9.755,"l":1,"r":0},{"t":-9.537,"l":0,"r":0},{"t":-9.347,"l":0,"r":0},{"t":-9.16,"l":0,"r":0},{"t":-8.956,"l":0,"r":0},{"t":-8.738,"l":0,"r":0},{"t":-8.552,"l":0,"r":0},{"t":-8.348,"l":0,"r":0},{"t":-8.146,"l":0,"r":0},{"t":-7.944,"l":0,"r":1},{"t":-7.756,"l":0,"r":1},{"t":-7.538,"l":0,"r":1},{"t":-7.349,"l":0,"r":1},{"t":-7.147,"l":0,"r":1},{"t":-6.945,"l":0,"r":1},{"t":-6.758,"l":0,"r":1},{"t":-6.54,"l":0,"r":1},{"t":-6.352,"l":0,"r":1},{"t":-6.148,"l":0,"r":1},{"t":-5.948,"l":0,"r":1},{"t":-5.748,"l":0,"r":1},{"t":-5.548,"l":0,"r":1},{"t":-5.36,"l":0,"r":1},{"t":-5.156,"l":0,"r":1},{"t":-4.951,"l":0,"r":0},{"t":-4.751,"l":0,"r":0},{"t":-4.548,"l":0,"r":0},{"t":-4.361,"l":0,"r":0},{"t":-4.156,"l":0,"r":0},{"t":-3.955,"l":0,"r":0},{"t":-3.752,"l":0,"r":0},{"t":-3.549,"l":0,"r":0},{"t":-3.36,"l":0,"r":0},{"t":-3.155,"l":1,"r":0},{"t":-2.949,"l":1,"r":0},{"t":-2.76,"l":1,"r":0},{"t":-2.555,"l":1,"r":0},{"t":-2.352,"l":1,"r":0},{"t":-2.147,"l":1,"r":0},{"t":-1.958,"l":1,"r":0},{"t":-1.753,"l":1,"r":0},{"t":-1.549,"l":1,"r":0},{"t":-1.358,"l":1,"r":0},{"t":-1.151,"l":1,"r":0},{"t":-0.946,"l":1,"r":0},{"t":-0.742,"l":1,"r":0},{"t":-0.557,"l":1,"r":0},{"t":-0.34,"l":1,"r":0},{"t":-0.152,"l":0,"r":0},{"t":0.052,"l":0,"r":0},{"t":0.241,"l":0,"r":0},{"t":0.444,"l":0,"r":0},{"t":0.647,"l":0,"r":0},{"t":0.852,"l":0,"r":0},{"t":1.041,"l":0,"r":0},{"t":1.261,"l":0,"r":0},{"t":1.446,"l":0,"r":0},{"t":1.647,"l":0,"r":0},{"t":1.851,"l":0,"r":0},{"t":2.041,"l":0,"r":0},{"t":2.261,"l":0,"r":0},{"t":2.446,"l":0,"r":0},{"t":2.648,"l":0,"r":0},{"t":2.853,"l":0,"r":0},{"t":3.04,"l":0,"r":0},{"t":3.257,"l":0,"r":0},{"t":3.441,"l":0,"r":0},{"t":3.659,"l":0,"r":0},{"t":3.844,"l":0,"r":0},{"t":4.048,"l":0,"r":0},{"t":4.252,"l":0,"r":0},{"t":4.455,"l":0,"r":0},{"t":4.643,"l":0,"r":0},{"t":4.846,"l":0,"r":0}],"availability":[{"start":-30.0,"end":5.346}],"unavailable":[{"start":5.346,"end":6.05262}],"window_before":30.0,"window_after":5.0,"rank_score":1.4336665263422441,"source_video":"CH0F_20260423150000-152430_0-211-32.avi"},{"id":"left-miss","label":"LEFT head turn / no matching signal","video":"../../assets/28April26/noSignalLeftClean_v3.mp4","clip_start_local":"15:12:29.992","duration_sec":1.05262,"pre_context_sec":1.9999779999999998,"glance_extend_before_sec":0.0,"glance_extend_after_sec":0.0,"verdict":{"type":"issue","headline_html":"No CAN-bus blinker active during this left-side look.","detail_html":"Both left and right signal rows stay off in the displayed event window, so the side look is not corroborated by signal timing."},"blinker":[{"t":-1.908,"l":0,"r":0},{"t":-1.706,"l":0,"r":0},{"t":-1.519,"l":0,"r":0},{"t":-1.317,"l":0,"r":0},{"t":-1.117,"l":0,"r":0},{"t":-0.916,"l":0,"r":0},{"t":-0.7,"l":0,"r":0},{"t":-0.514,"l":0,"r":0},{"t":-0.309,"l":0,"r":0},{"t":-0.097,"l":0,"r":0},{"t":0.092,"l":0,"r":0},{"t":0.293,"l":0,"r":0},{"t":0.48,"l":0,"r":0},{"t":0.683,"l":0,"r":0},{"t":0.887,"l":0,"r":0},{"t":1.091,"l":0,"r":0},{"t":1.292,"l":0,"r":0},{"t":1.494,"l":0,"r":0}],"availability":[{"start":-1.9999779999999998,"end":1.55262}],"unavailable":[],"window_before":1.9999779999999998,"window_after":0.5,"rank_score":1.4729949646783078,"source_video":"CH0F_20260423150000-152430_0-211-32.avi"},{"id":"right-miss","label":"RIGHT head turn / no matching signal","video":"../../assets/28April26/noSignalRightClean_v3.mp4","clip_start_local":"15:12:19.992","duration_sec":0.1,"pre_context_sec":1.9999779999999998,"glance_extend_before_sec":1.9999779999999998,"glance_extend_after_sec":0.0,"verdict":{"type":"issue","headline_html":"No CAN-bus blinker active during this right-side look.","detail_html":"Both left and right signal rows stay off in the displayed event window, so the side look is not corroborated by signal timing."},"blinker":[{"t":-1.919,"l":0,"r":0},{"t":-1.72,"l":0,"r":0},{"t":-1.505,"l":0,"r":0},{"t":-1.305,"l":0,"r":0},{"t":-1.117,"l":0,"r":0},{"t":-0.914,"l":0,"r":0},{"t":-0.696,"l":0,"r":0},{"t":-0.495,"l":0,"r":0},{"t":-0.309,"l":0,"r":0},{"t":-0.109,"l":0,"r":0},{"t":0.094,"l":0,"r":0},{"t":0.28,"l":0,"r":0},{"t":0.498,"l":0,"r":0}],"availability":[{"start":-1.9999779999999998,"end":0.6}],"unavailable":[],"window_before":1.9999779999999998,"window_after":0.5,"rank_score":1.4618001610262694,"source_video":"CH0F_20260423150000-152430_0-211-32.avi"}];
+  const DATA = [{"id":"right","label":"RIGHT mirror check","video":"../../assets/28April26/rightGoodExample_ctx.mp4","clip_start_local":"15:15:46","duration_sec":3.0,"pre_context_sec":3.0,"glance_extend_before_sec":1.0,"glance_extend_after_sec":-1.0,"verdict":{"type":"correct","headline_html":"Right blinker on at <span class='num'>-5.7s</span>, off at <span class='num'>+0.5s</span>.","detail_html":"Glance overlaps the active-signal window. Detection corroborated by telemetry."},"blinker":[{"t":-29.918,"l":0,"r":0},{"t":-29.715,"l":0,"r":0},{"t":-29.513,"l":0,"r":0},{"t":-29.307,"l":0,"r":0},{"t":-29.12,"l":0,"r":0},{"t":-28.917,"l":0,"r":0},{"t":-28.713,"l":0,"r":0},{"t":-28.528,"l":0,"r":0},{"t":-28.307,"l":0,"r":0},{"t":-28.125,"l":0,"r":0},{"t":-27.91,"l":0,"r":0},{"t":-27.723,"l":0,"r":0},{"t":-27.517,"l":0,"r":0},{"t":-27.315,"l":0,"r":0},{"t":-27.125,"l":0,"r":0},{"t":-26.923,"l":0,"r":0},{"t":-26.722,"l":0,"r":0},{"t":-26.518,"l":0,"r":0},{"t":-26.315,"l":0,"r":0},{"t":-26.113,"l":0,"r":0},{"t":-25.925,"l":0,"r":0},{"t":-25.703,"l":0,"r":0},{"t":-25.517,"l":0,"r":0},{"t":-25.318,"l":0,"r":0},{"t":-25.116,"l":0,"r":0},{"t":-24.913,"l":0,"r":0},{"t":-24.71,"l":0,"r":0},{"t":-24.524,"l":0,"r":0},{"t":-24.324,"l":0,"r":0},{"t":-24.106,"l":0,"r":0},{"t":-23.902,"l":0,"r":0},{"t":-23.715,"l":0,"r":0},{"t":-23.527,"l":0,"r":0},{"t":-23.321,"l":0,"r":0},{"t":-23.116,"l":0,"r":0},{"t":-22.917,"l":0,"r":0},{"t":-22.712,"l":0,"r":0},{"t":-22.524,"l":0,"r":0},{"t":-22.32,"l":0,"r":0},{"t":-22.118,"l":0,"r":0},{"t":-21.911,"l":0,"r":0},{"t":-21.714,"l":0,"r":0},{"t":-21.514,"l":0,"r":0},{"t":-21.325,"l":0,"r":0},{"t":-21.123,"l":0,"r":0},{"t":-20.919,"l":0,"r":0},{"t":-20.717,"l":0,"r":0},{"t":-20.527,"l":0,"r":0},{"t":-20.308,"l":0,"r":0},{"t":-20.121,"l":0,"r":0},{"t":-19.915,"l":0,"r":0},{"t":-19.728,"l":0,"r":0},{"t":-19.505,"l":0,"r":0},{"t":-19.316,"l":0,"r":0},{"t":-19.125,"l":0,"r":0},{"t":-18.92,"l":0,"r":0},{"t":-18.719,"l":0,"r":0},{"t":-18.517,"l":0,"r":0},{"t":-18.312,"l":0,"r":0},{"t":-18.113,"l":0,"r":0},{"t":-17.927,"l":0,"r":0},{"t":-17.723,"l":0,"r":0},{"t":-17.505,"l":0,"r":0},{"t":-17.317,"l":0,"r":0},{"t":-17.116,"l":0,"r":0},{"t":-16.913,"l":0,"r":0},{"t":-16.727,"l":0,"r":0},{"t":-16.526,"l":0,"r":0},{"t":-16.325,"l":0,"r":0},{"t":-16.122,"l":0,"r":0},{"t":-15.917,"l":0,"r":0},{"t":-15.714,"l":0,"r":0},{"t":-15.527,"l":0,"r":0},{"t":-15.31,"l":0,"r":0},{"t":-15.121,"l":0,"r":0},{"t":-14.92,"l":0,"r":0},{"t":-14.715,"l":0,"r":0},{"t":-14.51,"l":0,"r":0},{"t":-14.324,"l":0,"r":0},{"t":-14.12,"l":0,"r":0},{"t":-13.918,"l":0,"r":0},{"t":-13.716,"l":0,"r":0},{"t":-13.517,"l":0,"r":0},{"t":-13.315,"l":0,"r":0},{"t":-13.115,"l":0,"r":0},{"t":-12.914,"l":0,"r":0},{"t":-12.71,"l":0,"r":0},{"t":-12.507,"l":0,"r":0},{"t":-12.321,"l":0,"r":0},{"t":-12.119,"l":0,"r":0},{"t":-11.918,"l":0,"r":0},{"t":-11.718,"l":0,"r":0},{"t":-11.515,"l":0,"r":0},{"t":-11.311,"l":0,"r":0},{"t":-11.126,"l":0,"r":0},{"t":-10.924,"l":0,"r":0},{"t":-10.707,"l":0,"r":0},{"t":-10.521,"l":0,"r":0},{"t":-10.318,"l":0,"r":0},{"t":-10.116,"l":0,"r":0},{"t":-9.913,"l":0,"r":0},{"t":-9.724,"l":0,"r":0},{"t":-9.505,"l":0,"r":0},{"t":-9.318,"l":0,"r":0},{"t":-9.116,"l":0,"r":0},{"t":-8.915,"l":0,"r":0},{"t":-8.727,"l":0,"r":0},{"t":-8.524,"l":0,"r":0},{"t":-8.321,"l":0,"r":0},{"t":-8.116,"l":0,"r":0},{"t":-7.915,"l":0,"r":0},{"t":-7.725,"l":0,"r":0},{"t":-7.525,"l":0,"r":0},{"t":-7.322,"l":0,"r":0},{"t":-7.105,"l":0,"r":0},{"t":-6.92,"l":0,"r":0},{"t":-6.704,"l":0,"r":0},{"t":-6.517,"l":0,"r":0},{"t":-6.316,"l":0,"r":0},{"t":-6.113,"l":0,"r":0},{"t":-5.926,"l":0,"r":0},{"t":-5.722,"l":0,"r":1},{"t":-5.506,"l":0,"r":1},{"t":-5.317,"l":0,"r":1},{"t":-5.114,"l":0,"r":1},{"t":-4.914,"l":0,"r":1},{"t":-4.711,"l":0,"r":1},{"t":-4.522,"l":0,"r":1},{"t":-4.321,"l":0,"r":1},{"t":-4.119,"l":0,"r":1},{"t":-3.916,"l":0,"r":1},{"t":-3.728,"l":0,"r":1},{"t":-3.526,"l":0,"r":1},{"t":-3.324,"l":0,"r":1},{"t":-3.123,"l":0,"r":1},{"t":-2.92,"l":0,"r":1},{"t":-2.719,"l":0,"r":1},{"t":-2.518,"l":0,"r":1},{"t":-2.316,"l":0,"r":1},{"t":-2.114,"l":0,"r":1},{"t":-1.916,"l":0,"r":1},{"t":-1.714,"l":0,"r":1},{"t":-1.512,"l":0,"r":1},{"t":-1.325,"l":0,"r":1},{"t":-1.125,"l":0,"r":1},{"t":-0.906,"l":0,"r":1},{"t":-0.719,"l":0,"r":1},{"t":-0.515,"l":0,"r":1},{"t":-0.324,"l":0,"r":1},{"t":-0.121,"l":0,"r":1},{"t":0.08,"l":0,"r":1},{"t":0.282,"l":0,"r":1},{"t":0.482,"l":0,"r":0},{"t":0.685,"l":0,"r":0},{"t":0.874,"l":0,"r":0},{"t":1.075,"l":0,"r":0},{"t":1.276,"l":0,"r":0},{"t":1.48,"l":0,"r":0},{"t":1.682,"l":0,"r":0},{"t":1.886,"l":0,"r":0},{"t":2.088,"l":0,"r":0},{"t":2.276,"l":0,"r":0},{"t":2.477,"l":0,"r":0},{"t":2.691,"l":0,"r":0},{"t":2.876,"l":0,"r":0},{"t":3.092,"l":0,"r":0},{"t":3.28,"l":0,"r":0},{"t":3.481,"l":0,"r":0},{"t":3.696,"l":0,"r":0},{"t":3.883,"l":0,"r":0},{"t":4.084,"l":0,"r":0},{"t":4.287,"l":0,"r":0},{"t":4.471,"l":1,"r":0},{"t":4.674,"l":1,"r":0},{"t":4.878,"l":1,"r":0},{"t":5.079,"l":1,"r":0},{"t":5.281,"l":1,"r":0},{"t":5.484,"l":1,"r":0},{"t":5.684,"l":1,"r":0},{"t":5.885,"l":1,"r":0},{"t":6.086,"l":1,"r":0},{"t":6.275,"l":1,"r":0},{"t":6.492,"l":1,"r":0},{"t":6.677,"l":1,"r":0},{"t":6.879,"l":1,"r":0},{"t":7.081,"l":1,"r":0},{"t":7.285,"l":1,"r":0},{"t":7.474,"l":1,"r":0},{"t":7.679,"l":1,"r":0},{"t":7.88,"l":1,"r":0}],"window_before":30.0,"window_after":5.0,"slide_idx":"01","slide_total":"02"},{"id":"left","label":"LEFT mirror check","video":"../../assets/28April26/leftGoodexample_ctx.mp4","clip_start_local":"15:16:13","duration_sec":3.0,"pre_context_sec":3.0,"verdict":{"type":"issue","headline_html":"No blinker active in the glance window.","detail_html":"Left signal last pulsed at <span class='num'>-22s</span>. Detection not corroborated &mdash; routine glance or gaze-classifier false positive."},"blinker":[{"t":-29.92,"l":0,"r":1},{"t":-29.719,"l":0,"r":1},{"t":-29.518,"l":0,"r":1},{"t":-29.316,"l":0,"r":1},{"t":-29.114,"l":0,"r":1},{"t":-28.916,"l":0,"r":1},{"t":-28.714,"l":0,"r":1},{"t":-28.512,"l":0,"r":1},{"t":-28.325,"l":0,"r":1},{"t":-28.125,"l":0,"r":1},{"t":-27.906,"l":0,"r":1},{"t":-27.719,"l":0,"r":1},{"t":-27.515,"l":0,"r":1},{"t":-27.324,"l":0,"r":1},{"t":-27.121,"l":0,"r":1},{"t":-26.92,"l":0,"r":1},{"t":-26.718,"l":0,"r":1},{"t":-26.518,"l":0,"r":0},{"t":-26.315,"l":0,"r":0},{"t":-26.126,"l":0,"r":0},{"t":-25.925,"l":0,"r":0},{"t":-25.724,"l":0,"r":0},{"t":-25.52,"l":0,"r":0},{"t":-25.318,"l":0,"r":0},{"t":-25.114,"l":0,"r":0},{"t":-24.912,"l":0,"r":0},{"t":-24.724,"l":0,"r":0},{"t":-24.523,"l":0,"r":0},{"t":-24.309,"l":0,"r":0},{"t":-24.124,"l":0,"r":0},{"t":-23.908,"l":0,"r":0},{"t":-23.72,"l":0,"r":0},{"t":-23.519,"l":0,"r":0},{"t":-23.304,"l":0,"r":0},{"t":-23.117,"l":0,"r":0},{"t":-22.916,"l":0,"r":0},{"t":-22.713,"l":0,"r":0},{"t":-22.529,"l":1,"r":0},{"t":-22.326,"l":1,"r":0},{"t":-22.122,"l":1,"r":0},{"t":-21.921,"l":1,"r":0},{"t":-21.719,"l":1,"r":0},{"t":-21.516,"l":1,"r":0},{"t":-21.316,"l":1,"r":0},{"t":-21.115,"l":1,"r":0},{"t":-20.914,"l":1,"r":0},{"t":-20.725,"l":1,"r":0},{"t":-20.508,"l":1,"r":0},{"t":-20.323,"l":1,"r":0},{"t":-20.121,"l":1,"r":0},{"t":-19.919,"l":1,"r":0},{"t":-19.715,"l":1,"r":0},{"t":-19.526,"l":1,"r":0},{"t":-19.321,"l":1,"r":0},{"t":-19.12,"l":1,"r":0},{"t":-18.915,"l":1,"r":0},{"t":-18.711,"l":1,"r":0},{"t":-18.522,"l":1,"r":0},{"t":-18.321,"l":0,"r":0},{"t":-18.117,"l":0,"r":0},{"t":-17.926,"l":0,"r":0},{"t":-17.706,"l":0,"r":0},{"t":-17.516,"l":0,"r":0},{"t":-17.328,"l":0,"r":0},{"t":-17.124,"l":0,"r":0},{"t":-16.917,"l":0,"r":0},{"t":-16.712,"l":0,"r":0},{"t":-16.523,"l":0,"r":0},{"t":-16.317,"l":0,"r":0},{"t":-16.129,"l":0,"r":0},{"t":-15.907,"l":0,"r":0},{"t":-15.722,"l":0,"r":0},{"t":-15.517,"l":0,"r":0},{"t":-15.314,"l":0,"r":0},{"t":-15.113,"l":0,"r":0},{"t":-14.926,"l":0,"r":0},{"t":-14.722,"l":0,"r":0},{"t":-14.519,"l":0,"r":0},{"t":-14.315,"l":0,"r":0},{"t":-14.128,"l":0,"r":0},{"t":-13.911,"l":0,"r":0},{"t":-13.707,"l":0,"r":0},{"t":-13.521,"l":0,"r":0},{"t":-13.316,"l":0,"r":0},{"t":-13.129,"l":0,"r":0},{"t":-12.927,"l":0,"r":0},{"t":-12.706,"l":0,"r":0},{"t":-12.508,"l":0,"r":0},{"t":-12.321,"l":0,"r":0},{"t":-12.103,"l":0,"r":0},{"t":-11.92,"l":0,"r":0},{"t":-11.72,"l":0,"r":0},{"t":-11.529,"l":0,"r":0},{"t":-11.31,"l":0,"r":0},{"t":-11.107,"l":0,"r":0},{"t":-10.902,"l":0,"r":0},{"t":-10.715,"l":0,"r":0},{"t":-10.512,"l":0,"r":0},{"t":-10.31,"l":0,"r":0},{"t":-10.11,"l":0,"r":0},{"t":-9.924,"l":0,"r":0},{"t":-9.722,"l":0,"r":0},{"t":-9.521,"l":0,"r":0},{"t":-9.317,"l":0,"r":0},{"t":-9.116,"l":0,"r":0},{"t":-8.914,"l":0,"r":0},{"t":-8.727,"l":0,"r":0},{"t":-8.526,"l":0,"r":0},{"t":-8.306,"l":0,"r":0},{"t":-8.12,"l":0,"r":0},{"t":-7.917,"l":0,"r":0},{"t":-7.715,"l":0,"r":0},{"t":-7.529,"l":0,"r":0},{"t":-7.314,"l":0,"r":0},{"t":-7.113,"l":0,"r":0},{"t":-6.912,"l":0,"r":0},{"t":-6.724,"l":0,"r":0},{"t":-6.509,"l":0,"r":0},{"t":-6.324,"l":0,"r":0},{"t":-6.104,"l":0,"r":0},{"t":-5.916,"l":0,"r":0},{"t":-5.728,"l":0,"r":0},{"t":-5.525,"l":0,"r":0},{"t":-5.307,"l":0,"r":0},{"t":-5.119,"l":0,"r":0},{"t":-4.92,"l":0,"r":0},{"t":-4.719,"l":0,"r":0},{"t":-4.514,"l":0,"r":0},{"t":-4.312,"l":0,"r":0},{"t":-4.111,"l":0,"r":0},{"t":-3.909,"l":0,"r":0},{"t":-3.723,"l":0,"r":0},{"t":-3.522,"l":0,"r":0},{"t":-3.319,"l":0,"r":0},{"t":-3.113,"l":0,"r":0},{"t":-2.913,"l":0,"r":0},{"t":-2.713,"l":0,"r":0},{"t":-2.523,"l":0,"r":0},{"t":-2.306,"l":0,"r":0},{"t":-2.118,"l":0,"r":0},{"t":-1.915,"l":0,"r":0},{"t":-1.715,"l":0,"r":0},{"t":-1.516,"l":0,"r":0},{"t":-1.314,"l":0,"r":0},{"t":-1.115,"l":0,"r":0},{"t":-0.913,"l":0,"r":0},{"t":-0.725,"l":0,"r":0},{"t":-0.521,"l":0,"r":0},{"t":-0.321,"l":0,"r":0},{"t":-0.12,"l":0,"r":0},{"t":0.1,"l":0,"r":0},{"t":0.285,"l":0,"r":0},{"t":0.486,"l":0,"r":0},{"t":0.674,"l":0,"r":0},{"t":0.876,"l":0,"r":0},{"t":1.079,"l":0,"r":0},{"t":1.294,"l":0,"r":0},{"t":1.481,"l":0,"r":0},{"t":1.685,"l":0,"r":0},{"t":1.887,"l":0,"r":0},{"t":2.086,"l":0,"r":0},{"t":2.288,"l":0,"r":0},{"t":2.473,"l":0,"r":0},{"t":2.69,"l":0,"r":0},{"t":2.874,"l":0,"r":0},{"t":3.093,"l":0,"r":0},{"t":3.278,"l":0,"r":0},{"t":3.482,"l":0,"r":0},{"t":3.684,"l":0,"r":0},{"t":3.886,"l":0,"r":0},{"t":4.089,"l":0,"r":0},{"t":4.277,"l":0,"r":0},{"t":4.479,"l":0,"r":0},{"t":4.682,"l":0,"r":0},{"t":4.886,"l":0,"r":0},{"t":5.085,"l":0,"r":0},{"t":5.287,"l":0,"r":0},{"t":5.49,"l":0,"r":0},{"t":5.676,"l":0,"r":0},{"t":5.876,"l":0,"r":0},{"t":6.091,"l":0,"r":0},{"t":6.277,"l":0,"r":0},{"t":6.477,"l":0,"r":0},{"t":6.693,"l":0,"r":0},{"t":6.882,"l":0,"r":0},{"t":7.083,"l":0,"r":0},{"t":7.286,"l":0,"r":0},{"t":7.474,"l":0,"r":0},{"t":7.677,"l":0,"r":0},{"t":7.879,"l":0,"r":0}],"window_before":30.0,"window_after":5.0,"slide_idx":"02","slide_total":"02"}];
   const SVG_W = 820, SVG_PADX = 50, INNER_W = 720;
 
   function xOf(t, t0, t1) {
@@ -1517,8 +1224,8 @@
 (function() {
   const sectionMap = [
     { id: 'occupancy', els: ['#occupancy', '#occupancy-results'] },
-    { id: 'mirror',    els: ['#mirror', '#mirror-can', '#mirror-nosignal'] },
-    { id: 'slopegraph', els: ['#slopegraph', '#v2-explanation'] },
+    { id: 'mirror',    els: ['#mirror'] },
+    { id: 'slopegraph', els: ['#slopegraph'] },
   ];
   const counter = document.getElementById('outerCounter');
   const navLinks = Array.from(document.querySelectorAll('nav.outer-nav a[href^="#"]'));
