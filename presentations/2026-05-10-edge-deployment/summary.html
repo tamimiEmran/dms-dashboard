@@ -1,0 +1,1445 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+  10 May 2026 — Edge Deployment + CAN-bus + Next Steps
+  Three slides:
+    1. Hikvision lift slopegraph + edge box + use cases + deployment cards (Howen OBU + MHero / taxi / limo)
+    2. CAN-bus results placeholder
+    3. Next steps — current assets (Howen + Qoho, Howen + MHero + Dashcam) + extended edge device PR
+
+  Numbers in slide 1 KPI / slopegraph reuse the v2 routing result from
+  drafts/pareto_slopegraph.html (built from fuse_specialists_v2.py output).
+  Vehicle / pax / spec values are placeholders — search for `<TBD>` to fill.
+-->
+<head>
+  <meta charset="UTF-8">
+  <meta name="robots" content="noindex,nofollow">
+  <style id="dms-gate-hide">body{display:none!important}</style>
+  <script src="../../password-gate.js"></script>
+  <meta name="viewport" content="width=1920">
+  <title>10 May — Edge Deployment + CAN-bus + Next Steps</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #F8F9FB;
+      --bg-card: #FFFFFF;
+      --bg-elevated: #F0F1F4;
+      --border: #E0E2E8;
+      --text: #1A1D26;
+      --text-dim: #5A5E6E;
+      --text-muted: #8E92A0;
+      --accent: #0E9A7E;
+      --accent-dim: rgba(14, 154, 126, 0.08);
+      --accent-strong: rgba(14, 154, 126, 0.18);
+      --accent-2: #3B6FD6;
+      --accent-2-dim: rgba(59, 111, 214, 0.08);
+      --accent-3: #C88A1A;
+      --accent-3-dim: rgba(200, 138, 26, 0.08);
+      --red: #D9453E;
+      --red-dim: rgba(217, 69, 62, 0.07);
+      --purple: #8B5CC4;
+      --purple-dim: rgba(139, 92, 196, 0.08);
+      --teal: #0E8A9A;
+      --teal-dim: rgba(14, 138, 154, 0.08);
+      --font: 'DM Sans', system-ui, sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+      --radius: 10px;
+      --radius-sm: 6px;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      line-height: 1.5;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      background-image: radial-gradient(circle, rgba(26,29,38,0.035) 1px, transparent 1px);
+      background-size: 22px 22px;
+      background-position: 0 0;
+      padding-top: 44px;
+    }
+
+    /* === OUTER DECK NAV === */
+    nav.outer-nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 2000;
+      background: rgba(248, 249, 251, 0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 40px;
+      height: 44px;
+      gap: 4px;
+    }
+    nav.outer-nav a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      padding: 5px 12px;
+      border-radius: 20px;
+      transition: all 0.2s;
+    }
+    nav.outer-nav a:hover, nav.outer-nav a.active {
+      color: var(--text);
+      background: var(--bg-elevated);
+    }
+    nav.outer-nav .deck-title {
+      flex: 1;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: -0.01em;
+    }
+    nav.outer-nav .slide-counter {
+      color: var(--text-muted);
+      font-size: 11px;
+      font-family: var(--mono);
+    }
+
+    /* === SLIDE === */
+    section.slide {
+      min-height: 100vh;
+      scroll-snap-align: start;
+      display: flex;
+      flex-direction: column;
+      padding: 64px 56px 28px;
+      position: relative;
+      border-top: 1px solid var(--border);
+    }
+    section.slide::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, var(--border) 20%, var(--border) 80%, transparent 100%);
+    }
+
+    h2 { font-size: 26px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 4px }
+    h3 { font-size: 13px; font-weight: 400; color: var(--text-dim); margin-bottom: 18px; max-width: 880px }
+    h4 { font-size: 13px; font-weight: 600; margin-bottom: 6px; letter-spacing: -0.01em }
+
+    .num { font-family: var(--mono); font-feature-settings: "tnum" 1 }
+
+    .tag {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 600;
+      font-family: var(--mono);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin-bottom: 6px;
+    }
+    .tag--accent { background: var(--accent-dim); color: var(--accent) }
+    .tag--blue   { background: var(--accent-2-dim); color: var(--accent-2) }
+    .tag--amber  { background: var(--accent-3-dim); color: var(--accent-3) }
+
+    .slide-stamp {
+      position: absolute;
+      top: 56px; right: 56px;
+      display: flex; align-items: center; gap: 10px;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .slide-stamp .stamp-sep { width: 24px; height: 1px; background: var(--border) }
+    .slide-stamp .stamp-idx { color: var(--text-dim); font-weight: 500 }
+
+    .action-bar {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 10px 14px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-size: 12.5px;
+      margin-top: 14px;
+    }
+    .action-bar.amber { border-left-color: var(--accent-3) }
+    .action-bar.blue  { border-left-color: var(--accent-2) }
+    .action-bar .action-text { color: var(--text); flex: 1 }
+    .action-bar .action-text strong { font-weight: 600 }
+
+    /* === KPI ROW (slopegraph header) === */
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+    .kpi {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      text-align: center;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+    .kpi--accent {
+      border: 1.5px solid var(--accent);
+      background: var(--accent-dim);
+    }
+    .kpi--v2 {
+      border: 1.5px solid var(--accent-3);
+      background: var(--accent-3-dim);
+    }
+    .kpi--v2 .kpi-label { color: var(--accent-3); }
+    .kpi--v2 .kpi-value { color: var(--accent-3); }
+    .kpi--accent .kpi-label { color: var(--accent); }
+    .kpi--accent .kpi-value { color: var(--accent); }
+    .kpi-label {
+      font-size: 10px;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-family: var(--mono);
+      margin-bottom: 8px;
+    }
+    .kpi-value {
+      font-family: var(--mono);
+      font-size: 32px;
+      font-weight: 500;
+      color: var(--text);
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+    .kpi-delta {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 500;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+    .kpi-delta--neg { color: var(--red); }
+    .kpi-delta--pos { color: var(--accent); }
+    .kpi-sub {
+      font-size: 11px;
+      color: var(--text-dim);
+      margin-top: 8px;
+    }
+
+    /* === slide 1 : main grid (slopegraph + sidebar) === */
+    .lift-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 2.2fr) minmax(0, 1fr);
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px 14px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+    .eyebrow {
+      font-size: 10px;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-family: var(--mono);
+      margin-bottom: 6px;
+    }
+    .design-title {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      margin-bottom: 4px;
+    }
+    .intent {
+      font-size: 12px;
+      color: var(--text-dim);
+      max-width: 860px;
+      margin-bottom: 10px;
+    }
+    .chart { width: 100%; min-height: 380px; }
+
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .sidebar .card { padding: 16px 18px 14px; }
+    .use-list {
+      list-style: none;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px 10px;
+      margin-top: 4px;
+    }
+    .use-list li {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      color: var(--text);
+      padding: 6px 8px;
+      border-radius: var(--radius-sm);
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .use-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+    }
+    .use-list li[data-state="off"] .use-dot { background: var(--text-muted); opacity: 0.5; }
+    .use-list li[data-state="off"] { color: var(--text-muted); }
+
+    .edge-box {
+      background: var(--accent);
+      color: #FFFFFF;
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      box-shadow: 0 4px 12px rgba(14, 154, 126, 0.18);
+      position: relative;
+      overflow: hidden;
+    }
+    .edge-box::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 95% 0%, rgba(255,255,255,0.18), transparent 55%);
+      pointer-events: none;
+    }
+    .edge-box .edge-eyebrow {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      opacity: 0.85;
+      margin-bottom: 6px;
+    }
+    .edge-box .edge-title {
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      line-height: 1.25;
+    }
+    .edge-box .edge-sub {
+      font-size: 12px;
+      opacity: 0.88;
+      margin-top: 6px;
+    }
+
+    /* === slide 1 : deployment cards === */
+    .deploy-header {
+      display: flex; align-items: baseline; gap: 10px;
+      margin-bottom: 10px;
+    }
+    .deploy-header h4 { margin-bottom: 0; }
+    .deploy-header .deploy-sub {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      font-family: var(--mono);
+    }
+    .deploy-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+    .deploy-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 16px 14px;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    }
+    .deploy-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(26, 29, 38, 0.10);
+      border-color: color-mix(in srgb, var(--text-dim) 35%, var(--border));
+    }
+    .deploy-card:focus-visible {
+      outline: 2px solid var(--accent-2);
+      outline-offset: 2px;
+    }
+    .deploy-card:active { transform: translateY(0); }
+    .deploy-card::before {
+      content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+    }
+    .deploy-arrow {
+      position: absolute;
+      top: 12px; right: 12px;
+      width: 26px; height: 26px;
+      border-radius: 6px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-muted);
+      font-family: var(--mono);
+      font-size: 14px;
+      line-height: 1;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+    .deploy-card:hover .deploy-arrow {
+      background: var(--bg-card);
+      color: var(--text);
+      border-color: var(--text-dim);
+    }
+    .deploy-card .deploy-name { padding-right: 32px; }
+    .deploy-card.green::before { background: var(--accent) }
+    .deploy-card.blue::before  { background: var(--accent-2) }
+    .deploy-card.amber::before { background: var(--accent-3) }
+    .deploy-card .deploy-step {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .deploy-card.green .deploy-step { color: var(--accent) }
+    .deploy-card.blue  .deploy-step { color: var(--accent-2) }
+    .deploy-card.amber .deploy-step { color: var(--accent-3) }
+    .deploy-card .deploy-name {
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      margin-bottom: 2px;
+    }
+    .deploy-card .deploy-hw {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+    .deploy-metric {
+      display: flex; align-items: baseline;
+      gap: 6px;
+      padding: 8px 10px;
+      background: var(--bg-elevated);
+      border-radius: var(--radius-sm);
+      margin-bottom: 8px;
+    }
+    .deploy-metric .metric-value {
+      font-family: var(--mono);
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1;
+    }
+    .deploy-metric .metric-unit {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+    }
+    .deploy-metric .metric-tbd {
+      color: var(--text-muted);
+    }
+    .deploy-uses {
+      font-size: 11.5px;
+      color: var(--text-dim);
+      line-height: 1.5;
+    }
+    .deploy-uses .label {
+      font-family: var(--mono);
+      font-size: 9.5px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .deploy-uses .chip-row {
+      display: flex; flex-wrap: wrap; gap: 5px;
+    }
+    .deploy-uses .chip {
+      font-family: var(--mono);
+      font-size: 10.5px;
+      padding: 2px 7px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--text-dim);
+    }
+    .deploy-uses .chip.tbd {
+      color: var(--text-muted);
+      border-style: dashed;
+    }
+
+    /* === wide single-card variant (used when only one deployment) === */
+    .deploy-grid--single { grid-template-columns: 1fr; }
+    .deploy-card--wide { padding: 18px 22px 18px 24px; }
+    .deploy-card--wide .deploy-name { padding-right: 40px; }
+    .deploy-wide-grid {
+      display: grid;
+      grid-template-columns: minmax(220px, 1.1fr) minmax(180px, 0.8fr) minmax(0, 1.6fr);
+      gap: 24px;
+      align-items: center;
+    }
+    .deploy-wide-grid .deploy-step { margin-bottom: 6px; }
+    .deploy-wide-grid .deploy-name {
+      font-size: 17px;
+      margin-bottom: 4px;
+    }
+    .deploy-wide-grid .deploy-hw { margin-bottom: 0; }
+    .deploy-wide-metric {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      padding: 14px 16px;
+      background: var(--bg-elevated);
+      border-radius: var(--radius-sm);
+    }
+    .deploy-wide-metric .metric-value {
+      font-family: var(--mono);
+      font-size: 34px;
+      font-weight: 600;
+      line-height: 1;
+      color: var(--text);
+    }
+    .deploy-wide-metric .metric-value.metric-tbd { color: var(--text-muted); }
+    .deploy-wide-metric .metric-unit {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+    }
+    .deploy-wide-uses .label {
+      font-family: var(--mono);
+      font-size: 9.5px;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .deploy-wide-uses .chip-row {
+      display: flex; flex-wrap: wrap; gap: 6px;
+    }
+    .deploy-wide-uses .chip {
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 3px 9px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--text-dim);
+    }
+    .deploy-wide-uses .chip.tbd {
+      color: var(--text-muted);
+      border-style: dashed;
+    }
+    @media (max-width: 1100px) {
+      .deploy-wide-grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
+    }
+
+    /* === placeholder card (slide 2) === */
+    .placeholder-card {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-card);
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 80px 40px;
+      min-height: 400px;
+      text-align: center;
+    }
+    .placeholder-inner .placeholder-eyebrow {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-bottom: 14px;
+    }
+    .placeholder-inner .placeholder-title {
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: var(--text-dim);
+      margin-bottom: 10px;
+    }
+    .placeholder-inner .placeholder-sub {
+      font-size: 14px;
+      color: var(--text-muted);
+      max-width: 620px;
+      margin: 0 auto 18px;
+    }
+    .placeholder-inner .placeholder-targets {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+    .placeholder-inner .placeholder-targets .target {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      padding: 6px 12px;
+      background: var(--bg-elevated);
+      border: 1px dashed var(--border);
+      border-radius: 999px;
+      color: var(--text-dim);
+    }
+
+    /* === slide 3 : asset cards + PR spec table === */
+    .section-head {
+      display: flex; align-items: baseline; gap: 10px;
+      margin: 6px 0 10px;
+    }
+    .section-head h4 { margin-bottom: 0; }
+    .section-head .head-sub {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      font-family: var(--mono);
+    }
+
+    .assets-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+    .asset-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 18px 14px;
+      position: relative;
+      overflow: hidden;
+    }
+    .asset-card::before {
+      content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+      background: var(--accent-2);
+    }
+    .asset-card.purple::before { background: var(--purple); }
+    .asset-card .asset-step {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent-2);
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .asset-card.purple .asset-step { color: var(--purple); }
+    .asset-card .asset-name {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      margin-bottom: 2px;
+    }
+    .asset-card .asset-hw {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+    .asset-meta {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .asset-meta .cell {
+      background: var(--bg-elevated);
+      border-radius: var(--radius-sm);
+      padding: 8px 10px;
+    }
+    .asset-meta .cell-label {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+    .asset-meta .cell-value {
+      font-family: var(--mono);
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1;
+    }
+    .asset-meta .cell-value.tbd { color: var(--text-muted); }
+
+    /* === PR spec table === */
+    .pr-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+      position: relative;
+      overflow: hidden;
+    }
+    .pr-card::before {
+      content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+      background: var(--accent-3);
+    }
+    .pr-head {
+      display: flex; align-items: baseline; justify-content: space-between;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .pr-head .pr-eyebrow {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: var(--accent-3);
+      font-weight: 700;
+    }
+    .pr-head .pr-title {
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+    .pr-head .pr-status {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      padding: 3px 8px;
+      border: 1px dashed var(--border);
+      border-radius: 4px;
+    }
+    .pr-head .pr-head-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .pr-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: -0.005em;
+      color: #fff;
+      background: var(--accent-3);
+      border: 1px solid var(--accent-3);
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
+    }
+    .pr-cta:hover {
+      background: #B07815;
+      box-shadow: 0 3px 10px rgba(200, 138, 26, 0.30);
+      transform: translateY(-1px);
+    }
+    .pr-cta:focus-visible {
+      outline: 2px solid var(--accent-3);
+      outline-offset: 2px;
+    }
+    .pr-cta svg { width: 11px; height: 11px; flex-shrink: 0; }
+    .spec-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .spec-table tr { border-bottom: 1px solid var(--border); }
+    .spec-table tr:last-child { border-bottom: none; }
+    .spec-table th, .spec-table td { padding: 10px 12px; text-align: left; vertical-align: middle; }
+    .spec-table th {
+      width: 30%;
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+    .spec-table td {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--text);
+    }
+    .spec-table td.tbd {
+      color: var(--text-muted);
+      font-style: italic;
+    }
+    .spec-table td .note {
+      font-family: var(--font);
+      font-size: 11.5px;
+      color: var(--text-muted);
+      margin-left: 8px;
+      font-style: normal;
+    }
+
+    /* === LIGHTBOX (deploy-card detail overlay) === */
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: rgba(26, 29, 38, 0.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      cursor: pointer;
+      padding: 32px 40px;
+    }
+    .lightbox.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .lightbox-inner {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      width: min(1280px, 95vw);
+      height: min(880px, 90vh);
+      cursor: default;
+      position: relative;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.3);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .lightbox-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 56px 14px 20px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-elevated);
+      flex-shrink: 0;
+    }
+    .lightbox-head .lightbox-eyebrow {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 700;
+    }
+    .lightbox-head .lightbox-title {
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: var(--text);
+      margin-top: 2px;
+    }
+    .lightbox-frame {
+      flex: 1;
+      width: 100%;
+      border: none;
+      background: var(--bg);
+      display: block;
+    }
+    .lightbox-close, .lightbox-open {
+      position: absolute;
+      top: 12px;
+      width: 32px; height: 32px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      color: var(--text-dim);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s, color 0.15s;
+      font-family: var(--mono);
+    }
+    .lightbox-close { right: 12px; font-size: 16px; }
+    .lightbox-open  { right: 52px; }
+    .lightbox-close:hover, .lightbox-open:hover {
+      background: var(--bg-elevated);
+      color: var(--text);
+    }
+    .lightbox-open svg { width: 14px; height: 14px; }
+
+    @media (max-width: 1200px) {
+      .lift-grid { grid-template-columns: 1fr; }
+      .deploy-grid { grid-template-columns: 1fr; }
+      .assets-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+
+<body>
+
+<nav class="outer-nav">
+  <a href="../../index.html">&larr; Home</a>
+  <a href="#overview" class="active">Edge Lift</a>
+  <a href="#canbus">CAN-bus</a>
+  <a href="#nextsteps">Next Steps</a>
+  <span class="deck-title">Edge Deployment + CAN-bus + Next Steps</span>
+  <span class="slide-counter" id="outerCounter">1 / 3</span>
+</nav>
+
+<!-- ============================================
+     SLIDE 1 / EDGE LIFT + DEPLOYMENT
+     ============================================ -->
+<section class="slide" id="overview">
+  <div class="slide-stamp">
+    <span>edge deployment / overview / 2026-05</span>
+    <span class="stamp-sep"></span>
+    <span class="stamp-idx">01 / 03</span>
+  </div>
+
+  <span class="tag tag--accent">Edge Deployment</span>
+  <h2>Hikvision lift, optimized for the edge</h2>
+  <h3>v2 routing reaches <span class="num">81.6%</span> mean accuracy across <span class="num">5</span> use cases against the Hikvision OEM baseline. Pipeline packaged for in-vehicle inference on the Howen OBU + MHero camera test vehicle.</h3>
+
+  <div class="kpi-row">
+    <div class="kpi kpi--accent">
+      <div class="kpi-label">Ensemble (n=5)</div>
+      <div class="kpi-value">71.3%<span class="kpi-delta kpi-delta--neg">&minus;2.3 pts</span></div>
+      <div class="kpi-sub">mean accuracy &middot; 5 use cases</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Hikvision OEM</div>
+      <div class="kpi-value">73.6%</div>
+      <div class="kpi-sub">mean accuracy &middot; 5 use cases</div>
+    </div>
+    <div class="kpi kpi--v2">
+      <div class="kpi-label">v2 (best-of routing)</div>
+      <div class="kpi-value">81.6%<span class="kpi-delta kpi-delta--pos">+8.0 pts</span></div>
+      <div class="kpi-sub">vs OEM &middot; v2 used where it improved (4 of 5 cells)</div>
+    </div>
+  </div>
+
+  <div class="lift-grid">
+    <div class="card">
+      <div class="eyebrow">Per-use-case slopegraph</div>
+      <div class="design-title">Ensemble (n=5) vs. Hikvision OEM &middot; v2 where it improves</div>
+      <p class="intent">Sign-aware delta bars at every use case. Use cases ordered left-to-right by lift achieved (least-improved &rarr; most-improved). Routed model shown below the tick.</p>
+      <div id="slopegraph-chart" class="chart"></div>
+    </div>
+
+    <div class="sidebar">
+      <div class="card">
+        <div class="eyebrow">Use cases detected</div>
+        <h4 style="margin-bottom: 8px">Six DMS classes</h4>
+        <ul class="use-list">
+          <li><span class="use-dot"></span>distracted</li>
+          <li><span class="use-dot"></span>eating</li>
+          <li><span class="use-dot"></span>fatigue</li>
+          <li><span class="use-dot"></span>phone</li>
+          <li><span class="use-dot"></span>seatbelt</li>
+          <li data-state="off"><span class="use-dot"></span>smoking</li>
+        </ul>
+        <p style="font-size: 11px; color: var(--text-muted); margin-top: 8px; font-family: var(--mono); letter-spacing: 0.02em">5 of 6 scored on Hikvision Alerts. Smoking pending dataset.</p>
+      </div>
+
+      <div class="edge-box">
+        <div class="edge-eyebrow">Packaging</div>
+        <div class="edge-title">Optimized for deployment on the edge</div>
+        <div class="edge-sub">Routed pipeline runs on the Howen OBU without cloud round-trip.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="deploy-header">
+    <h4>In-vehicle deployment</h4>
+    <span class="deploy-sub">Test vehicle &middot; <span class="num">386</span> alerts captured &middot; <span class="num">5</span> alert types &middot; <span class="num">2026-05-07</span></span>
+  </div>
+
+  <div class="deploy-grid deploy-grid--single">
+    <div class="deploy-card deploy-card--wide green" role="button" tabindex="0"
+         data-href="details/test-vehicle.html"
+         data-label="Test vehicle &middot; Howen OBU + MHero camera">
+      <div class="deploy-arrow" aria-hidden="true">&rarr;</div>
+      <div class="deploy-wide-grid">
+        <div>
+          <div class="deploy-step">Test vehicle</div>
+          <div class="deploy-name">Howen OBU + MHero camera</div>
+          <div class="deploy-hw">howen.obu &middot; mhero.cam &middot; 2026-05-07</div>
+        </div>
+
+        <div class="deploy-wide-metric">
+          <span class="metric-value">386</span>
+          <span class="metric-unit">alerts captured</span>
+        </div>
+
+        <div class="deploy-wide-uses">
+          <div class="label">Use cases triggered</div>
+          <div class="chip-row">
+            <span class="chip">distracted <span class="num">162</span></span>
+            <span class="chip">drowsiness <span class="num">168</span></span>
+            <span class="chip">yawn <span class="num">7</span></span>
+            <span class="chip">phone <span class="num">39</span></span>
+            <span class="chip">seatbelt <span class="num">10</span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================
+     SLIDE 2 / CAN-BUS RESULTS PLACEHOLDER
+     ============================================ -->
+<section class="slide" id="canbus">
+  <div class="slide-stamp">
+    <span>can-bus / results / 2026-05</span>
+    <span class="stamp-sep"></span>
+    <span class="stamp-idx">02 / 03</span>
+  </div>
+
+  <span class="tag tag--blue">CAN-bus</span>
+  <h2>CAN-bus telemetry results</h2>
+  <h3>Per-event corroboration of mirror glances and deployment metrics from the vehicle CAN feed. Numbers and visualisations to be added once the pilot run is parsed.</h3>
+
+  <div class="placeholder-card">
+    <div class="placeholder-inner">
+      <div class="placeholder-eyebrow">Placeholder &middot; to be filled</div>
+      <div class="placeholder-title">CAN-bus results</div>
+      <div class="placeholder-sub">Drop in: blinker / signal corroboration timeline, brake / throttle event counts vs. detection events, and any other CAN-side metric the pilot deployment surfaces.</div>
+      <div class="placeholder-targets">
+        <span class="target">blinker corroboration</span>
+        <span class="target">brake / throttle event count</span>
+        <span class="target">speed-binned alert rate</span>
+        <span class="target">&lt;TBD additional&gt;</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================
+     SLIDE 3 / NEXT STEPS — CURRENT ASSETS + EXTENDED EDGE PR
+     ============================================ -->
+<section class="slide" id="nextsteps">
+  <div class="slide-stamp">
+    <span>deployment / next steps / 2026-05</span>
+    <span class="stamp-sep"></span>
+    <span class="stamp-idx">03 / 03</span>
+  </div>
+
+  <span class="tag tag--amber">Next steps</span>
+  <h2>Roll-out on current assets &middot; extended edge device PR</h2>
+  <h3>Two existing fleet pairings carry the v2 pipeline as-is. A hardware purchase request adds a third platform with more headroom for additional use cases.</h3>
+
+  <div class="section-head">
+    <h4>Current assets</h4>
+    <span class="head-sub">already in fleet &middot; no new procurement</span>
+  </div>
+
+  <div class="assets-grid">
+    <div class="asset-card">
+      <div class="asset-step">Asset &middot; 01</div>
+      <div class="asset-name">Howen OBU + Qoho camera</div>
+      <div class="asset-hw">howen.obu &middot; qoho.cam</div>
+      <div class="asset-meta">
+        <div class="cell">
+          <div class="cell-label">Units</div>
+          <div class="cell-value tbd">&lt;TBD&gt;</div>
+        </div>
+        <div class="cell">
+          <div class="cell-label">Sites</div>
+          <div class="cell-value tbd">&lt;TBD&gt;</div>
+        </div>
+        <div class="cell">
+          <div class="cell-label">Use cases</div>
+          <div class="cell-value tbd">&lt;TBD&gt;</div>
+        </div>
+      </div>
+      <div class="deploy-uses">
+        <div class="label">Coverage</div>
+        <div class="chip-row">
+          <span class="chip tbd">distracted</span>
+          <span class="chip tbd">eating</span>
+          <span class="chip tbd">fatigue</span>
+          <span class="chip tbd">phone</span>
+          <span class="chip tbd">seatbelt</span>
+          <span class="chip tbd">smoking</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="asset-card purple">
+      <div class="asset-step">Asset &middot; 02</div>
+      <div class="asset-name">Howen OBU + Howen MHero + Dashcamera</div>
+      <div class="asset-hw">howen.obu &middot; howen.mhero &middot; dashcam</div>
+      <div class="asset-meta">
+        <div class="cell">
+          <div class="cell-label">Units</div>
+          <div class="cell-value tbd">&lt;TBD&gt;</div>
+        </div>
+        <div class="cell">
+          <div class="cell-label">Sites</div>
+          <div class="cell-value tbd">&lt;TBD&gt;</div>
+        </div>
+        <div class="cell">
+          <div class="cell-label">Use cases</div>
+          <div class="cell-value tbd">&lt;TBD&gt;</div>
+        </div>
+      </div>
+      <div class="deploy-uses">
+        <div class="label">Coverage</div>
+        <div class="chip-row">
+          <span class="chip tbd">distracted</span>
+          <span class="chip tbd">eating</span>
+          <span class="chip tbd">fatigue</span>
+          <span class="chip tbd">phone</span>
+          <span class="chip tbd">seatbelt</span>
+          <span class="chip tbd">smoking</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-head">
+    <h4>Extended edge device PR</h4>
+    <span class="head-sub">purchase request &middot; specs to be finalised</span>
+  </div>
+
+  <div class="pr-card">
+    <div class="pr-head">
+      <div>
+        <div class="pr-eyebrow">Procurement</div>
+        <div class="pr-title">Extended edge device</div>
+      </div>
+      <div class="pr-head-right">
+        <button type="button"
+                class="pr-cta lightbox-trigger"
+                data-href="details/edge-device-pr-stack.html"
+                data-label="Extended edge device &middot; proposed stack"
+                aria-label="View proposed stack: Camera, OBU, SoC layers">
+          View proposed stack
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </button>
+        <div class="pr-status">Draft &middot; &lt;TBD&gt;</div>
+      </div>
+    </div>
+
+    <table class="spec-table">
+      <tbody>
+        <tr>
+          <th>SoC</th>
+          <td class="tbd">&lt;TBD&gt;<span class="note">target NPU-capable SoC</span></td>
+        </tr>
+        <tr>
+          <th>RAM</th>
+          <td class="tbd">&lt;TBD&gt;<span class="note">GB</span></td>
+        </tr>
+        <tr>
+          <th>NPU TOPs</th>
+          <td class="tbd">&lt;TBD&gt;<span class="note">int8</span></td>
+        </tr>
+        <tr>
+          <th>Power</th>
+          <td class="tbd">&lt;TBD&gt;<span class="note">W &middot; in-cabin draw</span></td>
+        </tr>
+        <tr>
+          <th>I/O</th>
+          <td class="tbd">&lt;TBD&gt;<span class="note">CAN, GPIO, USB, ethernet</span></td>
+        </tr>
+        <tr>
+          <th>Cameras</th>
+          <td class="tbd">&lt;TBD&gt;<span class="note">count &middot; resolution &middot; FOV</span></td>
+        </tr>
+        <tr>
+          <th>Storage</th>
+          <td class="tbd">&lt;TBD&gt;<span class="note">GB &middot; eMMC / SSD</span></td>
+        </tr>
+        <tr>
+          <th>Connectivity</th>
+          <td class="tbd">&lt;TBD&gt;<span class="note">4G / 5G / Wi-Fi</span></td>
+        </tr>
+        <tr>
+          <th>Unit cost</th>
+          <td class="tbd">&lt;TBD&gt;<span class="note">USD &middot; at quantity &lt;TBD&gt;</span></td>
+        </tr>
+        <tr>
+          <th>Lead time</th>
+          <td class="tbd">&lt;TBD&gt;<span class="note">weeks</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="action-bar amber">
+      <div class="action-text"><strong>Why an extended device:</strong> &lt;TBD&gt; — fill in justification (e.g. headroom for additional use cases, multi-camera support, or higher resolution than the current Qoho / MHero pairing allows).</div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================
+     LIGHTBOX (deploy-card detail overlay)
+     ============================================ -->
+<div class="lightbox" id="cardLightbox" role="dialog" aria-modal="true" aria-labelledby="cardLightboxTitle">
+  <div class="lightbox-inner" onclick="event.stopPropagation()">
+    <div class="lightbox-head">
+      <div>
+        <div class="lightbox-eyebrow">Deployment detail</div>
+        <div class="lightbox-title" id="cardLightboxTitle">&nbsp;</div>
+      </div>
+    </div>
+    <a class="lightbox-open" id="cardLightboxOpen" href="#" target="_blank" rel="noopener" title="Open in new tab" aria-label="Open in new tab">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 3h7v7"></path>
+        <path d="M10 14L21 3"></path>
+        <path d="M21 14v7H3V3h7"></path>
+      </svg>
+    </a>
+    <button class="lightbox-close" id="cardLightboxClose" aria-label="Close">&times;</button>
+    <iframe class="lightbox-frame" id="cardLightboxFrame" title="Deployment detail" loading="lazy"></iframe>
+  </div>
+</div>
+
+
+<script>
+// ============================================
+// === Lightbox: deploy-card click → iframe overlay ===
+// ============================================
+(function() {
+  const lightbox     = document.getElementById('cardLightbox');
+  const frame        = document.getElementById('cardLightboxFrame');
+  const titleEl      = document.getElementById('cardLightboxTitle');
+  const openInNewTab = document.getElementById('cardLightboxOpen');
+  const closeBtn     = document.getElementById('cardLightboxClose');
+  if (!lightbox || !frame) return;
+
+  function openCard(href, label) {
+    if (!href) return;
+    titleEl.textContent = label || 'Deployment detail';
+    openInNewTab.setAttribute('href', href);
+    frame.setAttribute('src', href);
+    lightbox.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeCard() {
+    lightbox.classList.remove('active');
+    frame.setAttribute('src', 'about:blank');
+    document.body.style.overflow = '';
+  }
+
+  document.querySelectorAll('.deploy-card[data-href], .lightbox-trigger[data-href]').forEach(function(el) {
+    el.addEventListener('click', function(e) {
+      // Let middle-click / ctrl-click / cmd-click open in a new tab via the open button instead.
+      if (e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey) return;
+      openCard(el.getAttribute('data-href'), el.getAttribute('data-label'));
+    });
+    // Native <button> elements already dispatch click on Enter/Space, so don't double-bind.
+    if (el.tagName !== 'BUTTON') {
+      el.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openCard(el.getAttribute('data-href'), el.getAttribute('data-label'));
+        }
+      });
+    }
+  });
+
+  closeBtn.addEventListener('click', closeCard);
+  lightbox.addEventListener('click', function(e) {
+    if (e.target === lightbox) closeCard();
+  });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && lightbox.classList.contains('active')) closeCard();
+  });
+})();
+
+
+// ============================================
+// === Slopegraph chart (data from drafts/pareto_slopegraph.html) ===
+// ============================================
+(function() {
+  const OEM = {
+    distracted_driving: 0.683,
+    eating_drinking:    0.500,
+    fatigue:            0.888,
+    phone_usage:        0.752,
+    seatbelt:           0.858,
+  };
+  const PERCLASS = {
+    1: { distracted_driving: 0.500, eating_drinking: 0.588, fatigue: 0.500, phone_usage: 0.783, seatbelt: 0.500 },
+    2: { distracted_driving: 0.500, eating_drinking: 0.588, fatigue: 0.500, phone_usage: 0.783, seatbelt: 0.796 },
+    3: { distracted_driving: 0.500, eating_drinking: 0.588, fatigue: 0.792, phone_usage: 0.783, seatbelt: 0.796 },
+    4: { distracted_driving: 0.602, eating_drinking: 0.588, fatigue: 0.792, phone_usage: 0.783, seatbelt: 0.796 },
+    5: { distracted_driving: 0.602, eating_drinking: 0.591, fatigue: 0.792, phone_usage: 0.783, seatbelt: 0.796 },
+  };
+  const FINAL_ROUTING = {
+    distracted_driving: 'classifier_followb1ind1y_mnv3',
+    eating_drinking:    'yolov8x',
+    fatigue:            'mediapipe',
+    phone_usage:        'rtdetr_x',
+    seatbelt:           'yolo_soham',
+  };
+  const OURS_V2 = {
+    distracted_driving: 0.669,
+    eating_drinking:    0.893,
+    fatigue:            0.808,
+    phone_usage:        0.916,
+  };
+  const ORDER = ['phone_usage', 'eating_drinking', 'distracted_driving', 'fatigue', 'seatbelt'];
+  const LABELS = {
+    phone_usage:        'Phone usage',
+    eating_drinking:    'Eating/drinking',
+    distracted_driving: 'Distracted driving',
+    fatigue:            'Fatigue',
+    seatbelt:           'Seatbelt',
+  };
+  const COMMON_CONFIG = { displayModeBar: false, responsive: true };
+  const COMMON_HOVER = {
+    bgcolor: '#1A1D26',
+    bordercolor: '#0E9A7E',
+    font: { family: 'JetBrains Mono, monospace', size: 12, color: '#E8EAF0' },
+  };
+  const COMMON_FONT = {
+    family: 'DM Sans, system-ui, sans-serif',
+    size: 12,
+    color: '#5A5E6E',
+  };
+  const X_LABELS = ORDER.map(c => LABELS[c]);
+
+  function buildSlopegraph() {
+    if (typeof Plotly === 'undefined') return;
+    const ensembleY = ORDER.map(c => PERCLASS[5][c] * 100);
+    const oemY      = ORDER.map(c => OEM[c] * 100);
+    const deltaShapes = ORDER.map((c, i) => {
+      const ens = PERCLASS[5][c] * 100;
+      const oem = OEM[c] * 100;
+      const positive = ens >= oem;
+      return {
+        type: 'line', xref: 'x', yref: 'y',
+        x0: i, x1: i, y0: oem, y1: ens,
+        line: { color: positive ? '#1FA974' : '#D85D5D', width: 5 },
+        layer: 'below',
+      };
+    });
+    const routingAnnotations = ORDER.map((c, i) => ({
+      x: i, y: 0, xref: 'x', yref: 'paper',
+      xanchor: 'center', yanchor: 'top',
+      text: '<span style="font-family:JetBrains Mono,monospace;font-size:10px;color:#8E92A0">' + FINAL_ROUTING[c] + '</span>',
+      showarrow: false, yshift: -34,
+    }));
+    const oursY = ORDER.map(c => (c in OURS_V2 ? OURS_V2[c] * 100 : null));
+    const traces = [
+      {
+        name: 'Hikvision OEM', type: 'scatter', mode: 'lines+markers',
+        x: X_LABELS, y: oemY,
+        line: { color: '#0E9A7E', width: 2 },
+        marker: { color: '#0E9A7E', size: 14, line: { color: '#FFFFFF', width: 2 } },
+        hovertemplate: '<b>%{x}</b><br>OEM: %{y:.1f}%<extra></extra>',
+      },
+      {
+        name: 'Ensemble (n=5)', type: 'scatter', mode: 'lines+markers',
+        x: X_LABELS, y: ensembleY,
+        line: { color: '#3B6FD6', width: 2 },
+        marker: { color: '#3B6FD6', size: 14, line: { color: '#FFFFFF', width: 2 } },
+        hovertemplate: '<b>%{x}</b><br>Ensemble: %{y:.1f}%<extra></extra>',
+      },
+      {
+        name: 'v2 (improved cells)', type: 'scatter', mode: 'lines+markers',
+        x: X_LABELS, y: oursY, connectgaps: false,
+        line: { color: '#C88A1A', width: 2, dash: 'dot' },
+        marker: { color: '#C88A1A', size: 17, symbol: 'diamond', line: { color: '#FFFFFF', width: 2 } },
+        hovertemplate: '<b>%{x}</b><br>v2: %{y:.1f}%<extra></extra>',
+      },
+    ];
+    const layout = {
+      paper_bgcolor: 'rgba(0,0,0,0)',
+      plot_bgcolor: 'rgba(240,241,244,0.4)',
+      margin: { l: 64, r: 28, t: 28, b: 96 },
+      font: COMMON_FONT,
+      hoverlabel: COMMON_HOVER,
+      height: 420,
+      legend: {
+        orientation: 'h',
+        x: 0, y: 1.12,
+        xanchor: 'left', yanchor: 'bottom',
+        bgcolor: 'rgba(0,0,0,0)',
+      },
+      xaxis: {
+        type: 'category', categoryorder: 'array', categoryarray: X_LABELS,
+        tickfont: { size: 12, color: '#1A1D26' },
+        gridcolor: '#E0E2E8', zerolinecolor: '#E0E2E8',
+      },
+      yaxis: {
+        title: { text: 'Accuracy (%)', font: { size: 12 } },
+        range: [0, 100], ticksuffix: '%',
+        gridcolor: '#E0E2E8', zerolinecolor: '#E0E2E8',
+      },
+      shapes: deltaShapes,
+      annotations: [
+        ...routingAnnotations,
+        {
+          x: 0, y: 1, xref: 'paper', yref: 'paper',
+          xanchor: 'left', yanchor: 'top',
+          text: '<span style="font-size:10px;color:#8E92A0">Vertical bar = ensemble &minus; OEM at each use case (green: ahead, red: behind) &middot; amber diamonds: v2 (preprocessing + fusion) where it improved over n=5</span>',
+          showarrow: false, yshift: 28,
+        },
+        {
+          x: 0, y: 0, xref: 'paper', yref: 'paper',
+          xanchor: 'left', yanchor: 'top',
+          text: '<span style="font-family:JetBrains Mono,monospace;font-size:9.5px;letter-spacing:0.05em;text-transform:uppercase;color:#8E92A0">Routed model</span>',
+          showarrow: false, yshift: -18,
+        },
+      ],
+    };
+    Plotly.newPlot('slopegraph-chart', traces, layout, COMMON_CONFIG);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', buildSlopegraph);
+  } else {
+    buildSlopegraph();
+  }
+})();
+
+
+// ============================================
+// === Outer-deck nav: counter + active link sync on scroll ===
+// ============================================
+(function() {
+  const slides = ['overview', 'canbus', 'nextsteps'];
+  const counter = document.getElementById('outerCounter');
+  const navLinks = Array.from(document.querySelectorAll('nav.outer-nav a[href^="#"]'));
+  const tracked = slides.map(id => document.getElementById(id)).filter(Boolean);
+  if (!counter || !tracked.length) return;
+
+  const obs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) {
+        const idx = tracked.indexOf(e.target);
+        if (idx < 0) return;
+        counter.textContent = (idx + 1) + ' / ' + slides.length;
+        navLinks.forEach(function(a) {
+          a.classList.toggle('active', a.getAttribute('href') === '#' + slides[idx]);
+        });
+      }
+    });
+  }, { threshold: 0.3 });
+
+  tracked.forEach(function(el) { obs.observe(el); });
+})();
+</script>
+
+</body>
+</html>

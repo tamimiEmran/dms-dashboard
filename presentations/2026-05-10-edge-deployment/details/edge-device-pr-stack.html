@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+  Extended edge device PR — proposed stack.
+
+  Three layers, top-to-bottom:
+    01 · Camera           MaixCam-2 (Sipeed)         — Axera AX630C, 3.2 TOPS, 4K MIPI CSI
+    02 · OBU / hardware   NavInfo S100 controller    — 8-ch GMSL, 12GB LPDDR5, 10× CAN FD, ASIL-B/D
+    03 · SoC / compute    TZTEK TADC-J6M (Horizon)   — 128 DL TOPS, 6× A78AE, 4× R52 lockstep
+
+  Images live at  ../../../assets/10May26/  (maixcam2-pinout, navinfo-s100-block, tztek-j6m-block).
+  Loaded into the slide-3 lightbox iframe via the "View proposed stack" button on summary.html;
+  also reachable directly through the dashboard password gate.
+-->
+<head>
+  <meta charset="UTF-8">
+  <meta name="robots" content="noindex,nofollow">
+  <style id="dms-gate-hide">body{display:none!important}</style>
+  <script src="../../../password-gate.js"></script>
+  <meta name="viewport" content="width=1280">
+  <title>Extended edge device &middot; proposed stack</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #F8F9FB;
+      --bg-card: #FFFFFF;
+      --bg-elevated: #F0F1F4;
+      --border: #E0E2E8;
+      --text: #1A1D26;
+      --text-dim: #5A5E6E;
+      --text-muted: #8E92A0;
+      --accent: #0E9A7E;
+      --accent-dim: rgba(14, 154, 126, 0.08);
+      --accent-2: #3B6FD6;
+      --accent-2-dim: rgba(59, 111, 214, 0.08);
+      --accent-3: #C88A1A;
+      --purple: #8B5CC4;
+      --purple-dim: rgba(139, 92, 196, 0.08);
+      --teal: #0E8A9A;
+      --font: 'DM Sans', system-ui, sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+      --radius: 10px;
+      --radius-sm: 6px;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      line-height: 1.5;
+      padding: 32px 36px 56px;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* === Header === */
+    .pill {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--accent-dim);
+      color: var(--accent);
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    h1 {
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: 4px;
+    }
+    .sub {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+      margin-bottom: 24px;
+    }
+
+    /* === Stack overview row (mini cards + arrows) === */
+    .stack-row {
+      display: grid;
+      grid-template-columns: 1fr 28px 1fr 28px 1fr;
+      gap: 0;
+      align-items: stretch;
+      margin-bottom: 28px;
+    }
+    .stack-mini {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+    }
+    .stack-mini.camera { border-left: 3px solid var(--accent); }
+    .stack-mini.obu    { border-left: 3px solid var(--accent-2); }
+    .stack-mini.soc    { border-left: 3px solid var(--purple); }
+    .stack-mini-label {
+      font-family: var(--mono);
+      font-size: 9.5px;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .stack-mini-name {
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      margin-bottom: 4px;
+    }
+    .stack-mini-tag {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-dim);
+      line-height: 1.4;
+    }
+    .stack-arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      font-family: var(--mono);
+      font-size: 16px;
+    }
+
+    /* === Layer section === */
+    .layer {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px 24px;
+      margin-bottom: 18px;
+    }
+    .layer.camera { border-top: 3px solid var(--accent); }
+    .layer.obu    { border-top: 3px solid var(--accent-2); }
+    .layer.soc    { border-top: 3px solid var(--purple); }
+
+    .layer-head { margin-bottom: 16px }
+    .layer-eyebrow {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .layer.camera .layer-eyebrow { color: var(--accent) }
+    .layer.obu    .layer-eyebrow { color: var(--accent-2) }
+    .layer.soc    .layer-eyebrow { color: var(--purple) }
+
+    .layer-name {
+      font-size: 19px;
+      font-weight: 600;
+      letter-spacing: -0.015em;
+      margin-bottom: 4px;
+    }
+    .layer-role {
+      font-size: 13px;
+      color: var(--text-dim);
+      max-width: 760px;
+    }
+
+    .layer-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.1fr;
+      gap: 22px;
+      align-items: start;
+    }
+
+    /* === Spec table === */
+    .spec-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .spec-table tbody tr { border-bottom: 1px solid var(--border) }
+    .spec-table tbody tr:last-child { border-bottom: 0 }
+    .spec-table th {
+      text-align: left;
+      font-weight: 500;
+      color: var(--text-dim);
+      padding: 8px 12px 8px 0;
+      width: 38%;
+      vertical-align: top;
+      font-size: 12.5px;
+    }
+    .spec-table td {
+      padding: 8px 0 8px 0;
+      vertical-align: top;
+      font-family: var(--mono);
+      font-size: 12.5px;
+      color: var(--text);
+      line-height: 1.5;
+    }
+    .spec-table td .note {
+      display: block;
+      font-family: var(--font);
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .spec-cat {
+      background: var(--bg-elevated);
+    }
+    .spec-cat th {
+      font-family: var(--mono);
+      font-size: 9.5px;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 700;
+      padding: 6px 12px 6px 8px;
+      border-radius: 4px;
+    }
+    .spec-cat td { padding: 0 }
+
+    /* === Diagram image card === */
+    .diagram {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      cursor: zoom-in;
+      position: relative;
+      transition: border-color 0.18s, box-shadow 0.18s;
+    }
+    .diagram:hover {
+      border-color: rgba(14, 154, 126, 0.4);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+    }
+    .diagram img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 4px;
+      background: #fff;
+    }
+    .diagram-caption {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .diagram-caption .expand {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      color: var(--text-dim);
+    }
+    .diagram-caption .expand svg { width: 11px; height: 11px }
+
+    /* === Image lightbox === */
+    .img-lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(26, 29, 38, 0.88);
+      backdrop-filter: blur(6px);
+      z-index: 9999;
+      cursor: zoom-out;
+      padding: 32px;
+    }
+    .img-lightbox.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .img-lightbox-inner {
+      background: var(--bg-card);
+      border-radius: 12px;
+      padding: 14px;
+      max-width: 95vw;
+      max-height: 92vh;
+      overflow: auto;
+      cursor: default;
+      position: relative;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.4);
+    }
+    .img-lightbox img { display: block; width: 100%; height: auto; min-width: 720px }
+    .img-lightbox-close {
+      position: absolute;
+      top: 8px; right: 8px;
+      width: 28px; height: 28px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      color: var(--text-dim);
+      cursor: pointer;
+      font-size: 16px;
+      line-height: 1;
+    }
+    .img-lightbox-close:hover { background: var(--bg-elevated); color: var(--text) }
+
+    /* === Footer note === */
+    .footnote {
+      margin-top: 18px;
+      padding: 12px 14px;
+      background: var(--bg-elevated);
+      border-left: 3px solid var(--accent-3);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-size: 12.5px;
+      color: var(--text-dim);
+      line-height: 1.55;
+    }
+    .footnote strong { color: var(--text); font-weight: 600 }
+
+    /* === Narrow viewport fallback === */
+    @media (max-width: 980px) {
+      .stack-row { grid-template-columns: 1fr; }
+      .stack-arrow { transform: rotate(90deg); padding: 4px 0; }
+      .layer-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <span class="pill">Procurement &middot; proposed stack</span>
+  <h1>Extended edge device &mdash; proposed stack</h1>
+  <div class="sub">Camera &rarr; OBU / hardware &rarr; SoC. One stack, three layers; the diagrams below show each.</div>
+
+  <!-- ============================================
+       Stack overview row
+       ============================================ -->
+  <div class="stack-row">
+    <div class="stack-mini camera">
+      <div class="stack-mini-label">01 &middot; Camera</div>
+      <div class="stack-mini-name">MaixCam-2 (Sipeed)</div>
+      <div class="stack-mini-tag">Axera AX630C &middot; 3.2 TOPS &middot; 4K MIPI CSI</div>
+    </div>
+    <div class="stack-arrow">&rarr;</div>
+    <div class="stack-mini obu">
+      <div class="stack-mini-label">02 &middot; OBU / hardware</div>
+      <div class="stack-mini-name">NavInfo S100 controller</div>
+      <div class="stack-mini-tag">8&times; GMSL camera in &middot; 12GB LPDDR5 &middot; 10&times; CAN FD &middot; ASIL-B/D</div>
+    </div>
+    <div class="stack-arrow">&rarr;</div>
+    <div class="stack-mini soc">
+      <div class="stack-mini-label">03 &middot; SoC / compute</div>
+      <div class="stack-mini-name">TZTEK TADC-J6M</div>
+      <div class="stack-mini-tag">Horizon J6M &middot; 128 DL TOPS &middot; 6&times; A78AE &middot; 4&times; R52 lockstep</div>
+    </div>
+  </div>
+
+  <!-- ============================================
+       LAYER 01 / CAMERA — MaixCam-2 (Sipeed)
+       ============================================ -->
+  <section class="layer camera">
+    <div class="layer-head">
+      <div class="layer-eyebrow">01 &middot; Camera</div>
+      <div class="layer-name">MaixCam-2 (Sipeed)</div>
+      <div class="layer-role">Smart camera with on-board AX630C NPU. Captures up to 4K @ 30 fps over a 4-lane MIPI CSI sensor and runs YOLO11n inference at the device, so the OBU sees pre-filtered events rather than raw video.</div>
+    </div>
+
+    <div class="layer-grid">
+      <table class="spec-table">
+        <tbody>
+          <tr class="spec-cat"><th colspan="2">Compute</th></tr>
+          <tr><th>SoC</th><td>Axera AX630C</td></tr>
+          <tr><th>CPU (big)</th><td>2&times; ARM Cortex-A53 @ 1.2 GHz<span class="note">runs Ubuntu Linux</span></td></tr>
+          <tr><th>CPU (small)</th><td>RISC-V 32-bit E907<span class="note">runs RT-Thread</span></td></tr>
+          <tr><th>NPU</th><td>3.2 TOPS @ INT8 &middot; 12.8 TOPS @ INT4</td></tr>
+          <tr><th>AI throughput</th><td>YOLO11n 640&times;640 up to 113 FPS</td></tr>
+
+          <tr class="spec-cat"><th colspan="2">Memory / storage</th></tr>
+          <tr><th>RAM</th><td>1 GB or 4 GB LPDDR4</td></tr>
+          <tr><th>Storage</th><td>32 GB eMMC + microSD slot</td></tr>
+
+          <tr class="spec-cat"><th colspan="2">Vision / display</th></tr>
+          <tr><th>Camera</th><td>Up to 4K (8 MP) @ 30 fps<span class="note">4-lane MIPI CSI</span></td></tr>
+          <tr><th>Display</th><td>2.4&Prime; HD IPS touchscreen (640&times;480)</td></tr>
+          <tr><th>Codec</th><td>H.264 / H.265 / MJPEG<span class="note">4K encode &middot; 1080p decode</span></td></tr>
+
+          <tr class="spec-cat"><th colspan="2">I/O &amp; connectivity</th></tr>
+          <tr><th>Wireless</th><td>Wi-Fi 6 + BLE 5.4</td></tr>
+          <tr><th>Audio</th><td>2&times; silicon mics + 1 W speaker</td></tr>
+          <tr><th>Pins</th><td>PMOD (20 IO), I2C, SPI, UART, ADC, PWM</td></tr>
+          <tr><th>Sensors</th><td>6-axis IMU + RTC (battery-backed)</td></tr>
+
+          <tr class="spec-cat"><th colspan="2">Physical</th></tr>
+          <tr><th>Power</th><td>USB-C + Li-ion battery management</td></tr>
+          <tr><th>Dimensions</th><td>66.5 &times; 50 &times; 21.2 mm<span class="note">1/4&Prime; tripod mount</span></td></tr>
+        </tbody>
+      </table>
+
+      <div class="diagram" onclick="openImg('../../../assets/10May26/maixcam2-pinout.png','MaixCam-2 &middot; pinout')">
+        <img src="../../../assets/10May26/maixcam2-pinout.png" alt="MaixCam-2 pinout v1.0 — physical layout, IO pads, power-supply table">
+        <div class="diagram-caption">
+          <span>MaixCam-2 pinout v1.0</span>
+          <span class="expand">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>
+            </svg>
+            Click to expand
+          </span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       LAYER 02 / OBU — NavInfo S100 controller
+       ============================================ -->
+  <section class="layer obu">
+    <div class="layer-head">
+      <div class="layer-eyebrow">02 &middot; OBU / hardware</div>
+      <div class="layer-name">NavInfo Autonomous Driving Domain Controller (S100)</div>
+      <div class="layer-role">The chassis side of the stack. Aggregates up to 8 GMSL camera feeds, exposes 10 CAN-FD channels for vehicle-bus integration, and meets automotive-grade ASIL-B/D safety with a dedicated R52 lockstep MCU domain.</div>
+    </div>
+
+    <div class="layer-grid">
+      <table class="spec-table">
+        <tbody>
+          <tr class="spec-cat"><th colspan="2">Compute</th></tr>
+          <tr><th>AI throughput</th><td>80 TOPS (total)</td></tr>
+          <tr><th>MCU domain</th><td>4&times; Cortex-R52 (6.5K DMIPS)<span class="note">ASIL-D, lockstep</span></td></tr>
+
+          <tr class="spec-cat"><th colspan="2">Memory / storage</th></tr>
+          <tr><th>RAM</th><td>12 GB LPDDR5<span class="note">3 &times; 4 GB configuration</span></td></tr>
+          <tr><th>Onboard storage</th><td>64 GB eMMC 5.1</td></tr>
+
+          <tr class="spec-cat"><th colspan="2">Vision / perception</th></tr>
+          <tr><th>Camera input</th><td>8-channel via GMSL / FAKRA</td></tr>
+          <tr><th>Video input</th><td>3 &times; 4-lane MIPI CSI RX</td></tr>
+          <tr><th>Video output</th><td>2 &times; 4-lane MIPI CSI TX</td></tr>
+
+          <tr class="spec-cat"><th colspan="2">Connectivity</th></tr>
+          <tr><th>Ethernet</th><td>2 &times; 1G internal + 1000BASE-T1 support</td></tr>
+          <tr><th>CAN bus</th><td>10-channel CAN FD</td></tr>
+          <tr><th>Other I/O</th><td>6&times; I2C &middot; 2&times; SPI &middot; 4&times; UART &middot; USB 2.0 &middot; LIN</td></tr>
+
+          <tr class="spec-cat"><th colspan="2">Environment / safety</th></tr>
+          <tr><th>Operating temp</th><td>&minus;40&deg;C to 85&deg;C<span class="note">automotive grade</span></td></tr>
+          <tr><th>Safety standards</th><td>ASIL-B (SoC) &middot; ASIL-D (MCU domain)</td></tr>
+
+          <tr class="spec-cat"><th colspan="2">Software / physical</th></tr>
+          <tr><th>Compatibility</th><td>Full-stack ONNX support, SDK access<span class="note">third-party model deployment</span></td></tr>
+          <tr><th>Dimensions</th><td>250 &times; 240 &times; 60 mm</td></tr>
+        </tbody>
+      </table>
+
+      <div class="diagram" onclick="openImg('../../../assets/10May26/navinfo-s100-block.png','NavInfo S100 &middot; hardware block diagram')">
+        <img src="../../../assets/10May26/navinfo-s100-block.png" alt="NavInfo S100 hardware block diagram — GMSL camera input, deserializers, MIPI-CSI, S100 SoC, R52 MCU domain, CAN FD, ethernet">
+        <div class="diagram-caption">
+          <span>NavInfo S100 &middot; hardware block diagram</span>
+          <span class="expand">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>
+            </svg>
+            Click to expand
+          </span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       LAYER 03 / SoC — TZTEK J6M
+       ============================================ -->
+  <section class="layer soc">
+    <div class="layer-head">
+      <div class="layer-eyebrow">03 &middot; SoC / compute</div>
+      <div class="layer-name">TZTEK TADC-J6M (Horizon Journey 6M)</div>
+      <div class="layer-role">The chip-level view of the AI compute. Six Cortex-A78AE application cores feed a 128 DL-TOPS BPU (Bayes architecture); a separate 4&times; R52 lockstep MCU and dual-ISP front-end handle safety and vision pre-processing.</div>
+    </div>
+
+    <div class="layer-grid">
+      <table class="spec-table">
+        <tbody>
+          <tr class="spec-cat"><th colspan="2">Main SoC</th></tr>
+          <tr><th>Processor</th><td>Horizon Journey 6M (J6M)</td></tr>
+          <tr><th>CPU (application)</th><td>6&times; ARM Cortex-A78AE<span class="note">137K DMIPS</span></td></tr>
+          <tr><th>BPU (AI engine)</th><td>128 DL TOPS<span class="note">Bayes architecture</span></td></tr>
+          <tr><th>GPU</th><td>2&times; G78AE<span class="note">100 GFLOPS</span></td></tr>
+
+          <tr class="spec-cat"><th colspan="2">Safety MCU</th></tr>
+          <tr><th>Processor</th><td>4&times; Cortex-R52<span class="note">6.5K DMIPS, lockstep</span></td></tr>
+          <tr><th>Internal memory</th><td>6 MB SRAM</td></tr>
+
+          <tr class="spec-cat"><th colspan="2">Memory / storage</th></tr>
+          <tr><th>RAM</th><td>12 GB LPDDR5</td></tr>
+          <tr><th>Onboard storage</th><td>64 GB eMMC</td></tr>
+
+          <tr class="spec-cat"><th colspan="2">Vision / perception</th></tr>
+          <tr><th>Camera support</th><td>Up to 12 GMSL cameras</td></tr>
+          <tr><th>Video codec</th><td>4K @ 90 fps (H.264 / H.265 / JPEG)</td></tr>
+          <tr><th>ISP</th><td>2&times; C78AE<span class="note">2.4 Gpix/s</span></td></tr>
+
+          <tr class="spec-cat"><th colspan="2">Connectivity</th></tr>
+          <tr><th>Networking</th><td>2&times; 1000BASE-T1 ethernet</td></tr>
+          <tr><th>Vehicle bus</th><td>7&times; CAN FD</td></tr>
+          <tr><th>Other I/O</th><td>LIN &middot; RS232 &middot; 4&times; DSI3 &middot; GPIO &middot; ADC &middot; PCIe U.2</td></tr>
+
+          <tr class="spec-cat"><th colspan="2">Environment</th></tr>
+          <tr><th>Cooling</th><td>Air or water cooling options</td></tr>
+          <tr><th>GNSS + IMU</th><td>Built-in (optional configuration)</td></tr>
+        </tbody>
+      </table>
+
+      <div class="diagram" onclick="openImg('../../../assets/10May26/tztek-j6m-block.png','TZTEK J6M &middot; system block diagram')">
+        <img src="../../../assets/10May26/tztek-j6m-block.png" alt="TZTEK J6M system block diagram — J6M SoC, J6M MCU, MAX9671x deserializers, GMSL camera array, GNSS+IMU, ethernet switch, CAN FD bus">
+        <div class="diagram-caption">
+          <span>TZTEK J6M &middot; system block diagram</span>
+          <span class="expand">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>
+            </svg>
+            Click to expand
+          </span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="footnote">
+    <strong>Source:</strong> vendor specification sheets shared by Khaled Syed Mohammad Ali Hossain (10 May 2026). Numbers are vendor-stated and have not been bench-verified on Mowasalat fleet workloads &mdash; treat the AI throughput and CAN-FD figures as headline claims to confirm during pilot procurement.
+  </div>
+
+  <!-- ============================================
+       Image lightbox
+       ============================================ -->
+  <div class="img-lightbox" id="imgLightbox" onclick="closeImg()">
+    <div class="img-lightbox-inner" onclick="event.stopPropagation()">
+      <button class="img-lightbox-close" onclick="closeImg()" aria-label="Close">&times;</button>
+      <img id="imgLightboxImg" src="" alt="">
+    </div>
+  </div>
+
+  <script>
+    function openImg(src, label) {
+      const lb  = document.getElementById('imgLightbox');
+      const img = document.getElementById('imgLightboxImg');
+      img.setAttribute('src', src);
+      img.setAttribute('alt', label || '');
+      lb.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeImg() {
+      const lb  = document.getElementById('imgLightbox');
+      const img = document.getElementById('imgLightboxImg');
+      lb.classList.remove('active');
+      img.setAttribute('src', '');
+      document.body.style.overflow = '';
+    }
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeImg();
+    });
+  </script>
+</body>
+</html>

@@ -1031,6 +1031,21 @@
     </div>
   </div>
 
+  <!-- Model Development Cycle Lightbox -->
+  <div class="lightbox" id="modelCycleLightbox" onclick="closeLightboxById('modelCycleLightbox')">
+    <div class="lightbox-inner" onclick="event.stopPropagation()">
+      <a class="lightbox-open" href="assets/model_development_cycle.svg" target="_blank" title="Open in new tab"><svg width="14"
+          height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+          <polyline points="15 3 21 3 21 9" />
+          <line x1="10" y1="14" x2="21" y2="3" />
+        </svg></a>
+      <button class="lightbox-close" onclick="closeLightboxById('modelCycleLightbox')">&times;</button>
+      <object data="assets/model_development_cycle.svg" type="image/svg+xml"
+        style="width:100%;min-width:1000px;aspect-ratio:1400/460;">Model Development Cycle</object>
+    </div>
+  </div>
+
   <script>
     // ===== RESOURCES REGISTRY =====
     const MATERIAL_TYPES = {
@@ -1080,17 +1095,54 @@
         type: 'diagram',
         action: 'lightbox',
       },
+      {
+        title: 'Model Development Cycle',
+        desc: 'Timeline from V1 (mid Apr) → V2 (May 5) → field test (May 7) → lessons → V3 (May 15) → weekly retrain + field-test loop → 97% target by Jun 30',
+        file: null,
+        type: 'roadmap',
+        action: 'lightbox',
+        lightboxId: 'modelCycleLightbox',
+      },
     ];
 
     // ===== PRESENTATION REGISTRY =====
     const PRESENTATIONS = [
+      {
+        id: 'edge_deployment_10may',
+        title: 'Edge Deployment + CAN-bus + Next Steps',
+        subtitle: 'Hikvision lift on the Jetson edge box (81.6% v2 best-of routing, +8.0 pts over OEM), CAN-bus telemetry results, and roll-out plan for current Howen + MHero / Qoho / dashcam assets.',
+        file: 'presentations/2026-05-10-edge-deployment/summary.html',
+        assetsDir: '10May26',
+        status: 'wip',
+        tags: [
+          { label: 'Edge', color: 'teal' },
+          { label: 'CAN-bus', color: 'blue' },
+          { label: 'Deployment', color: 'amber' },
+          { label: 'v2 Routing', color: 'purple' },
+        ],
+        stats: [
+          { value: '3', label: 'Slides' },
+          { value: '81.6%', label: 'v2 acc' },
+          { value: '+8.0', label: 'pts vs OEM' },
+          { value: '10 May', label: 'Target' },
+        ],
+        materials: [
+          {
+            title: 'Test Vehicle — Howen OBU + MHero',
+            pillLabel: 'Test Vehicle',
+            desc: 'Hardware spec, install photos, and live telemetry from the Howen OBU + MHero camera pair used for the 10 May pilot.',
+            file: 'presentations/2026-05-10-edge-deployment/details/test-vehicle.html',
+            type: 'report',
+          },
+        ],
+      },
       {
         id: 'passenger_counting_28apr',
         title: 'Passenger Counting + new use case + Model Lift',
         subtitle: 'Cabin ROI for occupancy counts, mirror-glance × CAN-bus blinker telemetry, and ensemble (n=5) vs Hikvision OEM lift across 5 use cases.',
         file: 'presentations/2026-04-28-passenger-counting/summary.html',
         assetsDir: '28April26',
-        status: 'wip',
+        status: 'past',
         tags: [
           { label: 'Passenger Counting', color: 'blue' },
           { label: 'Mirror Glance', color: 'purple' },
@@ -1284,8 +1336,26 @@
       document.getElementById('svgLightbox').classList.remove('active');
       document.body.style.overflow = '';
     }
+    // Generic open/close so additional lightboxes (e.g. modelCycleLightbox) can
+    // be added without a per-lightbox function pair. Pass the element id.
+    function openLightboxById(id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeLightboxById(id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.classList.remove('active');
+      document.body.style.overflow = '';
+    }
     document.addEventListener('keydown', e => {
-      if (e.key === 'Escape') { closeArchLightbox(); closeLightbox(); }
+      if (e.key !== 'Escape') return;
+      closeArchLightbox();
+      closeLightbox();
+      document.querySelectorAll('.lightbox.active').forEach(el => el.classList.remove('active'));
+      document.body.style.overflow = '';
     });
 
     // ===== RENDERING =====
@@ -1481,7 +1551,10 @@
         const badgeClass = `material-badge ${iconClass === 'report' ? '' : iconClass}`.trim();
         const badgeText = t.label;
         if (m.action === 'lightbox') {
-          return `<div class="card material" style="cursor:pointer" onclick="openLightbox()"><div class="card-strip"></div><div class="card-body"><div class="material-icon ${iconClass}">${icon}</div><div class="material-info"><div class="material-title">${m.title}</div><div class="material-desc">${m.desc}</div></div><span class="${badgeClass}">${badgeText}</span></div></div>`;
+          const openCall = m.lightboxId
+            ? `openLightboxById('${m.lightboxId}')`
+            : `openLightbox()`;
+          return `<div class="card material" style="cursor:pointer" onclick="${openCall}"><div class="card-strip"></div><div class="card-body"><div class="material-icon ${iconClass}">${icon}</div><div class="material-info"><div class="material-title">${m.title}</div><div class="material-desc">${m.desc}</div></div><span class="${badgeClass}">${badgeText}</span></div></div>`;
         }
         return `<a class="card material" href="${m.file}"><div class="card-strip"></div><div class="card-body"><div class="material-icon ${iconClass}">${icon}</div><div class="material-info"><div class="material-title">${m.title}</div><div class="material-desc">${m.desc}</div></div><span class="${badgeClass}">${badgeText}</span></div></a>`;
       }).join('');

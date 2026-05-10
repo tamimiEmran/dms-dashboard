@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+  Test vehicle examples gallery.
+
+  Source clips: ../../../assets/9May26/   (12 curated clips)
+  All source clips manifest: ../../../assets/9May26/source_manifest.json
+  Original folder: C:/Users/Admin/Downloads/9-May-Recording-Howen-Monitoring 1
+  Swap workflow: see ../EXAMPLES.md
+
+  TO SWAP A FEATURED CLIP:
+    1. Find the entry in the FEATURED array below by `kind` + current `file`.
+    2. Replace `file` with the new clip's filename.
+    3. Replace `when` with the new clip's ISO timestamp.
+    4. Copy the new clip into ../../../assets/9May26/ (rm the old one if no longer used).
+
+  TO ADD A USE CASE: add a SECTIONS entry + add FEATURED rows with the new `kind`.
+-->
+<head>
+  <meta charset="UTF-8">
+  <meta name="robots" content="noindex,nofollow">
+  <style id="dms-gate-hide">body{display:none!important}</style>
+  <script src="../../../password-gate.js"></script>
+  <meta name="viewport" content="width=1280">
+  <title>Test vehicle &middot; Howen OBU + MHero camera</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #F8F9FB;
+      --bg-card: #FFFFFF;
+      --bg-elevated: #F0F1F4;
+      --border: #E0E2E8;
+      --text: #1A1D26;
+      --text-dim: #5A5E6E;
+      --text-muted: #8E92A0;
+      --accent: #0E9A7E;
+      --accent-2: #3B6FD6;
+      --accent-3: #C88A1A;
+      --purple: #8B5CC4;
+      --teal: #0E8A9A;
+      --font: 'DM Sans', system-ui, sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+      --radius: 10px;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      line-height: 1.5;
+      padding: 32px 36px 48px;
+      min-height: 100vh;
+    }
+    .pill {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(14, 154, 126, 0.10);
+      color: var(--accent);
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    h1 {
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: 4px;
+    }
+    .sub {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+      margin-bottom: 20px;
+    }
+    .meta-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .meta {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+    }
+    .meta-label {
+      font-family: var(--mono);
+      font-size: 9.5px;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+    .meta-value {
+      font-family: var(--mono);
+      font-size: 18px;
+      color: var(--text);
+      font-weight: 600;
+      line-height: 1.1;
+    }
+    .meta-value .unit {
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+      margin-left: 4px;
+    }
+    .meta-value.tbd { color: var(--text-muted); font-style: italic; font-size: 14px; }
+
+    .gallery-intro {
+      font-size: 13px;
+      color: var(--text-dim);
+      max-width: 880px;
+      margin-bottom: 20px;
+    }
+    .gallery-intro strong { color: var(--text); font-weight: 600; }
+
+    /* === SECTION === */
+    .gallery-section {
+      margin-bottom: 22px;
+    }
+    .section-head {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 10px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border);
+    }
+    .section-pill {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      padding: 3px 9px;
+      border-radius: 4px;
+      font-weight: 700;
+    }
+    .section-title {
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+    .section-count {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      color: var(--text-muted);
+      letter-spacing: 0.02em;
+      margin-left: auto;
+    }
+    .section-count .num { color: var(--text); font-weight: 600; }
+
+    /* Section accent variants */
+    .section--amber  .section-pill { background: rgba(200, 138, 26, 0.10); color: var(--accent-3); }
+    .section--green  .section-pill { background: rgba(14, 154, 126, 0.10); color: var(--accent); }
+    .section--blue   .section-pill { background: rgba(59, 111, 214, 0.10); color: var(--accent-2); }
+    .section--purple .section-pill { background: rgba(139, 92, 196, 0.10); color: var(--purple); }
+    .section--teal   .section-pill { background: rgba(14, 138, 154, 0.10); color: var(--teal); }
+    .section--muted  .section-pill { background: var(--bg-elevated); color: var(--text-muted); }
+
+    /* === TILE GRID === */
+    .tile-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+    @media (max-width: 900px) {
+      .tile-grid { grid-template-columns: 1fr; }
+      .meta-row { grid-template-columns: repeat(2, 1fr); }
+    }
+    .tile {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .tile video {
+      width: 100%;
+      display: block;
+      aspect-ratio: 16 / 9;
+      background: #0B0D12;
+      object-fit: contain;
+    }
+    .tile-body {
+      padding: 10px 12px 12px;
+    }
+    .tile-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .tile-label {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .tile-time {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 0.02em;
+    }
+    .tile-file {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 4px;
+      letter-spacing: 0.02em;
+      word-break: break-all;
+      opacity: 0.7;
+    }
+  </style>
+</head>
+<body>
+  <span class="pill">Test vehicle</span>
+  <h1>Howen OBU + MHero camera</h1>
+  <div class="sub">howen.obu &middot; mhero.cam &middot; recorded 2026-05-07</div>
+
+  <div class="meta-row">
+    <div class="meta">
+      <div class="meta-label">Recording date</div>
+      <div class="meta-value">2026-05-07</div>
+    </div>
+    <div class="meta">
+      <div class="meta-label">Alerts captured</div>
+      <div class="meta-value">386</div>
+    </div>
+    <div class="meta">
+      <div class="meta-label">Distinct alert types</div>
+      <div class="meta-value">5</div>
+    </div>
+    <div class="meta">
+      <div class="meta-label">Top alert</div>
+      <div class="meta-value">drowsiness<span class="unit">168 events</span></div>
+    </div>
+  </div>
+
+  <div class="gallery-intro">
+    <p><strong>12 clips</strong> across <strong>6 categories</strong> &mdash; two examples per alert type plus normal-driving baselines. Sections ordered by alert frequency in the recording. Source: 2026-05-07 Howen Monitoring recording, 386 alerts captured.</p>
+  </div>
+
+  <div id="gallery"></div>
+
+  <script>
+  // ============================================================
+  // FEATURED clips. Single source of truth for the gallery.
+  // To swap: replace `file` + `when` for the row you want to update.
+  // To remove: delete the row. To add: insert a row + copy the file
+  // into ../../../assets/9May26/ + ensure SECTIONS has a matching `kind`.
+  // ============================================================
+  // `when` is time-of-day only (HH:MM:SS). Recording date (2026-05-07) is in
+  // the page header; filename date prefixes come from the device clock and are
+  // not authoritative — see EXAMPLES.md.
+  const FEATURED = [
+    // ---- distracted / look_forward (162 in source) ----
+    { kind: 'distracted', file: 'alert_20260507_174850_look_forward.mp4',         when: '17:48:50', label: 'Look forward' },
+    { kind: 'distracted', file: 'alert_20260510_104112_look_forward.mp4',         when: '10:41:12', label: 'Look forward' },
+    // ---- drowsiness (168 in source) ----
+    { kind: 'drowsiness', file: 'alert_20260509_172054_drowsiness_detected.mp4',  when: '17:20:54', label: 'Drowsiness detected' },
+    { kind: 'drowsiness', file: 'alert_20260507_171006_drowsiness_detected.mp4',  when: '17:10:06', label: 'Drowsiness detected' },
+    // ---- phone (39 in source) ----
+    { kind: 'phone',      file: 'alert_20260507_174031_put_down_your_phone.mp4',  when: '17:40:31', label: 'Put down your phone' },
+    { kind: 'phone',      file: 'alert_20260509_154104_put_down_your_phone.mp4',  when: '15:41:04', label: 'Put down your phone' },
+    // ---- seatbelt (10 in source) ----
+    { kind: 'seatbelt',   file: 'alert_20260509_153907_fasten_your_seatbelt.mp4', when: '15:39:07', label: 'Fasten your seatbelt' },
+    { kind: 'seatbelt',   file: 'alert_20260510_104034_fasten_your_seatbelt.mp4', when: '10:40:34', label: 'Fasten your seatbelt' },
+    // ---- yawn (7 in source) ----
+    { kind: 'yawn',       file: 'alert_20260507_171042_yawn_detected.mp4',        when: '17:10:42', label: 'Yawn detected' },
+    { kind: 'yawn',       file: 'alert_20260509_171038_yawn_detected.mp4',        when: '17:10:38', label: 'Yawn detected' },
+    // ---- normal driving baseline (123 in source) ----
+    { kind: 'normal',     file: 'general_20260507_173416.mp4',                    when: '17:34:16', label: 'Normal driving' },
+    { kind: 'normal',     file: 'general_20260509_151530.mp4',                    when: '15:15:30', label: 'Normal driving' },
+  ];
+
+  // SECTION metadata. Order here drives gallery order.
+  // sourceCount = total clips of this kind in the source recording (informational).
+  const SECTIONS = [
+    { kind: 'drowsiness', title: 'Drowsiness',          short: 'Fatigue',     accent: 'amber',  sourceCount: 168 },
+    { kind: 'distracted', title: 'Distracted (look forward)', short: 'Distracted', accent: 'green',  sourceCount: 162 },
+    { kind: 'phone',      title: 'Phone usage',         short: 'Phone',       accent: 'blue',   sourceCount:  39 },
+    { kind: 'seatbelt',   title: 'Seatbelt',            short: 'Seatbelt',    accent: 'purple', sourceCount:  10 },
+    { kind: 'yawn',       title: 'Yawn',                short: 'Yawn',        accent: 'teal',   sourceCount:   7 },
+    { kind: 'normal',     title: 'Normal driving',      short: 'Baseline',    accent: 'muted',  sourceCount: 123 },
+  ];
+
+  const ASSETS_BASE = '../../../assets/9May26/';
+
+  (function render() {
+    const root = document.getElementById('gallery');
+    if (!root) return;
+    SECTIONS.forEach(function(section) {
+      const items = FEATURED.filter(function(x) { return x.kind === section.kind; });
+      if (!items.length) return;
+
+      const sec = document.createElement('section');
+      sec.className = 'gallery-section section--' + section.accent;
+
+      const head = document.createElement('div');
+      head.className = 'section-head';
+      const pill = document.createElement('span');
+      pill.className = 'section-pill';
+      pill.textContent = section.short;
+      const title = document.createElement('span');
+      title.className = 'section-title';
+      title.textContent = section.title;
+      const count = document.createElement('span');
+      count.className = 'section-count';
+      count.textContent = items.length + ' featured of ' + section.sourceCount + ' in recording';
+      head.appendChild(pill);
+      head.appendChild(title);
+      head.appendChild(count);
+      sec.appendChild(head);
+
+      const grid = document.createElement('div');
+      grid.className = 'tile-grid';
+      items.forEach(function(item) {
+        const tile = document.createElement('div');
+        tile.className = 'tile';
+
+        const video = document.createElement('video');
+        video.setAttribute('src', ASSETS_BASE + item.file);
+        video.setAttribute('controls', '');
+        video.setAttribute('playsinline', '');
+        video.setAttribute('muted', '');
+        video.setAttribute('preload', 'metadata');
+        tile.appendChild(video);
+
+        const body = document.createElement('div');
+        body.className = 'tile-body';
+        const row = document.createElement('div');
+        row.className = 'tile-row';
+        const lbl = document.createElement('span');
+        lbl.className = 'tile-label';
+        lbl.textContent = item.label;
+        const tm = document.createElement('span');
+        tm.className = 'tile-time';
+        tm.textContent = item.when;
+        row.appendChild(lbl);
+        row.appendChild(tm);
+        body.appendChild(row);
+        const fileEl = document.createElement('div');
+        fileEl.className = 'tile-file';
+        fileEl.textContent = item.file;
+        body.appendChild(fileEl);
+        tile.appendChild(body);
+
+        grid.appendChild(tile);
+      });
+      sec.appendChild(grid);
+      root.appendChild(sec);
+    });
+  })();
+  </script>
+</body>
+</html>
