@@ -1102,7 +1102,7 @@
             <polyline points="12 5 19 12 12 19"></polyline>
           </svg>
         </button>
-        <div class="pr-status">Draft &middot; &lt;TBD&gt;</div>
+        <div class="pr-status">Draft &middot; 2026-05-10</div>
       </div>
     </div>
 
@@ -1110,49 +1110,53 @@
       <tbody>
         <tr>
           <th>SoC</th>
-          <td class="tbd">&lt;TBD&gt;<span class="note">target NPU-capable SoC</span></td>
+          <td>Horizon J6M + AX630C<span class="note">main SoC (TZTEK J6M) &middot; edge-camera SoC (Sipeed MaixCam-2)</span></td>
         </tr>
         <tr>
           <th>RAM</th>
-          <td class="tbd">&lt;TBD&gt;<span class="note">GB</span></td>
+          <td>12 GB LPDDR5<span class="note">3 &times; 4 GB on S100 &middot; + 1&ndash;4 GB LPDDR4 on camera</span></td>
         </tr>
         <tr>
           <th>NPU TOPs</th>
-          <td class="tbd">&lt;TBD&gt;<span class="note">int8</span></td>
+          <td>128 + 3.2<span class="note">DL TOPS (J6M, BPU) &middot; INT8 TOPS (AX630C edge)</span></td>
         </tr>
         <tr>
           <th>Power</th>
-          <td class="tbd">&lt;TBD&gt;<span class="note">W &middot; in-cabin draw</span></td>
+          <td class="tbd">Pending RFQ<span class="note">automotive-grade thermal envelope &middot; vendor TDP awaiting</span></td>
         </tr>
         <tr>
           <th>I/O</th>
-          <td class="tbd">&lt;TBD&gt;<span class="note">CAN, GPIO, USB, ethernet</span></td>
+          <td>10&times; CAN FD &middot; 6&times; I&sup2;C &middot; 4&times; UART &middot; USB &middot; LIN<span class="note">NavInfo S100 controller &middot; PMOD on camera (20 IO)</span></td>
         </tr>
         <tr>
           <th>Cameras</th>
-          <td class="tbd">&lt;TBD&gt;<span class="note">count &middot; resolution &middot; FOV</span></td>
+          <td>8-ch GMSL (up to 12) + 4K MaixCam<span class="note">FAKRA in / MIPI-CSI &middot; on-board YOLO11n at 113 FPS</span></td>
         </tr>
         <tr>
           <th>Storage</th>
-          <td class="tbd">&lt;TBD&gt;<span class="note">GB &middot; eMMC / SSD</span></td>
+          <td>64 GB eMMC 5.1<span class="note">+ 32 GB eMMC on camera &middot; microSD slot</span></td>
         </tr>
         <tr>
           <th>Connectivity</th>
-          <td class="tbd">&lt;TBD&gt;<span class="note">4G / 5G / Wi-Fi</span></td>
+          <td>2&times; 1000BASE-T1 + Wi-Fi 6 / BLE 5.4<span class="note">ethernet (S100) &middot; wireless (camera)</span></td>
+        </tr>
+        <tr>
+          <th>Safety / temp</th>
+          <td>ASIL-B (SoC) &middot; ASIL-D (R52 lockstep) &middot; &minus;40 to 85 &deg;C<span class="note">automotive grade</span></td>
         </tr>
         <tr>
           <th>Unit cost</th>
-          <td class="tbd">&lt;TBD&gt;<span class="note">USD &middot; at quantity &lt;TBD&gt;</span></td>
+          <td class="tbd">Pending RFQ<span class="note">USD &middot; at pilot quantity</span></td>
         </tr>
         <tr>
           <th>Lead time</th>
-          <td class="tbd">&lt;TBD&gt;<span class="note">weeks</span></td>
+          <td class="tbd">Pending RFQ<span class="note">weeks &middot; vendor TBC during procurement</span></td>
         </tr>
       </tbody>
     </table>
 
     <div class="action-bar amber">
-      <div class="action-text"><strong>Why an extended device:</strong> &lt;TBD&gt; — fill in justification (e.g. headroom for additional use cases, multi-camera support, or higher resolution than the current Qoho / MHero pairing allows).</div>
+      <div class="action-text"><strong>Why an extended device:</strong> v2 routing reaches <span class="num">81.6%</span> theoretical accuracy, but the same pipeline on the Howen OBU + MHero test vehicle delivered <span class="num">68%</span> on real captures &mdash; a <span class="num">~14 pt</span> gap. The proposed stack adds <span class="num">128</span> DL TOPS of headroom, <span class="num">8</span>-ch GMSL camera input, <span class="num">10&times;</span> CAN-FD, and ASIL-B/D safety &mdash; enough to run heavier multi-task models with multi-camera coverage that closes the theoretical-vs-real gap. Vendor figures from the proposed stack page; bench verification on Mowasalat fleet workloads is the next step.</div>
     </div>
   </div>
 </section>
