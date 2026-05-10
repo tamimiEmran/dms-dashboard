@@ -206,6 +206,12 @@
     .kpi--v2 .kpi-value { color: var(--accent-3); }
     .kpi--accent .kpi-label { color: var(--accent); }
     .kpi--accent .kpi-value { color: var(--accent); }
+    .kpi--deploy {
+      border: 1.5px solid var(--purple);
+      background: var(--purple-dim);
+    }
+    .kpi--deploy .kpi-label { color: var(--purple); }
+    .kpi--deploy .kpi-value { color: var(--purple); }
     .kpi-label {
       font-size: 10px;
       letter-spacing: 0.10em;
@@ -897,100 +903,63 @@
 </nav>
 
 <!-- ============================================
-     SLIDE 1 / EDGE LIFT + DEPLOYMENT
+     SLIDE 1 / EDGE LIFT — DEPLOYED (in-vehicle, v1-theoretical vs v1-deployment)
      ============================================ -->
 <section class="slide" id="overview">
   <div class="slide-stamp">
-    <span>edge deployment / overview / 2026-05</span>
+    <span>edge deployment / in-vehicle / 2026-05</span>
     <span class="stamp-sep"></span>
     <span class="stamp-idx">01 / 03</span>
   </div>
 
-  <span class="tag tag--accent">Edge Deployment</span>
-  <h2>Hikvision lift, optimized for the edge</h2>
-  <h3>v2 routing reaches <span class="num">81.6%</span> mean accuracy across <span class="num">5</span> use cases against the Hikvision OEM baseline. Pipeline packaged for in-vehicle inference on the Howen OBU + MHero camera test vehicle.</h3>
+  <span class="tag tag--blue">In-vehicle</span>
+  <h2>v1 &mdash; theoretical vs in-vehicle deployment</h2>
+  <h3>Lab routing (v1-theoretical) reaches <span class="num">81.6%</span> mean accuracy across <span class="num">4</span> cells. The test pilot measured <span class="num">3</span> of 5 use cases in-vehicle &mdash; distracted <span class="num">54%</span>, phone <span class="num">81%</span>, seatbelt <span class="num">70%</span> &mdash; averaging <span class="num">68.3%</span> across the measured set.</h3>
 
   <div class="kpi-row">
-    <div class="kpi kpi--accent">
-      <div class="kpi-label">Ensemble (n=5)</div>
-      <div class="kpi-value">71.3%<span class="kpi-delta kpi-delta--neg">&minus;2.3 pts</span></div>
-      <div class="kpi-sub">mean accuracy &middot; 5 use cases</div>
-    </div>
     <div class="kpi">
       <div class="kpi-label">Hikvision OEM</div>
       <div class="kpi-value">73.6%</div>
       <div class="kpi-sub">mean accuracy &middot; 5 use cases</div>
     </div>
     <div class="kpi kpi--v2">
-      <div class="kpi-label">v2 (best-of routing)</div>
+      <div class="kpi-label">v1-theoretical</div>
       <div class="kpi-value">81.6%<span class="kpi-delta kpi-delta--pos">+8.0 pts</span></div>
-      <div class="kpi-sub">vs OEM &middot; v2 used where it improved (4 of 5 cells)</div>
+      <div class="kpi-sub">lab routing &middot; 4 of 5 cells improved over OEM</div>
+    </div>
+    <div class="kpi kpi--deploy">
+      <div class="kpi-label">v1-deployment</div>
+      <div class="kpi-value">68.3%<span class="kpi-delta kpi-delta--neg">&minus;8.1 pts</span></div>
+      <div class="kpi-sub">in-vehicle &middot; 3 of 5 cells measured &middot; vs OEM at same cells</div>
     </div>
   </div>
 
   <div class="lift-grid">
     <div class="card">
-      <div class="eyebrow">Per-use-case slopegraph</div>
-      <div class="design-title">Ensemble (n=5) vs. Hikvision OEM &middot; v2 where it improves</div>
-      <p class="intent">Sign-aware delta bars at every use case. Use cases ordered left-to-right by lift achieved (least-improved &rarr; most-improved). Routed model shown below the tick.</p>
-      <div id="slopegraph-chart" class="chart"></div>
+      <div class="eyebrow">Per-use-case slopegraph &middot; deployment</div>
+      <div class="design-title">v1-theoretical (lab) vs. v1-deployment (in-vehicle) &middot; OEM baseline</div>
+      <p class="intent">Amber diamonds: v1-theoretical lab routing (4 cells). Purple circles: v1-deployment in-vehicle (3 measured cells, no connecting line). Vertical bar = deployment &minus; OEM at each measured tick (green: ahead, red: behind).</p>
+      <div id="slopegraph-chart-deployed" class="chart"></div>
     </div>
 
     <div class="sidebar">
       <div class="card">
-        <div class="eyebrow">Use cases detected</div>
-        <h4 style="margin-bottom: 8px">Six DMS classes</h4>
+        <div class="eyebrow">Deployment coverage</div>
+        <h4 style="margin-bottom: 8px">3 of 5 measured</h4>
         <ul class="use-list">
-          <li><span class="use-dot"></span>distracted</li>
-          <li><span class="use-dot"></span>eating</li>
-          <li><span class="use-dot"></span>fatigue</li>
-          <li><span class="use-dot"></span>phone</li>
-          <li><span class="use-dot"></span>seatbelt</li>
-          <li data-state="off"><span class="use-dot"></span>smoking</li>
+          <li><span class="use-dot"></span>distracted &middot; <span class="num">54%</span></li>
+          <li data-state="off"><span class="use-dot"></span>eating &middot; <span style="font-family:var(--mono);font-size:11px;color:var(--text-muted)">pending</span></li>
+          <li data-state="off"><span class="use-dot"></span>fatigue &middot; <span style="font-family:var(--mono);font-size:11px;color:var(--text-muted)">pending</span></li>
+          <li><span class="use-dot"></span>phone &middot; <span class="num">81%</span></li>
+          <li><span class="use-dot"></span>seatbelt &middot; <span class="num">70%</span></li>
         </ul>
-        <p style="font-size: 11px; color: var(--text-muted); margin-top: 8px; font-family: var(--mono); letter-spacing: 0.02em">5 of 6 scored on Hikvision Alerts. Smoking pending dataset.</p>
+        <p style="font-size: 11px; color: var(--text-muted); margin-top: 8px; font-family: var(--mono); letter-spacing: 0.02em">Eating &amp; fatigue not yet measured in-vehicle.</p>
       </div>
 
       <div class="edge-box">
-        <div class="edge-eyebrow">Packaging</div>
-        <div class="edge-title">Optimized for deployment on the edge</div>
-        <div class="edge-sub">Routed pipeline runs on the Howen OBU without cloud round-trip.</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="deploy-header">
-    <h4>In-vehicle deployment</h4>
-    <span class="deploy-sub">Test vehicle &middot; <span class="num">386</span> alerts captured &middot; <span class="num">5</span> alert types &middot; <span class="num">2026-05-07</span></span>
-  </div>
-
-  <div class="deploy-grid deploy-grid--single">
-    <div class="deploy-card deploy-card--wide green" role="button" tabindex="0"
-         data-href="details/test-vehicle.html"
-         data-label="Test vehicle &middot; Howen OBU + MHero camera">
-      <div class="deploy-arrow" aria-hidden="true">&rarr;</div>
-      <div class="deploy-wide-grid">
-        <div>
-          <div class="deploy-step">Test vehicle</div>
-          <div class="deploy-name">Howen OBU + MHero camera</div>
-          <div class="deploy-hw">howen.obu &middot; mhero.cam &middot; 2026-05-07</div>
-        </div>
-
-        <div class="deploy-wide-metric">
-          <span class="metric-value">386</span>
-          <span class="metric-unit">alerts captured</span>
-        </div>
-
-        <div class="deploy-wide-uses">
-          <div class="label">Use cases triggered</div>
-          <div class="chip-row">
-            <span class="chip">distracted <span class="num">162</span></span>
-            <span class="chip">drowsiness <span class="num">168</span></span>
-            <span class="chip">yawn <span class="num">7</span></span>
-            <span class="chip">phone <span class="num">39</span></span>
-            <span class="chip">seatbelt <span class="num">10</span></span>
-          </div>
-        </div>
+        <div class="edge-eyebrow">Lab vs vehicle gap</div>
+        <div class="edge-title">Phone holds the gain; distracted &amp; seatbelt regress</div>
+        <div class="edge-sub">Phone +5.8 pts vs OEM. Distracted &minus;14.3 pts and seatbelt &minus;15.8 pts vs OEM at the same cells &mdash; the regressions to triage first.</div>
       </div>
     </div>
   </div>
@@ -1297,6 +1266,13 @@
     fatigue:            0.808,
     phone_usage:        0.916,
   };
+  // v1 in-vehicle deployment numbers (test pilot, 2026-05-07).
+  // Three of five use cases measured. Eating & fatigue not yet captured in deployment.
+  const V1_DEPLOYMENT = {
+    distracted_driving: 0.54,
+    phone_usage:        0.81,
+    seatbelt:           0.70,
+  };
   const ORDER = ['phone_usage', 'eating_drinking', 'distracted_driving', 'fatigue', 'seatbelt'];
   const LABELS = {
     phone_usage:        'Phone usage',
@@ -1320,6 +1296,7 @@
 
   function buildSlopegraph() {
     if (typeof Plotly === 'undefined') return;
+    if (!document.getElementById('slopegraph-chart')) return;
     const ensembleY = ORDER.map(c => PERCLASS[5][c] * 100);
     const oemY      = ORDER.map(c => OEM[c] * 100);
     const deltaShapes = ORDER.map((c, i) => {
@@ -1406,10 +1383,115 @@
     Plotly.newPlot('slopegraph-chart', traces, layout, COMMON_CONFIG);
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', buildSlopegraph);
-  } else {
+  // ============================================
+  // === Slopegraph: deployed (slide 2) — OEM + v1-theoretical line + v1-deployment scatter ===
+  // ============================================
+  function buildSlopegraphDeployed() {
+    if (typeof Plotly === 'undefined') return;
+    const target = document.getElementById('slopegraph-chart-deployed');
+    if (!target) return;
+
+    const oemY    = ORDER.map(c => OEM[c] * 100);
+    const theoY   = ORDER.map(c => (c in OURS_V2        ? OURS_V2[c]        * 100 : null));
+    const deployY = ORDER.map(c => (c in V1_DEPLOYMENT  ? V1_DEPLOYMENT[c]  * 100 : null));
+
+    // Vertical bars: deployment − OEM at each measured tick (green ahead, red behind).
+    const deltaShapes = ORDER.map((c, i) => {
+      if (!(c in V1_DEPLOYMENT)) return null;
+      const dep = V1_DEPLOYMENT[c] * 100;
+      const oem = OEM[c] * 100;
+      const positive = dep >= oem;
+      return {
+        type: 'line', xref: 'x', yref: 'y',
+        x0: i, x1: i, y0: oem, y1: dep,
+        line: { color: positive ? '#1FA974' : '#D85D5D', width: 5 },
+        layer: 'below',
+      };
+    }).filter(Boolean);
+
+    const routingAnnotations = ORDER.map((c, i) => ({
+      x: i, y: 0, xref: 'x', yref: 'paper',
+      xanchor: 'center', yanchor: 'top',
+      text: '<span style="font-family:JetBrains Mono,monospace;font-size:10px;color:#8E92A0">' + FINAL_ROUTING[c] + '</span>',
+      showarrow: false, yshift: -34,
+    }));
+
+    const traces = [
+      {
+        name: 'Hikvision OEM', type: 'scatter', mode: 'lines+markers',
+        x: X_LABELS, y: oemY,
+        line: { color: '#0E9A7E', width: 2 },
+        marker: { color: '#0E9A7E', size: 14, line: { color: '#FFFFFF', width: 2 } },
+        hovertemplate: '<b>%{x}</b><br>OEM: %{y:.1f}%<extra></extra>',
+      },
+      {
+        name: 'v1-theoretical', type: 'scatter', mode: 'lines+markers',
+        x: X_LABELS, y: theoY, connectgaps: false,
+        line: { color: '#C88A1A', width: 2, dash: 'dot' },
+        marker: { color: '#C88A1A', size: 17, symbol: 'diamond', line: { color: '#FFFFFF', width: 2 } },
+        hovertemplate: '<b>%{x}</b><br>v1-theoretical: %{y:.1f}%<extra></extra>',
+      },
+      {
+        // mode: 'markers' (no 'lines') — three scatter points only, no connecting line.
+        name: 'v1-deployment', type: 'scatter', mode: 'markers',
+        x: X_LABELS, y: deployY, connectgaps: false,
+        marker: { color: '#8B5CC4', size: 17, symbol: 'circle', line: { color: '#FFFFFF', width: 2 } },
+        hovertemplate: '<b>%{x}</b><br>v1-deployment: %{y:.1f}%<extra></extra>',
+      },
+    ];
+
+    const layout = {
+      paper_bgcolor: 'rgba(0,0,0,0)',
+      plot_bgcolor: 'rgba(240,241,244,0.4)',
+      margin: { l: 64, r: 28, t: 28, b: 96 },
+      font: COMMON_FONT,
+      hoverlabel: COMMON_HOVER,
+      height: 420,
+      legend: {
+        orientation: 'h',
+        x: 0, y: 1.12,
+        xanchor: 'left', yanchor: 'bottom',
+        bgcolor: 'rgba(0,0,0,0)',
+      },
+      xaxis: {
+        type: 'category', categoryorder: 'array', categoryarray: X_LABELS,
+        tickfont: { size: 12, color: '#1A1D26' },
+        gridcolor: '#E0E2E8', zerolinecolor: '#E0E2E8',
+      },
+      yaxis: {
+        title: { text: 'Accuracy (%)', font: { size: 12 } },
+        range: [0, 100], ticksuffix: '%',
+        gridcolor: '#E0E2E8', zerolinecolor: '#E0E2E8',
+      },
+      shapes: deltaShapes,
+      annotations: [
+        ...routingAnnotations,
+        {
+          x: 0, y: 1, xref: 'paper', yref: 'paper',
+          xanchor: 'left', yanchor: 'top',
+          text: '<span style="font-size:10px;color:#8E92A0">Vertical bar = v1-deployment &minus; OEM at each measured tick (green: ahead, red: behind) &middot; amber diamonds: v1-theoretical (lab routing) &middot; purple circles: v1-deployment (in-vehicle, no connecting line)</span>',
+          showarrow: false, yshift: 28,
+        },
+        {
+          x: 0, y: 0, xref: 'paper', yref: 'paper',
+          xanchor: 'left', yanchor: 'top',
+          text: '<span style="font-family:JetBrains Mono,monospace;font-size:9.5px;letter-spacing:0.05em;text-transform:uppercase;color:#8E92A0">Routed model</span>',
+          showarrow: false, yshift: -18,
+        },
+      ],
+    };
+    Plotly.newPlot('slopegraph-chart-deployed', traces, layout, COMMON_CONFIG);
+  }
+
+  function buildAll() {
     buildSlopegraph();
+    buildSlopegraphDeployed();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', buildAll);
+  } else {
+    buildAll();
   }
 })();
 
