@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="robots" content="noindex,nofollow">
+  <style id="dms-gate-hide">body{display:none!important}</style>
+  <script src="../password-gate.js"></script>
+  <meta name="viewport" content="width=1280">
+  <title>Hikvision v2 Edge Compact Slopegraph</title>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #F8F9FB;
+      --bg-card: #FFFFFF;
+      --bg-elevated: #F0F1F4;
+      --border: #E0E2E8;
+      --text: #1A1D26;
+      --text-dim: #5A5E6E;
+      --text-muted: #8E92A0;
+      --green: #0E9A7E;
+      --green-dim: rgba(14, 154, 126, 0.08);
+      --blue: #3B6FD6;
+      --amber: #C88A1A;
+      --amber-dim: rgba(200, 138, 26, 0.08);
+      --red: #D85D5D;
+      --red-dim: rgba(216, 93, 93, 0.08);
+      --font: 'DM Sans', system-ui, sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+      --radius: 10px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      padding: 46px 56px 54px;
+    }
+
+    h1 {
+      font-size: 34px;
+      font-weight: 700;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      margin-bottom: 10px;
+    }
+
+    .framing {
+      color: var(--text-dim);
+      font-size: 14px;
+      max-width: 960px;
+      margin-bottom: 28px;
+    }
+
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .kpi,
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+
+    .kpi {
+      padding: 21px 20px 18px;
+    }
+
+    .kpi--v2 {
+      border: 1.5px solid var(--blue);
+      background: rgba(59, 111, 214, 0.07);
+    }
+
+    .kpi--compact {
+      border: 1.5px solid var(--green);
+      background: var(--green-dim);
+    }
+
+    .kpi--oem {
+      border: 1.5px solid var(--amber);
+      background: var(--amber-dim);
+    }
+
+    .kpi-label {
+      color: var(--text-muted);
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.10em;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+
+    .kpi-value {
+      font-family: var(--mono);
+      font-size: 39px;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      line-height: 1;
+    }
+
+    .kpi--v2 .kpi-value { color: var(--blue); }
+    .kpi--compact .kpi-value { color: var(--green); }
+    .kpi--oem .kpi-value { color: var(--amber); }
+
+    .kpi-delta {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 500;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+
+    .kpi-delta--neg { color: var(--red); }
+    .kpi-delta--pos { color: var(--green); }
+
+    .kpi-sub {
+      color: var(--text-dim);
+      font-size: 11px;
+      margin-top: 9px;
+    }
+
+    .metric-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .metric {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 15px;
+    }
+
+    .metric b {
+      display: block;
+      font-family: var(--mono);
+      font-size: 19px;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+      margin-bottom: 4px;
+    }
+
+    .metric span {
+      color: var(--text-muted);
+      display: block;
+      font-size: 11px;
+    }
+
+    .card {
+      padding: 22px 24px 18px;
+      margin-bottom: 18px;
+    }
+
+    .eyebrow {
+      color: var(--text-muted);
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.10em;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    .design-title {
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      margin-bottom: 6px;
+    }
+
+    .intent {
+      color: var(--text-dim);
+      font-size: 13px;
+      max-width: 920px;
+      margin-bottom: 12px;
+    }
+
+    .chart { width: 100%; min-height: 456px; }
+
+    .notes {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .note {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 15px 16px;
+    }
+
+    .note strong {
+      display: block;
+      font-size: 13.5px;
+      margin-bottom: 5px;
+    }
+
+    .note p {
+      color: var(--text-dim);
+      font-size: 12.5px;
+      line-height: 1.55;
+    }
+
+    code {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 1px 4px;
+    }
+
+    .footer {
+      color: var(--text-muted);
+      font-family: var(--mono);
+      font-size: 10px;
+      margin-top: 18px;
+    }
+
+    @media (max-width: 980px) {
+      body { padding: 28px; }
+      .kpi-row,
+      .metric-strip,
+      .notes { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Hikvision v2: accuracy held against edge size</h1>
+  <p class="framing">
+    Strict v2_pp scoring on 619 Hikvision-reviewed frames. All headline and chart values use balanced accuracy on the same five one-vs-rest classes. The compact row keeps the v2 preprocessing and fusion rules, but replaces both heavy generic detectors with one <code>yolov10s_coco</code> detector. This is a weights-only size estimate; runtime libraries are not counted.
+  </p>
+
+  <div class="kpi-row">
+    <div class="kpi kpi--v2">
+      <div class="kpi-label">Current v2 pipeline</div>
+      <div class="kpi-value">75.0%<span class="kpi-delta kpi-delta--pos">+0.6 pts</span></div>
+      <div class="kpi-sub">mean balanced accuracy vs OEM &middot; 268 MB &middot; 14.6 TOPS @ 30 FPS</div>
+    </div>
+    <div class="kpi kpi--compact">
+      <div class="kpi-label">Compact v2 candidate</div>
+      <div class="kpi-value">71.1%<span class="kpi-delta kpi-delta--neg">&minus;3.9 pts</span></div>
+      <div class="kpi-sub">drop vs current v2 &middot; MediaPipe + yolo_soham + yolov10s_coco &middot; 23 MB &middot; 0.85 TOPS @ 30 FPS</div>
+    </div>
+    <div class="kpi kpi--oem">
+      <div class="kpi-label">Hikvision OEM reference</div>
+      <div class="kpi-value">74.4%</div>
+      <div class="kpi-sub">strict one-vs-rest mean balanced accuracy across the same five classes</div>
+    </div>
+  </div>
+
+  <div class="metric-strip">
+    <div class="metric">
+      <b>&minus;91.4%</b>
+      <span>estimated model-weight size vs current v2</span>
+    </div>
+    <div class="metric">
+      <b>&minus;94.2%</b>
+      <span>estimated per-frame compute vs current v2</span>
+    </div>
+    <div class="metric">
+      <b>&le;25 MB</b>
+      <span>target met on weights-only estimate</span>
+    </div>
+    <div class="metric">
+      <b>&le;3.2 TOPS</b>
+      <span>target met at 30 FPS before quantization</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="eyebrow">Per-use-case slopegraph</div>
+    <div class="design-title">Current v2 vs compact v2 vs Hikvision OEM</div>
+    <p class="intent">
+      The compact pipeline mostly preserves the non-object branches. The visible drop is phone usage, where replacing <code>rtdetr_x_coco</code> with <code>yolov10s_coco</code> cuts recall.
+    </p>
+    <div id="slopegraph-chart" class="chart"></div>
+  </div>
+
+  <div class="card">
+    <div class="eyebrow">Interpretation</div>
+    <div class="notes">
+      <div class="note">
+        <strong>Best under-25 MB candidate</strong>
+        <p><code>mediapipe + yolo_soham + yolov10s_coco</code> is the clean size-target candidate: 23 MB, 28.2 GFLOPs/frame, and 71.1% mean balanced accuracy.</p>
+      </div>
+      <div class="note">
+        <strong>Where the accuracy goes</strong>
+        <p>Distracted, eating, fatigue, and seatbelt remain unchanged versus v2 in this substitution. Phone usage drops from 83.3% to 63.6% balanced accuracy.</p>
+      </div>
+      <div class="note">
+        <strong>Metric consistency</strong>
+        <p>OEM, current v2, and compact v2 are all shown as balanced accuracy. The older 81.x% v2 number was raw mean accuracy and is intentionally not used for this comparison.</p>
+      </div>
+    </div>
+    <div class="footer">
+      SOURCES: outputs/leaderboards/hikvision_v2_pp/edge_substitution_metrics_ranked.csv &middot;
+      outputs/leaderboards/hikvision_v2_pp/fused_metrics.json &middot;
+      data/processed/hikvision/hikvision_review_results.json &middot;
+      scripts/experiments/use_cases/fuse_specialists_v2.py
+    </div>
+  </div>
+
+  <script>
+    const CLASSES = [
+      'distracted_driving',
+      'eating_drinking',
+      'fatigue',
+      'phone_usage',
+      'seatbelt',
+    ];
+
+    const LABELS = {
+      distracted_driving: 'Distracted',
+      eating_drinking: 'Eating',
+      fatigue: 'Fatigue',
+      phone_usage: 'Phone',
+      seatbelt: 'Seatbelt',
+    };
+
+    const OEM = {
+      distracted_driving: 69.5981,
+      eating_drinking: 50.0,
+      fatigue: 88.4972,
+      phone_usage: 78.3071,
+      seatbelt: 85.8450,
+    };
+
+    const V2 = {
+      distracted_driving: 64.54535660418014,
+      eating_drinking: 63.32984449760766,
+      fatigue: 82.69555065507848,
+      phone_usage: 83.31002331002331,
+      seatbelt: 81.19024692207166,
+    };
+
+    const COMPACT = {
+      distracted_driving: 64.54535660418014,
+      eating_drinking: 63.32984449760766,
+      fatigue: 82.69555065507848,
+      phone_usage: 63.63636363636364,
+      seatbelt: 81.19024692207166,
+    };
+
+    const ROUTING = {
+      distracted_driving: 'MediaPipe head/eye rule',
+      eating_drinking: 'yolov10s_coco + MediaPipe behavior',
+      fatigue: 'MediaPipe EAR rule',
+      phone_usage: 'yolov10s_coco',
+      seatbelt: 'yolo_soham',
+    };
+
+    const X = CLASSES.map(c => LABELS[c]);
+    const COMMON_CONFIG = { displayModeBar: false, responsive: true };
+    const COMMON_HOVER = {
+      bgcolor: '#1A1D26',
+      bordercolor: '#0E9A7E',
+      font: { family: 'JetBrains Mono, monospace', size: 12, color: '#E8EAF0' },
+    };
+
+    const deltaShapes = CLASSES.map((c, i) => {
+      const current = V2[c];
+      const compact = COMPACT[c];
+      const changed = Math.abs(current - compact) > 0.05;
+      return {
+        type: 'line',
+        xref: 'x',
+        yref: 'y',
+        x0: i,
+        x1: i,
+        y0: current,
+        y1: compact,
+        line: {
+          color: changed ? '#D85D5D' : '#8E92A0',
+          width: changed ? 6 : 2,
+        },
+        layer: 'below',
+      };
+    });
+
+    const routingAnnotations = CLASSES.map((c, i) => ({
+      x: i,
+      y: 0,
+      xref: 'x',
+      yref: 'paper',
+      xanchor: 'center',
+      yanchor: 'top',
+      text: '<span style="font-family:JetBrains Mono,monospace;font-size:10px;color:#8E92A0">' + ROUTING[c] + '</span>',
+      showarrow: false,
+      yshift: -34,
+    }));
+
+    const traces = [
+      {
+        name: 'Hikvision OEM',
+        type: 'scatter',
+        mode: 'lines+markers',
+        x: X,
+        y: CLASSES.map(c => OEM[c]),
+        line: { color: '#C88A1A', width: 2 },
+        marker: { color: '#C88A1A', size: 13, line: { color: '#FFFFFF', width: 2 } },
+        hovertemplate: '<b>%{x}</b><br>Hikvision OEM: %{y:.1f}%<extra></extra>',
+      },
+      {
+        name: 'Current v2',
+        type: 'scatter',
+        mode: 'lines+markers',
+        x: X,
+        y: CLASSES.map(c => V2[c]),
+        line: { color: '#3B6FD6', width: 2 },
+        marker: { color: '#3B6FD6', size: 14, line: { color: '#FFFFFF', width: 2 } },
+        hovertemplate: '<b>%{x}</b><br>Current v2: %{y:.1f}%<extra></extra>',
+      },
+      {
+        name: 'Compact v2 (23 MB)',
+        type: 'scatter',
+        mode: 'lines+markers',
+        x: X,
+        y: CLASSES.map(c => COMPACT[c]),
+        line: { color: '#0E9A7E', width: 2 },
+        marker: { color: '#0E9A7E', size: 15, symbol: 'diamond', line: { color: '#FFFFFF', width: 2 } },
+        hovertemplate: '<b>%{x}</b><br>Compact v2: %{y:.1f}%<extra></extra>',
+      },
+    ];
+
+    const layout = {
+      paper_bgcolor: 'rgba(0,0,0,0)',
+      plot_bgcolor: 'rgba(240,241,244,0.4)',
+      margin: { l: 64, r: 28, t: 28, b: 104 },
+      height: 456,
+      font: {
+        family: 'DM Sans, system-ui, sans-serif',
+        size: 12,
+        color: '#5A5E6E',
+      },
+      hoverlabel: COMMON_HOVER,
+      legend: {
+        orientation: 'h',
+        x: 0,
+        y: 1.12,
+        xanchor: 'left',
+        yanchor: 'bottom',
+        bgcolor: 'rgba(0,0,0,0)',
+      },
+      xaxis: {
+        type: 'category',
+        categoryorder: 'array',
+        categoryarray: X,
+        tickfont: { size: 12, color: '#1A1D26' },
+        gridcolor: '#E0E2E8',
+        zerolinecolor: '#E0E2E8',
+      },
+      yaxis: {
+        title: { text: 'Balanced accuracy (%)', font: { size: 12 } },
+        range: [45, 92],
+        ticksuffix: '%',
+        gridcolor: '#E0E2E8',
+        zerolinecolor: '#E0E2E8',
+      },
+      shapes: deltaShapes,
+      annotations: [
+        ...routingAnnotations,
+        {
+          x: 0,
+          y: 1,
+          xref: 'paper',
+          yref: 'paper',
+          xanchor: 'left',
+          yanchor: 'top',
+          text: '<span style="font-size:10px;color:#8E92A0">Vertical bar = current v2 to compact v2. Red marks the real loss; gray means unchanged by this detector substitution.</span>',
+          showarrow: false,
+          yshift: 28,
+        },
+        {
+          x: 0,
+          y: 0,
+          xref: 'paper',
+          yref: 'paper',
+          xanchor: 'left',
+          yanchor: 'top',
+          text: '<span style="font-family:JetBrains Mono,monospace;font-size:9.5px;letter-spacing:0.05em;text-transform:uppercase;color:#8E92A0">Compact route</span>',
+          showarrow: false,
+          yshift: -18,
+        },
+      ],
+    };
+
+    Plotly.newPlot('slopegraph-chart', traces, layout, COMMON_CONFIG);
+  </script>
+</body>
+</html>
