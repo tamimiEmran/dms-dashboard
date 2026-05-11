@@ -794,59 +794,70 @@
 
     /* === slide 3 : CAN-bus summary === */
     .can-bus-layout {
-      flex: 1;
+      flex: 0 0 auto;
       min-height: 0;
       display: grid;
-      grid-template-columns: minmax(360px, .78fr) minmax(620px, 1.22fr);
-      gap: 18px;
-      align-items: stretch;
+      grid-template-columns: 1fr;
+      gap: 14px;
+      align-content: start;
     }
 
     .can-summary-card {
       background: var(--bg-card);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 24px 26px;
+      padding: 18px 24px;
       min-height: 0;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
     }
 
+    .can-summary-card > div {
+      display: grid;
+      grid-template-columns: minmax(420px, 0.55fr) minmax(360px, 1fr);
+      grid-template-areas:
+        "eyebrow eyebrow"
+        "title copy";
+      column-gap: 26px;
+      row-gap: 6px;
+      align-items: center;
+    }
+
     .can-summary-eyebrow {
+      grid-area: eyebrow;
       font-family: var(--mono);
       font-size: 11px;
       letter-spacing: 0.12em;
       text-transform: uppercase;
       color: var(--accent-2);
       font-weight: 600;
-      margin-bottom: 10px;
+      margin-bottom: 0;
     }
 
     .can-summary-title {
-      font-size: 22px;
+      grid-area: title;
+      font-size: 20px;
       font-weight: 600;
       letter-spacing: -0.02em;
       color: var(--text);
-      margin-bottom: 8px;
+      margin-bottom: 0;
     }
 
     .can-summary-copy {
+      grid-area: copy;
       font-size: 13px;
       color: var(--text-dim);
-      max-width: 760px;
+      max-width: none;
+      margin: 0;
     }
 
     .can-preview-card {
       background: var(--bg-card);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 18px;
+      padding: 16px;
       display: flex;
       flex-direction: column;
       min-width: 0;
-      min-height: 0;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
     }
 
@@ -1056,9 +1067,16 @@
     }
 
     @media (max-width: 1100px) {
-      .can-bus-layout,
+      .can-summary-card > div,
       .can-preview-grid {
         grid-template-columns: 1fr;
+      }
+
+      .can-summary-card > div {
+        grid-template-areas:
+          "eyebrow"
+          "title"
+          "copy";
       }
     }
 
