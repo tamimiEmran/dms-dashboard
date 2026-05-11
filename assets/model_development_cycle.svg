@@ -265,14 +265,6 @@
     <text x="816" y="592" fill="#1A1D26" font-size="13.2" font-weight="600">Expansion to whole fleet</text>
   </a>
 
-  <!-- ===== Fleet expansion decision gate ===== -->
-  <!-- Green trigger shows readiness; amber box below marks the decision gate before whole-fleet expansion. -->
-  <path d="M943,530 L943,548" fill="none" stroke="#C88A1A" stroke-width="1.3" stroke-dasharray="4,3" marker-end="url(#mdc-arrow-a)" />
-  <rect x="713" y="548" width="460" height="58" rx="10" fill="#FFF8E8" stroke="#C88A1A" stroke-width="1.8" />
-  <text x="733" y="568" fill="#C88A1A" font-size="10.5" font-weight="700" font-family="JetBrains Mono, monospace" letter-spacing="0.10em">DECISION REQUIRED · FLEET EXPANSION</text>
-  <text x="733" y="589" fill="#1A1D26" font-size="13.2" font-weight="600">Approve expansion from trigger to whole-fleet rollout</text>
-  <text x="733" y="603" fill="#5A5E6E" font-size="10.8">Gate: operations sign-off + deployment wave plan</text>
-
   <!-- ===== V1.2 field test deployment annotation (May 7) =====
        Describes the hardware stack + scope of the May 7 field test.
        Linked to the V1.2 field test card via a short dashed amber line

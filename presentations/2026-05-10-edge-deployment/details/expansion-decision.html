@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+  Whole-fleet expansion procurement paths overlay.
+
+  Opened from model_development_cycle.svg when the decision-required box
+  is used as a standalone detail page. The page is self-contained so it can
+  render either inside the dashboard floater or directly in a browser tab.
+-->
+<head>
+  <meta charset="UTF-8">
+  <meta name="robots" content="noindex,nofollow">
+  <style id="dms-gate-hide">body{display:none!important}</style>
+  <script src="../../../password-gate.js"></script>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Whole-fleet Expansion &middot; Procurement Paths</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-card: #FFFFFF;
+      --bg-elevated: #F6F7FA;
+      --text: #1A1D26;
+      --text-dim: #5A5E6E;
+      --text-muted: #8E92A0;
+      --border: #D8DBE3;
+      --accent-3: #C88A1A;
+      --accent-3-dim: rgba(200, 138, 26, 0.08);
+      --teal: #0E9A7E;
+      --teal-dim: rgba(14, 154, 126, 0.08);
+      --mono: "JetBrains Mono", "Consolas", monospace;
+    }
+
+    body {
+      font-family: "DM Sans", system-ui, sans-serif;
+      color: var(--text);
+      background: var(--bg-card);
+      padding: 40px 48px;
+      min-height: 100vh;
+      line-height: 1.4;
+    }
+
+    .eyebrow {
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: var(--accent-3);
+      text-transform: uppercase;
+    }
+
+    .title {
+      margin: 8px 0 6px;
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      line-height: 1.2;
+    }
+
+    .sub {
+      font-size: 16px;
+      color: var(--text-dim);
+      margin-bottom: 28px;
+      line-height: 1.45;
+      max-width: 860px;
+    }
+
+    .section-label {
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .opt-card {
+      border: 1.5px solid var(--accent-3);
+      background: var(--accent-3-dim);
+      border-radius: 12px;
+      padding: 22px 26px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-height: 110px;
+    }
+
+    .opt-num {
+      font-family: var(--mono);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: var(--accent-3);
+      text-transform: uppercase;
+    }
+
+    .opt-stack {
+      font-size: 19px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.4;
+    }
+
+    .decision-divider {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 28px 0 20px;
+    }
+
+    .decision-divider::before,
+    .decision-divider::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .decision-divider span {
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      padding: 6px 16px;
+      background: var(--bg-elevated);
+      border-radius: 999px;
+    }
+
+    .opt-card-lease {
+      border-color: var(--teal);
+      background: var(--teal-dim);
+    }
+
+    .opt-card-lease .opt-num {
+      color: var(--teal);
+    }
+
+    @media (max-width: 720px) {
+      body { padding: 28px 22px; }
+      .options-grid { grid-template-columns: 1fr; }
+      .title { font-size: 22px; }
+      .opt-stack { font-size: 17px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="eyebrow">Decision required</div>
+  <h1 class="title">Whole-fleet expansion &middot; procurement paths</h1>
+  <p class="sub">Hardware paths to evaluate before expanding the current edge deployment across the full fleet.</p>
+
+  <div class="section-label">Hardware procurement options</div>
+  <div class="options-grid">
+    <div class="opt-card">
+      <div class="opt-num">Option 1</div>
+      <div class="opt-stack">QOHO + OBU</div>
+    </div>
+    <div class="opt-card">
+      <div class="opt-num">Option 2</div>
+      <div class="opt-stack">Streaming + OBU</div>
+    </div>
+    <div class="opt-card">
+      <div class="opt-num">Option 3</div>
+      <div class="opt-stack">Edge camera + OBU</div>
+    </div>
+    <div class="opt-card">
+      <div class="opt-num">Option 4</div>
+      <div class="opt-stack">Streaming camera + extended device + OBU</div>
+    </div>
+  </div>
+
+  <div class="decision-divider"><span>or</span></div>
+
+  <div class="section-label">Alternative business model</div>
+  <div class="opt-card opt-card-lease">
+    <div class="opt-num">Leasing model</div>
+    <div class="opt-stack">Tablet + streaming camera</div>
+  </div>
+</body>
+</html>
