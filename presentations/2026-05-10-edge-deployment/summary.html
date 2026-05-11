@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <!--
-  10 May 2026 — Edge Deployment + CAN-bus + Next Steps
+  10 May 2026 — Edge Deployment + Next Steps + CAN-bus
   Three slides:
     1. Hikvision lift slopegraph + edge box + use cases + deployment cards (Howen OBU + MHero / taxi / limo)
-    2. CAN-bus telemetry summary
-    3. Next steps — current assets (Howen + Qoho, Howen + MHero + Dashcam) + extended edge device PR
+    2. Next steps — current assets (Howen + Qoho, Howen + MHero + Dashcam) + extended edge device PR
+    3. CAN-bus telemetry summary
 
   Numbers in slide 1 KPI / slopegraph reuse the v2 routing result from
   drafts/pareto_slopegraph.html (built from fuse_specialists_v2.py output).
@@ -22,7 +22,7 @@
   </style>
   <script src="../../password-gate.js"></script>
   <meta name="viewport" content="width=1920">
-  <title>10 May — Edge Deployment + CAN-bus + Next Steps</title>
+  <title>10 May — Edge Deployment + Next Steps + CAN-bus</title>
   <link
     href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap"
     rel="stylesheet">
@@ -792,7 +792,7 @@
       }
     }
 
-    /* === slide 2 : CAN-bus summary === */
+    /* === slide 3 : CAN-bus summary === */
     .can-bus-layout {
       flex: 1;
       min-height: 0;
@@ -836,61 +836,6 @@
       font-size: 13px;
       color: var(--text-dim);
       max-width: 760px;
-    }
-
-    .can-summary-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      width: fit-content;
-      margin-top: 24px;
-      color: var(--accent-2);
-      text-decoration: none;
-      font-size: 12px;
-      font-weight: 600;
-      font-family: var(--mono);
-      letter-spacing: 0.02em;
-    }
-
-    .can-summary-link:hover {
-      text-decoration: underline;
-    }
-
-    .can-summary-side {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 10px;
-      margin-top: 18px;
-    }
-
-    .can-metric {
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 12px 14px;
-      background: var(--bg);
-    }
-
-    .can-metric .metric-label {
-      font-family: var(--mono);
-      font-size: 10px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      margin-bottom: 5px;
-      font-weight: 600;
-    }
-
-    .can-metric .metric-value {
-      font-size: 16px;
-      font-weight: 600;
-      letter-spacing: -0.02em;
-      color: var(--text);
-    }
-
-    .can-metric .metric-note {
-      margin-top: 4px;
-      font-size: 12px;
-      color: var(--text-dim);
     }
 
     .can-preview-card {
@@ -1117,7 +1062,7 @@
       }
     }
 
-    /* === slide 3 : asset cards + PR spec table === */
+    /* === slide 2 : asset cards + PR spec table === */
     .section-head {
       display: flex;
       align-items: baseline;
@@ -1597,9 +1542,9 @@
   <nav class="outer-nav">
     <a href="../../index.html">&larr; Home</a>
     <a href="#overview" class="active">Edge Lift</a>
-    <a href="#canbus">CAN-bus</a>
     <a href="#nextsteps">Next Steps</a>
-    <span class="deck-title">Edge Deployment + CAN-bus + Next Steps</span>
+    <a href="#canbus">CAN-bus</a>
+    <span class="deck-title">Edge Deployment + Next Steps + CAN-bus</span>
     <span class="slide-counter" id="outerCounter">1 / 3</span>
   </nav>
 
@@ -1677,140 +1622,13 @@
 
 
   <!-- ============================================
-     SLIDE 2 / CAN-BUS TELEMETRY SUMMARY
-     ============================================ -->
-  <section class="slide" id="canbus">
-    <div class="slide-stamp">
-      <span>can-bus / results / 2026-05</span>
-      <span class="stamp-sep"></span>
-      <span class="stamp-idx">02 / 03</span>
-    </div>
-
-    <span class="tag tag--blue">CAN-bus</span>
-    <h2>CAN-bus corroboration for DMS events</h2>
-    <h3>Pair the DMS camera view with vehicle turn-signal data so risky lane-change events are checked from both driver action and vehicle state.</h3>
-
-    <div class="can-bus-layout">
-      <div class="can-summary-card">
-        <div>
-          <div class="can-summary-eyebrow">Camera + vehicle signal</div>
-          <div class="can-summary-title">Use CAN-bus turn indicators to verify what the DMS camera sees.</div>
-          <p class="can-summary-copy">The camera shows whether the driver checked before a maneuver. The CAN-bus signal
-            shows whether the vehicle indicator was active in the same window. Together they make the event easier to
-            review than either source alone.</p>
-        </div>
-
-        <div class="can-summary-side">
-          <div class="can-metric">
-            <div class="metric-label">Vehicle evidence</div>
-            <div class="metric-value">Turn indicator state</div>
-            <div class="metric-note">Left and right turn signals are read from the vehicle CAN feed.</div>
-          </div>
-          <div class="can-metric">
-            <div class="metric-label">Examples shown</div>
-            <div class="metric-value num">4 synced examples</div>
-            <div class="metric-note">Driver look / no-look crossed with right signal on / off.</div>
-          </div>
-          <div class="can-metric">
-            <div class="metric-label">What this catches</div>
-            <div class="metric-value">Dangerous-event context</div>
-            <div class="metric-note">The same clip shows both the driver behavior and the vehicle signal at that time.</div>
-          </div>
-        </div>
-
-        <a class="can-summary-link"
-          href="assets/can-bus/front_right_look_can_report.html"
-          target="_blank" rel="noopener">Open synced CAN-bus example report &rarr;</a>
-      </div>
-
-      <div class="can-preview-card">
-        <div class="can-preview-head">
-          <div class="can-preview-title">Synced CAN-bus examples</div>
-          <div class="can-preview-note">local presentation assets</div>
-        </div>
-        <div class="can-preview-grid">
-          <div class="can-preview-item good">
-            <div class="can-example-head">
-              <div>
-                <span class="can-example-kicker">01 &middot; expected behaviour</span>
-                <span class="can-example-title">LOOK + RIGHT SIGNAL</span>
-              </div>
-              <span class="can-verdict good">matched</span>
-            </div>
-            <video src="assets/can-bus/clips/01_look_can_on.mp4" muted loop playsinline preload="metadata" controls></video>
-            <div class="can-evidence-row">
-              <span class="gaze-state">driver looking</span>
-              <span class="blinker-pair">
-                <span class="blinker left"><span class="arrow">&#9664;</span>L off</span>
-                <span class="blinker right on"><span class="arrow">&#9654;</span>R on</span>
-              </span>
-            </div>
-          </div>
-          <div class="can-preview-item warn">
-            <div class="can-example-head">
-              <div>
-                <span class="can-example-kicker">02 &middot; missing signal</span>
-                <span class="can-example-title">LOOK + NO SIGNAL</span>
-              </div>
-              <span class="can-verdict warn">issue</span>
-            </div>
-            <video src="assets/can-bus/clips/02_look_can_off.mp4" muted loop playsinline preload="metadata" controls></video>
-            <div class="can-evidence-row">
-              <span class="gaze-state">driver looking</span>
-              <span class="blinker-pair">
-                <span class="blinker left"><span class="arrow">&#9664;</span>L off</span>
-                <span class="blinker right"><span class="arrow">&#9654;</span>R off</span>
-              </span>
-            </div>
-          </div>
-          <div class="can-preview-item warn">
-            <div class="can-example-head">
-              <div>
-                <span class="can-example-kicker">03 &middot; signal without look</span>
-                <span class="can-example-title">NO LOOK + RIGHT SIGNAL</span>
-              </div>
-              <span class="can-verdict warn">issue</span>
-            </div>
-            <video src="assets/can-bus/clips/03_no_look_can_on.mp4" muted loop playsinline preload="metadata" controls></video>
-            <div class="can-evidence-row">
-              <span class="gaze-state off">not looking</span>
-              <span class="blinker-pair">
-                <span class="blinker left"><span class="arrow">&#9664;</span>L off</span>
-                <span class="blinker right on"><span class="arrow">&#9654;</span>R on</span>
-              </span>
-            </div>
-          </div>
-          <div class="can-preview-item warn">
-            <div class="can-example-head">
-              <div>
-                <span class="can-example-kicker">04 &middot; no look / no signal</span>
-                <span class="can-example-title">NO LOOK + NO SIGNAL</span>
-              </div>
-              <span class="can-verdict warn">issue</span>
-            </div>
-            <video src="assets/can-bus/clips/04_no_look_can_off.mp4" muted loop playsinline preload="metadata" controls></video>
-            <div class="can-evidence-row">
-              <span class="gaze-state off">not looking</span>
-              <span class="blinker-pair">
-                <span class="blinker left"><span class="arrow">&#9664;</span>L off</span>
-                <span class="blinker right"><span class="arrow">&#9654;</span>R off</span>
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-
-  <!-- ============================================
-     SLIDE 3 / NEXT STEPS — CURRENT ASSETS + EXTENDED EDGE PR
+     SLIDE 2 / NEXT STEPS — CURRENT ASSETS + EXTENDED EDGE PR
      ============================================ -->
   <section class="slide" id="nextsteps">
     <div class="slide-stamp">
       <span>deployment / next steps / 2026-05</span>
       <span class="stamp-sep"></span>
-      <span class="stamp-idx">03 / 03</span>
+      <span class="stamp-idx">02 / 03</span>
     </div>
 
     <span class="tag tag--amber">Next steps</span>
@@ -2014,6 +1832,111 @@
           camera input, <span class="num">10&times;</span> CAN-FD, and ASIL-B/D safety &mdash; enough to run heavier
           multi-task models with multi-camera coverage that closes the theoretical-vs-real gap. Vendor figures from the
           proposed stack page; bench verification on Mowasalat fleet workloads is the next step.</div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================
+     SLIDE 3 / CAN-BUS TELEMETRY SUMMARY
+     ============================================ -->
+  <section class="slide" id="canbus">
+    <div class="slide-stamp">
+      <span>can-bus / results / 2026-05</span>
+      <span class="stamp-sep"></span>
+      <span class="stamp-idx">03 / 03</span>
+    </div>
+
+    <span class="tag tag--blue">CAN-bus</span>
+    <h2>CAN-bus corroboration for DMS events</h2>
+    <h3>Pair the DMS camera view with vehicle turn-signal data so risky lane-change events are checked from both driver action and vehicle state.</h3>
+
+    <div class="can-bus-layout">
+      <div class="can-summary-card">
+        <div>
+          <div class="can-summary-eyebrow">Camera + vehicle signal</div>
+          <div class="can-summary-title">Cross-verify correct turning behaviour with the DMS camera and CAN-bus signals.</div>
+          <p class="can-summary-copy">The camera shows whether the driver checked before a maneuver. The CAN-bus signal
+            shows whether the vehicle indicator was active in the same window. Together they make the event easier to
+            review than either source alone.</p>
+        </div>
+      </div>
+
+      <div class="can-preview-card">
+        <div class="can-preview-head">
+          <div class="can-preview-title">Synced CAN-bus examples</div>
+          <div class="can-preview-note">local presentation assets</div>
+        </div>
+        <div class="can-preview-grid">
+          <div class="can-preview-item good">
+            <div class="can-example-head">
+              <div>
+                <span class="can-example-kicker">01 &middot; expected behaviour</span>
+                <span class="can-example-title">LOOK + RIGHT SIGNAL</span>
+              </div>
+              <span class="can-verdict good">matched</span>
+            </div>
+            <video src="assets/can-bus/clips/01_look_can_on.mp4" muted loop playsinline preload="metadata" controls></video>
+            <div class="can-evidence-row">
+              <span class="gaze-state">driver looking</span>
+              <span class="blinker-pair">
+                <span class="blinker left"><span class="arrow">&#9664;</span>L off</span>
+                <span class="blinker right on"><span class="arrow">&#9654;</span>R on</span>
+              </span>
+            </div>
+          </div>
+          <div class="can-preview-item warn">
+            <div class="can-example-head">
+              <div>
+                <span class="can-example-kicker">02 &middot; missing signal</span>
+                <span class="can-example-title">LOOK + NO SIGNAL</span>
+              </div>
+              <span class="can-verdict warn">issue</span>
+            </div>
+            <video src="assets/can-bus/clips/02_look_can_off.mp4" muted loop playsinline preload="metadata" controls></video>
+            <div class="can-evidence-row">
+              <span class="gaze-state">driver looking</span>
+              <span class="blinker-pair">
+                <span class="blinker left"><span class="arrow">&#9664;</span>L off</span>
+                <span class="blinker right"><span class="arrow">&#9654;</span>R off</span>
+              </span>
+            </div>
+          </div>
+          <div class="can-preview-item warn">
+            <div class="can-example-head">
+              <div>
+                <span class="can-example-kicker">03 &middot; signal without look</span>
+                <span class="can-example-title">NO LOOK + RIGHT SIGNAL</span>
+              </div>
+              <span class="can-verdict warn">issue</span>
+            </div>
+            <video src="assets/can-bus/clips/03_no_look_can_on.mp4" muted loop playsinline preload="metadata" controls></video>
+            <div class="can-evidence-row">
+              <span class="gaze-state off">not looking</span>
+              <span class="blinker-pair">
+                <span class="blinker left"><span class="arrow">&#9664;</span>L off</span>
+                <span class="blinker right on"><span class="arrow">&#9654;</span>R on</span>
+              </span>
+            </div>
+          </div>
+          <div class="can-preview-item warn">
+            <div class="can-example-head">
+              <div>
+                <span class="can-example-kicker">04 &middot; no look / no signal</span>
+                <span class="can-example-title">NO LOOK + NO SIGNAL</span>
+              </div>
+              <span class="can-verdict warn">issue</span>
+            </div>
+            <video src="assets/can-bus/clips/04_no_look_can_off.mp4" muted loop playsinline preload="metadata" controls></video>
+            <div class="can-evidence-row">
+              <span class="gaze-state off">not looking</span>
+              <span class="blinker-pair">
+                <span class="blinker left"><span class="arrow">&#9664;</span>L off</span>
+                <span class="blinker right"><span class="arrow">&#9654;</span>R off</span>
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -2405,7 +2328,7 @@
     // === Outer-deck nav: counter + active link sync on scroll ===
     // ============================================
     (function () {
-      const slides = ['overview', 'canbus', 'nextsteps'];
+      const slides = ['overview', 'nextsteps', 'canbus'];
       const counter = document.getElementById('outerCounter');
       const navLinks = Array.from(document.querySelectorAll('nav.outer-nav a[href^="#"]'));
       const tracked = slides.map(id => document.getElementById(id)).filter(Boolean);
