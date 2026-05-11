@@ -187,13 +187,9 @@
   <!-- Iteration loop progression line (inside block, ends at right edge) -->
   <line x1="650" y1="244" x2="1235" y2="244" stroke="#3B6FD6" stroke-width="1.2" marker-end="url(#mdc-arrow-b)" />
 
-  <!-- ===== Connector: iter block middle-bottom → early-exit box right side (mirrored-L with hook) ===== -->
-  <!-- Path emanates from middle-bottom of iter block (offset 6px below the bottom border).
-       Segments: RIGHT to x=1200 (16px LEFT of target box at x=1216, no collision),
-                 DOWN to y=495 (mid-height of early-exit box),
-                 LEFT 36px hook ending 4px inside box's right edge — arrowhead orient="auto"
-                 rotates to point LEFT, visually entering the box from its right side. -->
-  <path d="M942,250 L1200,250 L1200,495 L1164,495" fill="none" stroke="#0E9A7E" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#mdc-arrow-g)" />
+  <!-- ===== Connector: iter block middle-bottom → early-exit box top-middle ===== -->
+  <!-- Straight drop from the weekly iteration block center to the early-exit trigger center. -->
+  <path d="M943,250 L943,460" fill="none" stroke="#0E9A7E" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#mdc-arrow-g)" />
 
   <!-- ===== 97% target milestone (Jun 30) — below axis, mass rollout outcome ===== -->
   <circle cx="1280" cy="290" r="6" fill="#0E9A7E" />
@@ -205,8 +201,7 @@
   <text x="1301" y="432" fill="#5A5E6E" font-size="9.5" text-anchor="middle" font-family="JetBrains Mono, monospace" letter-spacing="0.04em">2026-06-30</text>
 
   <!-- ===== Mass rollout early-exit box (clickable, compact, left-of-target) ===== -->
-  <!-- Box: x=700..1160 (width 460). Right edge held fixed at x=1160 so the connector
-       hook (ending at x=1164) still enters the box from its right side as designed. -->
+  <!-- Box center aligns with the weekly iteration block center so the connector drops straight down. -->
   <a id="mass-rollout-cta"
      xlink:href="../presentations/2026-05-10-edge-deployment/details/mass-rollout-leasing-taxis.html"
      href="../presentations/2026-05-10-edge-deployment/details/mass-rollout-leasing-taxis.html"
@@ -214,10 +209,10 @@
      class="mass-rollout-link"
      onclick="if(window.parent &amp;&amp; window.parent !== window){window.parent.postMessage({type:'open-leasing-taxis-overlay'},'*');return false;}return true;"
      aria-label="Open leasing-taxis AI brain architecture overlay">
-    <rect class="mass-rollout-bg mass-rollout-rect" x="700" y="460" width="460" height="70" rx="10" fill="#E8F5F1" stroke="#0E9A7E" stroke-width="2" />
-    <text x="720" y="482" fill="#0E9A7E" font-size="10.5" font-weight="700" font-family="JetBrains Mono, monospace" letter-spacing="0.10em">EARLY-EXIT TRIGGER · CLICK FOR DETAIL</text>
-    <text x="720" y="504" fill="#1A1D26" font-size="13.5" font-weight="600">Field test &gt; <tspan font-family="JetBrains Mono, monospace" fill="#0E9A7E">71%</tspan> → rollout to <tspan font-family="JetBrains Mono, monospace" fill="#0E9A7E">100</tspan> vehicles</text>
-    <text x="720" y="522" fill="#5A5E6E" font-size="11">Rollout trigger ahead of Jun 30 97% target</text>
+    <rect class="mass-rollout-bg mass-rollout-rect" x="713" y="460" width="460" height="70" rx="10" fill="#E8F5F1" stroke="#0E9A7E" stroke-width="2" />
+    <text x="733" y="482" fill="#0E9A7E" font-size="10.5" font-weight="700" font-family="JetBrains Mono, monospace" letter-spacing="0.10em">EARLY-EXIT TRIGGER · CLICK FOR DETAIL</text>
+    <text x="733" y="504" fill="#1A1D26" font-size="13.5" font-weight="600">Field test &gt; <tspan font-family="JetBrains Mono, monospace" fill="#0E9A7E">71%</tspan> → rollout to <tspan font-family="JetBrains Mono, monospace" fill="#0E9A7E">100</tspan> vehicles</text>
+    <text x="733" y="522" fill="#5A5E6E" font-size="11">Rollout trigger ahead of Jun 30 97% target</text>
   </a>
 
   <!-- ===== V1.2 field test deployment annotation (May 7) =====
