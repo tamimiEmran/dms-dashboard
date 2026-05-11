@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Design options preview — "DONE" status treatment for completed boxes
+  in the Model Development Cycle timeline.
+
+  Affects (in main SVG):
+    - V1, V1.1, V1.2 theoretical boxes (blue scheme)
+    - V1.2 field test box (amber scheme)
+
+  Each row applies the SAME treatment to both schemes so you can judge
+  consistency. Future boxes (V2, weekly iter, mass rollout) are NOT in
+  scope here — only the boxes that are already complete.
+
+  This file is for review only. Once a treatment is chosen, it will be
+  inlined into model_development_cycle.svg and this preview can be
+  deleted.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 950" width="1100"
+     font-family="'DM Sans', system-ui, sans-serif">
+
+  <defs>
+    <!-- Diagonal hatch patterns for option 2 -->
+    <pattern id="hatch-blue" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)">
+      <line x1="0" y1="0" x2="0" y2="6" stroke="#3B6FD6" stroke-width="1.5" stroke-opacity="0.30" />
+    </pattern>
+    <pattern id="hatch-amber" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)">
+      <line x1="0" y1="0" x2="0" y2="6" stroke="#C88A1A" stroke-width="1.5" stroke-opacity="0.32" />
+    </pattern>
+  </defs>
+
+  <!-- ===== HEADER ===== -->
+  <text x="40" y="34" fill="#0E9A7E" font-size="11" font-weight="600" letter-spacing="0.10em">DESIGN OPTIONS &#xB7; &quot;DONE&quot; STATUS</text>
+  <text x="40" y="62" fill="#1A1D26" font-size="22" font-weight="700" letter-spacing="-0.02em">Mark V1 / V1.1 / V1.2 (theoretical) and V1.2 field test as completed</text>
+  <text x="40" y="86" fill="#5A5E6E" font-size="12.5">Each row applies the same treatment to both box types. Pick the one whose &quot;done&quot; cue is legible without crowding the timeline.</text>
+
+  <!-- Column headers -->
+  <text x="430" y="120" fill="#8E92A0" font-size="10.5" font-weight="700" letter-spacing="0.10em" text-anchor="middle">THEORETICAL</text>
+  <text x="690" y="120" fill="#8E92A0" font-size="10.5" font-weight="700" letter-spacing="0.10em" text-anchor="middle">FIELD TEST</text>
+  <text x="800" y="120" fill="#8E92A0" font-size="10.5" font-weight="700" letter-spacing="0.10em">RATIONALE</text>
+
+  <line x1="40" y1="128" x2="1060" y2="128" stroke="#E0E2E8" stroke-width="1" />
+
+  <!-- ============================================================== -->
+  <!-- REFERENCE: CURRENT (no treatment) — for visual baseline -->
+  <!-- ============================================================== -->
+  <g transform="translate(0, 140)">
+    <text x="40" y="36" fill="#1A1D26" font-size="14" font-weight="700">Current</text>
+    <text x="40" y="56" fill="#8E92A0" font-size="11">No &quot;completed&quot; treatment — for comparison</text>
+
+    <rect x="380" y="24" width="100" height="62" rx="8" fill="#E8F0FA" stroke="#3B6FD6" stroke-width="1.5" />
+    <text x="430" y="44" fill="#3B6FD6" font-size="13" font-weight="600" text-anchor="middle">V1 &#xB7; <tspan font-family="JetBrains Mono, monospace">38%</tspan></text>
+    <text x="430" y="60" fill="#1A1D26" font-size="11" text-anchor="middle">Theoretical</text>
+    <text x="430" y="76" fill="#5A5E6E" font-size="10" text-anchor="middle" font-family="JetBrains Mono, monospace">Apr 14</text>
+
+    <rect x="620" y="24" width="140" height="62" rx="8" fill="#FAEFD7" stroke="#C88A1A" stroke-width="1.5" />
+    <text x="690" y="44" fill="#C88A1A" font-size="13" font-weight="600" text-anchor="middle">V1.2 field test &#xB7; <tspan font-family="JetBrains Mono, monospace">68%</tspan></text>
+    <text x="690" y="60" fill="#1A1D26" font-size="11" text-anchor="middle">Real fleet captures</text>
+    <text x="690" y="76" fill="#5A5E6E" font-size="10" text-anchor="middle" font-family="JetBrains Mono, monospace">May 7</text>
+
+    <text x="800" y="50" fill="#5A5E6E" font-size="11">Baseline. No completion cue.</text>
+  </g>
+
+  <line x1="40" y1="245" x2="1060" y2="245" stroke="#E0E2E8" stroke-width="1" stroke-dasharray="3,3" />
+
+  <!-- ============================================================== -->
+  <!-- OPTION 1: Solid filled + white text + corner check -->
+  <!-- ============================================================== -->
+  <g transform="translate(0, 255)">
+    <text x="40" y="36" fill="#1A1D26" font-size="14" font-weight="700">1 &#xB7; Solid filled + corner &#x2713;</text>
+    <text x="40" y="56" fill="#5A5E6E" font-size="11">Saturated brand color, white text, white check chip</text>
+
+    <!-- Theoretical -->
+    <rect x="380" y="24" width="100" height="62" rx="8" fill="#3B6FD6" stroke="#3B6FD6" stroke-width="1.5" />
+    <text x="430" y="44" fill="#FFFFFF" font-size="13" font-weight="600" text-anchor="middle">V1 &#xB7; <tspan font-family="JetBrains Mono, monospace">38%</tspan></text>
+    <text x="430" y="60" fill="#FFFFFF" font-size="11" text-anchor="middle">Theoretical</text>
+    <text x="430" y="76" fill="#FFFFFF" font-size="10" text-anchor="middle" font-family="JetBrains Mono, monospace" opacity="0.80">Apr 14</text>
+    <circle cx="471" cy="33" r="8" fill="#FFFFFF" />
+    <text x="471" y="37" fill="#3B6FD6" font-size="11" font-weight="700" text-anchor="middle">&#x2713;</text>
+
+    <!-- Field test -->
+    <rect x="620" y="24" width="140" height="62" rx="8" fill="#C88A1A" stroke="#C88A1A" stroke-width="1.5" />
+    <text x="690" y="44" fill="#FFFFFF" font-size="13" font-weight="600" text-anchor="middle">V1.2 field test &#xB7; <tspan font-family="JetBrains Mono, monospace">68%</tspan></text>
+    <text x="690" y="60" fill="#FFFFFF" font-size="11" text-anchor="middle">Real fleet captures</text>
+    <text x="690" y="76" fill="#FFFFFF" font-size="10" text-anchor="middle" font-family="JetBrains Mono, monospace" opacity="0.80">May 7</text>
+    <circle cx="751" cy="33" r="8" fill="#FFFFFF" />
+    <text x="751" y="37" fill="#C88A1A" font-size="11" font-weight="700" text-anchor="middle">&#x2713;</text>
+
+    <text x="800" y="36" fill="#1A1D26" font-size="11">Highest contrast &#x2014; loud and clear.</text>
+    <text x="800" y="52" fill="#5A5E6E" font-size="11">Risk: dominates timeline; future</text>
+    <text x="800" y="68" fill="#5A5E6E" font-size="11">boxes read as &quot;empty&quot; by contrast.</text>
+  </g>
+
+  <line x1="40" y1="360" x2="1060" y2="360" stroke="#E0E2E8" stroke-width="1" stroke-dasharray="3,3" />
+
+  <!-- ============================================================== -->
+  <!-- OPTION 2: Diagonal hatch overlay -->
+  <!-- ============================================================== -->
+  <g transform="translate(0, 370)">
+    <text x="40" y="36" fill="#1A1D26" font-size="14" font-weight="700">2 &#xB7; Diagonal hatch overlay</text>
+    <text x="40" y="56" fill="#5A5E6E" font-size="11">Striped texture over original fill</text>
+
+    <rect x="380" y="24" width="100" height="62" rx="8" fill="#E8F0FA" stroke="#3B6FD6" stroke-width="1.5" />
+    <rect x="380" y="24" width="100" height="62" rx="8" fill="url(#hatch-blue)" stroke="none" />
+    <text x="430" y="44" fill="#3B6FD6" font-size="13" font-weight="600" text-anchor="middle">V1 &#xB7; <tspan font-family="JetBrains Mono, monospace">38%</tspan></text>
+    <text x="430" y="60" fill="#1A1D26" font-size="11" text-anchor="middle">Theoretical</text>
+    <text x="430" y="76" fill="#5A5E6E" font-size="10" text-anchor="middle" font-family="JetBrains Mono, monospace">Apr 14</text>
+
+    <rect x="620" y="24" width="140" height="62" rx="8" fill="#FAEFD7" stroke="#C88A1A" stroke-width="1.5" />
+    <rect x="620" y="24" width="140" height="62" rx="8" fill="url(#hatch-amber)" stroke="none" />
+    <text x="690" y="44" fill="#C88A1A" font-size="13" font-weight="600" text-anchor="middle">V1.2 field test &#xB7; <tspan font-family="JetBrains Mono, monospace">68%</tspan></text>
+    <text x="690" y="60" fill="#1A1D26" font-size="11" text-anchor="middle">Real fleet captures</text>
+    <text x="690" y="76" fill="#5A5E6E" font-size="10" text-anchor="middle" font-family="JetBrains Mono, monospace">May 7</text>
+
+    <text x="800" y="36" fill="#1A1D26" font-size="11">Texture says &quot;archived / striped&quot;.</text>
+    <text x="800" y="52" fill="#5A5E6E" font-size="11">Risk: visual noise; readability drops</text>
+    <text x="800" y="68" fill="#5A5E6E" font-size="11">on small/zoomed renders.</text>
+  </g>
+
+  <line x1="40" y1="475" x2="1060" y2="475" stroke="#E0E2E8" stroke-width="1" stroke-dasharray="3,3" />
+
+  <!-- ============================================================== -->
+  <!-- OPTION 3: Desaturated / muted -->
+  <!-- ============================================================== -->
+  <g transform="translate(0, 485)">
+    <text x="40" y="36" fill="#1A1D26" font-size="14" font-weight="700">3 &#xB7; Desaturated</text>
+    <text x="40" y="56" fill="#5A5E6E" font-size="11">Greyed fill + muted stroke + softer text</text>
+
+    <rect x="380" y="24" width="100" height="62" rx="8" fill="#EAEDF1" stroke="#A8ADB8" stroke-width="1.5" />
+    <text x="430" y="44" fill="#5A5E6E" font-size="13" font-weight="600" text-anchor="middle">V1 &#xB7; <tspan font-family="JetBrains Mono, monospace">38%</tspan></text>
+    <text x="430" y="60" fill="#8E92A0" font-size="11" text-anchor="middle">Theoretical</text>
+    <text x="430" y="76" fill="#8E92A0" font-size="10" text-anchor="middle" font-family="JetBrains Mono, monospace">Apr 14</text>
+
+    <rect x="620" y="24" width="140" height="62" rx="8" fill="#EFECE4" stroke="#A8ADB8" stroke-width="1.5" />
+    <text x="690" y="44" fill="#5A5E6E" font-size="13" font-weight="600" text-anchor="middle">V1.2 field test &#xB7; <tspan font-family="JetBrains Mono, monospace">68%</tspan></text>
+    <text x="690" y="60" fill="#8E92A0" font-size="11" text-anchor="middle">Real fleet captures</text>
+    <text x="690" y="76" fill="#8E92A0" font-size="10" text-anchor="middle" font-family="JetBrains Mono, monospace">May 7</text>
+
+    <text x="800" y="36" fill="#1A1D26" font-size="11">Quiet, &quot;past&quot; feeling.</text>
+    <text x="800" y="52" fill="#5A5E6E" font-size="11">Risk: loses blue/amber identity;</text>
+    <text x="800" y="68" fill="#5A5E6E" font-size="11">may read &quot;deprecated&quot; not &quot;done&quot;.</text>
+  </g>
+
+  <line x1="40" y1="590" x2="1060" y2="590" stroke="#E0E2E8" stroke-width="1" stroke-dasharray="3,3" />
+
+  <!-- ============================================================== -->
+  <!-- OPTION 4: Corner check badge (green chip) -->
+  <!-- ============================================================== -->
+  <g transform="translate(0, 600)">
+    <text x="40" y="36" fill="#1A1D26" font-size="14" font-weight="700">4 &#xB7; Corner check badge</text>
+    <text x="40" y="56" fill="#5A5E6E" font-size="11">Original style + small green &#x2713; chip top-right</text>
+
+    <rect x="380" y="24" width="100" height="62" rx="8" fill="#E8F0FA" stroke="#3B6FD6" stroke-width="1.5" />
+    <text x="430" y="44" fill="#3B6FD6" font-size="13" font-weight="600" text-anchor="middle">V1 &#xB7; <tspan font-family="JetBrains Mono, monospace">38%</tspan></text>
+    <text x="430" y="60" fill="#1A1D26" font-size="11" text-anchor="middle">Theoretical</text>
+    <text x="430" y="76" fill="#5A5E6E" font-size="10" text-anchor="middle" font-family="JetBrains Mono, monospace">Apr 14</text>
+    <circle cx="471" cy="33" r="8" fill="#0E9A7E" />
+    <text x="471" y="37" fill="#FFFFFF" font-size="11" font-weight="700" text-anchor="middle">&#x2713;</text>
+
+    <rect x="620" y="24" width="140" height="62" rx="8" fill="#FAEFD7" stroke="#C88A1A" stroke-width="1.5" />
+    <text x="690" y="44" fill="#C88A1A" font-size="13" font-weight="600" text-anchor="middle">V1.2 field test &#xB7; <tspan font-family="JetBrains Mono, monospace">68%</tspan></text>
+    <text x="690" y="60" fill="#1A1D26" font-size="11" text-anchor="middle">Real fleet captures</text>
+    <text x="690" y="76" fill="#5A5E6E" font-size="10" text-anchor="middle" font-family="JetBrains Mono, monospace">May 7</text>
+    <circle cx="751" cy="33" r="8" fill="#0E9A7E" />
+    <text x="751" y="37" fill="#FFFFFF" font-size="11" font-weight="700" text-anchor="middle">&#x2713;</text>
+
+    <text x="800" y="36" fill="#1A1D26" font-size="11">Minimal change, brand intact.</text>
+    <text x="800" y="52" fill="#5A5E6E" font-size="11">Green = same hue as target / mass</text>
+    <text x="800" y="68" fill="#5A5E6E" font-size="11">rollout (&quot;passed checkpoint&quot;).</text>
+  </g>
+
+  <line x1="40" y1="705" x2="1060" y2="705" stroke="#E0E2E8" stroke-width="1" stroke-dasharray="3,3" />
+
+  <!-- ============================================================== -->
+  <!-- OPTION 5: Inline ✓ before title text -->
+  <!-- ============================================================== -->
+  <g transform="translate(0, 715)">
+    <text x="40" y="36" fill="#1A1D26" font-size="14" font-weight="700">5 &#xB7; Inline &#x2713; in title</text>
+    <text x="40" y="56" fill="#5A5E6E" font-size="11">Green check prefix before version label</text>
+
+    <rect x="380" y="24" width="100" height="62" rx="8" fill="#E8F0FA" stroke="#3B6FD6" stroke-width="1.5" />
+    <text x="430" y="44" fill="#3B6FD6" font-size="13" font-weight="600" text-anchor="middle"><tspan fill="#0E9A7E" font-weight="700">&#x2713; </tspan>V1 &#xB7; <tspan font-family="JetBrains Mono, monospace">38%</tspan></text>
+    <text x="430" y="60" fill="#1A1D26" font-size="11" text-anchor="middle">Theoretical</text>
+    <text x="430" y="76" fill="#5A5E6E" font-size="10" text-anchor="middle" font-family="JetBrains Mono, monospace">Apr 14</text>
+
+    <rect x="620" y="24" width="140" height="62" rx="8" fill="#FAEFD7" stroke="#C88A1A" stroke-width="1.5" />
+    <text x="690" y="44" fill="#C88A1A" font-size="13" font-weight="600" text-anchor="middle"><tspan fill="#0E9A7E" font-weight="700">&#x2713; </tspan>V1.2 field test &#xB7; <tspan font-family="JetBrains Mono, monospace">68%</tspan></text>
+    <text x="690" y="60" fill="#1A1D26" font-size="11" text-anchor="middle">Real fleet captures</text>
+    <text x="690" y="76" fill="#5A5E6E" font-size="10" text-anchor="middle" font-family="JetBrains Mono, monospace">May 7</text>
+
+    <text x="800" y="36" fill="#1A1D26" font-size="11">Cleanest, in-flow with title.</text>
+    <text x="800" y="52" fill="#5A5E6E" font-size="11">Survives at small sizes. May be too</text>
+    <text x="800" y="68" fill="#5A5E6E" font-size="11">subtle if &quot;done&quot; needs to pop.</text>
+  </g>
+
+  <line x1="40" y1="820" x2="1060" y2="820" stroke="#E0E2E8" stroke-width="1" stroke-dasharray="3,3" />
+
+  <!-- ============================================================== -->
+  <!-- OPTION 6: Corner "DONE" ribbon overhang -->
+  <!-- ============================================================== -->
+  <g transform="translate(0, 830)">
+    <text x="40" y="36" fill="#1A1D26" font-size="14" font-weight="700">6 &#xB7; Corner DONE ribbon</text>
+    <text x="40" y="56" fill="#5A5E6E" font-size="11">Angled ribbon overhang at top-right corner</text>
+
+    <rect x="380" y="24" width="100" height="62" rx="8" fill="#E8F0FA" stroke="#3B6FD6" stroke-width="1.5" />
+    <text x="430" y="44" fill="#3B6FD6" font-size="13" font-weight="600" text-anchor="middle">V1 &#xB7; <tspan font-family="JetBrains Mono, monospace">38%</tspan></text>
+    <text x="430" y="60" fill="#1A1D26" font-size="11" text-anchor="middle">Theoretical</text>
+    <text x="430" y="76" fill="#5A5E6E" font-size="10" text-anchor="middle" font-family="JetBrains Mono, monospace">Apr 14</text>
+    <g transform="translate(472, 20) rotate(40)">
+      <rect x="-21" y="-7" width="42" height="14" fill="#0E9A7E" />
+      <text x="0" y="3" fill="#FFFFFF" font-size="8" font-weight="700" text-anchor="middle" font-family="JetBrains Mono, monospace" letter-spacing="0.10em">DONE</text>
+    </g>
+
+    <rect x="620" y="24" width="140" height="62" rx="8" fill="#FAEFD7" stroke="#C88A1A" stroke-width="1.5" />
+    <text x="690" y="44" fill="#C88A1A" font-size="13" font-weight="600" text-anchor="middle">V1.2 field test &#xB7; <tspan font-family="JetBrains Mono, monospace">68%</tspan></text>
+    <text x="690" y="60" fill="#1A1D26" font-size="11" text-anchor="middle">Real fleet captures</text>
+    <text x="690" y="76" fill="#5A5E6E" font-size="10" text-anchor="middle" font-family="JetBrains Mono, monospace">May 7</text>
+    <g transform="translate(752, 20) rotate(40)">
+      <rect x="-21" y="-7" width="42" height="14" fill="#0E9A7E" />
+      <text x="0" y="3" fill="#FFFFFF" font-size="8" font-weight="700" text-anchor="middle" font-family="JetBrains Mono, monospace" letter-spacing="0.10em">DONE</text>
+    </g>
+
+    <text x="800" y="36" fill="#1A1D26" font-size="11">Decorative, decisive.</text>
+    <text x="800" y="52" fill="#5A5E6E" font-size="11">Risk: extra visual element to render;</text>
+    <text x="800" y="68" fill="#5A5E6E" font-size="11">may not survive rasterization.</text>
+  </g>
+
+  <!-- ===== FOOTER ===== -->
+  <line x1="40" y1="930" x2="1060" y2="930" stroke="#E0E2E8" stroke-width="1" />
+  <text x="40" y="948" fill="#8E92A0" font-size="10" font-family="JetBrains Mono, monospace" letter-spacing="0.04em">Preview only &#xB7; pick one to inline into model_development_cycle.svg</text>
+</svg>

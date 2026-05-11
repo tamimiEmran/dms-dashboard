@@ -1167,7 +1167,7 @@
       }
     }
 
-    /* === Model development cycle hero on the rollout slide ===
+    /* === Model development cycle hero on the expansion slide ===
        The .model-cycle-host is the anchor for the .floater overlay:
        position:relative means the absolutely-positioned floater nests
        inside this card and only dims this visual (not the whole slide). */
@@ -1261,6 +1261,180 @@
     .floater-open:hover {
       background: #2E323D;
       color: #FFFFFF;
+    }
+
+    /* === Decision-options overlay (inline HTML, not iframe) ===
+       Triggered by clicking the DECISION REQUIRED amber box inside
+       model_development_cycle.svg. Shares the floater backdrop pattern
+       but renders content as cards instead of an embedded PDF. */
+    .decision-floater {
+      display: none;
+      position: absolute;
+      inset: 0;
+      z-index: 10;
+      background: rgba(26, 29, 38, 0.72);
+      backdrop-filter: blur(4px);
+      border-radius: 12px;
+      cursor: pointer;
+      padding: 24px;
+    }
+
+    .decision-floater.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .decision-panel {
+      position: relative;
+      cursor: default;
+      width: 100%;
+      max-width: 1100px;
+      max-height: 100%;
+      overflow-y: auto;
+      background: var(--bg-card);
+      border-radius: 14px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+      padding: 40px 48px;
+    }
+
+    .decision-panel-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      color: var(--text-dim);
+      cursor: pointer;
+      font-size: 26px;
+      line-height: 1;
+    }
+
+    .decision-panel-close:hover {
+      background: var(--bg-elevated);
+      color: var(--text);
+    }
+
+    .decision-panel-eyebrow {
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: var(--accent-3);
+      text-transform: uppercase;
+    }
+
+    .decision-panel-title {
+      margin: 8px 0 6px;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.01em;
+      line-height: 1.2;
+    }
+
+    .decision-panel-sub {
+      font-size: 16px;
+      color: var(--text-dim);
+      margin-bottom: 28px;
+      line-height: 1.45;
+    }
+
+    .decision-section-label {
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .decision-options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .opt-card {
+      border: 1.5px solid var(--accent-3);
+      background: var(--accent-3-dim);
+      border-radius: 12px;
+      padding: 22px 26px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-height: 110px;
+    }
+
+    .opt-num {
+      font-family: var(--mono);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: var(--accent-3);
+      text-transform: uppercase;
+    }
+
+    .opt-stack {
+      font-size: 19px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.4;
+    }
+
+    .decision-divider {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 28px 0 20px;
+    }
+
+    .decision-divider::before,
+    .decision-divider::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .decision-divider span {
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      padding: 6px 16px;
+      background: var(--bg-elevated);
+      border-radius: 999px;
+    }
+
+    .opt-card-lease {
+      border-color: var(--teal);
+      background: var(--teal-dim);
+    }
+
+    .opt-card-lease .opt-num {
+      color: var(--teal);
+    }
+
+    @media (max-width: 720px) {
+      .decision-options-grid {
+        grid-template-columns: 1fr;
+      }
+      .decision-panel {
+        padding: 28px 22px;
+      }
+      .decision-panel-title {
+        font-size: 22px;
+      }
+      .opt-stack {
+        font-size: 17px;
+      }
     }
 
     /* === Collapsible "Extended edge device PR" section ===
@@ -1449,6 +1623,53 @@
                   title="AI Brain Architecture &middot; Leasing Model Taxis (slide 3)"></iframe>
         </div>
       </div>
+
+      <!-- Decision-options overlay: opens when the SVG's "DECISION REQUIRED"
+           amber box posts {type:'open-decision-overlay'}. Inline cards (no iframe)
+           since the option content is short and benefits from CSS grid styling.
+           Click outside the panel or press Esc to close. -->
+      <div class="decision-floater" id="decisionOptionsFloater"
+           onclick="closeDecisionOptionsFloater()"
+           role="dialog" aria-modal="true"
+           aria-labelledby="decisionOptionsTitle">
+        <div class="decision-panel" onclick="event.stopPropagation()">
+          <button class="decision-panel-close"
+                  onclick="closeDecisionOptionsFloater()"
+                  aria-label="Close">&times;</button>
+
+          <div class="decision-panel-eyebrow">Decision required</div>
+          <h3 class="decision-panel-title" id="decisionOptionsTitle">Whole-fleet expansion &middot; procurement paths</h3>
+          <div class="decision-panel-sub">Four hardware options to evaluate, plus an alternative business model for the leasing fleet.</div>
+
+          <div class="decision-section-label">Hardware procurement options</div>
+          <div class="decision-options-grid">
+            <div class="opt-card">
+              <div class="opt-num">Option 1</div>
+              <div class="opt-stack">QOHO + OBU</div>
+            </div>
+            <div class="opt-card">
+              <div class="opt-num">Option 2</div>
+              <div class="opt-stack">Streaming + OBU</div>
+            </div>
+            <div class="opt-card">
+              <div class="opt-num">Option 3</div>
+              <div class="opt-stack">Edge camera + OBU</div>
+            </div>
+            <div class="opt-card">
+              <div class="opt-num">Option 4</div>
+              <div class="opt-stack">Streaming camera + extended device + OBU</div>
+            </div>
+          </div>
+
+          <div class="decision-divider"><span>or</span></div>
+
+          <div class="decision-section-label">Alternative business model</div>
+          <div class="opt-card opt-card-lease">
+            <div class="opt-num">Leasing model</div>
+            <div class="opt-stack">Tablet + streaming camera</div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <details class="pr-collapsible">
@@ -1627,7 +1848,7 @@
 
 
     // ============================================
-    // === Leasing-taxi PDF floater on the rollout slide ===
+    // === Leasing-taxi PDF floater on the expansion slide ===
     // ============================================
     // The model_development_cycle.svg is loaded via <object>. When the user
     // clicks its early-exit-trigger rect, the SVG posts an
@@ -1658,6 +1879,35 @@
 
       window.addEventListener('message', function (e) {
         if (e && e.data && e.data.type === 'open-leasing-taxis-overlay') {
+          open();
+        }
+      });
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && floater.classList.contains('active')) close();
+      });
+    })();
+
+
+    // ============================================
+    // === Decision-options overlay (inline cards) ===
+    // ============================================
+    // Triggered when model_development_cycle.svg posts
+    // {type:'open-decision-overlay'} after the user clicks the amber
+    // "DECISION REQUIRED" gate. Same scoping pattern as the leasing
+    // floater above — only the .model-cycle-host visual is dimmed.
+    (function () {
+      const floater = document.getElementById('decisionOptionsFloater');
+      if (!floater) return;
+
+      function open() { floater.classList.add('active'); }
+      function close() { floater.classList.remove('active'); }
+
+      // Expose so inline onclick handlers in the markup can call it.
+      window.closeDecisionOptionsFloater = close;
+
+      window.addEventListener('message', function (e) {
+        if (e && e.data && e.data.type === 'open-decision-overlay') {
           open();
         }
       });
