@@ -17,7 +17,7 @@
   Visual idiom borrowed from reports/dms/workflow.html.
 -->
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-     viewBox="0 0 1400 560" width="1400"
+     viewBox="0 0 1400 580" width="1400"
      font-family="'DM Sans', system-ui, sans-serif">
   <defs>
     <marker id="mdc-arrow-b" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">

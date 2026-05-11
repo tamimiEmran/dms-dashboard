@@ -4,7 +4,7 @@
   10 May 2026 — Edge Deployment + CAN-bus + Next Steps
   Three slides:
     1. Hikvision lift slopegraph + edge box + use cases + deployment cards (Howen OBU + MHero / taxi / limo)
-    2. CAN-bus results placeholder
+    2. CAN-bus telemetry summary
     3. Next steps — current assets (Howen + Qoho, Howen + MHero + Dashcam) + extended edge device PR
 
   Numbers in slide 1 KPI / slopegraph reuse the v2 routing result from
@@ -792,62 +792,329 @@
       }
     }
 
-    /* === placeholder card (slide 2) === */
-    .placeholder-card {
+    /* === slide 2 : CAN-bus summary === */
+    .can-bus-layout {
       flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--bg-card);
-      border: 2px dashed var(--border);
-      border-radius: var(--radius);
-      padding: 80px 40px;
-      min-height: 400px;
-      text-align: center;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: minmax(360px, .78fr) minmax(620px, 1.22fr);
+      gap: 18px;
+      align-items: stretch;
     }
 
-    .placeholder-inner .placeholder-eyebrow {
+    .can-summary-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px 26px;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+
+    .can-summary-eyebrow {
       font-family: var(--mono);
       font-size: 11px;
-      letter-spacing: 0.18em;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: var(--text-muted);
+      color: var(--accent-2);
       font-weight: 600;
-      margin-bottom: 14px;
-    }
-
-    .placeholder-inner .placeholder-title {
-      font-size: 28px;
-      font-weight: 600;
-      letter-spacing: -0.02em;
-      color: var(--text-dim);
       margin-bottom: 10px;
     }
 
-    .placeholder-inner .placeholder-sub {
-      font-size: 14px;
-      color: var(--text-muted);
-      max-width: 620px;
-      margin: 0 auto 18px;
+    .can-summary-title {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      margin-bottom: 8px;
     }
 
-    .placeholder-inner .placeholder-targets {
-      display: flex;
-      gap: 14px;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-top: 14px;
-    }
-
-    .placeholder-inner .placeholder-targets .target {
-      font-family: var(--mono);
-      font-size: 11px;
-      letter-spacing: 0.04em;
-      padding: 6px 12px;
-      background: var(--bg-elevated);
-      border: 1px dashed var(--border);
-      border-radius: 999px;
+    .can-summary-copy {
+      font-size: 13px;
       color: var(--text-dim);
+      max-width: 760px;
+    }
+
+    .can-summary-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      width: fit-content;
+      margin-top: 24px;
+      color: var(--accent-2);
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: var(--mono);
+      letter-spacing: 0.02em;
+    }
+
+    .can-summary-link:hover {
+      text-decoration: underline;
+    }
+
+    .can-summary-side {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .can-metric {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      background: var(--bg);
+    }
+
+    .can-metric .metric-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+
+    .can-metric .metric-value {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: var(--text);
+    }
+
+    .can-metric .metric-note {
+      margin-top: 4px;
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    .can-preview-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      min-height: 0;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+
+    .can-preview-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .can-preview-title {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .can-preview-note {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+    }
+
+    .can-preview-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      min-height: 0;
+    }
+
+    .can-preview-item {
+      min-width: 0;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .can-preview-item.good {
+      border-color: rgba(14, 154, 126, 0.34);
+      background: linear-gradient(180deg, rgba(14, 154, 126, 0.04), var(--bg) 42%);
+    }
+
+    .can-preview-item.warn {
+      border-color: rgba(200, 138, 26, 0.42);
+      background: linear-gradient(180deg, rgba(200, 138, 26, 0.05), var(--bg) 42%);
+    }
+
+    .can-example-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 10px 12px 9px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.64);
+    }
+
+    .can-example-kicker {
+      display: block;
+      font-family: var(--mono);
+      font-size: 9.5px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 2px;
+    }
+
+    .can-example-title {
+      display: block;
+      font-size: 15px;
+      line-height: 1.1;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text);
+    }
+
+    .can-verdict {
+      flex: 0 0 auto;
+      font-family: var(--mono);
+      font-size: 9.5px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      border-radius: 999px;
+      padding: 4px 7px;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      background: var(--bg-card);
+    }
+
+    .can-verdict.good {
+      color: var(--accent);
+      border-color: rgba(14, 154, 126, 0.28);
+      background: var(--accent-dim);
+    }
+
+    .can-verdict.warn {
+      color: var(--accent-3);
+      border-color: rgba(200, 138, 26, 0.32);
+      background: var(--accent-3-dim);
+    }
+
+    .can-preview-item video {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      max-height: 196px;
+      display: block;
+      object-fit: contain;
+      background: #000;
+    }
+
+    .can-evidence-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 9px 10px;
+      background: var(--bg-card);
+      border-top: 1px solid var(--border);
+    }
+
+    .gaze-state {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 5px 8px;
+      border-radius: 999px;
+      background: var(--accent-2-dim);
+      color: var(--accent-2);
+      white-space: nowrap;
+    }
+
+    .gaze-state.off {
+      color: var(--text-muted);
+      background: var(--bg-elevated);
+    }
+
+    .blinker-pair {
+      display: flex;
+      gap: 7px;
+      align-items: center;
+    }
+
+    .blinker {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      min-width: 68px;
+      padding: 4px 7px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg-elevated);
+      color: var(--text-muted);
+      opacity: 0.72;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .blinker .arrow {
+      width: 20px;
+      height: 20px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      background: var(--bg-card);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .blinker.on {
+      opacity: 1;
+      font-weight: 700;
+      border-color: rgba(200, 138, 26, 0.42);
+      background: var(--accent-3-dim);
+      color: var(--accent-3);
+      box-shadow: inset 0 0 0 1px rgba(200, 138, 26, 0.08);
+    }
+
+    .blinker.left.on {
+      border-color: rgba(59, 111, 214, 0.36);
+      background: var(--accent-2-dim);
+      color: var(--accent-2);
+    }
+
+    .blinker.on .arrow {
+      background: currentColor;
+      color: #fff;
+      animation: blinkerPulse 0.72s steps(2, start) infinite;
+    }
+
+    @keyframes blinkerPulse {
+      0%, 49% {
+        opacity: 1;
+      }
+
+      50%, 100% {
+        opacity: 0.42;
+      }
+    }
+
+    @media (max-width: 1100px) {
+      .can-bus-layout,
+      .can-preview-grid {
+        grid-template-columns: 1fr;
+      }
     }
 
     /* === slide 3 : asset cards + PR spec table === */
@@ -1225,6 +1492,103 @@
         grid-template-columns: 1fr;
       }
     }
+
+    /* === Model development cycle hero on the rollout slide ===
+       The .model-cycle-host is the anchor for the .floater overlay:
+       position:relative means the absolutely-positioned floater nests
+       inside this card and only dims this visual (not the whole slide). */
+    .model-cycle-host {
+      position: relative;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 18px;
+      overflow: hidden;
+    }
+
+    .model-cycle-svg {
+      display: block;
+      width: 100%;
+      /* Aspect must match the SVG's viewBox (1400 wide × 580 tall — the
+         extra 20px below 560 hosts the legend strip without clipping). */
+      aspect-ratio: 1400 / 580;
+      border: 0;
+    }
+
+    /* Floater (scoped PDF overlay) — same selectors and visual treatment
+       as the dashboard's leasing-taxis floater. Duplicated inline because
+       summary.html and dashboard/index.html don't share a stylesheet yet. */
+    .floater {
+      display: none;
+      position: absolute;
+      inset: 0;
+      z-index: 10;
+      background: rgba(26, 29, 38, 0.72);
+      backdrop-filter: blur(4px);
+      border-radius: 12px;
+      cursor: pointer;
+      padding: 24px;
+    }
+
+    .floater.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .floater-panel {
+      background: #1A1D26;
+      border-radius: 8px;
+      position: relative;
+      width: 100%;
+      height: 100%;
+      max-width: 1280px;
+      cursor: default;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+      overflow: hidden;
+    }
+
+    .floater-frame {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    .floater-close,
+    .floater-open {
+      position: absolute;
+      top: 8px;
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      border: 1px solid #2E323D;
+      background: #1A1D26;
+      color: #E0E2E8;
+      cursor: pointer;
+      z-index: 11;
+    }
+
+    .floater-close {
+      right: 8px;
+      font-size: 22px;
+      line-height: 1;
+    }
+
+    .floater-open {
+      right: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+    }
+
+    .floater-close:hover,
+    .floater-open:hover {
+      background: #2E323D;
+      color: #FFFFFF;
+    }
   </style>
 </head>
 
@@ -1313,7 +1677,7 @@
 
 
   <!-- ============================================
-     SLIDE 2 / CAN-BUS RESULTS PLACEHOLDER
+     SLIDE 2 / CAN-BUS TELEMETRY SUMMARY
      ============================================ -->
   <section class="slide" id="canbus">
     <div class="slide-stamp">
@@ -1323,21 +1687,116 @@
     </div>
 
     <span class="tag tag--blue">CAN-bus</span>
-    <h2>CAN-bus telemetry results</h2>
-    <h3>Per-event corroboration of mirror glances and deployment metrics from the vehicle CAN feed. Numbers and
-      visualisations to be added once the pilot run is parsed.</h3>
+    <h2>CAN-bus corroboration for DMS events</h2>
+    <h3>Pair the DMS camera view with vehicle turn-signal data so risky lane-change events are checked from both driver action and vehicle state.</h3>
 
-    <div class="placeholder-card">
-      <div class="placeholder-inner">
-        <div class="placeholder-eyebrow">Placeholder &middot; to be filled</div>
-        <div class="placeholder-title">CAN-bus results</div>
-        <div class="placeholder-sub">Drop in: blinker / signal corroboration timeline, brake / throttle event counts vs.
-          detection events, and any other CAN-side metric the pilot deployment surfaces.</div>
-        <div class="placeholder-targets">
-          <span class="target">blinker corroboration</span>
-          <span class="target">brake / throttle event count</span>
-          <span class="target">speed-binned alert rate</span>
-          <span class="target">&lt;TBD additional&gt;</span>
+    <div class="can-bus-layout">
+      <div class="can-summary-card">
+        <div>
+          <div class="can-summary-eyebrow">Camera + vehicle signal</div>
+          <div class="can-summary-title">Use CAN-bus turn indicators to verify what the DMS camera sees.</div>
+          <p class="can-summary-copy">The camera shows whether the driver checked before a maneuver. The CAN-bus signal
+            shows whether the vehicle indicator was active in the same window. Together they make the event easier to
+            review than either source alone.</p>
+        </div>
+
+        <div class="can-summary-side">
+          <div class="can-metric">
+            <div class="metric-label">Vehicle evidence</div>
+            <div class="metric-value">Turn indicator state</div>
+            <div class="metric-note">Left and right turn signals are read from the vehicle CAN feed.</div>
+          </div>
+          <div class="can-metric">
+            <div class="metric-label">Examples shown</div>
+            <div class="metric-value num">4 synced examples</div>
+            <div class="metric-note">Driver look / no-look crossed with right signal on / off.</div>
+          </div>
+          <div class="can-metric">
+            <div class="metric-label">What this catches</div>
+            <div class="metric-value">Dangerous-event context</div>
+            <div class="metric-note">The same clip shows both the driver behavior and the vehicle signal at that time.</div>
+          </div>
+        </div>
+
+        <a class="can-summary-link"
+          href="assets/can-bus/front_right_look_can_report.html"
+          target="_blank" rel="noopener">Open synced CAN-bus example report &rarr;</a>
+      </div>
+
+      <div class="can-preview-card">
+        <div class="can-preview-head">
+          <div class="can-preview-title">Synced CAN-bus examples</div>
+          <div class="can-preview-note">local presentation assets</div>
+        </div>
+        <div class="can-preview-grid">
+          <div class="can-preview-item good">
+            <div class="can-example-head">
+              <div>
+                <span class="can-example-kicker">01 &middot; expected behaviour</span>
+                <span class="can-example-title">LOOK + RIGHT SIGNAL</span>
+              </div>
+              <span class="can-verdict good">matched</span>
+            </div>
+            <video src="assets/can-bus/clips/01_look_can_on.mp4" muted loop playsinline preload="metadata" controls></video>
+            <div class="can-evidence-row">
+              <span class="gaze-state">driver looking</span>
+              <span class="blinker-pair">
+                <span class="blinker left"><span class="arrow">&#9664;</span>L off</span>
+                <span class="blinker right on"><span class="arrow">&#9654;</span>R on</span>
+              </span>
+            </div>
+          </div>
+          <div class="can-preview-item warn">
+            <div class="can-example-head">
+              <div>
+                <span class="can-example-kicker">02 &middot; missing signal</span>
+                <span class="can-example-title">LOOK + NO SIGNAL</span>
+              </div>
+              <span class="can-verdict warn">issue</span>
+            </div>
+            <video src="assets/can-bus/clips/02_look_can_off.mp4" muted loop playsinline preload="metadata" controls></video>
+            <div class="can-evidence-row">
+              <span class="gaze-state">driver looking</span>
+              <span class="blinker-pair">
+                <span class="blinker left"><span class="arrow">&#9664;</span>L off</span>
+                <span class="blinker right"><span class="arrow">&#9654;</span>R off</span>
+              </span>
+            </div>
+          </div>
+          <div class="can-preview-item warn">
+            <div class="can-example-head">
+              <div>
+                <span class="can-example-kicker">03 &middot; signal without look</span>
+                <span class="can-example-title">NO LOOK + RIGHT SIGNAL</span>
+              </div>
+              <span class="can-verdict warn">issue</span>
+            </div>
+            <video src="assets/can-bus/clips/03_no_look_can_on.mp4" muted loop playsinline preload="metadata" controls></video>
+            <div class="can-evidence-row">
+              <span class="gaze-state off">not looking</span>
+              <span class="blinker-pair">
+                <span class="blinker left"><span class="arrow">&#9664;</span>L off</span>
+                <span class="blinker right on"><span class="arrow">&#9654;</span>R on</span>
+              </span>
+            </div>
+          </div>
+          <div class="can-preview-item warn">
+            <div class="can-example-head">
+              <div>
+                <span class="can-example-kicker">04 &middot; no look / no signal</span>
+                <span class="can-example-title">NO LOOK + NO SIGNAL</span>
+              </div>
+              <span class="can-verdict warn">issue</span>
+            </div>
+            <video src="assets/can-bus/clips/04_no_look_can_off.mp4" muted loop playsinline preload="metadata" controls></video>
+            <div class="can-evidence-row">
+              <span class="gaze-state off">not looking</span>
+              <span class="blinker-pair">
+                <span class="blinker left"><span class="arrow">&#9664;</span>L off</span>
+                <span class="blinker right"><span class="arrow">&#9654;</span>R off</span>
+              </span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -1358,6 +1817,43 @@
     <h2>Roll-out on current assets &middot; extended edge device PR</h2>
     <h3>Two existing fleet pairings carry the v2 pipeline as-is. A hardware purchase request adds a third platform with
       more headroom for additional use cases.</h3>
+
+    <div class="section-head">
+      <h4>Model development cycle</h4>
+      <span class="head-sub">click the early-exit trigger for the v2 leasing-taxi architecture detail</span>
+    </div>
+
+    <!-- Hero visual: model_development_cycle.svg with its scoped PDF floater.
+         The SVG's internal click handler posts "open-leasing-taxis-overlay"
+         to this parent document; the floater listens and opens inline. -->
+    <div class="model-cycle-host">
+      <object data="../../assets/model_development_cycle.svg" type="image/svg+xml" class="model-cycle-svg">
+        Model Development Cycle
+      </object>
+
+      <div class="floater" id="leasingTaxisFloater"
+           onclick="closeLeasingTaxisFloater()"
+           role="dialog" aria-modal="true"
+           aria-label="Leasing Model Taxis &middot; AI Brain Architecture">
+        <div class="floater-panel" onclick="event.stopPropagation()">
+          <a class="floater-open"
+             href="details/mass-rollout-leasing-taxis.html"
+             target="_blank" rel="noopener" title="Open in new tab">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+              <polyline points="15 3 21 3 21 9" />
+              <line x1="10" y1="14" x2="21" y2="3" />
+            </svg>
+          </a>
+          <button class="floater-close"
+                  onclick="closeLeasingTaxisFloater()"
+                  aria-label="Close">&times;</button>
+          <iframe id="leasingTaxisFloaterFrame" src="" loading="lazy"
+                  class="floater-frame"
+                  title="AI Brain Architecture &middot; Leasing Model Taxis (slide 3)"></iframe>
+        </div>
+      </div>
+    </div>
 
     <div class="section-head">
       <h4>Current assets</h4>
@@ -1598,6 +2094,48 @@
       });
       document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape' && lightbox.classList.contains('active')) closeCard();
+      });
+    })();
+
+
+    // ============================================
+    // === Leasing-taxi PDF floater on the rollout slide ===
+    // ============================================
+    // The model_development_cycle.svg is loaded via <object>. When the user
+    // clicks its early-exit-trigger rect, the SVG posts an
+    // "open-leasing-taxis-overlay" message to window.parent (this document).
+    // We listen and reveal a scoped PDF panel positioned absolutely inside
+    // the model-cycle host card — only the SVG behind it is dimmed.
+    (function () {
+      const floater = document.getElementById('leasingTaxisFloater');
+      const frame = document.getElementById('leasingTaxisFloaterFrame');
+      if (!floater || !frame) return;
+
+      function open() {
+        // Lazy-load the PDF on first open (saves bandwidth + initial render).
+        if (!frame.getAttribute('src')) {
+          frame.setAttribute(
+            'src',
+            '../../assets/leasing_taxis_arch/AI_Brain_Architecture_slide3.pdf#toolbar=0&navpanes=0&view=Fit'
+          );
+        }
+        floater.classList.add('active');
+      }
+      function close() {
+        floater.classList.remove('active');
+      }
+
+      // Expose close() so the inline onclick handlers in the markup can call it.
+      window.closeLeasingTaxisFloater = close;
+
+      window.addEventListener('message', function (e) {
+        if (e && e.data && e.data.type === 'open-leasing-taxis-overlay') {
+          open();
+        }
+      });
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && floater.classList.contains('active')) close();
       });
     })();
 

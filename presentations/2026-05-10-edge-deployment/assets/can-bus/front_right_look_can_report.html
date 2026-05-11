@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Yutong CH0F right-look + CAN report</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #F8F9FB;
+      --bg-card: #FFFFFF;
+      --bg-elevated: #F0F1F4;
+      --border: #E0E2E8;
+      --text: #1A1D26;
+      --text-dim: #5A5E6E;
+      --text-muted: #8E92A0;
+      --accent: #0E9A7E;
+      --accent-dim: rgba(14, 154, 126, 0.08);
+      --accent-strong: rgba(14, 154, 126, 0.18);
+      --accent-2: #3B6FD6;
+      --accent-2-dim: rgba(59, 111, 214, 0.08);
+      --accent-3: #C88A1A;
+      --accent-3-dim: rgba(200, 138, 26, 0.08);
+      --red: #D9453E;
+      --red-dim: rgba(217, 69, 62, 0.07);
+      --font: 'DM Sans', system-ui, sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+      --radius: 10px;
+      --radius-sm: 6px;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      line-height: 1.5;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      background-image: radial-gradient(circle, rgba(26,29,38,0.035) 1px, transparent 1px);
+      background-size: 22px 22px;
+      background-position: 0 0;
+    }
+    main { max-width: 1440px; margin: 0 auto; padding: 44px 42px 56px; }
+    section.slide {
+      position: relative;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 56px 48px 36px;
+      box-shadow: 0 18px 54px rgba(26,29,38,0.08);
+    }
+    section.slide::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, var(--border) 20%, var(--border) 80%, transparent 100%);
+    }
+    h1 { font-size: 26px; font-weight: 600; letter-spacing: -0.02em; margin: 0 0 4px; }
+    h2 { margin: 0; font-size: 18px; font-weight: 600; letter-spacing: -0.01em; }
+    h3 { font-size: 13px; font-weight: 400; color: var(--text-dim); margin: 0 0 18px; max-width: 920px; }
+    p { color: var(--text-dim); }
+    .hero { display: flex; justify-content: space-between; gap: 24px; align-items: flex-end; margin-bottom: 22px; }
+    .hero-copy { min-width: 0; }
+    .hero-subtitle { font-size: 13px; color: var(--text-dim); }
+    .hero-kpi { min-width: 168px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px; text-align: right; }
+    .hero-kpi .label { display: block; }
+    .hero-kpi .value { margin-top: 3px; }
+    .num { font-family: var(--mono); font-feature-settings: "tnum" 1; }
+    .tag {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 600;
+      font-family: var(--mono);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin-bottom: 6px;
+      background: var(--accent-dim);
+      color: var(--accent);
+    }
+    .slide-stamp {
+      position: absolute;
+      top: 28px; right: 38px;
+      display: flex; align-items: center; gap: 10px;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .slide-stamp .stamp-sep { width: 24px; height: 1px; background: var(--border); }
+    .slide-stamp .stamp-idx { color: var(--text-dim); font-weight: 500; }
+    .summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 18px 0 24px; }
+    .box { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 13px 14px; }
+    .label { color: var(--text-muted); font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 700; }
+    .value { margin-top: 5px; font-size: 24px; font-weight: 650; letter-spacing: -0.02em; }
+    .note { margin-top: 4px; color: var(--text-dim); font-size: 12px; }
+    .notice { border-left: 3px solid var(--accent-3); background: var(--bg-elevated); padding: 10px 14px; border-radius: 0 var(--radius-sm) var(--radius-sm) 0; margin: 14px 0 20px; color: var(--text); font-size: 12.5px; }
+    .dual-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px; align-items: stretch; }
+    .clip-block { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+    .clip-block-header { display: flex; align-items: baseline; justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+    .clip-title { font-size: 13px; font-weight: 600; }
+    .clip-time { font-size: 11.5px; color: var(--text-muted); }
+    .video-frame { background: #000; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; display: flex; justify-content: center; align-items: center; }
+    .video-frame video { width: 100%; height: auto; max-height: 380px; object-fit: contain; display: block; }
+    .leds { display: flex; justify-content: center; align-items: center; gap: 24px; padding: 4px 0 2px; }
+    .led { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .led .arrow { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 30px; line-height: 1; color: var(--border); transition: color 0.08s linear, text-shadow 0.08s linear; }
+    .led.on .arrow { animation: blink 0.6s steps(2, start) infinite; }
+    .led-left.on .arrow { color: var(--accent-2); text-shadow: 0 0 12px rgba(59,111,214,0.55); }
+    .led-right.on .arrow { color: var(--accent-3); text-shadow: 0 0 12px rgba(200,138,26,0.55); }
+    @keyframes blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0.32; } }
+    .led .label { font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); }
+    .led-left.on .label { color: var(--accent-2); }
+    .led-right.on .label { color: var(--accent-3); }
+    .metric-strip { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+    .metric-strip span { border: 1px solid var(--border); border-radius: 999px; padding: 5px 8px; color: var(--text-dim); font-size: 11.5px; background: var(--bg-card); }
+    .timeline-wrap { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 14px 4px; }
+    .timeline-wrap canvas { width: 100%; height: 150px; display: block; }
+    .action-bar { display: flex; align-items: flex-start; gap: 8px; padding: 10px 14px; background: var(--bg-elevated); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; font-size: 12.5px; margin-top: auto; }
+    .action-bar.amber { border-left-color: var(--accent-3); }
+    .action-text { color: var(--text); flex: 1; }
+    .action-text strong { font-weight: 600; }
+    table { width: 100%; border-collapse: collapse; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; font-size: 12.5px; }
+    th { color: var(--text-muted); font-family: var(--mono); text-transform: uppercase; letter-spacing: .06em; font-size: 10px; }
+    tr:last-child td { border-bottom: 0; }
+    img { width: 100%; border-radius: var(--radius); border: 1px solid var(--border); display: block; }
+    .section-label { margin: 24px 0 10px; font-size: 13px; font-weight: 600; }
+    @media (max-width: 980px) { main { padding: 24px 16px 36px; } section.slide { padding: 46px 24px 28px; } .hero { display: block; } .hero-kpi { text-align: left; margin-top: 12px; } .summary, .dual-grid { grid-template-columns: 1fr; } .slide-stamp { position: static; margin-bottom: 10px; } }
+  </style>
+</head>
+<body>
+<main>
+  <section class="slide" id="yutong-front-can">
+    <div class="slide-stamp">
+      <span>yutong / front-glance / 2026-05</span>
+      <span class="stamp-sep"></span>
+      <span class="stamp-idx">01 / 01</span>
+    </div>
+
+    <span class="tag">Glance Evaluation</span>
+    <div class="hero">
+      <div class="hero-copy">
+        <h1>Front driver look &times; CAN-bus blinkers</h1>
+        <p class="hero-subtitle">Video, blinker LEDs, and CAN-bus timeline are synced around each event window.</p>
+      </div>
+      <div class="hero-kpi">
+        <span class="label">Video duration</span>
+        <div class="value num">20.0 min</div>
+      </div>
+    </div>
+
+    <div class="dual-grid">
+    <article class="clip-block" data-example="ex01">
+      <div class="clip-block-header">
+        <span class="clip-title">Looking / L off / R on</span>
+        <span class="clip-time num">12:55:08.97</span>
+      </div>
+
+      <div class="video-frame">
+        <video src="clips/01_look_can_on.mp4" controls muted loop playsinline preload="metadata"></video>
+      </div>
+
+      <div class="leds">
+        <div class="led led-left" data-led="left">
+          <div class="arrow">&#9664;</div>
+          <div class="label">Left blinker</div>
+        </div>
+        <div class="led led-right" data-led="right">
+          <div class="arrow">&#9654;</div>
+          <div class="label">Right blinker</div>
+        </div>
+        <div class="metric-strip">
+          <span>look p <b class="num">0.84</b></span>
+          <span>L fraction <b class="num">0.00</b></span>
+          <span>R fraction <b class="num">0.68</b></span>
+        </div>
+      </div>
+
+      <div class="timeline-wrap">
+        <canvas width="820" height="150"></canvas>
+      </div>
+
+      <div class="action-bar">
+        <div class="action-text"><strong>Looking + right blinker active.</strong> Front-camera look probability 0.84; right blinker active fraction 0.68; left blinker active fraction 0.00.</div>
+      </div>
+    </article>
+    
+
+    <article class="clip-block" data-example="ex02">
+      <div class="clip-block-header">
+        <span class="clip-title">Looking / L off / R off</span>
+        <span class="clip-time num">12:57:00.48</span>
+      </div>
+
+      <div class="video-frame">
+        <video src="clips/02_look_can_off.mp4" controls muted loop playsinline preload="metadata"></video>
+      </div>
+
+      <div class="leds">
+        <div class="led led-left" data-led="left">
+          <div class="arrow">&#9664;</div>
+          <div class="label">Left blinker</div>
+        </div>
+        <div class="led led-right" data-led="right">
+          <div class="arrow">&#9654;</div>
+          <div class="label">Right blinker</div>
+        </div>
+        <div class="metric-strip">
+          <span>look p <b class="num">0.94</b></span>
+          <span>L fraction <b class="num">0.00</b></span>
+          <span>R fraction <b class="num">0.00</b></span>
+        </div>
+      </div>
+
+      <div class="timeline-wrap">
+        <canvas width="820" height="150"></canvas>
+      </div>
+
+      <div class="action-bar amber">
+        <div class="action-text"><strong>Looking + right blinker inactive.</strong> Front-camera look probability 0.94; right blinker active fraction 0.00; left blinker active fraction 0.00.</div>
+      </div>
+    </article>
+    
+
+    <article class="clip-block" data-example="ex03">
+      <div class="clip-block-header">
+        <span class="clip-title">Not looking / L off / R on</span>
+        <span class="clip-time num">13:00:33.82</span>
+      </div>
+
+      <div class="video-frame">
+        <video src="clips/03_no_look_can_on.mp4" controls muted loop playsinline preload="metadata"></video>
+      </div>
+
+      <div class="leds">
+        <div class="led led-left" data-led="left">
+          <div class="arrow">&#9664;</div>
+          <div class="label">Left blinker</div>
+        </div>
+        <div class="led led-right" data-led="right">
+          <div class="arrow">&#9654;</div>
+          <div class="label">Right blinker</div>
+        </div>
+        <div class="metric-strip">
+          <span>look p <b class="num">0.04</b></span>
+          <span>L fraction <b class="num">0.00</b></span>
+          <span>R fraction <b class="num">0.53</b></span>
+        </div>
+      </div>
+
+      <div class="timeline-wrap">
+        <canvas width="820" height="150"></canvas>
+      </div>
+
+      <div class="action-bar amber">
+        <div class="action-text"><strong>Not looking + right blinker active.</strong> Front-camera look probability 0.04; right blinker active fraction 0.53; left blinker active fraction 0.00.</div>
+      </div>
+    </article>
+    
+
+    <article class="clip-block" data-example="ex04">
+      <div class="clip-block-header">
+        <span class="clip-title">Not looking / L off / R off</span>
+        <span class="clip-time num">13:01:40.52</span>
+      </div>
+
+      <div class="video-frame">
+        <video src="clips/04_no_look_can_off.mp4" controls muted loop playsinline preload="metadata"></video>
+      </div>
+
+      <div class="leds">
+        <div class="led led-left" data-led="left">
+          <div class="arrow">&#9664;</div>
+          <div class="label">Left blinker</div>
+        </div>
+        <div class="led led-right" data-led="right">
+          <div class="arrow">&#9654;</div>
+          <div class="label">Right blinker</div>
+        </div>
+        <div class="metric-strip">
+          <span>look p <b class="num">0.01</b></span>
+          <span>L fraction <b class="num">0.00</b></span>
+          <span>R fraction <b class="num">0.00</b></span>
+        </div>
+      </div>
+
+      <div class="timeline-wrap">
+        <canvas width="820" height="150"></canvas>
+      </div>
+
+      <div class="action-bar">
+        <div class="action-text"><strong>Not looking + right blinker inactive.</strong> Front-camera look probability 0.01; right blinker active fraction 0.00; left blinker active fraction 0.00.</div>
+      </div>
+    </article>
+    </div>
+  </section>
+</main>
+<script>
+  const DATA = [{"id":"ex01","key":"look_can_on","title":"Looking + right blinker active","looking":true,"can_active":true,"right_blinker":true,"left_blinker":false,"video":"clips/01_look_can_on.mp4","clip_start":605.96732,"clip_duration":6.0,"pre_context":3.0,"reference_t":608.96732,"event_start_rel":-0.5091700000000401,"event_end_rel":7.128379999999993,"look_prob":0.8442157880781549,"can_active_fraction":0.6764705882352942,"right_blinker_fraction":0.6764705882352942,"left_blinker_fraction":0.0,"can_points":[{"t":-14.846,"left":0,"right":0},{"t":-14.648,"left":0,"right":0},{"t":-14.447,"left":0,"right":0},{"t":-14.247,"left":0,"right":0},{"t":-14.047,"left":0,"right":0},{"t":-13.847,"left":0,"right":0},{"t":-13.647,"left":0,"right":0},{"t":-13.447,"left":0,"right":0},{"t":-13.247,"left":0,"right":0},{"t":-13.047,"left":0,"right":0},{"t":-12.847,"left":0,"right":0},{"t":-12.647,"left":0,"right":0},{"t":-12.447,"left":0,"right":0},{"t":-12.247,"left":0,"right":0},{"t":-12.048,"left":0,"right":0},{"t":-11.846,"left":0,"right":0},{"t":-11.647,"left":0,"right":0},{"t":-11.448,"left":0,"right":0},{"t":-11.247,"left":0,"right":0},{"t":-11.047,"left":0,"right":0},{"t":-10.847,"left":0,"right":0},{"t":-10.647,"left":0,"right":0},{"t":-10.447,"left":0,"right":0},{"t":-10.247,"left":0,"right":0},{"t":-10.047,"left":0,"right":0},{"t":-9.846,"left":0,"right":0},{"t":-9.647,"left":0,"right":0},{"t":-9.447,"left":0,"right":0},{"t":-9.248,"left":0,"right":0},{"t":-9.048,"left":0,"right":0},{"t":-8.847,"left":0,"right":0},{"t":-8.648,"left":0,"right":0},{"t":-8.447,"left":0,"right":0},{"t":-8.247,"left":0,"right":0},{"t":-8.047,"left":0,"right":0},{"t":-7.847,"left":0,"right":0},{"t":-7.647,"left":0,"right":0},{"t":-7.446,"left":0,"right":0},{"t":-7.247,"left":0,"right":0},{"t":-7.047,"left":0,"right":0},{"t":-6.845,"left":0,"right":0},{"t":-6.647,"left":0,"right":0},{"t":-6.447,"left":0,"right":0},{"t":-6.247,"left":0,"right":0},{"t":-6.047,"left":0,"right":0},{"t":-5.847,"left":0,"right":0},{"t":-5.648,"left":0,"right":0},{"t":-5.448,"left":0,"right":0},{"t":-5.246,"left":0,"right":0},{"t":-5.048,"left":0,"right":0},{"t":-4.846,"left":0,"right":0},{"t":-4.648,"left":0,"right":1},{"t":-4.446,"left":0,"right":1},{"t":-4.246,"left":0,"right":1},{"t":-4.048,"left":0,"right":1},{"t":-3.845,"left":0,"right":1},{"t":-3.648,"left":0,"right":1},{"t":-3.448,"left":0,"right":1},{"t":-3.247,"left":0,"right":1},{"t":-3.048,"left":0,"right":1},{"t":-2.845,"left":0,"right":1},{"t":-2.648,"left":0,"right":1},{"t":-2.448,"left":0,"right":1},{"t":-2.247,"left":0,"right":1},{"t":-2.048,"left":0,"right":1},{"t":-1.846,"left":0,"right":1},{"t":-1.648,"left":0,"right":1},{"t":-1.448,"left":0,"right":1},{"t":-1.248,"left":0,"right":1},{"t":-1.047,"left":0,"right":1},{"t":-0.846,"left":0,"right":1},{"t":-0.648,"left":0,"right":1},{"t":-0.447,"left":0,"right":1},{"t":-0.247,"left":0,"right":1},{"t":-0.046,"left":0,"right":1},{"t":0.154,"left":0,"right":1},{"t":0.352,"left":0,"right":1},{"t":0.552,"left":0,"right":1},{"t":0.752,"left":0,"right":1},{"t":0.952,"left":0,"right":1},{"t":1.154,"left":0,"right":1},{"t":1.354,"left":0,"right":1},{"t":1.553,"left":0,"right":1},{"t":1.753,"left":0,"right":1},{"t":1.953,"left":0,"right":1},{"t":2.155,"left":0,"right":1},{"t":2.353,"left":0,"right":1},{"t":2.553,"left":0,"right":1},{"t":2.754,"left":0,"right":1},{"t":2.953,"left":0,"right":1},{"t":3.155,"left":0,"right":1},{"t":3.354,"left":0,"right":1},{"t":3.554,"left":0,"right":1},{"t":3.753,"left":0,"right":1},{"t":3.954,"left":0,"right":1},{"t":4.154,"left":0,"right":1},{"t":4.353,"left":0,"right":1},{"t":4.553,"left":0,"right":1},{"t":4.753,"left":0,"right":0},{"t":4.952,"left":0,"right":0},{"t":5.154,"left":0,"right":0},{"t":5.353,"left":0,"right":0},{"t":5.554,"left":0,"right":0},{"t":5.754,"left":0,"right":0},{"t":5.954,"left":0,"right":0},{"t":6.154,"left":0,"right":0},{"t":6.353,"left":0,"right":0},{"t":6.554,"left":0,"right":0},{"t":6.753,"left":0,"right":0},{"t":6.953,"left":0,"right":0},{"t":7.155,"left":0,"right":0},{"t":7.354,"left":0,"right":0},{"t":7.553,"left":0,"right":0},{"t":7.753,"left":0,"right":0},{"t":7.953,"left":0,"right":0}],"clock_local":"12:55:08.97","clock_can":"17:55:08.97","headline":"Looking + right blinker active","detail":"Front-camera look probability 0.84; right blinker active fraction 0.68; left blinker active fraction 0.00."},{"id":"ex02","key":"look_can_off","title":"Looking + right blinker inactive","looking":true,"can_active":false,"right_blinker":false,"left_blinker":false,"video":"clips/02_look_can_off.mp4","clip_start":717.4755499999999,"clip_duration":6.0,"pre_context":3.0,"reference_t":720.4755499999999,"event_start_rel":-2.545849999999973,"event_end_rel":6.110040000000026,"look_prob":0.935151279405405,"can_active_fraction":0.0,"right_blinker_fraction":0.0,"left_blinker_fraction":0.0,"can_points":[{"t":-14.953,"left":0,"right":0},{"t":-14.754,"left":0,"right":0},{"t":-14.554,"left":0,"right":0},{"t":-14.351,"left":0,"right":0},{"t":-14.154,"left":0,"right":0},{"t":-13.954,"left":0,"right":0},{"t":-13.753,"left":0,"right":0},{"t":-13.554,"left":0,"right":0},{"t":-13.344,"left":0,"right":0},{"t":-13.153,"left":0,"right":0},{"t":-12.954,"left":0,"right":0},{"t":-12.747,"left":0,"right":0},{"t":-12.553,"left":0,"right":0},{"t":-12.351,"left":0,"right":0},{"t":-12.154,"left":0,"right":0},{"t":-11.953,"left":0,"right":0},{"t":-11.752,"left":0,"right":0},{"t":-11.553,"left":0,"right":0},{"t":-11.352,"left":0,"right":0},{"t":-11.153,"left":0,"right":0},{"t":-10.951,"left":0,"right":0},{"t":-10.753,"left":0,"right":0},{"t":-10.553,"left":0,"right":0},{"t":-10.35,"left":0,"right":0},{"t":-10.153,"left":0,"right":0},{"t":-9.954,"left":0,"right":0},{"t":-9.753,"left":0,"right":0},{"t":-9.553,"left":0,"right":0},{"t":-9.352,"left":0,"right":0},{"t":-9.152,"left":0,"right":0},{"t":-8.947,"left":0,"right":0},{"t":-8.755,"left":0,"right":0},{"t":-8.555,"left":0,"right":0},{"t":-8.352,"left":0,"right":0},{"t":-8.154,"left":0,"right":0},{"t":-7.953,"left":0,"right":0},{"t":-7.753,"left":0,"right":0},{"t":-7.551,"left":0,"right":0},{"t":-7.351,"left":0,"right":0},{"t":-7.155,"left":0,"right":0},{"t":-6.953,"left":0,"right":0},{"t":-6.755,"left":0,"right":0},{"t":-6.552,"left":0,"right":0},{"t":-6.352,"left":0,"right":0},{"t":-6.155,"left":0,"right":0},{"t":-5.953,"left":0,"right":0},{"t":-5.755,"left":0,"right":0},{"t":-5.554,"left":0,"right":0},{"t":-5.353,"left":0,"right":0},{"t":-5.154,"left":0,"right":0},{"t":-4.948,"left":0,"right":0},{"t":-4.748,"left":0,"right":0},{"t":-4.554,"left":0,"right":0},{"t":-4.351,"left":0,"right":0},{"t":-4.147,"left":0,"right":0},{"t":-3.948,"left":0,"right":0},{"t":-3.747,"left":0,"right":0},{"t":-3.551,"left":0,"right":0},{"t":-3.351,"left":0,"right":0},{"t":-3.152,"left":0,"right":0},{"t":-2.952,"left":0,"right":0},{"t":-2.751,"left":0,"right":0},{"t":-2.554,"left":0,"right":0},{"t":-2.347,"left":0,"right":0},{"t":-2.151,"left":0,"right":0},{"t":-1.952,"left":0,"right":0},{"t":-1.753,"left":0,"right":0},{"t":-1.546,"left":0,"right":0},{"t":-1.344,"left":0,"right":0},{"t":-1.146,"left":0,"right":0},{"t":-0.954,"left":0,"right":0},{"t":-0.747,"left":0,"right":0},{"t":-0.553,"left":0,"right":0},{"t":-0.352,"left":0,"right":0},{"t":-0.146,"left":0,"right":0},{"t":0.047,"left":0,"right":0},{"t":0.254,"left":0,"right":0},{"t":0.449,"left":0,"right":0},{"t":0.648,"left":0,"right":0},{"t":0.849,"left":0,"right":0},{"t":1.049,"left":0,"right":0},{"t":1.249,"left":0,"right":0},{"t":1.448,"left":0,"right":0},{"t":1.652,"left":0,"right":0},{"t":1.849,"left":0,"right":0},{"t":2.049,"left":0,"right":0},{"t":2.248,"left":0,"right":0},{"t":2.453,"left":0,"right":0},{"t":2.657,"left":0,"right":0},{"t":2.847,"left":0,"right":0},{"t":3.047,"left":0,"right":0},{"t":3.247,"left":0,"right":0},{"t":3.453,"left":0,"right":0},{"t":3.648,"left":0,"right":0},{"t":3.847,"left":0,"right":0},{"t":4.047,"left":0,"right":0},{"t":4.247,"left":0,"right":0},{"t":4.448,"left":0,"right":0},{"t":4.648,"left":0,"right":0},{"t":4.847,"left":0,"right":0},{"t":5.048,"left":0,"right":0},{"t":5.247,"left":0,"right":0},{"t":5.447,"left":0,"right":0},{"t":5.648,"left":0,"right":0},{"t":5.848,"left":0,"right":0},{"t":6.047,"left":0,"right":0},{"t":6.247,"left":0,"right":0},{"t":6.447,"left":0,"right":0},{"t":6.647,"left":0,"right":0},{"t":6.847,"left":0,"right":0},{"t":7.053,"left":0,"right":0},{"t":7.247,"left":0,"right":0},{"t":7.454,"left":0,"right":0},{"t":7.657,"left":0,"right":0},{"t":7.847,"left":0,"right":0}],"clock_local":"12:57:00.48","clock_can":"17:57:00.48","headline":"Looking + right blinker inactive","detail":"Front-camera look probability 0.94; right blinker active fraction 0.00; left blinker active fraction 0.00."},{"id":"ex03","key":"no_look_can_on","title":"Not looking + right blinker active","looking":false,"can_active":true,"right_blinker":true,"left_blinker":false,"video":"clips/03_no_look_can_on.mp4","clip_start":930.81778,"clip_duration":6.0,"pre_context":3.0,"reference_t":933.81778,"event_start_rel":-1.5,"event_end_rel":1.5,"look_prob":0.04348029639760727,"can_active_fraction":0.5333333333333333,"right_blinker_fraction":0.5333333333333333,"left_blinker_fraction":0.0,"can_points":[{"t":-14.892,"left":0,"right":0},{"t":-14.691,"left":0,"right":0},{"t":-14.491,"left":0,"right":0},{"t":-14.292,"left":0,"right":0},{"t":-14.091,"left":0,"right":0},{"t":-13.892,"left":0,"right":0},{"t":-13.691,"left":0,"right":1},{"t":-13.491,"left":0,"right":1},{"t":-13.291,"left":0,"right":1},{"t":-13.091,"left":0,"right":1},{"t":-12.891,"left":0,"right":1},{"t":-12.691,"left":0,"right":1},{"t":-12.492,"left":0,"right":1},{"t":-12.292,"left":0,"right":1},{"t":-12.092,"left":0,"right":1},{"t":-11.892,"left":0,"right":1},{"t":-11.691,"left":0,"right":1},{"t":-11.492,"left":0,"right":0},{"t":-11.292,"left":0,"right":0},{"t":-11.092,"left":0,"right":0},{"t":-10.892,"left":0,"right":0},{"t":-10.691,"left":0,"right":0},{"t":-10.492,"left":0,"right":0},{"t":-10.291,"left":0,"right":0},{"t":-10.091,"left":0,"right":0},{"t":-9.892,"left":0,"right":0},{"t":-9.691,"left":0,"right":0},{"t":-9.492,"left":0,"right":0},{"t":-9.291,"left":0,"right":0},{"t":-9.092,"left":0,"right":0},{"t":-8.891,"left":0,"right":0},{"t":-8.69,"left":0,"right":0},{"t":-8.492,"left":0,"right":0},{"t":-8.292,"left":0,"right":0},{"t":-8.092,"left":0,"right":0},{"t":-7.891,"left":0,"right":0},{"t":-7.69,"left":0,"right":0},{"t":-7.491,"left":0,"right":0},{"t":-7.29,"left":0,"right":0},{"t":-7.091,"left":0,"right":0},{"t":-6.891,"left":0,"right":0},{"t":-6.691,"left":0,"right":0},{"t":-6.492,"left":0,"right":0},{"t":-6.292,"left":0,"right":0},{"t":-6.092,"left":0,"right":0},{"t":-5.892,"left":0,"right":0},{"t":-5.691,"left":0,"right":0},{"t":-5.492,"left":0,"right":0},{"t":-5.292,"left":0,"right":0},{"t":-5.092,"left":0,"right":0},{"t":-4.892,"left":0,"right":0},{"t":-4.691,"left":0,"right":1},{"t":-4.492,"left":0,"right":1},{"t":-4.292,"left":0,"right":1},{"t":-4.092,"left":0,"right":1},{"t":-3.89,"left":0,"right":1},{"t":-3.691,"left":0,"right":1},{"t":-3.492,"left":0,"right":1},{"t":-3.292,"left":0,"right":1},{"t":-3.092,"left":0,"right":1},{"t":-2.892,"left":0,"right":1},{"t":-2.691,"left":0,"right":1},{"t":-2.492,"left":0,"right":1},{"t":-2.292,"left":0,"right":1},{"t":-2.092,"left":0,"right":1},{"t":-1.892,"left":0,"right":1},{"t":-1.691,"left":0,"right":1},{"t":-1.491,"left":0,"right":1},{"t":-1.292,"left":0,"right":1},{"t":-1.092,"left":0,"right":1},{"t":-0.892,"left":0,"right":1},{"t":-0.691,"left":0,"right":1},{"t":-0.491,"left":0,"right":1},{"t":-0.292,"left":0,"right":1},{"t":-0.092,"left":0,"right":1},{"t":0.108,"left":0,"right":1},{"t":0.309,"left":0,"right":0},{"t":0.509,"left":0,"right":0},{"t":0.708,"left":0,"right":0},{"t":0.909,"left":0,"right":0},{"t":1.11,"left":0,"right":0},{"t":1.31,"left":0,"right":0},{"t":1.509,"left":0,"right":0},{"t":1.708,"left":0,"right":0},{"t":1.908,"left":0,"right":0},{"t":2.108,"left":0,"right":0},{"t":2.309,"left":0,"right":0},{"t":2.509,"left":0,"right":0},{"t":2.709,"left":0,"right":0},{"t":2.908,"left":0,"right":0},{"t":3.109,"left":0,"right":0},{"t":3.31,"left":0,"right":0},{"t":3.509,"left":0,"right":0},{"t":3.708,"left":0,"right":0},{"t":3.908,"left":0,"right":0},{"t":4.108,"left":0,"right":0},{"t":4.31,"left":0,"right":0},{"t":4.509,"left":0,"right":0},{"t":4.708,"left":0,"right":0},{"t":4.908,"left":0,"right":0},{"t":5.108,"left":0,"right":0},{"t":5.31,"left":0,"right":0},{"t":5.509,"left":0,"right":0},{"t":5.709,"left":0,"right":0},{"t":5.908,"left":0,"right":0},{"t":6.109,"left":0,"right":0},{"t":6.309,"left":0,"right":0},{"t":6.508,"left":0,"right":0},{"t":6.709,"left":0,"right":0},{"t":6.908,"left":0,"right":0},{"t":7.108,"left":0,"right":0},{"t":7.309,"left":0,"right":0},{"t":7.508,"left":0,"right":0},{"t":7.708,"left":0,"right":0},{"t":7.909,"left":0,"right":0}],"clock_local":"13:00:33.82","clock_can":"18:00:33.82","headline":"Not looking + right blinker active","detail":"Front-camera look probability 0.04; right blinker active fraction 0.53; left blinker active fraction 0.00."},{"id":"ex04","key":"no_look_can_off","title":"Not looking + right blinker inactive","looking":false,"can_active":false,"right_blinker":false,"left_blinker":false,"video":"clips/04_no_look_can_off.mp4","clip_start":997.5190499999999,"clip_duration":6.0,"pre_context":3.0,"reference_t":1000.5190499999999,"event_start_rel":-1.5,"event_end_rel":1.5,"look_prob":0.008708086785009863,"can_active_fraction":0.0,"right_blinker_fraction":0.0,"left_blinker_fraction":0.0,"can_points":[{"t":-14.991,"left":0,"right":0},{"t":-14.792,"left":0,"right":0},{"t":-14.593,"left":0,"right":0},{"t":-14.39,"left":0,"right":0},{"t":-14.193,"left":0,"right":0},{"t":-13.991,"left":0,"right":0},{"t":-13.793,"left":0,"right":0},{"t":-13.592,"left":0,"right":0},{"t":-13.39,"left":0,"right":0},{"t":-13.193,"left":0,"right":0},{"t":-12.992,"left":0,"right":0},{"t":-12.793,"left":0,"right":0},{"t":-12.593,"left":0,"right":0},{"t":-12.39,"left":0,"right":0},{"t":-12.192,"left":0,"right":0},{"t":-11.993,"left":0,"right":0},{"t":-11.793,"left":0,"right":0},{"t":-11.592,"left":0,"right":0},{"t":-11.39,"left":0,"right":0},{"t":-11.191,"left":0,"right":0},{"t":-10.992,"left":0,"right":0},{"t":-10.79,"left":0,"right":0},{"t":-10.591,"left":0,"right":0},{"t":-10.391,"left":0,"right":0},{"t":-10.193,"left":0,"right":0},{"t":-9.991,"left":0,"right":0},{"t":-9.791,"left":0,"right":0},{"t":-9.591,"left":0,"right":0},{"t":-9.39,"left":0,"right":0},{"t":-9.191,"left":0,"right":0},{"t":-8.991,"left":0,"right":0},{"t":-8.791,"left":0,"right":0},{"t":-8.591,"left":0,"right":0},{"t":-8.388,"left":0,"right":0},{"t":-8.19,"left":0,"right":0},{"t":-7.99,"left":0,"right":0},{"t":-7.79,"left":0,"right":0},{"t":-7.591,"left":0,"right":0},{"t":-7.39,"left":0,"right":0},{"t":-7.191,"left":0,"right":0},{"t":-6.991,"left":0,"right":0},{"t":-6.791,"left":0,"right":0},{"t":-6.591,"left":0,"right":0},{"t":-6.39,"left":0,"right":0},{"t":-6.191,"left":0,"right":0},{"t":-5.991,"left":0,"right":0},{"t":-5.791,"left":0,"right":0},{"t":-5.59,"left":0,"right":0},{"t":-5.389,"left":0,"right":0},{"t":-5.191,"left":0,"right":0},{"t":-4.992,"left":0,"right":0},{"t":-4.791,"left":0,"right":0},{"t":-4.591,"left":0,"right":0},{"t":-4.39,"left":0,"right":0},{"t":-4.191,"left":0,"right":0},{"t":-3.991,"left":0,"right":0},{"t":-3.79,"left":0,"right":0},{"t":-3.591,"left":0,"right":0},{"t":-3.39,"left":0,"right":0},{"t":-3.191,"left":0,"right":0},{"t":-2.991,"left":0,"right":0},{"t":-2.791,"left":0,"right":0},{"t":-2.591,"left":0,"right":0},{"t":-2.39,"left":0,"right":0},{"t":-2.191,"left":0,"right":0},{"t":-1.991,"left":0,"right":0},{"t":-1.791,"left":0,"right":0},{"t":-1.591,"left":0,"right":0},{"t":-1.39,"left":0,"right":0},{"t":-1.191,"left":0,"right":0},{"t":-0.991,"left":0,"right":0},{"t":-0.792,"left":0,"right":0},{"t":-0.592,"left":0,"right":0},{"t":-0.389,"left":0,"right":0},{"t":-0.192,"left":0,"right":0},{"t":0.008,"left":0,"right":0},{"t":0.208,"left":0,"right":0},{"t":0.408,"left":0,"right":0},{"t":0.61,"left":0,"right":0},{"t":0.809,"left":0,"right":0},{"t":1.008,"left":0,"right":0},{"t":1.208,"left":0,"right":0},{"t":1.408,"left":0,"right":0},{"t":1.609,"left":0,"right":0},{"t":1.809,"left":0,"right":0},{"t":2.008,"left":0,"right":0},{"t":2.208,"left":0,"right":0},{"t":2.408,"left":0,"right":0},{"t":2.61,"left":0,"right":0},{"t":2.808,"left":0,"right":0},{"t":3.009,"left":0,"right":0},{"t":3.208,"left":0,"right":0},{"t":3.408,"left":0,"right":0},{"t":3.609,"left":0,"right":0},{"t":3.809,"left":0,"right":0},{"t":4.008,"left":0,"right":0},{"t":4.209,"left":0,"right":0},{"t":4.408,"left":0,"right":0},{"t":4.609,"left":0,"right":0},{"t":4.809,"left":0,"right":0},{"t":5.008,"left":0,"right":0},{"t":5.21,"left":0,"right":0},{"t":5.409,"left":0,"right":0},{"t":5.61,"left":0,"right":0},{"t":5.808,"left":0,"right":0},{"t":6.008,"left":0,"right":0},{"t":6.208,"left":0,"right":0},{"t":6.408,"left":0,"right":0},{"t":6.609,"left":0,"right":0},{"t":6.808,"left":0,"right":0},{"t":7.009,"left":0,"right":0},{"t":7.208,"left":0,"right":0},{"t":7.408,"left":0,"right":0},{"t":7.61,"left":0,"right":0},{"t":7.808,"left":0,"right":0}],"clock_local":"13:01:40.52","clock_can":"18:01:40.52","headline":"Not looking + right blinker inactive","detail":"Front-camera look probability 0.01; right blinker active fraction 0.00; left blinker active fraction 0.00."}];
+  const byId = new Map(DATA.map(item => [item.id, item]));
+  function draw(canvas, item, currentRel) {
+    const ctx = canvas.getContext('2d');
+    const w = canvas.width, h = canvas.height;
+    ctx.clearRect(0, 0, w, h);
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(0, 0, w, h);
+    const minT = -15.0, maxT = 8.0;
+    const plotLeft = 64, plotRight = w - 34, rowH = 18;
+    const rows = [
+      { key: 'left', label: 'LEFT', y: 48, color: '#3B6FD6' },
+      { key: 'right', label: 'RIGHT', y: 78, color: '#C88A1A' }
+    ];
+    const x = t => plotLeft + (t - minT) / (maxT - minT) * (plotRight - plotLeft);
+    ctx.fillStyle = 'rgba(14,154,126,.13)';
+    ctx.strokeStyle = 'rgba(14,154,126,.55)';
+    ctx.lineWidth = 1.25;
+    const eventX = x(item.event_start_rel);
+    const eventW = Math.max(2, x(item.event_end_rel) - x(item.event_start_rel));
+    ctx.fillRect(eventX, 26, eventW, 86);
+    ctx.strokeRect(eventX, 26, eventW, 86);
+    for (const row of rows) {
+      ctx.fillStyle = '#F0F1F4';
+      roundRect(ctx, plotLeft, row.y, plotRight - plotLeft, rowH, 4);
+      ctx.fill();
+    }
+    ctx.strokeStyle = '#E0E2E8';
+    ctx.lineWidth = 1;
+    for (let t = Math.ceil(minT / 5) * 5; t <= maxT; t += 5) {
+      ctx.beginPath(); ctx.moveTo(x(t), 122); ctx.lineTo(x(t), 128); ctx.stroke();
+      ctx.fillStyle = '#8E92A0'; ctx.font = '10px JetBrains Mono, monospace'; ctx.textAlign = 'center'; ctx.fillText(`${t}s`, x(t), 118);
+    }
+    for (const row of rows) {
+      ctx.fillStyle = row.color;
+      for (let i = 0; i < item.can_points.length - 1; i++) {
+        const a = item.can_points[i], b = item.can_points[i + 1];
+        if (a[row.key]) {
+          roundRect(ctx, x(a.t), row.y, Math.max(1, x(b.t) - x(a.t)), rowH, 3);
+          ctx.fill();
+        }
+      }
+      ctx.fillStyle = '#8E92A0';
+      ctx.font = '700 10px JetBrains Mono, monospace';
+      ctx.textAlign = 'right';
+      ctx.fillText(row.label, 52, row.y + 13);
+    }
+    ctx.fillStyle = '#0E9A7E'; ctx.font = '700 9px JetBrains Mono, monospace'; ctx.textAlign = 'center'; ctx.fillText(item.looking ? 'LOOK DETECTION' : 'NOT-LOOK SAMPLE', eventX + eventW / 2, 20);
+    if (currentRel !== null) {
+      ctx.strokeStyle = '#1A1D26'; ctx.lineWidth = 1.25;
+      ctx.beginPath(); ctx.moveTo(x(currentRel), 22); ctx.lineTo(x(currentRel), 116); ctx.stroke();
+      ctx.fillStyle = '#1A1D26';
+      ctx.beginPath(); ctx.arc(x(currentRel), 22, 3.5, 0, Math.PI * 2); ctx.fill();
+    }
+  }
+  function roundRect(ctx, x, y, width, height, radius) {
+    const r = Math.min(radius, width / 2, height / 2);
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + width, y, x + width, y + height, r);
+    ctx.arcTo(x + width, y + height, x, y + height, r);
+    ctx.arcTo(x, y + height, x, y, r);
+    ctx.arcTo(x, y, x + width, y, r);
+    ctx.closePath();
+  }
+  function stateAt(item, rel) {
+    let left = 0, right = 0;
+    for (const point of item.can_points) {
+      if (point.t <= rel) {
+        left = point.left;
+        right = point.right;
+      }
+      else break;
+    }
+    return { left, right };
+  }
+  document.querySelectorAll('[data-example]').forEach(card => {
+    const item = byId.get(card.dataset.example);
+    const video = card.querySelector('video');
+    const canvas = card.querySelector('canvas');
+    const leftLed = card.querySelector('[data-led="left"]');
+    const rightLed = card.querySelector('[data-led="right"]');
+    const update = () => {
+      const rel = video.currentTime - item.pre_context;
+      const state = stateAt(item, rel);
+      leftLed.classList.toggle('on', state.left === 1);
+      rightLed.classList.toggle('on', state.right === 1);
+      draw(canvas, item, rel);
+    };
+    draw(canvas, item, null);
+    video.addEventListener('timeupdate', update);
+    video.addEventListener('loadedmetadata', update);
+  });
+</script>
+</body>
+</html>
