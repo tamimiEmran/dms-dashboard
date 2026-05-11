@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+  Mass-rollout overlay: embeds page 3 of "AI Brain Architecture.pdf" directly.
+  Replaces the prior hand-built PowerPoint-shape reconstruction so the slide
+  stays pixel-faithful to the original deck without manual re-extraction.
+
+  Source PDF was split with pypdf (page 3 only) and committed alongside the
+  prior reconstruction artifacts at:
+    ../../../assets/leasing_taxis_arch/AI_Brain_Architecture_slide3.pdf
+
+  The original reconstruction artifacts (pic_*.png, shapes.json,
+  _extract_slide3.py, _build_overlay.py) remain in the assets directory as
+  reference history but are no longer referenced by any live HTML.
+-->
+<head>
+  <meta charset="UTF-8">
+  <meta name="robots" content="noindex,nofollow">
+  <style id="dms-gate-hide">body{display:none!important}</style>
+  <script src="../../../password-gate.js"></script>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Leasing Model Taxis · AI Brain Architecture</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 100%;
+      height: 100%;
+      /* Dark background prevents a white flash before the PDF paints and
+         provides letterbox bars if the viewer's fit-mode leaves margins. */
+      background: #1A1D26;
+      overflow: hidden;
+    }
+    /* The parent dashboard iframe is min(1280px, 92vw) × 80vh, so 100%
+       sizing here fills that container exactly with no scrollbars. */
+    .pdf-frame {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+    /* Accessible fallback shown only if the browser can't render the PDF. */
+    .pdf-fallback {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #E0E2E8;
+      font: 14px/1.5 system-ui, sans-serif;
+      padding: 24px;
+      text-align: center;
+      pointer-events: none;
+    }
+    .pdf-fallback a { color: #0E9A7E; text-decoration: underline; pointer-events: auto; }
+  </style>
+</head>
+<body>
+  <!-- Chromium honors #toolbar=0&navpanes=0&view=Fit to hide viewer chrome
+       and fit-page the single slide. Firefox ignores these hints but still
+       renders the PDF correctly (just with its own toolbar visible). -->
+  <iframe
+    class="pdf-frame"
+    src="../../../assets/leasing_taxis_arch/AI_Brain_Architecture_slide3.pdf#toolbar=0&navpanes=0&view=Fit"
+    title="AI Brain Architecture · Leasing Model Taxis (slide 3)"
+    loading="lazy"></iframe>
+  <noscript>
+    <div class="pdf-fallback">
+      Your browser blocked the embedded PDF.
+      <a href="../../../assets/leasing_taxis_arch/AI_Brain_Architecture_slide3.pdf" target="_blank" rel="noopener">Open the slide directly &rarr;</a>
+    </div>
+  </noscript>
+</body>
+</html>

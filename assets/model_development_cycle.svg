@@ -1,10 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Model Development Cycle timeline.
-  Date axis: 2026-04-15 → 2026-06-30 (76 days, ~15.5 px/day).
-  Visual idiom borrowed from reports/dms/workflow.html (palette, fonts, card style).
+  Model Development Cycle timeline (revised 2026-05-10).
+
+  Three phases (legend at bottom):
+    1. Theoretical (blue)             — V1 / V1.1 / V1.2 on validation data
+    2. Field test (amber)             — V1.2 against real fleet captures
+    3. Mass rollout / target (green)  — 97% goal + early-exit at >71%
+
+  Mass-rollout box (bottom) is clickable. The <a> wraps the rect + labels
+  with target="_top"; when the destination overlay is defined, replace the
+  href with the real anchor or swap the click handler for a postMessage
+  call (the SVG is loaded inside an <object> so it has its own browsing
+  context — window.parent.postMessage(...) is the cleanest path).
+
+  Date axis: 2026-04-14 → 2026-06-30 (77 days, ~15.3 px/day).
+  Visual idiom borrowed from reports/dms/workflow.html.
 -->
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 460" width="1400" font-family="'DM Sans', system-ui, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+     viewBox="0 0 1400 560" width="1400"
+     font-family="'DM Sans', system-ui, sans-serif">
   <defs>
     <marker id="mdc-arrow-b" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
       <path d="M0,0 L8,3 L0,6" fill="none" stroke="#3B6FD6" stroke-width="1.2" />
@@ -12,108 +26,131 @@
     <marker id="mdc-arrow-a" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
       <path d="M0,0 L8,3 L0,6" fill="none" stroke="#C88A1A" stroke-width="1.2" />
     </marker>
-    <marker id="mdc-arrow-p" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
-      <path d="M0,0 L8,3 L0,6" fill="none" stroke="#8B5CC4" stroke-width="1.2" />
-    </marker>
     <marker id="mdc-arrow-g" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
       <path d="M0,0 L8,3 L0,6" fill="none" stroke="#0E9A7E" stroke-width="1.2" />
     </marker>
+    <style><![CDATA[
+      .mass-rollout-link { cursor: pointer; }
+      .mass-rollout-link .mass-rollout-bg {
+        transition: fill 0.15s ease;
+      }
+      .mass-rollout-link:hover .mass-rollout-bg {
+        fill: #D2EBE2;
+      }
+      .mass-rollout-link:hover .mass-rollout-rect {
+        stroke-width: 2.5;
+      }
+      .mass-rollout-link:focus { outline: none; }
+      .mass-rollout-link:focus .mass-rollout-rect {
+        stroke-width: 2.5;
+        stroke: #0E9A7E;
+      }
+    ]]></style>
   </defs>
 
   <!-- ===== HEADER ===== -->
   <text x="40" y="34" fill="#0E9A7E" font-size="11" font-weight="600" letter-spacing="0.10em" text-transform="uppercase">MODEL TEAM · TIMELINE</text>
   <text x="40" y="62" fill="#1A1D26" font-size="22" font-weight="700" letter-spacing="-0.02em">Model Development Cycle</text>
-  <text x="40" y="84" fill="#5A5E6E" font-size="12.5">V1 (mid Apr) → V2 (May 5) → Field test (May 7) → Lessons → V3 (May 15) → Weekly train + test cycle → 97% on field test (Jun 30)</text>
+  <text x="40" y="84" fill="#5A5E6E" font-size="12.5">Theoretical V1 → V1.1 → V1.2 (Apr) → V1.2 field test (May 7) → weekly retrain + test → mass rollout to 100 vehicles by Jun 30</text>
 
   <!-- ===== AXIS ===== -->
   <line x1="80" y1="290" x2="1300" y2="290" stroke="#E0E2E8" stroke-width="1.5" />
 
-  <!-- Month markers along axis -->
+  <!-- Major date ticks -->
   <line x1="100" y1="286" x2="100" y2="298" stroke="#8E92A0" stroke-width="1" />
-  <text x="100" y="316" fill="#8E92A0" font-size="10.5" font-family="JetBrains Mono, monospace" text-anchor="middle" letter-spacing="0.04em">Apr 15</text>
-
-  <line x1="410" y1="286" x2="410" y2="298" stroke="#8E92A0" stroke-width="1" />
-  <text x="410" y="316" fill="#8E92A0" font-size="10.5" font-family="JetBrains Mono, monospace" text-anchor="middle" letter-spacing="0.04em">May 5</text>
-
-  <line x1="441" y1="286" x2="441" y2="298" stroke="#8E92A0" stroke-width="1" />
-  <text x="441" y="332" fill="#8E92A0" font-size="10.5" font-family="JetBrains Mono, monospace" text-anchor="middle" letter-spacing="0.04em">May 7</text>
-
-  <line x1="565" y1="286" x2="565" y2="298" stroke="#8E92A0" stroke-width="1" />
-  <text x="565" y="316" fill="#8E92A0" font-size="10.5" font-family="JetBrains Mono, monospace" text-anchor="middle" letter-spacing="0.04em">May 15</text>
+  <text x="100" y="316" fill="#8E92A0" font-size="10.5" font-family="JetBrains Mono, monospace" text-anchor="middle" letter-spacing="0.04em">Apr 14</text>
+  <line x1="207" y1="286" x2="207" y2="298" stroke="#8E92A0" stroke-width="1" />
+  <text x="207" y="316" fill="#8E92A0" font-size="10.5" font-family="JetBrains Mono, monospace" text-anchor="middle" letter-spacing="0.04em">Apr 21</text>
+  <line x1="314" y1="286" x2="314" y2="298" stroke="#8E92A0" stroke-width="1" />
+  <text x="314" y="316" fill="#8E92A0" font-size="10.5" font-family="JetBrains Mono, monospace" text-anchor="middle" letter-spacing="0.04em">Apr 28</text>
+  <line x1="452" y1="286" x2="452" y2="298" stroke="#8E92A0" stroke-width="1" />
+  <text x="452" y="316" fill="#8E92A0" font-size="10.5" font-family="JetBrains Mono, monospace" text-anchor="middle" letter-spacing="0.04em">May 7</text>
+  <line x1="575" y1="286" x2="575" y2="298" stroke="#8E92A0" stroke-width="1" />
+  <text x="575" y="316" fill="#8E92A0" font-size="10.5" font-family="JetBrains Mono, monospace" text-anchor="middle" letter-spacing="0.04em">May 15</text>
 
   <!-- Weekly iteration ticks -->
-  <line x1="674" y1="288" x2="674" y2="295" stroke="#8E92A0" stroke-width="0.8" />
-  <text x="674" y="312" fill="#B0B3BE" font-size="9.5" font-family="JetBrains Mono, monospace" text-anchor="middle">May 22</text>
-  <line x1="782" y1="288" x2="782" y2="295" stroke="#8E92A0" stroke-width="0.8" />
-  <text x="782" y="312" fill="#B0B3BE" font-size="9.5" font-family="JetBrains Mono, monospace" text-anchor="middle">May 29</text>
-  <line x1="891" y1="288" x2="891" y2="295" stroke="#8E92A0" stroke-width="0.8" />
-  <text x="891" y="312" fill="#B0B3BE" font-size="9.5" font-family="JetBrains Mono, monospace" text-anchor="middle">Jun 5</text>
-  <line x1="999" y1="288" x2="999" y2="295" stroke="#8E92A0" stroke-width="0.8" />
-  <text x="999" y="312" fill="#B0B3BE" font-size="9.5" font-family="JetBrains Mono, monospace" text-anchor="middle">Jun 12</text>
-  <line x1="1108" y1="288" x2="1108" y2="295" stroke="#8E92A0" stroke-width="0.8" />
-  <text x="1108" y="312" fill="#B0B3BE" font-size="9.5" font-family="JetBrains Mono, monospace" text-anchor="middle">Jun 19</text>
-  <line x1="1216" y1="288" x2="1216" y2="295" stroke="#8E92A0" stroke-width="0.8" />
-  <text x="1216" y="312" fill="#B0B3BE" font-size="9.5" font-family="JetBrains Mono, monospace" text-anchor="middle">Jun 26</text>
+  <line x1="682" y1="288" x2="682" y2="295" stroke="#8E92A0" stroke-width="0.8" />
+  <text x="682" y="312" fill="#B0B3BE" font-size="9.5" font-family="JetBrains Mono, monospace" text-anchor="middle">May 22</text>
+  <line x1="789" y1="288" x2="789" y2="295" stroke="#8E92A0" stroke-width="0.8" />
+  <text x="789" y="312" fill="#B0B3BE" font-size="9.5" font-family="JetBrains Mono, monospace" text-anchor="middle">May 29</text>
+  <line x1="896" y1="288" x2="896" y2="295" stroke="#8E92A0" stroke-width="0.8" />
+  <text x="896" y="312" fill="#B0B3BE" font-size="9.5" font-family="JetBrains Mono, monospace" text-anchor="middle">Jun 5</text>
+  <line x1="1004" y1="288" x2="1004" y2="295" stroke="#8E92A0" stroke-width="0.8" />
+  <text x="1004" y="312" fill="#B0B3BE" font-size="9.5" font-family="JetBrains Mono, monospace" text-anchor="middle">Jun 12</text>
+  <line x1="1111" y1="288" x2="1111" y2="295" stroke="#8E92A0" stroke-width="0.8" />
+  <text x="1111" y="312" fill="#B0B3BE" font-size="9.5" font-family="JetBrains Mono, monospace" text-anchor="middle">Jun 19</text>
+  <line x1="1218" y1="288" x2="1218" y2="295" stroke="#8E92A0" stroke-width="0.8" />
+  <text x="1218" y="312" fill="#B0B3BE" font-size="9.5" font-family="JetBrains Mono, monospace" text-anchor="middle">Jun 26</text>
 
-  <line x1="1278" y1="286" x2="1278" y2="298" stroke="#8E92A0" stroke-width="1" />
-  <text x="1278" y="332" fill="#8E92A0" font-size="10.5" font-family="JetBrains Mono, monospace" text-anchor="middle" letter-spacing="0.04em">Jun 30</text>
+  <line x1="1280" y1="286" x2="1280" y2="298" stroke="#8E92A0" stroke-width="1" />
+  <text x="1280" y="332" fill="#8E92A0" font-size="10.5" font-family="JetBrains Mono, monospace" text-anchor="middle" letter-spacing="0.04em">Jun 30</text>
 
-  <!-- ===== V1 (Apr 15) ===== -->
+  <!-- ===== V1 (Apr 14) — theoretical, 38% ===== -->
   <line x1="100" y1="222" x2="100" y2="290" stroke="#3B6FD6" stroke-width="1" stroke-dasharray="2,3" />
   <circle cx="100" cy="290" r="5" fill="#FFF" stroke="#3B6FD6" stroke-width="2" />
-  <rect x="30" y="160" width="140" height="62" rx="8" fill="#E8F0FA" stroke="#3B6FD6" stroke-width="1.5" />
-  <text x="100" y="180" fill="#3B6FD6" font-size="13" font-weight="600" text-anchor="middle">V1 model &#183; <tspan font-family="JetBrains Mono, monospace">71%</tspan></text>
-  <text x="100" y="196" fill="#1A1D26" font-size="11" text-anchor="middle">Theoretical pipeline</text>
-  <text x="100" y="212" fill="#5A5E6E" font-size="10" text-anchor="middle" font-family="JetBrains Mono, monospace" letter-spacing="0.04em">mid April</text>
+  <rect x="50" y="160" width="100" height="62" rx="8" fill="#E8F0FA" stroke="#3B6FD6" stroke-width="1.5" />
+  <text x="100" y="180" fill="#3B6FD6" font-size="13" font-weight="600" text-anchor="middle">V1 · <tspan font-family="JetBrains Mono, monospace">38%</tspan></text>
+  <text x="100" y="196" fill="#1A1D26" font-size="11" text-anchor="middle">Theoretical</text>
+  <text x="100" y="212" fill="#5A5E6E" font-size="10" text-anchor="middle" font-family="JetBrains Mono, monospace" letter-spacing="0.04em">Apr 14</text>
 
-  <!-- V1 → V2 connector -->
-  <line x1="170" y1="191" x2="340" y2="191" stroke="#3B6FD6" stroke-width="1.2" marker-end="url(#mdc-arrow-b)" />
+  <!-- V1 → V1.1 connector -->
+  <line x1="150" y1="191" x2="157" y2="191" stroke="#3B6FD6" stroke-width="1.2" marker-end="url(#mdc-arrow-b)" />
 
-  <!-- ===== V2 (May 5) ===== -->
-  <line x1="410" y1="222" x2="410" y2="290" stroke="#3B6FD6" stroke-width="1" stroke-dasharray="2,3" />
-  <circle cx="410" cy="290" r="5" fill="#FFF" stroke="#3B6FD6" stroke-width="2" />
-  <rect x="340" y="160" width="140" height="62" rx="8" fill="#E8F0FA" stroke="#3B6FD6" stroke-width="1.5" />
-  <text x="410" y="180" fill="#3B6FD6" font-size="13" font-weight="600" text-anchor="middle">V2 model &#183; <tspan font-family="JetBrains Mono, monospace">81%</tspan></text>
-  <text x="410" y="196" fill="#1A1D26" font-size="11" text-anchor="middle">Theoretical pipeline</text>
-  <text x="410" y="212" fill="#5A5E6E" font-size="10" text-anchor="middle" font-family="JetBrains Mono, monospace" letter-spacing="0.04em">2026-05-05</text>
+  <!-- ===== V1.1 (Apr 21) — theoretical, 71% ===== -->
+  <line x1="207" y1="222" x2="207" y2="290" stroke="#3B6FD6" stroke-width="1" stroke-dasharray="2,3" />
+  <circle cx="207" cy="290" r="5" fill="#FFF" stroke="#3B6FD6" stroke-width="2" />
+  <rect x="157" y="160" width="100" height="62" rx="8" fill="#E8F0FA" stroke="#3B6FD6" stroke-width="1.5" />
+  <text x="207" y="180" fill="#3B6FD6" font-size="13" font-weight="600" text-anchor="middle">V1.1 · <tspan font-family="JetBrains Mono, monospace">71%</tspan></text>
+  <text x="207" y="196" fill="#1A1D26" font-size="11" text-anchor="middle">Theoretical</text>
+  <text x="207" y="212" fill="#5A5E6E" font-size="10" text-anchor="middle" font-family="JetBrains Mono, monospace" letter-spacing="0.04em">Apr 21</text>
 
-  <!-- V2 → Field test connector (down to bottom row) -->
-  <path d="M410,222 L410,232 L441,232 L441,358" fill="none" stroke="#C88A1A" stroke-width="1.2" marker-end="url(#mdc-arrow-a)" />
+  <!-- V1.1 → V1.2 connector -->
+  <line x1="257" y1="191" x2="264" y2="191" stroke="#3B6FD6" stroke-width="1.2" marker-end="url(#mdc-arrow-b)" />
 
-  <!-- ===== Field test (May 7) — bottom row ===== -->
-  <line x1="441" y1="290" x2="441" y2="358" stroke="#C88A1A" stroke-width="1" stroke-dasharray="2,3" />
-  <circle cx="441" cy="290" r="5" fill="#FFF" stroke="#C88A1A" stroke-width="2" />
-  <rect x="371" y="358" width="140" height="62" rx="8" fill="#FAEFD7" stroke="#C88A1A" stroke-width="1.5" />
-  <text x="441" y="378" fill="#C88A1A" font-size="13" font-weight="600" text-anchor="middle">Field test &#183; <tspan font-family="JetBrains Mono, monospace">68%</tspan></text>
-  <text x="441" y="394" fill="#1A1D26" font-size="11" text-anchor="middle">On Howen vehicle</text>
-  <text x="441" y="410" fill="#5A5E6E" font-size="10" text-anchor="middle" font-family="JetBrains Mono, monospace" letter-spacing="0.04em">2026-05-07</text>
+  <!-- ===== V1.2 (Apr 28) — theoretical, 81% ===== -->
+  <line x1="314" y1="222" x2="314" y2="290" stroke="#3B6FD6" stroke-width="1" stroke-dasharray="2,3" />
+  <circle cx="314" cy="290" r="5" fill="#FFF" stroke="#3B6FD6" stroke-width="2" />
+  <rect x="264" y="160" width="100" height="62" rx="8" fill="#E8F0FA" stroke="#3B6FD6" stroke-width="1.5" />
+  <text x="314" y="180" fill="#3B6FD6" font-size="13" font-weight="600" text-anchor="middle">V1.2 · <tspan font-family="JetBrains Mono, monospace">81%</tspan></text>
+  <text x="314" y="196" fill="#1A1D26" font-size="11" text-anchor="middle">Theoretical</text>
+  <text x="314" y="212" fill="#5A5E6E" font-size="10" text-anchor="middle" font-family="JetBrains Mono, monospace" letter-spacing="0.04em">Apr 28</text>
 
-  <!-- ===== Lessons learnt callout (between Field test and V3) ===== -->
-  <path d="M511,389 L515,389 Q535,389 535,376 L535,250 Q535,232 552,232 L565,232 L565,222" fill="none" stroke="#8B5CC4" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#mdc-arrow-p)" />
-  <rect x="490" y="244" width="115" height="38" rx="6" fill="#F4ECFB" stroke="#8B5CC4" stroke-width="1" />
-  <text x="547" y="260" fill="#8B5CC4" font-size="11" font-weight="600" text-anchor="middle">Lessons learnt</text>
-  <text x="547" y="274" fill="#5A5E6E" font-size="9.5" text-anchor="middle" font-style="italic">from field test</text>
+  <!-- V1.2 → Field test connector (short horizontal, both above axis) -->
+  <line x1="364" y1="191" x2="382" y2="191" stroke="#C88A1A" stroke-width="1.2" marker-end="url(#mdc-arrow-a)" />
 
-  <!-- ===== V3 (May 15) ===== -->
-  <line x1="565" y1="222" x2="565" y2="290" stroke="#3B6FD6" stroke-width="1" stroke-dasharray="2,3" />
-  <circle cx="565" cy="290" r="5" fill="#FFF" stroke="#3B6FD6" stroke-width="2" />
-  <rect x="495" y="160" width="140" height="62" rx="8" fill="#E8F0FA" stroke="#3B6FD6" stroke-width="1.5" />
-  <text x="565" y="180" fill="#3B6FD6" font-size="13" font-weight="600" text-anchor="middle">V3 model</text>
-  <text x="565" y="196" fill="#1A1D26" font-size="11" text-anchor="middle">Field-corrected pipeline</text>
-  <text x="565" y="212" fill="#5A5E6E" font-size="10" text-anchor="middle" font-family="JetBrains Mono, monospace" letter-spacing="0.04em">2026-05-15</text>
+  <!-- ===== V1.2 Field test (May 7) — top row, 68% ===== -->
+  <line x1="452" y1="222" x2="452" y2="290" stroke="#C88A1A" stroke-width="1" stroke-dasharray="2,3" />
+  <circle cx="452" cy="290" r="5" fill="#FFF" stroke="#C88A1A" stroke-width="2" />
+  <rect x="382" y="160" width="140" height="62" rx="8" fill="#FAEFD7" stroke="#C88A1A" stroke-width="1.5" />
+  <text x="452" y="180" fill="#C88A1A" font-size="13" font-weight="600" text-anchor="middle">V1.2 field test · <tspan font-family="JetBrains Mono, monospace">68%</tspan></text>
+  <text x="452" y="196" fill="#1A1D26" font-size="11" text-anchor="middle">Real fleet captures</text>
+  <text x="452" y="212" fill="#5A5E6E" font-size="10" text-anchor="middle" font-family="JetBrains Mono, monospace" letter-spacing="0.04em">May 7</text>
 
-  <!-- V3 → Iteration loop connector -->
-  <line x1="635" y1="191" x2="650" y2="191" stroke="#3B6FD6" stroke-width="1.2" marker-end="url(#mdc-arrow-b)" />
+  <!-- Field test → V2 connector (blue, V2 is the next theoretical model) -->
+  <line x1="522" y1="191" x2="540" y2="191" stroke="#3B6FD6" stroke-width="1.2" marker-end="url(#mdc-arrow-b)" />
 
-  <!-- ===== Weekly Train + Test loop block (May 22 → Jun 26) ===== -->
+  <!-- ===== V2 (May 15) — trained on centralized dataset =====
+       Card center x=590, May 15 axis tick x=575 — dashed line slopes 15px to align tick with actual date.
+       No accuracy yet (V2 enters the weekly iter loop for field testing). -->
+  <line x1="590" y1="222" x2="575" y2="290" stroke="#3B6FD6" stroke-width="1" stroke-dasharray="2,3" />
+  <circle cx="575" cy="290" r="5" fill="#FFF" stroke="#3B6FD6" stroke-width="2" />
+  <rect x="540" y="160" width="100" height="62" rx="8" fill="#E8F0FA" stroke="#3B6FD6" stroke-width="1.5" />
+  <text x="590" y="180" fill="#3B6FD6" font-size="13" font-weight="600" text-anchor="middle">V2 · trained</text>
+  <text x="590" y="196" fill="#1A1D26" font-size="11" text-anchor="middle">Centralized data</text>
+  <text x="590" y="212" fill="#5A5E6E" font-size="10" text-anchor="middle" font-family="JetBrains Mono, monospace" letter-spacing="0.04em">May 15</text>
+
+  <!-- V2 → iter block connector -->
+  <line x1="640" y1="191" x2="648" y2="191" stroke="#3B6FD6" stroke-width="1.2" marker-end="url(#mdc-arrow-b)" />
+
+  <!-- ===== Weekly iteration loop block ===== -->
   <rect x="650" y="138" width="585" height="106" rx="10" fill="#FFFFFF" stroke="#3B6FD6" stroke-width="1.5" stroke-dasharray="6,4" />
 
   <!-- Loop title row -->
   <text x="670" y="160" fill="#3B6FD6" font-size="10.5" font-weight="700" font-family="JetBrains Mono, monospace" letter-spacing="0.10em">WEEKLY ITERATION</text>
   <text x="670" y="178" fill="#1A1D26" font-size="14" font-weight="600">Model development cycle</text>
-  <text x="670" y="196" fill="#5A5E6E" font-size="11.5">Train on centralized data ⇄ field-test on Howen, weekly</text>
+  <text x="670" y="196" fill="#5A5E6E" font-size="11.5">Train on centralized data &#x21C4; field-test, weekly</text>
 
-  <!-- Loop multiplier badge -->
+  <!-- × 6 badge -->
   <rect x="1145" y="148" width="78" height="32" rx="6" fill="#E8F0FA" stroke="#3B6FD6" stroke-width="1" />
   <text x="1184" y="169" fill="#3B6FD6" font-size="14" font-weight="700" text-anchor="middle" font-family="JetBrains Mono, monospace">× 6</text>
 
@@ -125,7 +162,6 @@
     <text x="300" y="12" fill="#8E92A0" font-size="10" font-family="JetBrains Mono, monospace" letter-spacing="0.04em">W4</text>
     <text x="400" y="12" fill="#8E92A0" font-size="10" font-family="JetBrains Mono, monospace" letter-spacing="0.04em">W5</text>
     <text x="500" y="12" fill="#8E92A0" font-size="10" font-family="JetBrains Mono, monospace" letter-spacing="0.04em">W6</text>
-    <!-- Small alternating train/test glyphs -->
     <g font-size="8.5" font-family="JetBrains Mono, monospace" fill="#3B6FD6">
       <text x="22" y="12">iter</text>
       <text x="60" y="12" fill="#C88A1A">test</text>
@@ -142,40 +178,62 @@
     </g>
   </g>
 
-  <!-- Loop circular arrow icon (left of × 6 badge, vertically centered with it) -->
+  <!-- Loop circular arrow icon (left of × 6 badge) -->
   <g transform="translate(1130, 164)" stroke="#3B6FD6" stroke-width="1.2" fill="none" stroke-linecap="round">
     <path d="M0,0 a5,5 0 1 1 -5,-5" />
     <path d="M-7,-7 L-5,-5 L-3,-7" />
   </g>
 
-  <!-- Iteration loop tick marks on axis -->
+  <!-- Iteration loop progression line (inside block, ends at right edge) -->
   <line x1="650" y1="244" x2="1235" y2="244" stroke="#3B6FD6" stroke-width="1.2" marker-end="url(#mdc-arrow-b)" />
 
-  <!-- ===== 97% goal milestone (Jun 30) — below axis ===== -->
-  <circle cx="1278" cy="290" r="6" fill="#0E9A7E" />
-  <line x1="1278" y1="290" x2="1278" y2="358" stroke="#0E9A7E" stroke-width="1" stroke-dasharray="2,3" />
-  <rect x="1208" y="358" width="170" height="62" rx="10" fill="#E8F5F1" stroke="#0E9A7E" stroke-width="2" />
-  <text x="1293" y="378" fill="#0E9A7E" font-size="11" font-weight="700" text-anchor="middle" font-family="JetBrains Mono, monospace" letter-spacing="0.10em">TARGET</text>
-  <text x="1293" y="402" fill="#0E9A7E" font-size="22" font-weight="700" text-anchor="middle" font-family="JetBrains Mono, monospace" letter-spacing="-0.02em">97%</text>
-  <text x="1293" y="416" fill="#5A5E6E" font-size="10" text-anchor="middle" font-family="JetBrains Mono, monospace" letter-spacing="0.04em">on field test &#183; 2026-06-30</text>
+  <!-- ===== Connector: iter block middle-bottom → early-exit box right side (mirrored-L with hook) ===== -->
+  <!-- Path emanates from middle-bottom of iter block (offset 6px below the bottom border).
+       Segments: RIGHT to x=1200 (16px LEFT of target box at x=1216, no collision),
+                 DOWN to y=495 (mid-height of early-exit box),
+                 LEFT 36px hook ending 4px inside box's right edge — arrowhead orient="auto"
+                 rotates to point LEFT, visually entering the box from its right side. -->
+  <path d="M942,250 L1200,250 L1200,495 L1164,495" fill="none" stroke="#0E9A7E" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#mdc-arrow-g)" />
+
+  <!-- ===== 97% target milestone (Jun 30) — below axis, mass rollout outcome ===== -->
+  <circle cx="1280" cy="290" r="6" fill="#0E9A7E" />
+  <line x1="1280" y1="290" x2="1280" y2="358" stroke="#0E9A7E" stroke-width="1" stroke-dasharray="2,3" />
+  <rect x="1216" y="358" width="170" height="80" rx="10" fill="#E8F5F1" stroke="#0E9A7E" stroke-width="2" />
+  <text x="1301" y="378" fill="#0E9A7E" font-size="11" font-weight="700" text-anchor="middle" font-family="JetBrains Mono, monospace" letter-spacing="0.10em">TARGET</text>
+  <text x="1301" y="402" fill="#0E9A7E" font-size="22" font-weight="700" text-anchor="middle" font-family="JetBrains Mono, monospace" letter-spacing="-0.02em">97%</text>
+  <text x="1301" y="418" fill="#1A1D26" font-size="10.5" text-anchor="middle">→ mass rollout (100 vehicles)</text>
+  <text x="1301" y="432" fill="#5A5E6E" font-size="9.5" text-anchor="middle" font-family="JetBrains Mono, monospace" letter-spacing="0.04em">2026-06-30</text>
+
+  <!-- ===== Mass rollout early-exit box (clickable, compact, left-of-target) ===== -->
+  <!-- Box: x=700..1160 (width 460). Right edge held fixed at x=1160 so the connector
+       hook (ending at x=1164) still enters the box from its right side as designed. -->
+  <a id="mass-rollout-cta"
+     xlink:href="../presentations/2026-05-10-edge-deployment/details/mass-rollout-leasing-taxis.html"
+     href="../presentations/2026-05-10-edge-deployment/details/mass-rollout-leasing-taxis.html"
+     target="_top"
+     class="mass-rollout-link"
+     onclick="if(window.parent &amp;&amp; window.parent !== window){window.parent.postMessage({type:'open-leasing-taxis-overlay'},'*');return false;}return true;"
+     aria-label="Open leasing-taxis AI brain architecture overlay">
+    <rect class="mass-rollout-bg mass-rollout-rect" x="700" y="460" width="460" height="70" rx="10" fill="#E8F5F1" stroke="#0E9A7E" stroke-width="2" />
+    <text x="720" y="482" fill="#0E9A7E" font-size="10.5" font-weight="700" font-family="JetBrains Mono, monospace" letter-spacing="0.10em">EARLY-EXIT TRIGGER · CLICK FOR DETAIL</text>
+    <text x="720" y="504" fill="#1A1D26" font-size="13.5" font-weight="600">Field test &gt; <tspan font-family="JetBrains Mono, monospace" fill="#0E9A7E">71%</tspan> → rollout to <tspan font-family="JetBrains Mono, monospace" fill="#0E9A7E">100</tspan> vehicles</text>
+    <text x="720" y="522" fill="#5A5E6E" font-size="11">Rollout trigger ahead of Jun 30 97% target</text>
+  </a>
 
   <!-- ===== LEGEND ===== -->
-  <line x1="40" y1="430" x2="1360" y2="430" stroke="#E0E2E8" stroke-width="1" />
+  <line x1="40" y1="544" x2="1360" y2="544" stroke="#E0E2E8" stroke-width="1" />
 
-  <rect x="40" y="442" width="10" height="10" rx="2" fill="#E8F0FA" stroke="#3B6FD6" />
-  <text x="56" y="451" fill="#5A5E6E" font-size="10.5">Model release (V1 / V2 / V3)</text>
+  <rect x="40" y="552" width="12" height="12" rx="2" fill="#E8F0FA" stroke="#3B6FD6" stroke-width="1.5" />
+  <text x="58" y="562" fill="#5A5E6E" font-size="10.5">Theoretical model (V1 / V1.1 / V1.2)</text>
 
-  <rect x="240" y="442" width="10" height="10" rx="2" fill="#FAEFD7" stroke="#C88A1A" />
-  <text x="256" y="451" fill="#5A5E6E" font-size="10.5">Field test</text>
+  <rect x="290" y="552" width="12" height="12" rx="2" fill="#FAEFD7" stroke="#C88A1A" stroke-width="1.5" />
+  <text x="308" y="562" fill="#5A5E6E" font-size="10.5">Field test (V1.2)</text>
 
-  <rect x="340" y="442" width="10" height="10" rx="2" fill="#F4ECFB" stroke="#8B5CC4" />
-  <text x="356" y="451" fill="#5A5E6E" font-size="10.5">Lessons / insight</text>
+  <rect x="450" y="552" width="12" height="12" rx="2" fill="#E8F5F1" stroke="#0E9A7E" stroke-width="1.5" />
+  <text x="468" y="562" fill="#5A5E6E" font-size="10.5">Mass rollout / target</text>
 
-  <rect x="470" y="442" width="10" height="10" rx="2" fill="#FFFFFF" stroke="#3B6FD6" stroke-dasharray="3,2" />
-  <text x="486" y="451" fill="#5A5E6E" font-size="10.5">Iteration loop (weekly)</text>
+  <rect x="640" y="552" width="12" height="12" rx="2" fill="#FFFFFF" stroke="#3B6FD6" stroke-dasharray="3,2" stroke-width="1.5" />
+  <text x="658" y="562" fill="#5A5E6E" font-size="10.5">Weekly iteration cycle</text>
 
-  <rect x="640" y="442" width="10" height="10" rx="2" fill="#E8F5F1" stroke="#0E9A7E" stroke-width="1.5" />
-  <text x="656" y="451" fill="#5A5E6E" font-size="10.5">Target milestone</text>
-
-  <text x="1360" y="451" fill="#8E92A0" font-size="10" text-anchor="end" font-family="JetBrains Mono, monospace" letter-spacing="0.04em">Apr 15 → Jun 30 · 76 days</text>
+  <text x="1360" y="562" fill="#8E92A0" font-size="10" text-anchor="end" font-family="JetBrains Mono, monospace" letter-spacing="0.04em">Apr 14 → Jun 30 · 77 days</text>
 </svg>

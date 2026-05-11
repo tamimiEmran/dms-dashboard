@@ -663,6 +663,89 @@
       color: var(--text);
     }
 
+    /* Floater: a lightbox-style overlay scoped to a single lightbox-inner
+       (used for the leasing-taxis PDF panel inside the model-cycle SVG card).
+       Anchors via inset:0 to the .lightbox-inner padding-box, so only that
+       card is dimmed — the rest of the dashboard stays untouched. */
+    .floater {
+      display: none;
+      position: absolute;
+      inset: 0;
+      z-index: 10;
+      background: rgba(26, 29, 38, 0.72);
+      backdrop-filter: blur(4px);
+      border-radius: 12px;
+      cursor: pointer;
+      padding: 24px;
+    }
+    .floater.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .floater-panel {
+      background: #1A1D26;
+      border-radius: 8px;
+      position: relative;
+      width: 100%;
+      height: 100%;
+      max-width: 1280px;
+      cursor: default;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+      overflow: hidden;
+    }
+    .floater-frame {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+    .floater-close {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      border: 1px solid #2E323D;
+      background: #1A1D26;
+      color: #E0E2E8;
+      font-size: 22px;
+      line-height: 1;
+      cursor: pointer;
+      z-index: 11;
+    }
+    .floater-close:hover {
+      background: #2E323D;
+      color: #FFFFFF;
+    }
+    .floater-open {
+      position: absolute;
+      top: 8px;
+      right: 48px;
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      border: 1px solid #2E323D;
+      background: #1A1D26;
+      color: #E0E2E8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 11;
+      text-decoration: none;
+    }
+    .floater-open:hover {
+      background: #2E323D;
+      color: #FFFFFF;
+    }
+    /* When a floater is active, lock the parent .lightbox-inner so a tall
+       SVG doesn't scroll behind the PDF panel. */
+    .lightbox-inner.floater-locked {
+      overflow: hidden;
+    }
+
     /* ============================================
        HERO OVERVIEW SECTION
        ============================================ */
@@ -1033,7 +1116,7 @@
 
   <!-- Model Development Cycle Lightbox -->
   <div class="lightbox" id="modelCycleLightbox" onclick="closeLightboxById('modelCycleLightbox')">
-    <div class="lightbox-inner" onclick="event.stopPropagation()">
+    <div class="lightbox-inner" id="modelCycleInner" onclick="event.stopPropagation()">
       <a class="lightbox-open" href="assets/model_development_cycle.svg" target="_blank" title="Open in new tab"><svg width="14"
           height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
@@ -1042,7 +1125,32 @@
         </svg></a>
       <button class="lightbox-close" onclick="closeLightboxById('modelCycleLightbox')">&times;</button>
       <object data="assets/model_development_cycle.svg" type="image/svg+xml"
-        style="width:100%;min-width:1000px;aspect-ratio:1400/460;">Model Development Cycle</object>
+        style="width:100%;min-width:1000px;aspect-ratio:1400/560;">Model Development Cycle</object>
+
+      <!-- Floating PDF panel: scoped overlay shown when the SVG's early-exit
+           trigger posts "open-leasing-taxis-overlay". Dims only this card. -->
+      <div class="floater" id="leasingTaxisFloater"
+           onclick="closeLeasingTaxisFloater()"
+           role="dialog" aria-modal="true"
+           aria-label="Leasing Model Taxis · AI Brain Architecture">
+        <div class="floater-panel" onclick="event.stopPropagation()">
+          <a class="floater-open"
+             href="presentations/2026-05-10-edge-deployment/details/mass-rollout-leasing-taxis.html"
+             target="_blank" rel="noopener" title="Open in new tab">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+              <polyline points="15 3 21 3 21 9" />
+              <line x1="10" y1="14" x2="21" y2="3" />
+            </svg>
+          </a>
+          <button class="floater-close"
+                  onclick="closeLeasingTaxisFloater()"
+                  aria-label="Close">&times;</button>
+          <iframe id="leasingTaxisFloaterFrame" src="" loading="lazy"
+                  class="floater-frame"
+                  title="AI Brain Architecture · Leasing Model Taxis (slide 3)"></iframe>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -1352,10 +1460,53 @@
     }
     document.addEventListener('keydown', e => {
       if (e.key !== 'Escape') return;
+      // Close any active floater first (scoped overlay inside a lightbox)
+      // so Esc dismisses just the PDF without also collapsing the lightbox.
+      const activeFloaters = document.querySelectorAll('.floater.active');
+      if (activeFloaters.length) {
+        activeFloaters.forEach(closeFloaterEl);
+        return;
+      }
       closeArchLightbox();
       closeLightbox();
       document.querySelectorAll('.lightbox.active').forEach(el => el.classList.remove('active'));
       document.body.style.overflow = '';
+    });
+
+    // Cross-document trigger from inside the model-cycle SVG (loaded via <object>):
+    // when the user clicks the "early-exit trigger" box, the SVG posts
+    // 'open-leasing-taxis-overlay'. Instead of stacking another full-page
+    // lightbox, we show a floating PDF panel scoped to the model-cycle card.
+    function openLeasingTaxisFloater() {
+      const floater = document.getElementById('leasingTaxisFloater');
+      const frame = document.getElementById('leasingTaxisFloaterFrame');
+      const parent = document.getElementById('modelCycleInner');
+      if (!floater || !frame) return;
+      // Lazy-load the PDF on first open (saves bandwidth until user clicks).
+      if (!frame.getAttribute('src')) {
+        frame.setAttribute(
+          'src',
+          'assets/leasing_taxis_arch/AI_Brain_Architecture_slide3.pdf#toolbar=0&navpanes=0&view=Fit'
+        );
+      }
+      floater.classList.add('active');
+      if (parent) parent.classList.add('floater-locked');
+    }
+    function closeFloaterEl(el) {
+      el.classList.remove('active');
+      // Unlock any parent .lightbox-inner that was scroll-locked when this
+      // floater opened (idempotent — does nothing if the class isn't there).
+      const parent = el.closest('.lightbox-inner');
+      if (parent) parent.classList.remove('floater-locked');
+    }
+    function closeLeasingTaxisFloater() {
+      const el = document.getElementById('leasingTaxisFloater');
+      if (el) closeFloaterEl(el);
+    }
+    window.addEventListener('message', (e) => {
+      if (e && e.data && e.data.type === 'open-leasing-taxis-overlay') {
+        openLeasingTaxisFloater();
+      }
     });
 
     // ===== RENDERING =====
