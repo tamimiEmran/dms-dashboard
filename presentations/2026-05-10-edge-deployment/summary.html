@@ -1552,6 +1552,61 @@
       background: #2E323D;
       color: #FFFFFF;
     }
+
+    /* === Collapsible "Extended edge device PR" section ===
+       Native <details>/<summary> with a CSS-only +/- toggle.
+       Default state is collapsed (no `open` attribute). The summary
+       inherits .section-head layout, adding only affordances. */
+    .pr-collapsible {
+      margin-top: 0;
+    }
+
+    .pr-summary {
+      cursor: pointer;
+      list-style: none;
+      user-select: none;
+      padding: 4px 6px;
+      border-radius: 6px;
+      transition: background 0.15s ease;
+    }
+
+    /* Suppress the default disclosure marker (WebKit). */
+    .pr-summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .pr-summary:hover {
+      background: var(--bg-elevated);
+    }
+
+    .pr-summary:focus-visible {
+      outline: 2px solid var(--accent-2);
+      outline-offset: 2px;
+    }
+
+    /* +/- toggle on the right; CSS-only state via details[open]. */
+    .pr-summary::after {
+      content: '+';
+      margin-left: auto;
+      font-family: var(--mono);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-muted);
+      width: 22px;
+      height: 22px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+
+    details[open] .pr-summary::after {
+      content: '\2212';
+      color: var(--text);
+      background: var(--bg-elevated);
+    }
   </style>
 </head>
 
@@ -1579,9 +1634,10 @@
     <span class="tag tag--blue">In-vehicle</span>
     <h2>v1.3 &mdash; theoretical vs in-vehicle deployment</h2>
     <h3>Lab routing (v1-theoretical) reaches <span class="num">81.6%</span> mean accuracy across <span
-        class="num">4</span> cells. The test pilot measured <span class="num">3</span> of 5 use cases in-vehicle &mdash;
-      distracted <span class="num">54%</span>, phone <span class="num">81%</span>, seatbelt <span class="num">70%</span>
-      &mdash; averaging <span class="num">68.3%</span> across the measured set.</h3>
+        class="num">4</span> cells. The test pilot now covers all <span class="num">5</span> use cases in-vehicle
+      &mdash; distracted <span class="num">54%</span>, eating <span class="num">73%</span>, fatigue <span
+        class="num">62%</span>, phone <span class="num">81%</span>, seatbelt <span class="num">70%</span> &mdash;
+      averaging <span class="num">68.0%</span> in-vehicle.</h3>
 
     <div class="kpi-row">
       <div class="kpi">
@@ -1596,8 +1652,8 @@
       </div>
       <div class="kpi kpi--deploy">
         <div class="kpi-label">v1-deployment</div>
-        <div class="kpi-value">68.3%<span class="kpi-delta kpi-delta--neg">&minus;8.1 pts</span></div>
-        <div class="kpi-sub">in-vehicle &middot; 3 of 5 cells measured &middot; vs OEM at same cells</div>
+        <div class="kpi-value">68.0%<span class="kpi-delta kpi-delta--neg">&minus;5.6 pts</span></div>
+        <div class="kpi-sub">in-vehicle &middot; 5 use cases &middot; vs Hikvision OEM</div>
       </div>
     </div>
 
@@ -1606,7 +1662,7 @@
         <div class="eyebrow">Per-use-case slopegraph &middot; deployment</div>
         <div class="design-title">v1-theoretical (lab) vs. v1-deployment (in-vehicle) &middot; OEM baseline</div>
         <p class="intent">Amber diamonds: v1-theoretical lab routing (4 cells). Purple circles: v1-deployment in-vehicle
-          (3 measured cells, no connecting line). Vertical bar = deployment &minus; OEM at each measured tick (green:
+          (5 measured cells, no connecting line). Vertical bar = deployment &minus; OEM at each measured tick (green:
           ahead, red: behind).</p>
         <div id="slopegraph-chart-deployed" class="chart"></div>
       </div>
@@ -1614,19 +1670,14 @@
       <div class="sidebar">
         <div class="card">
           <div class="eyebrow">Deployment coverage</div>
-          <h4 style="margin-bottom: 8px">3 of 5 measured</h4>
+          <h4 style="margin-bottom: 8px">5 of 5 measured</h4>
           <ul class="use-list">
             <li><span class="use-dot"></span>distracted &middot; <span class="num">54%</span></li>
-            <li data-state="off"><span class="use-dot"></span>eating &middot; <span
-                style="font-family:var(--mono);font-size:11px;color:var(--text-muted)">pending</span></li>
-            <li data-state="off"><span class="use-dot"></span>fatigue &middot; <span
-                style="font-family:var(--mono);font-size:11px;color:var(--text-muted)">pending</span></li>
+            <li><span class="use-dot"></span>eating &middot; <span class="num">73%</span></li>
+            <li><span class="use-dot"></span>fatigue &middot; <span class="num">62%</span></li>
             <li><span class="use-dot"></span>phone &middot; <span class="num">81%</span></li>
             <li><span class="use-dot"></span>seatbelt &middot; <span class="num">70%</span></li>
           </ul>
-          <p
-            style="font-size: 11px; color: var(--text-muted); margin-top: 8px; font-family: var(--mono); letter-spacing: 0.02em">
-            Eating &amp; fatigue not yet measured in-vehicle.</p>
         </div>
 
         <div class="edge-box">
@@ -1691,81 +1742,13 @@
       </div>
     </div>
 
-    <div class="section-head">
-      <h4>Current assets</h4>
-      <span class="head-sub">already in fleet &middot; no new procurement</span>
-    </div>
+    <details class="pr-collapsible">
+      <summary class="section-head pr-summary">
+        <h4>Extended edge device PR</h4>
+        <span class="head-sub">purchase request &middot; specs to be finalised</span>
+      </summary>
 
-    <div class="assets-grid">
-      <div class="asset-card">
-        <div class="asset-step">Asset &middot; 01</div>
-        <div class="asset-name">Howen OBU + Qoho camera</div>
-        <div class="asset-hw">howen.obu &middot; qoho.cam</div>
-        <div class="asset-meta">
-          <div class="cell">
-            <div class="cell-label">Units</div>
-            <div class="cell-value tbd">&lt;TBD&gt;</div>
-          </div>
-          <div class="cell">
-            <div class="cell-label">Sites</div>
-            <div class="cell-value tbd">&lt;TBD&gt;</div>
-          </div>
-          <div class="cell">
-            <div class="cell-label">Use cases</div>
-            <div class="cell-value tbd">&lt;TBD&gt;</div>
-          </div>
-        </div>
-        <div class="deploy-uses">
-          <div class="label">Coverage</div>
-          <div class="chip-row">
-            <span class="chip tbd">distracted</span>
-            <span class="chip tbd">eating</span>
-            <span class="chip tbd">fatigue</span>
-            <span class="chip tbd">phone</span>
-            <span class="chip tbd">seatbelt</span>
-            <span class="chip tbd">smoking</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="asset-card purple">
-        <div class="asset-step">Asset &middot; 02</div>
-        <div class="asset-name">Howen OBU + Howen MHero + Dashcamera</div>
-        <div class="asset-hw">howen.obu &middot; howen.mhero &middot; dashcam</div>
-        <div class="asset-meta">
-          <div class="cell">
-            <div class="cell-label">Units</div>
-            <div class="cell-value tbd">&lt;TBD&gt;</div>
-          </div>
-          <div class="cell">
-            <div class="cell-label">Sites</div>
-            <div class="cell-value tbd">&lt;TBD&gt;</div>
-          </div>
-          <div class="cell">
-            <div class="cell-label">Use cases</div>
-            <div class="cell-value tbd">&lt;TBD&gt;</div>
-          </div>
-        </div>
-        <div class="deploy-uses">
-          <div class="label">Coverage</div>
-          <div class="chip-row">
-            <span class="chip tbd">distracted</span>
-            <span class="chip tbd">eating</span>
-            <span class="chip tbd">fatigue</span>
-            <span class="chip tbd">phone</span>
-            <span class="chip tbd">seatbelt</span>
-            <span class="chip tbd">smoking</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="section-head">
-      <h4>Extended edge device PR</h4>
-      <span class="head-sub">purchase request &middot; specs to be finalised</span>
-    </div>
-
-    <div class="pr-card">
+      <div class="pr-card">
       <div class="pr-head">
         <div>
           <div class="pr-eyebrow">Procurement</div>
@@ -1850,6 +1833,112 @@
           camera input, <span class="num">10&times;</span> CAN-FD, and ASIL-B/D safety &mdash; enough to run heavier
           multi-task models with multi-camera coverage that closes the theoretical-vs-real gap. Vendor figures from the
           proposed stack page; bench verification on Mowasalat fleet workloads is the next step.</div>
+      </div>
+    </div>
+    </details>
+  </section>
+
+
+  <!-- ============================================
+     SLIDE 3 / CAN-BUS TELEMETRY SUMMARY
+     ============================================ -->
+  <section class="slide" id="canbus">
+    <div class="slide-stamp">
+      <span>can-bus / results / 2026-05</span>
+      <span class="stamp-sep"></span>
+      <span class="stamp-idx">03 / 03</span>
+    </div>
+
+    <span class="tag tag--blue">CAN-bus</span>
+    <h2>CAN-bus corroboration for DMS events</h2>
+    <h3>Pair the DMS camera view with vehicle turn-signal data so risky lane-change events are checked from both driver action and vehicle state.</h3>
+
+    <div class="can-bus-layout">
+      <div class="can-summary-card">
+        <div>
+          <div class="can-summary-eyebrow">Camera + vehicle signal</div>
+          <div class="can-summary-title">Cross-verify correct turning behaviour with the DMS camera and CAN-bus signals.</div>
+          <p class="can-summary-copy">The camera shows whether the driver checked before a maneuver. The CAN-bus signal
+            shows whether the vehicle indicator was active in the same window. Together they make the event easier to
+            review than either source alone.</p>
+        </div>
+      </div>
+
+      <div class="can-preview-card">
+        <div class="can-preview-head">
+          <div class="can-preview-title">Synced CAN-bus examples</div>
+          <div class="can-preview-note">local presentation assets</div>
+        </div>
+        <div class="can-preview-grid">
+          <div class="can-preview-item good">
+            <div class="can-example-head">
+              <div>
+                <span class="can-example-kicker">01 &middot; expected behaviour</span>
+                <span class="can-example-title">LOOK + RIGHT SIGNAL</span>
+              </div>
+              <span class="can-verdict good">matched</span>
+            </div>
+            <video src="assets/can-bus/clips/01_look_can_on.mp4" muted loop playsinline preload="metadata" controls></video>
+            <div class="can-evidence-row">
+              <span class="gaze-state">driver looking</span>
+              <span class="blinker-pair">
+                <span class="blinker left"><span class="arrow">&#9664;</span>L off</span>
+                <span class="blinker right on"><span class="arrow">&#9654;</span>R on</span>
+              </span>
+            </div>
+          </div>
+          <div class="can-preview-item warn">
+            <div class="can-example-head">
+              <div>
+                <span class="can-example-kicker">02 &middot; missing signal</span>
+                <span class="can-example-title">LOOK + NO SIGNAL</span>
+              </div>
+              <span class="can-verdict warn">issue</span>
+            </div>
+            <video src="assets/can-bus/clips/02_look_can_off.mp4" muted loop playsinline preload="metadata" controls></video>
+            <div class="can-evidence-row">
+              <span class="gaze-state">driver looking</span>
+              <span class="blinker-pair">
+                <span class="blinker left"><span class="arrow">&#9664;</span>L off</span>
+                <span class="blinker right"><span class="arrow">&#9654;</span>R off</span>
+              </span>
+            </div>
+          </div>
+          <div class="can-preview-item warn">
+            <div class="can-example-head">
+              <div>
+                <span class="can-example-kicker">03 &middot; signal without look</span>
+                <span class="can-example-title">NO LOOK + RIGHT SIGNAL</span>
+              </div>
+              <span class="can-verdict warn">issue</span>
+            </div>
+            <video src="assets/can-bus/clips/03_no_look_can_on.mp4" muted loop playsinline preload="metadata" controls></video>
+            <div class="can-evidence-row">
+              <span class="gaze-state off">not looking</span>
+              <span class="blinker-pair">
+                <span class="blinker left"><span class="arrow">&#9664;</span>L off</span>
+                <span class="blinker right on"><span class="arrow">&#9654;</span>R on</span>
+              </span>
+            </div>
+          </div>
+          <div class="can-preview-item warn">
+            <div class="can-example-head">
+              <div>
+                <span class="can-example-kicker">04 &middot; no look / no signal</span>
+                <span class="can-example-title">NO LOOK + NO SIGNAL</span>
+              </div>
+              <span class="can-verdict warn">issue</span>
+            </div>
+            <video src="assets/can-bus/clips/04_no_look_can_off.mp4" muted loop playsinline preload="metadata" controls></video>
+            <div class="can-evidence-row">
+              <span class="gaze-state off">not looking</span>
+              <span class="blinker-pair">
+                <span class="blinker left"><span class="arrow">&#9664;</span>L off</span>
+                <span class="blinker right"><span class="arrow">&#9654;</span>R off</span>
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -2113,11 +2202,13 @@
         phone_usage: 0.916,
       };
       // v1 in-vehicle deployment numbers (test pilot, 2026-05-07).
-      // Three of five use cases measured. Eating & fatigue not yet captured in deployment.
+      // All five use cases now measured in-vehicle.
       const V1_DEPLOYMENT = {
         distracted_driving: 0.54,
         phone_usage: 0.81,
         seatbelt: 0.70,
+        fatigue: 0.62,
+        eating_drinking: 0.73,
       };
       const ORDER = ['phone_usage', 'eating_drinking', 'distracted_driving', 'fatigue', 'seatbelt'];
       const LABELS = {

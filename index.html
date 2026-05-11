@@ -1234,15 +1234,6 @@
           { value: '+8.0', label: 'pts vs OEM' },
           { value: '10 May', label: 'Target' },
         ],
-        materials: [
-          {
-            title: 'Test Vehicle — Howen OBU + MHero',
-            pillLabel: 'Test Vehicle',
-            desc: 'Hardware spec, install photos, and live telemetry from the Howen OBU + MHero camera pair used for the 10 May pilot.',
-            file: 'presentations/2026-05-10-edge-deployment/details/test-vehicle.html',
-            type: 'report',
-          },
-        ],
       },
       {
         id: 'passenger_counting_28apr',
@@ -1632,7 +1623,7 @@
               ${detailLinksHtml ? `<div class="detail-links">${detailLinksHtml}</div>` : ''}
             </div>
           </div>
-          ${isPast ? '' : `<div class="arrow-connector">
+          ${isPast || !p.materials || p.materials.length === 0 ? '' : `<div class="arrow-connector">
             <span class="arrow-label">will include</span>
             <div class="arrow-line"><div class="line"></div><div class="head"></div></div>
           </div>
