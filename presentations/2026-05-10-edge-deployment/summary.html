@@ -1477,6 +1477,33 @@
         </div>
       </div>
 
+      <!-- HW-assessment floater: opens when the SVG's amber HW ASSESSMENT
+           box posts {type:'open-hw-assessment-overlay'}. Iframes
+           details/hw-assessment.html which embeds the Howen MDT
+           performance workbook via Microsoft Office Online viewer. -->
+      <div class="floater" id="hwAssessmentFloater"
+           onclick="closeHwAssessmentFloater()"
+           role="dialog" aria-modal="true"
+           aria-label="HW assessment &middot; Howen MDT performance">
+        <div class="floater-panel" onclick="event.stopPropagation()">
+          <a class="floater-open"
+             href="details/hw-assessment.html"
+             target="_blank" rel="noopener" title="Open in new tab">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+              <polyline points="15 3 21 3 21 9" />
+              <line x1="10" y1="14" x2="21" y2="3" />
+            </svg>
+          </a>
+          <button class="floater-close"
+                  onclick="closeHwAssessmentFloater()"
+                  aria-label="Close">&times;</button>
+          <iframe id="hwAssessmentFloaterFrame" src="" loading="lazy"
+                  class="floater-frame"
+                  title="HW assessment &middot; Howen MDT performance"></iframe>
+        </div>
+      </div>
+
     </div>
 
     <details class="pr-collapsible">
@@ -1722,6 +1749,43 @@
 
       window.addEventListener('message', function (e) {
         if (e && e.data && e.data.type === 'open-decision-overlay') {
+          open();
+        }
+      });
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && floater.classList.contains('active')) close();
+      });
+    })();
+
+
+    // ============================================
+    // === HW-assessment Office viewer floater ===
+    // ============================================
+    // Mirrors the decision-options floater above. SVG posts
+    // {type:'open-hw-assessment-overlay'} when the amber HW ASSESSMENT
+    // box is clicked; we iframe details/hw-assessment.html which embeds
+    // the Howen MDT performance workbook via Office Online. Lazy-loaded
+    // on first open.
+    (function () {
+      const floater = document.getElementById('hwAssessmentFloater');
+      const frame = document.getElementById('hwAssessmentFloaterFrame');
+      if (!floater || !frame) return;
+
+      function open() {
+        if (!frame.getAttribute('src')) {
+          frame.setAttribute('src', 'details/hw-assessment.html');
+        }
+        floater.classList.add('active');
+      }
+      function close() {
+        floater.classList.remove('active');
+      }
+
+      window.closeHwAssessmentFloater = close;
+
+      window.addEventListener('message', function (e) {
+        if (e && e.data && e.data.type === 'open-hw-assessment-overlay') {
           open();
         }
       });

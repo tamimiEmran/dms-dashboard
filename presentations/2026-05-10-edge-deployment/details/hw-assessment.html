@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+  HW assessment detail page — embeds the Howen MDT performance workbook
+  via Microsoft Office Online viewer. Self-contained so it renders the
+  same way inside the dashboard floater (iframed from summary.html) or
+  as a standalone browser tab.
+
+  Why Office Online: native multi-sheet rendering with tabs, formulas,
+  formatting — zero custom code. Microsoft's servers fetch the xlsx
+  from raw.githubusercontent.com (public repo) and stream it back as
+  rendered HTML/canvas inside the iframe. Updates to the xlsx on master
+  appear here on next view (Office Online caches briefly).
+-->
+<head>
+  <meta charset="UTF-8">
+  <meta name="robots" content="noindex,nofollow">
+  <style id="dms-gate-hide">body{display:none!important}</style>
+  <script src="../../../password-gate.js"></script>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>HW Assessment &middot; Howen MDT Performance</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: "DM Sans", system-ui, sans-serif;
+      color: #1A1D26;
+      background: #F6F7FA;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    header {
+      padding: 16px 24px;
+      background: #FFFFFF;
+      border-bottom: 1px solid #D8DBE3;
+      flex: 0 0 auto;
+    }
+    .eyebrow {
+      font-family: "JetBrains Mono", "Consolas", monospace;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: #C88A1A;
+      text-transform: uppercase;
+    }
+    .title {
+      margin: 4px 0 0;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+    .meta {
+      margin-top: 4px;
+      font-size: 12px;
+      color: #5A5E6E;
+    }
+    .download-link {
+      color: #5A5E6E;
+      text-decoration: none;
+      border-bottom: 1px dashed currentColor;
+    }
+    .download-link:hover { color: #1A1D26; }
+    .viewer-frame {
+      flex: 1 1 auto;
+      width: 100%;
+      border: 0;
+      display: block;
+      background: #FFFFFF;
+    }
+    .fallback {
+      padding: 24px;
+      font-size: 13px;
+      color: #5A5E6E;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="eyebrow">HW assessment</div>
+    <h1 class="title">Howen MDT performance &middot; multi-sheet workbook</h1>
+    <p class="meta">
+      Rendered via Microsoft Office Online &middot;
+      <a class="download-link"
+         href="../assets/howen-mdt-performance-1.xlsx"
+         download>download .xlsx</a>
+    </p>
+  </header>
+  <!--
+    Office Online embed URL format:
+      https://view.officeapps.live.com/op/embed.aspx?src=<URL-encoded raw file URL>
+
+    The src must be publicly fetchable by Microsoft's servers — the dashboard
+    repo is public, so raw.githubusercontent.com URLs work. Pinned to master
+    so the latest committed version is always shown.
+  -->
+  <iframe class="viewer-frame"
+          src="https://view.officeapps.live.com/op/embed.aspx?src=https%3A%2F%2Fraw.githubusercontent.com%2FtamimiEmran%2Fdms-dashboard%2Fmaster%2Fpresentations%2F2026-05-10-edge-deployment%2Fassets%2Fhowen-mdt-performance-1.xlsx"
+          title="Howen MDT performance spreadsheet (Office Online viewer)"
+          allow="fullscreen"
+          loading="lazy"></iframe>
+  <noscript>
+    <div class="fallback">
+      The Office Online viewer requires JavaScript. You can
+      <a class="download-link"
+         href="../assets/howen-mdt-performance-1.xlsx"
+         download>download the .xlsx file</a> instead.
+    </div>
+  </noscript>
+</body>
+</html>

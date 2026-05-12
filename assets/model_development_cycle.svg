@@ -303,21 +303,20 @@
        field-test phase, not a new phase. Connector drops straight down from
        the field-test-deployment box bottom-center (x=450) to this box top.
 
-       Clickable: opens the Howen MDT performance spreadsheet in a new tab.
-       Uses target="_blank" directly (not the postMessage overlay pattern used
-       by mass-expansion / decision-gate) because the destination is an
-       external .xlsx, not an inline HTML preview. The file lives in the
-       dashboard repo (presentations/2026-05-10-edge-deployment/assets/) so
-       the link works from any host (local file://, http server, GitHub
-       Pages). Relative path is resolved against the SVG's location. -->
+       Clickable: opens the Howen MDT performance workbook in an inline
+       floater that iframes details/hw-assessment.html (Office Online
+       viewer with multi-sheet tabs). Same postMessage pattern as the
+       mass-expansion / decision-gate CTAs — onclick posts to parent if
+       embedded, otherwise the href/target="_top" fallback navigates the
+       top frame to the detail page (works in standalone SVG view too). -->
   <line x1="450" y1="425" x2="450" y2="445" stroke="#C88A1A" stroke-width="1" stroke-dasharray="2,3" />
   <a id="hw-assessment-cta"
-     xlink:href="../presentations/2026-05-10-edge-deployment/assets/howen-mdt-performance-1.xlsx"
-     href="../presentations/2026-05-10-edge-deployment/assets/howen-mdt-performance-1.xlsx"
-     target="_blank"
-     rel="noopener"
+     xlink:href="../presentations/2026-05-10-edge-deployment/details/hw-assessment.html"
+     href="../presentations/2026-05-10-edge-deployment/details/hw-assessment.html"
+     target="_top"
      class="hw-assessment-link"
-     aria-label="Open Howen MDT performance spreadsheet in a new tab">
+     onclick="if(window.parent &amp;&amp; window.parent !== window){window.parent.postMessage({type:'open-hw-assessment-overlay'},'*');return false;}return true;"
+     aria-label="Open HW assessment overlay (Howen MDT performance)">
     <rect class="hw-assessment-bg hw-assessment-rect" x="343" y="445" width="214" height="80" rx="10" fill="#FAEFD7" stroke="#C88A1A" stroke-width="1.5" />
     <text x="359" y="465" fill="#C88A1A" font-size="10.5" font-weight="700" font-family="JetBrains Mono, monospace" letter-spacing="0.10em">HW ASSESSMENT</text>
     <text x="359" y="488" fill="#1A1D26" font-size="13" font-weight="600">Hardware assessment will run</text>
