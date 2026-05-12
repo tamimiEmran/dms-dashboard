@@ -8,9 +8,15 @@
 
   Why Office Online: native multi-sheet rendering with tabs, formulas,
   formatting — zero custom code. Microsoft's servers fetch the xlsx
-  from raw.githubusercontent.com (public repo) and stream it back as
-  rendered HTML/canvas inside the iframe. Updates to the xlsx on master
-  appear here on next view (Office Online caches briefly).
+  from the GitHub Pages URL (tamimiemran.github.io/dms-dashboard/...)
+  and stream it back as rendered HTML/canvas inside the iframe.
+
+  Pages URL — not raw.githubusercontent.com — because the source repo
+  is PRIVATE but Pages is configured to serve publicly. raw URLs need
+  auth on private repos and would 404 to Microsoft's servers.
+
+  Updates to the xlsx on master appear here after the next Pages build
+  (~1 min) plus Office Online's brief edge cache.
 -->
 <head>
   <meta charset="UTF-8">
@@ -88,14 +94,16 @@
   </header>
   <!--
     Office Online embed URL format:
-      https://view.officeapps.live.com/op/embed.aspx?src=<URL-encoded raw file URL>
+      https://view.officeapps.live.com/op/embed.aspx?src=<URL-encoded file URL>
 
-    The src must be publicly fetchable by Microsoft's servers — the dashboard
-    repo is public, so raw.githubusercontent.com URLs work. Pinned to master
-    so the latest committed version is always shown.
+    The src must be publicly fetchable by Microsoft's servers. Repo is
+    private, so raw.githubusercontent.com 404s without auth — instead we
+    use the GitHub Pages URL which is publicly served (Pages "public":true
+    even though repo isPrivate:true). Pages mirrors master on push, so
+    the latest pushed xlsx is always what gets rendered.
   -->
   <iframe class="viewer-frame"
-          src="https://view.officeapps.live.com/op/embed.aspx?src=https%3A%2F%2Fraw.githubusercontent.com%2FtamimiEmran%2Fdms-dashboard%2Fmaster%2Fpresentations%2F2026-05-10-edge-deployment%2Fassets%2Fhowen-mdt-performance-1.xlsx"
+          src="https://view.officeapps.live.com/op/embed.aspx?src=https%3A%2F%2Ftamimiemran.github.io%2Fdms-dashboard%2Fpresentations%2F2026-05-10-edge-deployment%2Fassets%2Fhowen-mdt-performance-1.xlsx"
           title="Howen MDT performance spreadsheet (Office Online viewer)"
           allow="fullscreen"
           loading="lazy"></iframe>
