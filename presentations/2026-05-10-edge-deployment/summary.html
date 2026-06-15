@@ -1450,17 +1450,16 @@
         </div>
       </div>
 
-      <!-- Decision-options floater: opens when the SVG's "DECISION REQUIRED"
-           amber box posts {type:'open-decision-overlay'}. Iframes the
-           standalone details/expansion-decision.html so the page is the
-           single source of truth (no inline duplicate to keep in sync). -->
-      <div class="floater" id="decisionOptionsFloater"
-           onclick="closeDecisionOptionsFloater()"
+      <!-- Fleet-deployment floater (box 1): opens when the SVG's "FLEET DEPLOYMENT"
+           box posts {type:'open-fleet-overlay'}. Iframes the standalone
+           details/fleet-deployment-progress.html (HW + model progress). -->
+      <div class="floater" id="fleetFloater"
+           onclick="closeFleetFloater()"
            role="dialog" aria-modal="true"
-           aria-label="Whole-fleet expansion &middot; procurement paths">
+           aria-label="Fleet deployment &middot; progress">
         <div class="floater-panel" onclick="event.stopPropagation()">
           <a class="floater-open"
-             href="details/expansion-decision.html"
+             href="details/fleet-deployment-progress.html"
              target="_blank" rel="noopener" title="Open in new tab">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
@@ -1469,11 +1468,11 @@
             </svg>
           </a>
           <button class="floater-close"
-                  onclick="closeDecisionOptionsFloater()"
+                  onclick="closeFleetFloater()"
                   aria-label="Close">&times;</button>
-          <iframe id="decisionOptionsFloaterFrame" src="" loading="lazy"
+          <iframe id="fleetFloaterFrame" src="" loading="lazy"
                   class="floater-frame"
-                  title="Whole-fleet expansion &middot; procurement paths"></iframe>
+                  title="Fleet deployment &middot; progress"></iframe>
         </div>
       </div>
 
@@ -1722,20 +1721,19 @@
 
 
     // ============================================
-    // === Decision-options HTML floater on the expansion slide ===
+    // === Fleet-deployment floater (box 1) on the expansion slide ===
     // ============================================
-    // Mirrors the leasing-taxis floater above. SVG posts
-    // {type:'open-decision-overlay'} when the amber DECISION REQUIRED
-    // box is clicked; we iframe details/expansion-decision.html as the
-    // overlay content. Lazy-loaded on first open.
+    // SVG box 1 ("FLEET DEPLOYMENT") posts {type:'open-fleet-overlay'}; we
+    // iframe details/fleet-deployment-progress.html (HW + model progress
+    // matrices) as the overlay content. Lazy-loaded on first open.
     (function () {
-      const floater = document.getElementById('decisionOptionsFloater');
-      const frame = document.getElementById('decisionOptionsFloaterFrame');
+      const floater = document.getElementById('fleetFloater');
+      const frame = document.getElementById('fleetFloaterFrame');
       if (!floater || !frame) return;
 
       function open() {
         if (!frame.getAttribute('src')) {
-          frame.setAttribute('src', 'details/expansion-decision.html');
+          frame.setAttribute('src', 'details/fleet-deployment-progress.html');
         }
         floater.classList.add('active');
       }
@@ -1743,10 +1741,10 @@
         floater.classList.remove('active');
       }
 
-      window.closeDecisionOptionsFloater = close;
+      window.closeFleetFloater = close;
 
       window.addEventListener('message', function (e) {
-        if (e && e.data && e.data.type === 'open-decision-overlay') {
+        if (e && e.data && e.data.type === 'open-fleet-overlay') {
           open();
         }
       });

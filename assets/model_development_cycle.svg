@@ -8,10 +8,10 @@
     3. Fleet expansion / target (green)  — 97% goal + early-exit at >71%
 
   The bottom-center status cluster (Deployed / Procurement / v3.1) hangs off the
-  weekly-iteration block. Box 3 (v3.1 / pax counting) is wired: it posts
-  'open-deployment-overlay' to the parent (summary.html) and falls back to
-  details/fare-trip-validation.html in standalone view. Boxes 1 (Deployed)
-  and 2 (Procurement) are static (non-clickable).
+  weekly-iteration block. Box 1 (Deployed) posts 'open-fleet-overlay' (fleet
+  deployment progress); Box 3 (v3.1 / pax counting) posts 'open-deployment-overlay'
+  (pax-detection test); both fall back to their details/*.html in standalone view.
+  Box 2 (Procurement) is static (non-clickable).
 
   Date axis: 2026-04-14 → 2026-06-30 (77 days, ~15.3 px/day).
   Visual idiom borrowed from reports/dms/workflow.html.
@@ -247,14 +247,20 @@
        onclick is inert (return false) until a real href / overlay is wired in.
        Box 3 (v3.1) is intentionally non-clickable. -->
 
-  <!-- Box 1 — Deployed to 50 vehicles · DONE · non-clickable -->
-  <g>
-    <rect x="782" y="450" width="322" height="50" rx="10" fill="#E8F5F1" stroke="#0E9A7E" stroke-width="2" />
+  <!-- Box 1 — Deployed to 50 vehicles · DONE · clickable → fleet-deployment-progress overlay -->
+  <a id="status-deployed-cta"
+     xlink:href="../presentations/2026-05-10-edge-deployment/details/fleet-deployment-progress.html"
+     href="../presentations/2026-05-10-edge-deployment/details/fleet-deployment-progress.html"
+     target="_top"
+     class="status-cta"
+     onclick="if(window.parent &amp;&amp; window.parent !== window){window.parent.postMessage({type:'open-fleet-overlay'},'*');return false;}return true;"
+     aria-label="Open fleet deployment progress overlay">
+    <rect class="status-bg status-rect" x="782" y="450" width="322" height="50" rx="10" fill="#E8F5F1" stroke="#0E9A7E" stroke-width="2" />
     <text x="802" y="472" fill="#0E9A7E" font-size="10.5" font-weight="700" font-family="JetBrains Mono, monospace" letter-spacing="0.10em">FLEET DEPLOYMENT</text>
     <text x="802" y="490" fill="#1A1D26" font-size="13" font-weight="600">Deployed to 50 vehicles</text>
     <circle cx="1084" cy="468" r="9" fill="#0E9A7E" />
     <text x="1084" y="472" fill="#FFFFFF" font-size="12" font-weight="700" text-anchor="middle">&#x2713;</text>
-  </g>
+  </a>
 
   <!-- Box 2 — Components for whole-fleet expansion · IN PROGRESS · non-clickable -->
   <g>
