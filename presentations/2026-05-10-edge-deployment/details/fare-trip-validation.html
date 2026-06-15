@@ -153,6 +153,7 @@
     .act b{ font-size:13px; font-weight:600; } .act span{ color:var(--dim); font-size:12px; }
     .act .sep{ color:var(--mut); margin:0 7px; }
 
+    .src-shot { display:block; width:100%; border:1px solid var(--border); border-radius:var(--r); box-shadow:0 1px 4px rgba(26,29,38,.05); }
     .foot { margin-top:24px; padding-top:12px; border-top:1px solid var(--border); font-family:var(--mono); font-size:10px; color:var(--mut); letter-spacing:.02em; line-height:1.7; }
     @media (max-width:840px){ .stats{ grid-template-columns:1fr 1fr;} .ea{ grid-template-columns:1fr;} .versus{ grid-template-columns:1fr;} }
   </style>
@@ -303,7 +304,9 @@
     </div>
   </section>
 
-  <div class="foot reveal" style="animation-delay:.36s">
+  <img class="src-shot reveal" style="animation-delay:.36s" src="../assets/finance-fare-review-email.png" alt="Finance email — fare-review request (KM / Start Time / Trip Duration)">
+
+  <div class="foot reveal" style="animation-delay:.4s">
     Phase 1 passenger-detection test &middot; vehicle #3091 &middot; ~3.5 km fixed route, HQ &middot; single-passenger worst case.<br>
     Tester names anonymised. Fares are initial meter-app readings (rounding error); Mursaal verification pending with Finance.
   </div>
