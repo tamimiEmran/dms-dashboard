@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+  Model Development Cycle — standalone (16 Jun "Upcoming" card).
+  Stripped from 2026-05-10-edge-deployment/summary.html down to just the
+  model-cycle hero + its three detail floaters.
+
+  The SVG is the shared current version (../../assets/model_development_cycle.svg,
+  status cluster). The box overlays reuse the edge-deployment detail pages via
+  ../2026-05-10-edge-deployment/details/ (no duplication).
+-->
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1280">
+  <style id="dms-gate-hide">body{display:none!important}</style>
+  <script src="../../password-gate.js"></script>
+  <title>Model Development Cycle</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg:#F8F9FB; --bg-card:#FFFFFF; --bg-elevated:#F0F1F4; --border:#E0E2E8;
+      --text:#1A1D26; --text-dim:#5A5E6E; --text-muted:#8E92A0;
+      --accent:#0E9A7E; --accent-2:#3B6FD6;
+      --font:'DM Sans', system-ui, sans-serif; --mono:'JetBrains Mono', monospace;
+    }
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+    body { background:var(--bg); color:var(--text); font-family:var(--font); line-height:1.5; padding:24px 28px 44px; max-width:1180px; margin:0 auto; }
+
+    .topbar { display:flex; align-items:center; gap:14px; margin-bottom:22px; }
+    .topbar .home { font-family:var(--mono); font-size:12px; color:var(--text-dim); text-decoration:none; padding:6px 12px; border:1px solid var(--border); border-radius:7px; background:var(--bg-card); }
+    .topbar .home:hover { background:var(--bg-elevated); color:var(--text); }
+    .topbar .title { font-size:16px; font-weight:600; letter-spacing:-.01em; }
+    .topbar .stamp { margin-left:auto; font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--accent-2); background:rgba(59,111,214,.10); padding:5px 11px; border-radius:999px; }
+
+    .section-head { display:flex; align-items:baseline; gap:12px; margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid var(--border); }
+    .section-head h4 { font-size:15px; font-weight:600; letter-spacing:-.01em; }
+    .section-head .head-sub { font-family:var(--mono); font-size:11px; color:var(--text-muted); letter-spacing:.02em; }
+
+    /* === Model development cycle hero (anchor for the scoped floater overlay) === */
+    .model-cycle-host { position:relative; background:var(--bg-card); border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:18px; overflow:hidden; }
+    .model-cycle-svg { display:block; width:100%; aspect-ratio:1400 / 670; border:0; }
+
+    /* Floater (scoped detail overlay) */
+    .floater { display:none; position:absolute; inset:0; z-index:10; background:rgba(26,29,38,.72); backdrop-filter:blur(4px); border-radius:12px; cursor:pointer; padding:24px; }
+    .floater.active { display:flex; align-items:center; justify-content:center; }
+    .floater-panel { background:#1A1D26; border-radius:8px; position:relative; width:100%; height:100%; max-width:1280px; cursor:default; box-shadow:0 20px 60px rgba(0,0,0,.45); overflow:hidden; }
+    .floater-frame { display:block; width:100%; height:100%; border:0; }
+    .floater-close, .floater-open { position:absolute; top:8px; width:32px; height:32px; border-radius:6px; border:1px solid #2E323D; background:#1A1D26; color:#E0E2E8; cursor:pointer; z-index:11; }
+    .floater-close { right:8px; font-size:22px; line-height:1; }
+    .floater-open { right:48px; display:flex; align-items:center; justify-content:center; text-decoration:none; }
+    .floater-close:hover, .floater-open:hover { background:#2E323D; color:#FFFFFF; }
+  </style>
+</head>
+
+<body>
+  <nav class="topbar">
+    <a class="home" href="../../index.html">&larr; Home</a>
+    <span class="title">Model Development Cycle</span>
+    <span class="stamp">Upcoming &middot; 16 Jun</span>
+  </nav>
+
+  <div class="section-head">
+    <h4>Model development cycle</h4>
+    <span class="head-sub">click a status box for its deployment / pax-detection detail</span>
+  </div>
+
+  <!-- Hero visual: shared model_development_cycle.svg. The SVG's status-box
+       click handlers post messages to this parent; the floaters below listen
+       and open the matching edge-deployment detail page inline. -->
+  <div class="model-cycle-host">
+    <object data="../../assets/model_development_cycle.svg" type="image/svg+xml" class="model-cycle-svg">
+      Model Development Cycle
+    </object>
+
+    <!-- Box 3 (v3.1 / pax counting) → open-deployment-overlay -->
+    <div class="floater" id="deploymentFloater"
+         onclick="closeDeploymentFloater()"
+         role="dialog" aria-modal="true"
+         aria-label="Passenger detection &middot; Phase 1 test">
+      <div class="floater-panel" onclick="event.stopPropagation()">
+        <a class="floater-open"
+           href="../2026-05-10-edge-deployment/details/fare-trip-validation.html"
+           target="_blank" rel="noopener" title="Open in new tab">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+            <polyline points="15 3 21 3 21 9" />
+            <line x1="10" y1="14" x2="21" y2="3" />
+          </svg>
+        </a>
+        <button class="floater-close" onclick="closeDeploymentFloater()" aria-label="Close">&times;</button>
+        <iframe id="deploymentFloaterFrame" src="" loading="lazy" class="floater-frame" title="Passenger detection &middot; Phase 1 test"></iframe>
+      </div>
+    </div>
+
+    <!-- Box 1 (FLEET DEPLOYMENT) → open-fleet-overlay -->
+    <div class="floater" id="fleetFloater"
+         onclick="closeFleetFloater()"
+         role="dialog" aria-modal="true"
+         aria-label="Fleet deployment &middot; progress">
+      <div class="floater-panel" onclick="event.stopPropagation()">
+        <a class="floater-open"
+           href="../2026-05-10-edge-deployment/details/fleet-deployment-progress.html"
+           target="_blank" rel="noopener" title="Open in new tab">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+            <polyline points="15 3 21 3 21 9" />
+            <line x1="10" y1="14" x2="21" y2="3" />
+          </svg>
+        </a>
+        <button class="floater-close" onclick="closeFleetFloater()" aria-label="Close">&times;</button>
+        <iframe id="fleetFloaterFrame" src="" loading="lazy" class="floater-frame" title="Fleet deployment &middot; progress"></iframe>
+      </div>
+    </div>
+
+    <!-- HW ASSESSMENT box → open-hw-assessment-overlay -->
+    <div class="floater" id="hwAssessmentFloater"
+         onclick="closeHwAssessmentFloater()"
+         role="dialog" aria-modal="true"
+         aria-label="HW assessment &middot; Howen MDT performance">
+      <div class="floater-panel" onclick="event.stopPropagation()">
+        <a class="floater-open"
+           href="../2026-05-10-edge-deployment/details/hw-assessment.html"
+           target="_blank" rel="noopener" title="Open in new tab">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+            <polyline points="15 3 21 3 21 9" />
+            <line x1="10" y1="14" x2="21" y2="3" />
+          </svg>
+        </a>
+        <button class="floater-close" onclick="closeHwAssessmentFloater()" aria-label="Close">&times;</button>
+        <iframe id="hwAssessmentFloaterFrame" src="" loading="lazy" class="floater-frame" title="HW assessment &middot; Howen MDT performance"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Three scoped floaters — each listens for the SVG's postMessage and iframes
+    // the matching edge-deployment detail page (../2026-05-10-edge-deployment/details/).
+    function makeFloater(floaterId, frameId, src, msgType, closeName) {
+      const floater = document.getElementById(floaterId);
+      const frame = document.getElementById(frameId);
+      if (!floater || !frame) return;
+      function open() {
+        if (!frame.getAttribute('src')) frame.setAttribute('src', src);
+        floater.classList.add('active');
+      }
+      function close() { floater.classList.remove('active'); }
+      window[closeName] = close;
+      window.addEventListener('message', function (e) {
+        if (e && e.data && e.data.type === msgType) open();
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && floater.classList.contains('active')) close();
+      });
+    }
+    makeFloater('deploymentFloater', 'deploymentFloaterFrame', '../2026-05-10-edge-deployment/details/fare-trip-validation.html', 'open-deployment-overlay', 'closeDeploymentFloater');
+    makeFloater('fleetFloater', 'fleetFloaterFrame', '../2026-05-10-edge-deployment/details/fleet-deployment-progress.html', 'open-fleet-overlay', 'closeFleetFloater');
+    makeFloater('hwAssessmentFloater', 'hwAssessmentFloaterFrame', '../2026-05-10-edge-deployment/details/hw-assessment.html', 'open-hw-assessment-overlay', 'closeHwAssessmentFloater');
+  </script>
+</body>
+</html>
