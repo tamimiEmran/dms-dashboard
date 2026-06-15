@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+  Fare & trip-data validation (box 1 "Deployed to 50 vehicles" overlay).
+
+  Source: VMS_TripReport export "Black_trip_test" (report 2026-06-11),
+  trips 2026-06-02 -> 06-10. Raw export is PII (driver names/IDs, plates,
+  GPS) and is intentionally NOT served -- it lives git-ignored under
+  /_private/. This page is a curated, redacted summary only:
+    - The 6 yellow-flagged rows from the export are test vehicle KA 3019,
+      trips #6-11, no driver assigned -> no personal data shown.
+    - Anomaly exemplars use the KARWA TEST account label (not a person).
+    - Correspondents are shown as teams (Finance / Engineering), not names.
+  All figures transcribed from the export; see scripts note in the repo.
+-->
+<head>
+  <meta charset="UTF-8">
+  <meta name="robots" content="noindex,nofollow">
+  <style id="dms-gate-hide">body{display:none!important}</style>
+  <script src="../../../password-gate.js"></script>
+  <meta name="viewport" content="width=1100">
+  <title>Fare &amp; trip-data validation &middot; Mursal test trips</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #F8F9FB;
+      --bg-card: #FFFFFF;
+      --bg-elevated: #F0F1F4;
+      --border: #E0E2E8;
+      --text: #1A1D26;
+      --text-dim: #5A5E6E;
+      --text-muted: #8E92A0;
+      --green: #0E9A7E;
+      --blue: #3B6FD6;
+      --amber: #C88A1A;
+      --red: #D9453E;
+      --flag-bg: #FFF1C2;
+      --flag-line: #E7B53C;
+      --font: 'DM Sans', system-ui, sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+      --radius: 10px;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      line-height: 1.5;
+      padding: 32px 36px 48px;
+      min-height: 100vh;
+      max-width: 1040px;
+    }
+    .pill {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(14, 154, 126, 0.10);
+      color: var(--green);
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    h1 { font-size: 24px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 4px; }
+    .sub {
+      font-family: var(--mono); font-size: 12px; color: var(--text-muted);
+      letter-spacing: 0.04em; margin-bottom: 18px;
+    }
+    .lead { font-size: 13.5px; color: var(--text-dim); max-width: 860px; margin-bottom: 22px; }
+    .lead strong { color: var(--text); font-weight: 600; }
+
+    /* === STAT ROW === */
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 26px; }
+    .stat { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px; }
+    .stat-label {
+      font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.10em;
+      text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 6px;
+    }
+    .stat-value { font-size: 18px; font-weight: 700; line-height: 1.15; letter-spacing: -0.01em; }
+    .stat-value .unit { font-family: var(--mono); font-size: 11px; color: var(--text-muted); font-weight: 500; display: block; margin-top: 3px; letter-spacing: 0.02em; }
+    .stat--green .stat-value { color: var(--green); }
+    .stat--amber .stat-value { color: var(--amber); }
+
+    /* === SECTION === */
+    section { margin-bottom: 26px; }
+    .section-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 12px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+    .section-pill {
+      font-family: var(--mono); font-size: 10px; letter-spacing: 0.10em; text-transform: uppercase;
+      padding: 3px 9px; border-radius: 4px; font-weight: 700;
+      background: rgba(59, 111, 214, 0.10); color: var(--blue);
+    }
+    .section-title { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
+    .section-note { font-family: var(--mono); font-size: 11px; color: var(--text-muted); margin-left: auto; }
+
+    /* === CORRESPONDENCE === */
+    .thread { display: flex; flex-direction: column; gap: 12px; }
+    .msg { display: flex; gap: 12px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; }
+    .avatar {
+      flex: 0 0 auto; width: 38px; height: 38px; border-radius: 999px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--mono); font-weight: 600; font-size: 13px; color: #fff;
+    }
+    .avatar.fin { background: var(--blue); }
+    .avatar.eng { background: var(--green); }
+    .msg-body { flex: 1; }
+    .msg-meta { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; margin-bottom: 5px; }
+    .msg-name { font-weight: 600; font-size: 13.5px; }
+    .msg-role { font-family: var(--mono); font-size: 10.5px; color: var(--text-muted); letter-spacing: 0.02em; }
+    .msg-text { font-size: 13px; color: var(--text-dim); }
+    .msg-text .hl-blue { background: rgba(59,111,214,0.12); color: var(--blue); font-weight: 600; padding: 0 3px; border-radius: 3px; }
+    .msg-text .hl-yellow { background: var(--flag-bg); color: #8a6a12; font-weight: 600; padding: 0 3px; border-radius: 3px; }
+
+    /* === TRIPS TABLE === */
+    .table-wrap { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    table.trips { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+    table.trips th, table.trips td { padding: 9px 12px; text-align: right; border-bottom: 1px solid var(--border); }
+    table.trips th:first-child, table.trips td:first-child,
+    table.trips th:nth-child(2), table.trips td:nth-child(2) { text-align: left; }
+    table.trips thead th {
+      font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--text-muted); font-weight: 600; background: var(--bg-elevated);
+    }
+    table.trips thead th.fare { color: var(--blue); }
+    table.trips tbody td { font-family: var(--mono); }
+    table.trips tbody tr:last-child td { border-bottom: none; }
+    table.trips td.flag { background: var(--flag-bg); color: #7a5d10; font-weight: 600; box-shadow: inset 2px 0 0 var(--flag-line); }
+    table.trips td.fare { color: var(--blue); }
+    .legend { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 10px; font-size: 11.5px; color: var(--text-dim); }
+    .legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .swatch { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+    .swatch.y { background: var(--flag-bg); border: 1px solid var(--flag-line); }
+    .swatch.b { background: rgba(59,111,214,0.12); border: 1px solid var(--blue); }
+
+    /* === EVIDENCE === */
+    .ev-intro { font-size: 13px; color: var(--text-dim); margin-bottom: 12px; max-width: 860px; }
+    .evidence { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .ev-card { background: var(--bg-card); border: 1px solid var(--border); border-left: 3px solid var(--amber); border-radius: var(--radius); padding: 13px 15px; }
+    .ev-tag { font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--amber); font-weight: 700; margin-bottom: 8px; }
+    .ev-big { font-family: var(--mono); font-size: 21px; font-weight: 600; letter-spacing: -0.02em; }
+    .ev-big .u { font-size: 11px; color: var(--text-muted); margin-left: 3px; }
+    .ev-row { display: flex; justify-content: space-between; font-size: 11.5px; font-family: var(--mono); color: var(--text-dim); margin-top: 7px; }
+    .ev-row b { color: var(--text); font-weight: 600; }
+    .ev-diag { font-size: 12px; color: var(--text-dim); margin-top: 9px; padding-top: 9px; border-top: 1px solid var(--border); }
+
+    /* === VERDICT === */
+    .verdict { display: flex; gap: 16px; align-items: flex-start; background: linear-gradient(0deg, rgba(14,154,126,0.05), rgba(14,154,126,0.05)), var(--bg-card); border: 1px solid rgba(14,154,126,0.30); border-radius: var(--radius); padding: 16px 18px; }
+    .verdict-check { flex: 0 0 auto; width: 30px; height: 30px; border-radius: 999px; background: var(--green); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; }
+    .verdict h3 { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
+    .verdict p { font-size: 12.5px; color: var(--text-dim); }
+    .verdict .next { color: var(--amber); font-weight: 600; }
+
+    .foot { margin-top: 26px; padding-top: 12px; border-top: 1px solid var(--border); font-family: var(--mono); font-size: 10.5px; color: var(--text-muted); letter-spacing: 0.02em; line-height: 1.7; }
+
+    @media (max-width: 760px) {
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .evidence { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <span class="pill">Fleet deployment</span>
+  <h1>Fare &amp; trip-data validation</h1>
+  <div class="sub">VMS &middot; Mursal test trips &middot; 2026-06-02 &rarr; 06-10</div>
+
+  <p class="lead">
+    Finance reviewed <strong>fare calculations</strong> against test trips extracted from Mursal.
+    The fare arithmetic reconciles correctly &mdash; but three captured input fields,
+    <strong>Distance&nbsp;(KM)</strong>, <strong>Start&nbsp;Time</strong> and <strong>Trip&nbsp;Duration</strong>,
+    were flagged for an engineering retest.
+  </p>
+
+  <div class="stats">
+    <div class="stat stat--green">
+      <div class="stat-label">Fare calculation</div>
+      <div class="stat-value">Verified<span class="unit">arithmetic reconciles</span></div>
+    </div>
+    <div class="stat stat--amber">
+      <div class="stat-label">Fields flagged</div>
+      <div class="stat-value">3<span class="unit">KM &middot; Start &middot; Duration</span></div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Flagged test trips</div>
+      <div class="stat-value">6<span class="unit">test vehicle KA&nbsp;3019</span></div>
+    </div>
+    <div class="stat stat--amber">
+      <div class="stat-label">Status</div>
+      <div class="stat-value">Retest<span class="unit">engineering, underway</span></div>
+    </div>
+  </div>
+
+  <!-- ===== CORRESPONDENCE ===== -->
+  <section>
+    <div class="section-head">
+      <span class="section-pill">Correspondence</span>
+      <span class="section-title">Finance &harr; Engineering</span>
+      <span class="section-note">teams only &middot; signatures trimmed</span>
+    </div>
+    <div class="thread">
+      <div class="msg">
+        <div class="avatar fin">FIN</div>
+        <div class="msg-body">
+          <div class="msg-meta">
+            <span class="msg-name">Finance</span>
+            <span class="msg-role">LTS &middot; Mowasalat</span>
+          </div>
+          <div class="msg-text">
+            Please find the summary of the test trips extracted from Mursal. As discussed, the
+            fare calculations appear to be correct <span class="hl-blue">(highlighted in blue)</span>.
+            However, could you please review the items <span class="hl-yellow">highlighted in yellow</span>
+            &mdash; particularly: <strong>KM</strong>, <strong>Start&nbsp;Time</strong> and <strong>Trip&nbsp;Duration</strong>.
+          </div>
+        </div>
+      </div>
+      <div class="msg">
+        <div class="avatar eng">ENG</div>
+        <div class="msg-body">
+          <div class="msg-meta">
+            <span class="msg-name">Engineering</span>
+            <span class="msg-role">Mowasalat (Karwa)</span>
+          </div>
+          <div class="msg-text">
+            Thank you for the email and the analysis. As discussed, we will <strong>retest these fields</strong>
+            and come back with a new test result.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FLAGGED FIELDS ===== -->
+  <section>
+    <div class="section-head">
+      <span class="section-pill" style="background:rgba(200,138,26,0.12);color:var(--amber)">Flagged fields</span>
+      <span class="section-title">6 controlled test trips &middot; KA&nbsp;3019 &middot; 10&nbsp;Jun&nbsp;2026</span>
+      <span class="section-note">yellow = flagged for review</span>
+    </div>
+    <div class="table-wrap">
+      <table class="trips">
+        <thead>
+          <tr>
+            <th>Trip&nbsp;#</th>
+            <th>Start time</th>
+            <th>Duration (min)</th>
+            <th>Distance (km)</th>
+            <th class="fare">Meter (QAR)</th>
+            <th class="fare">Total (QAR)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>6</td>  <td>10:32:30</td>            <td>8.00</td>            <td class="flag">3.31</td> <td class="fare">4</td>  <td class="fare">11</td></tr>
+          <tr><td>7</td>  <td>10:43:20</td>            <td class="flag">7.08</td> <td class="flag">3.34</td> <td class="fare">5</td>  <td class="fare">12</td></tr>
+          <tr><td>8</td>  <td>10:52:50</td>            <td class="flag">7.73</td> <td class="flag">2.77</td> <td class="fare">4</td>  <td class="fare">11</td></tr>
+          <tr><td>9</td>  <td class="flag">11:15:21</td> <td class="flag">5.45</td> <td class="flag">2.37</td> <td class="fare">3</td>  <td class="fare">10</td></tr>
+          <tr><td>10</td> <td>11:27:38</td>            <td class="flag">7.72</td> <td class="flag">3.38</td> <td class="fare">5</td>  <td class="fare">12</td></tr>
+          <tr><td>11</td> <td class="flag">11:51:04</td> <td class="flag">7.20</td> <td class="flag">3.36</td> <td class="fare">5</td>  <td class="fare">12</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="legend">
+      <span><i class="swatch y"></i> Flagged for retest (Start / Duration / KM, per cell)</span>
+      <span><i class="swatch b"></i> Fare fields &mdash; verified correct</span>
+    </div>
+  </section>
+
+  <!-- ===== EVIDENCE ===== -->
+  <section>
+    <div class="section-head">
+      <span class="section-pill" style="background:rgba(200,138,26,0.12);color:var(--amber)">Why it matters</span>
+      <span class="section-title">Trips that never closed cleanly</span>
+    </div>
+    <p class="ev-intro">
+      The fare formula is sound &mdash; <strong>Total = Meter + Additional + Waiting</strong> reconciles on every row.
+      The break is upstream: when a trip is not closed cleanly, <strong>Trip Duration</strong> inflates, the derived
+      waiting fare balloons, and <strong>Distance / Start</strong> drift from the real run. The same
+      <code>KARWA&nbsp;TEST</code> account produced these:
+    </p>
+    <div class="evidence">
+      <div class="ev-card">
+        <div class="ev-tag">KARWA TEST &middot; KA 3122</div>
+        <div class="ev-big">8.5<span class="u">h open</span></div>
+        <div class="ev-row"><span>Distance</span><b>0.37 km</b></div>
+        <div class="ev-row"><span>Waiting fare</span><b>QAR 266</b></div>
+        <div class="ev-diag">509 min logged for a 0.37&nbsp;km trip &mdash; meter left running.</div>
+      </div>
+      <div class="ev-card">
+        <div class="ev-tag">KARWA TEST &middot; KA 2668</div>
+        <div class="ev-big">22.8<span class="u">h open</span></div>
+        <div class="ev-row"><span>Distance</span><b>1.14 km</b></div>
+        <div class="ev-row"><span>Waiting fare</span><b>QAR 724</b></div>
+        <div class="ev-diag">~23&nbsp;h duration on a ~1&nbsp;km trip drives a runaway waiting fare.</div>
+      </div>
+      <div class="ev-card">
+        <div class="ev-tag">KARWA TEST &middot; KA 3099</div>
+        <div class="ev-big">8.1<span class="u">days open</span></div>
+        <div class="ev-row"><span>Distance</span><b>16.0 km</b></div>
+        <div class="ev-row"><span>Waiting fare</span><b>QAR 6,246</b></div>
+        <div class="ev-diag">Meter ran 02&rarr;10 Jun &mdash; Start &amp; Duration unusable as-is.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== VERDICT ===== -->
+  <div class="verdict">
+    <div class="verdict-check">&#x2713;</div>
+    <div>
+      <h3>Fare engine: correct</h3>
+      <p>
+        Fare arithmetic reconciles across the reviewed trips.
+        <span class="next">Queued for engineering retest:</span> Distance (KM), Start Time, and Trip Duration capture &mdash; new test result to follow.
+      </p>
+    </div>
+  </div>
+
+  <div class="foot">
+    Curated, redacted summary of the VMS_TripReport export (report 2026-06-11; trips 02&ndash;10&nbsp;Jun&nbsp;2026).<br>
+    Raw export holds driver / plate / GPS data and is held privately &mdash; not published. Figures transcribed from the flagged rows (test vehicle KA&nbsp;3019, no driver assigned) and KARWA&nbsp;TEST account anomalies.
+  </div>
+</body>
+</html>

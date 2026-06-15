@@ -8,3 +8,9 @@
 # Python bytecode from running scripts/test_*.py
 __pycache__/
 *.pyc
+
+# Raw trip-data exports (driver names/IDs, plate numbers, GPS) = PII. Must never
+# be served from the public site. The curated detail page ships redacted highlights
+# only; keep raw source files local under _private/.
+/_private/
+Black_trip_test*.xlsx

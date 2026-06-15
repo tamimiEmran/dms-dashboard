@@ -1419,21 +1419,21 @@
       <span class="head-sub">click the early-exit trigger for the v2 leasing-taxi architecture detail</span>
     </div>
 
-    <!-- Hero visual: model_development_cycle.svg with its scoped PDF floater.
-         The SVG's internal click handler posts "open-leasing-taxis-overlay"
+    <!-- Hero visual: model_development_cycle.svg with its scoped detail floater.
+         The SVG's box-1 click handler posts "open-deployment-overlay"
          to this parent document; the floater listens and opens inline. -->
     <div class="model-cycle-host">
       <object data="../../assets/model_development_cycle.svg" type="image/svg+xml" class="model-cycle-svg">
         Model Development Cycle
       </object>
 
-      <div class="floater" id="leasingTaxisFloater"
-           onclick="closeLeasingTaxisFloater()"
+      <div class="floater" id="deploymentFloater"
+           onclick="closeDeploymentFloater()"
            role="dialog" aria-modal="true"
-           aria-label="Leasing Model Taxis &middot; AI Brain Architecture">
+           aria-label="Fleet deployment &middot; Fare &amp; trip-data validation">
         <div class="floater-panel" onclick="event.stopPropagation()">
           <a class="floater-open"
-             href="details/mass-rollout-leasing-taxis.html"
+             href="details/fare-trip-validation.html"
              target="_blank" rel="noopener" title="Open in new tab">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
@@ -1442,11 +1442,11 @@
             </svg>
           </a>
           <button class="floater-close"
-                  onclick="closeLeasingTaxisFloater()"
+                  onclick="closeDeploymentFloater()"
                   aria-label="Close">&times;</button>
-          <iframe id="leasingTaxisFloaterFrame" src="" loading="lazy"
+          <iframe id="deploymentFloaterFrame" src="" loading="lazy"
                   class="floater-frame"
-                  title="AI Brain Architecture &middot; Leasing Model Taxis (slide 3)"></iframe>
+                  title="Fare &amp; trip-data validation"></iframe>
         </div>
       </div>
 
@@ -1682,25 +1682,23 @@
 
 
     // ============================================
-    // === Leasing-taxi PDF floater on the expansion slide ===
+    // === Deployment detail floater (box 1) on the expansion slide ===
     // ============================================
     // The model_development_cycle.svg is loaded via <object>. When the user
-    // clicks its early-exit-trigger rect, the SVG posts an
-    // "open-leasing-taxis-overlay" message to window.parent (this document).
-    // We listen and reveal a scoped PDF panel positioned absolutely inside
-    // the model-cycle host card — only the SVG behind it is dimmed.
+    // clicks its box-1 "Deployed to 50 vehicles" rect, the SVG posts an
+    // "open-deployment-overlay" message to window.parent (this document).
+    // We listen and reveal a scoped panel positioned absolutely inside the
+    // model-cycle host card — only the SVG behind it is dimmed. The panel
+    // iframes details/fare-trip-validation.html (curated fare/trip review).
     (function () {
-      const floater = document.getElementById('leasingTaxisFloater');
-      const frame = document.getElementById('leasingTaxisFloaterFrame');
+      const floater = document.getElementById('deploymentFloater');
+      const frame = document.getElementById('deploymentFloaterFrame');
       if (!floater || !frame) return;
 
       function open() {
-        // Lazy-load the PDF on first open (saves bandwidth + initial render).
+        // Lazy-load on first open (saves bandwidth + initial render).
         if (!frame.getAttribute('src')) {
-          frame.setAttribute(
-            'src',
-            '../../assets/leasing_taxis_arch/AI_Brain_Architecture_slide3.pdf#toolbar=0&navpanes=0&view=Fit'
-          );
+          frame.setAttribute('src', 'details/fare-trip-validation.html');
         }
         floater.classList.add('active');
       }
@@ -1709,10 +1707,10 @@
       }
 
       // Expose close() so the inline onclick handlers in the markup can call it.
-      window.closeLeasingTaxisFloater = close;
+      window.closeDeploymentFloater = close;
 
       window.addEventListener('message', function (e) {
-        if (e && e.data && e.data.type === 'open-leasing-taxis-overlay') {
+        if (e && e.data && e.data.type === 'open-deployment-overlay') {
           open();
         }
       });
