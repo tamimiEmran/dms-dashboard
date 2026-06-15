@@ -271,11 +271,12 @@
     <text x="1050" y="524" fill="#C88A1A" font-size="8" font-weight="700" font-family="JetBrains Mono, monospace" letter-spacing="0.08em" text-anchor="middle">IN PROGRESS</text>
   </g>
 
-  <!-- Box 3 — v3.1 trained · DONE · non-clickable -->
+  <!-- Box 3 — v3.1 trained (done) + pax-counting note · non-clickable -->
   <g>
     <rect x="782" y="564" width="322" height="50" rx="10" fill="#E8F5F1" stroke="#0E9A7E" stroke-width="2" />
-    <text x="802" y="586" fill="#0E9A7E" font-size="10.5" font-weight="700" font-family="JetBrains Mono, monospace" letter-spacing="0.10em">MODEL · v3.1</text>
-    <text x="802" y="604" fill="#1A1D26" font-size="13" font-weight="600">Centralized dataset · <tspan font-family="JetBrains Mono, monospace">74%</tspan></text>
+    <text x="802" y="580" fill="#0E9A7E" font-size="10.5" font-weight="700" font-family="JetBrains Mono, monospace" letter-spacing="0.10em">MODEL · v3.1</text>
+    <text x="802" y="596" fill="#1A1D26" font-size="13" font-weight="600">Centralized dataset · <tspan font-family="JetBrains Mono, monospace">74%</tspan></text>
+    <text x="802" y="610" fill="#5A5E6E" font-size="9.5">Pax counting &#183; under improvement for v2</text>
     <circle cx="1084" cy="582" r="9" fill="#0E9A7E" />
     <text x="1084" y="586" fill="#FFFFFF" font-size="12" font-weight="700" text-anchor="middle">&#x2713;</text>
   </g>

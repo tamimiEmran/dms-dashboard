@@ -10,7 +10,6 @@
     - The 6 yellow-flagged rows from the export are test vehicle KA 3019,
       trips #6-11, no driver assigned -> no personal data shown.
     - Anomaly exemplars use the KARWA TEST account label (not a person).
-    - Correspondents are shown as teams (Finance / Engineering), not names.
   All figures transcribed from the export; see scripts note in the repo.
 -->
 <head>
@@ -74,7 +73,7 @@
     .lead strong { color: var(--text); font-weight: 600; }
 
     /* === STAT ROW === */
-    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 26px; }
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 26px; }
     .stat { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px; }
     .stat-label {
       font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.10em;
@@ -95,24 +94,6 @@
     }
     .section-title { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
     .section-note { font-family: var(--mono); font-size: 11px; color: var(--text-muted); margin-left: auto; }
-
-    /* === CORRESPONDENCE === */
-    .thread { display: flex; flex-direction: column; gap: 12px; }
-    .msg { display: flex; gap: 12px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; }
-    .avatar {
-      flex: 0 0 auto; width: 38px; height: 38px; border-radius: 999px;
-      display: flex; align-items: center; justify-content: center;
-      font-family: var(--mono); font-weight: 600; font-size: 13px; color: #fff;
-    }
-    .avatar.fin { background: var(--blue); }
-    .avatar.eng { background: var(--green); }
-    .msg-body { flex: 1; }
-    .msg-meta { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; margin-bottom: 5px; }
-    .msg-name { font-weight: 600; font-size: 13.5px; }
-    .msg-role { font-family: var(--mono); font-size: 10.5px; color: var(--text-muted); letter-spacing: 0.02em; }
-    .msg-text { font-size: 13px; color: var(--text-dim); }
-    .msg-text .hl-blue { background: rgba(59,111,214,0.12); color: var(--blue); font-weight: 600; padding: 0 3px; border-radius: 3px; }
-    .msg-text .hl-yellow { background: var(--flag-bg); color: #8a6a12; font-weight: 600; padding: 0 3px; border-radius: 3px; }
 
     /* === TRIPS TABLE === */
     .table-wrap { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
@@ -151,7 +132,6 @@
     .verdict-check { flex: 0 0 auto; width: 30px; height: 30px; border-radius: 999px; background: var(--green); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; }
     .verdict h3 { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
     .verdict p { font-size: 12.5px; color: var(--text-dim); }
-    .verdict .next { color: var(--amber); font-weight: 600; }
 
     .foot { margin-top: 26px; padding-top: 12px; border-top: 1px solid var(--border); font-family: var(--mono); font-size: 10.5px; color: var(--text-muted); letter-spacing: 0.02em; line-height: 1.7; }
 
@@ -167,10 +147,9 @@
   <div class="sub">VMS &middot; Mursal test trips &middot; 2026-06-02 &rarr; 06-10</div>
 
   <p class="lead">
-    Finance reviewed <strong>fare calculations</strong> against test trips extracted from Mursal.
-    The fare arithmetic reconciles correctly &mdash; but three captured input fields,
-    <strong>Distance&nbsp;(KM)</strong>, <strong>Start&nbsp;Time</strong> and <strong>Trip&nbsp;Duration</strong>,
-    were flagged for an engineering retest.
+    Fare calculations on the Mursal test trips <strong>reconcile correctly</strong>. The
+    <strong>Distance&nbsp;(KM)</strong>, <strong>Start&nbsp;Time</strong> and
+    <strong>Trip&nbsp;Duration</strong> values are flagged across the six test trips below.
   </p>
 
   <div class="stats">
@@ -186,57 +165,14 @@
       <div class="stat-label">Flagged test trips</div>
       <div class="stat-value">6<span class="unit">test vehicle KA&nbsp;3019</span></div>
     </div>
-    <div class="stat stat--amber">
-      <div class="stat-label">Status</div>
-      <div class="stat-value">Retest<span class="unit">engineering, underway</span></div>
-    </div>
   </div>
-
-  <!-- ===== CORRESPONDENCE ===== -->
-  <section>
-    <div class="section-head">
-      <span class="section-pill">Correspondence</span>
-      <span class="section-title">Finance &harr; Engineering</span>
-      <span class="section-note">teams only &middot; signatures trimmed</span>
-    </div>
-    <div class="thread">
-      <div class="msg">
-        <div class="avatar fin">FIN</div>
-        <div class="msg-body">
-          <div class="msg-meta">
-            <span class="msg-name">Finance</span>
-            <span class="msg-role">LTS &middot; Mowasalat</span>
-          </div>
-          <div class="msg-text">
-            Please find the summary of the test trips extracted from Mursal. As discussed, the
-            fare calculations appear to be correct <span class="hl-blue">(highlighted in blue)</span>.
-            However, could you please review the items <span class="hl-yellow">highlighted in yellow</span>
-            &mdash; particularly: <strong>KM</strong>, <strong>Start&nbsp;Time</strong> and <strong>Trip&nbsp;Duration</strong>.
-          </div>
-        </div>
-      </div>
-      <div class="msg">
-        <div class="avatar eng">ENG</div>
-        <div class="msg-body">
-          <div class="msg-meta">
-            <span class="msg-name">Engineering</span>
-            <span class="msg-role">Mowasalat (Karwa)</span>
-          </div>
-          <div class="msg-text">
-            Thank you for the email and the analysis. As discussed, we will <strong>retest these fields</strong>
-            and come back with a new test result.
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
 
   <!-- ===== FLAGGED FIELDS ===== -->
   <section>
     <div class="section-head">
       <span class="section-pill" style="background:rgba(200,138,26,0.12);color:var(--amber)">Flagged fields</span>
       <span class="section-title">6 controlled test trips &middot; KA&nbsp;3019 &middot; 10&nbsp;Jun&nbsp;2026</span>
-      <span class="section-note">yellow = flagged for review</span>
+      <span class="section-note">yellow = flagged cell</span>
     </div>
     <div class="table-wrap">
       <table class="trips">
@@ -261,7 +197,7 @@
       </table>
     </div>
     <div class="legend">
-      <span><i class="swatch y"></i> Flagged for retest (Start / Duration / KM, per cell)</span>
+      <span><i class="swatch y"></i> Flagged cell (Start / Duration / KM, per cell)</span>
       <span><i class="swatch b"></i> Fare fields &mdash; verified correct</span>
     </div>
   </section>
@@ -298,7 +234,7 @@
         <div class="ev-big">8.1<span class="u">days open</span></div>
         <div class="ev-row"><span>Distance</span><b>16.0 km</b></div>
         <div class="ev-row"><span>Waiting fare</span><b>QAR 6,246</b></div>
-        <div class="ev-diag">Meter ran 02&rarr;10 Jun &mdash; Start &amp; Duration unusable as-is.</div>
+        <div class="ev-diag">Meter ran 02&rarr;10 Jun, so Start &amp; Duration diverge from the real trip.</div>
       </div>
     </div>
   </section>
@@ -309,8 +245,8 @@
     <div>
       <h3>Fare engine: correct</h3>
       <p>
-        Fare arithmetic reconciles across the reviewed trips.
-        <span class="next">Queued for engineering retest:</span> Distance (KM), Start Time, and Trip Duration capture &mdash; new test result to follow.
+        Fare arithmetic reconciles across the reviewed trips &mdash;
+        <strong>Total = Meter + Additional + Waiting</strong> on every row.
       </p>
     </div>
   </div>
