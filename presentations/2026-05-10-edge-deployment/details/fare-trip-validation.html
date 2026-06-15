@@ -1,17 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <!--
-  Passenger-detection Phase 1 test (box 1 overlay).
+  Passenger-detection Phase 1 test (box 1 overlay) — visualization-forward.
 
-  Source: engineering Phase 1 email + appendix table. Camera vs seat-sensor
-  baseline for passenger-occupancy detection, vehicle #3091, fixed ~3.5 km
-  route inside HQ, black trips across 3 seating positions.
-
-  Redaction: tester names anonymised ("tester"); no personal data shown.
-  Fare figures are initial meter-app readings (rounding error) — Mursaal is
-  authoritative; verification is a Finance next-step, not a result here.
-  Narrative order (per request): tested -> expected -> actual -> error
-  analysis -> actions.
+  Source: engineering Phase 1 email + appendix. Camera vs seat-sensor baseline,
+  vehicle #3091, ~3.5 km HQ route, black trips across 3 seat positions.
+  Redaction: tester names anonymised. Fares = initial meter-app readings
+  (rounding error); Mursaal authoritative, verification is a Finance next-step.
+  Narrative: tested -> expected -> actual -> error analysis -> actions.
+  Design: prose replaced by visuals (seat-map, lag chart, data-bars, chips);
+  full trial table + every note retained — no information lost.
 -->
 <head>
   <meta charset="UTF-8">
@@ -21,209 +19,291 @@
   <meta name="viewport" content="width=1100">
   <title>Passenger detection &middot; Phase 1 test</title>
   <link
-    href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
     rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg: #F8F9FB; --bg-card: #FFFFFF; --bg-elevated: #F0F1F4; --border: #E0E2E8;
-      --text: #1A1D26; --text-dim: #5A5E6E; --text-muted: #8E92A0;
+      --bg: #F8F9FB; --card: #FFFFFF; --elev: #F0F1F4; --border: #E0E2E8;
+      --ink: #1A1D26; --dim: #5A5E6E; --mut: #8E92A0;
       --green: #0E9A7E; --blue: #3B6FD6; --amber: #C88A1A; --red: #D9453E; --purple: #8B5CC4;
-      --good-bg: #E6F4EF; --warn-bg: #FBF0D6; --bad-bg: #FBE6E4;
-      --font: 'DM Sans', system-ui, sans-serif; --mono: 'JetBrains Mono', monospace; --radius: 10px;
+      --green-t: #DDF1EA; --amber-t: #FAEBCF; --red-t: #FBDFDC; --blue-t: #E4ECFA;
+      --font: 'DM Sans', system-ui, sans-serif; --mono: 'JetBrains Mono', monospace; --r: 10px;
     }
-    body { background: var(--bg); color: var(--text); font-family: var(--font); line-height: 1.5; padding: 32px 36px 48px; min-height: 100vh; max-width: 1040px; }
-    .pill { display: inline-block; font-family: var(--mono); font-size: 10px; letter-spacing: 0.10em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; background: rgba(139,92,196,0.10); color: var(--purple); font-weight: 700; margin-bottom: 8px; }
-    h1 { font-size: 24px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 4px; }
-    .sub { font-family: var(--mono); font-size: 12px; color: var(--text-muted); letter-spacing: 0.04em; margin-bottom: 18px; }
-    .lead { font-size: 13.5px; color: var(--text-dim); max-width: 880px; margin-bottom: 22px; }
-    .lead strong { color: var(--text); font-weight: 600; }
+    body { background:
+        radial-gradient(120% 80% at 100% 0%, rgba(139,92,196,0.05), transparent 60%),
+        var(--bg);
+      color: var(--ink); font-family: var(--font); line-height: 1.45; padding: 30px 34px 46px; min-height: 100vh; max-width: 1060px; }
 
-    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 26px; }
-    .stat { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px; }
-    .stat-label { font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.10em; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 6px; }
-    .stat-value { font-size: 17px; font-weight: 700; line-height: 1.15; letter-spacing: -0.01em; }
-    .stat-value .unit { font-family: var(--mono); font-size: 10.5px; color: var(--text-muted); font-weight: 500; display: block; margin-top: 3px; letter-spacing: 0.02em; }
-    .stat--green .stat-value { color: var(--green); } .stat--amber .stat-value { color: var(--amber); } .stat--red .stat-value { color: var(--red); }
+    .pill { display:inline-block; font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.10em; text-transform:uppercase; padding:4px 10px; border-radius:999px; background:rgba(139,92,196,.10); color:var(--purple); margin-bottom:8px; }
+    h1 { font-size:25px; font-weight:700; letter-spacing:-.025em; margin-bottom:4px; }
+    .sub { font-family:var(--mono); font-size:12px; color:var(--mut); letter-spacing:.03em; margin-bottom:22px; }
 
-    section { margin-bottom: 26px; }
-    .section-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 12px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
-    .step { font-family: var(--mono); font-size: 10px; font-weight: 700; color: #fff; background: var(--purple); border-radius: 4px; padding: 2px 7px; letter-spacing: 0.06em; }
-    .section-title { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
-    .section-note { font-family: var(--mono); font-size: 11px; color: var(--text-muted); margin-left: auto; }
+    /* staggered reveal */
+    .reveal { opacity:0; transform:translateY(8px); animation:rise .5s cubic-bezier(.2,.7,.2,1) forwards; }
+    @keyframes rise { to { opacity:1; transform:none; } }
+    @media (prefers-reduced-motion: reduce){ .reveal{ animation:none; opacity:1; transform:none; } }
 
-    .body-text { font-size: 13px; color: var(--text-dim); max-width: 880px; }
-    .body-text strong { color: var(--text); font-weight: 600; }
-    ul.notes { list-style: none; margin-top: 10px; display: grid; gap: 7px; }
-    ul.notes li { font-size: 12.5px; color: var(--text-dim); padding-left: 18px; position: relative; }
-    ul.notes li::before { content: ""; position: absolute; left: 4px; top: 8px; width: 5px; height: 5px; border-radius: 999px; background: var(--text-muted); }
+    /* stat strip */
+    .stats { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:24px; }
+    .stat { background:var(--card); border:1px solid var(--border); border-radius:var(--r); padding:11px 13px; }
+    .stat .l { font-family:var(--mono); font-size:9px; letter-spacing:.10em; text-transform:uppercase; color:var(--mut); font-weight:600; margin-bottom:5px; }
+    .stat .v { font-size:16px; font-weight:700; letter-spacing:-.01em; line-height:1.1; }
+    .stat .v small { display:block; font-family:var(--mono); font-size:10px; font-weight:500; color:var(--mut); margin-top:3px; }
+    .stat.g .v{color:var(--green)} .stat.r .v{color:var(--red)}
 
-    /* Expected / baseline callout */
-    .baseline { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; background: var(--bg-card); border: 1px solid var(--border); border-left: 3px solid var(--green); border-radius: var(--radius); padding: 14px 18px; }
-    .baseline .bl-label { font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--green); }
-    .baseline .bl-metric { display: flex; flex-direction: column; }
-    .baseline .bl-metric b { font-family: var(--mono); font-size: 16px; font-weight: 600; color: var(--text); }
-    .baseline .bl-metric span { font-family: var(--mono); font-size: 9.5px; color: var(--text-muted); letter-spacing: 0.04em; text-transform: uppercase; margin-top: 2px; }
+    section { margin-bottom:24px; }
+    .sh { display:flex; align-items:center; gap:10px; margin-bottom:13px; }
+    .step { font-family:var(--mono); font-size:10px; font-weight:700; color:#fff; background:var(--purple); border-radius:5px; padding:3px 8px; letter-spacing:.05em; }
+    .sh h2 { font-size:14px; font-weight:600; letter-spacing:-.01em; }
+    .sh .hint { margin-left:auto; font-family:var(--mono); font-size:10.5px; color:var(--mut); }
 
-    /* Trials table */
-    .table-wrap { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
-    table.trials { width: 100%; border-collapse: collapse; font-size: 12px; }
-    table.trials th, table.trials td { padding: 8px 9px; text-align: right; border-bottom: 1px solid var(--border); white-space: nowrap; }
-    table.trials th:nth-child(2), table.trials td:nth-child(2) { text-align: left; }
-    table.trials thead th { font-family: var(--mono); font-size: 9px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-muted); font-weight: 600; background: var(--bg-elevated); }
-    table.trials tbody td { font-family: var(--mono); }
-    table.trials tbody td.seat { font-family: var(--font); font-weight: 600; color: var(--text); }
-    table.trials tr.baseline-row td { background: rgba(14,154,126,0.06); }
-    table.trials tr.baseline-row td.seat { color: var(--green); }
-    td.good { color: var(--green); } td.warn { color: var(--amber); background: var(--warn-bg); } td.bad { color: var(--red); background: var(--bad-bg); font-weight: 600; }
-    td.na { color: var(--text-muted); }
-    tr.note-row td { text-align: left; font-family: var(--font); font-size: 11px; color: var(--text-dim); padding: 4px 9px 9px 30px; border-bottom: 1px solid var(--border); font-style: italic; }
-    tr.note-row.warn-note td { color: #8a6a12; } tr.note-row.bad-note td { color: #a8332c; }
+    /* chips */
+    .chips { display:flex; flex-wrap:wrap; gap:8px; }
+    .chip { display:inline-flex; align-items:center; gap:8px; background:var(--card); border:1px solid var(--border); border-radius:999px; padding:7px 13px 7px 9px; font-size:12px; color:var(--dim); }
+    .chip svg { flex:0 0 auto; width:15px; height:15px; }
+    .chip b { color:var(--ink); font-weight:600; }
+    .chip.amber{ border-color:rgba(200,138,26,.35); } .chip.amber svg{ color:var(--amber); }
+    .chip.blue svg{ color:var(--blue); } .chip.green svg{ color:var(--green); } .chip.purple svg{ color:var(--purple); }
 
-    /* Error-analysis seat cards */
-    .seats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-    .seatcard { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; border-top: 3px solid var(--border); }
-    .seatcard.s-good { border-top-color: var(--green); } .seatcard.s-warn { border-top-color: var(--amber); } .seatcard.s-bad { border-top-color: var(--red); }
-    .seatcard h3 { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
-    .seatcard .rank { font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
-    .s-good .rank { color: var(--green); } .s-warn .rank { color: var(--amber); } .s-bad .rank { color: var(--red); }
-    .seatcard p { font-size: 12px; color: var(--text-dim); margin-top: 8px; }
+    /* TESTED — camera vs sensor split */
+    .versus { display:grid; grid-template-columns:1fr auto 1fr; align-items:stretch; gap:0; background:var(--card); border:1px solid var(--border); border-radius:var(--r); overflow:hidden; margin-bottom:12px; }
+    .vs-side { padding:14px 18px; display:flex; align-items:center; gap:13px; }
+    .vs-side .ic { width:34px; height:34px; border-radius:9px; display:flex; align-items:center; justify-content:center; flex:0 0 auto; }
+    .vs-side .ic svg{ width:19px; height:19px; }
+    .vs-side .tx b{ display:block; font-size:13px; font-weight:600; } .vs-side .tx span{ font-family:var(--mono); font-size:10.5px; color:var(--mut); letter-spacing:.03em; }
+    .vs-side.base { background:linear-gradient(90deg, rgba(14,154,126,.06), transparent); }
+    .vs-side.base .ic{ background:var(--green-t); color:var(--green); }
+    .vs-side.cam{ justify-content:flex-end; text-align:right; flex-direction:row-reverse; }
+    .vs-side.cam .ic{ background:var(--blue-t); color:var(--blue); }
+    .vs-mid { display:flex; align-items:center; justify-content:center; padding:0 4px; background:var(--elev); font-family:var(--mono); font-size:11px; font-weight:700; color:var(--mut); }
 
-    /* Actions */
-    .actions { display: grid; gap: 10px; }
-    .action { display: flex; gap: 12px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 15px; align-items: flex-start; }
-    .action .pri { flex: 0 0 auto; font-family: var(--mono); font-size: 9px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; margin-top: 1px; }
-    .pri.p1 { background: var(--bad-bg); color: var(--red); } .pri.p2 { background: var(--warn-bg); color: var(--amber); } .pri.p3 { background: var(--bg-elevated); color: var(--text-dim); } .pri.next { background: rgba(59,111,214,0.10); color: var(--blue); }
-    .action .a-body b { font-size: 13px; font-weight: 600; } .action .a-body p { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+    /* EXPECTED — baseline strip */
+    .baseline { display:flex; gap:0; background:var(--card); border:1px solid var(--border); border-left:3px solid var(--green); border-radius:var(--r); overflow:hidden; }
+    .baseline .bl-head{ padding:14px 16px; display:flex; align-items:center; }
+    .baseline .bl-head span{ font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--green); line-height:1.3; }
+    .baseline .m { flex:1; padding:12px 14px; border-left:1px solid var(--border); }
+    .baseline .m b { font-family:var(--mono); font-size:17px; font-weight:600; color:var(--ink); }
+    .baseline .m span { display:block; font-family:var(--mono); font-size:9px; letter-spacing:.06em; text-transform:uppercase; color:var(--mut); margin-top:3px; }
 
-    .foot { margin-top: 26px; padding-top: 12px; border-top: 1px solid var(--border); font-family: var(--mono); font-size: 10.5px; color: var(--text-muted); letter-spacing: 0.02em; line-height: 1.7; }
+    /* ACTUAL — lag chart */
+    .chart { background:var(--card); border:1px solid var(--border); border-radius:var(--r); padding:16px 18px 12px; margin-bottom:12px; position:relative; }
+    .lagrow { display:grid; grid-template-columns:108px 1fr 52px; align-items:center; gap:10px; height:30px; }
+    .lagrow .lbl { font-family:var(--mono); font-size:11px; color:var(--dim); }
+    .lagrow .lbl b{ color:var(--ink); font-weight:600; }
+    .track { position:relative; height:14px; background:var(--elev); border-radius:7px; overflow:hidden; }
+    .fill { position:absolute; inset:0 auto 0 0; border-radius:7px; animation:grow .8s cubic-bezier(.2,.7,.2,1) forwards; transform-origin:left; }
+    @keyframes grow { from{ transform:scaleX(0);} to{ transform:scaleX(1);} }
+    @media (prefers-reduced-motion: reduce){ .fill{ animation:none; } }
+    .fill.g{ background:linear-gradient(90deg,#1FB596,var(--green)); } .fill.a{ background:linear-gradient(90deg,#E0A53A,var(--amber)); } .fill.r{ background:linear-gradient(90deg,#E8675F,var(--red)); }
+    .lagrow .val { font-family:var(--mono); font-size:11.5px; font-weight:600; text-align:right; }
+    .val.g{color:var(--green)} .val.a{color:var(--amber)} .val.r{color:var(--red)} .val.na{color:var(--mut); font-weight:400;}
+    .lag-na { display:flex; align-items:center; height:14px; font-family:var(--mono); font-size:10px; color:var(--mut); padding-left:4px; }
+    .lag-fail { display:flex; align-items:center; gap:6px; height:14px; font-family:var(--mono); font-size:10px; font-weight:600; color:var(--red); }
+    .chart .axis { display:grid; grid-template-columns:108px 1fr 52px; gap:10px; margin-top:6px; padding-top:8px; border-top:1px solid var(--border); }
+    .chart .axis .scale{ grid-column:2; display:flex; justify-content:space-between; font-family:var(--mono); font-size:9px; color:var(--mut); }
+    .chart .cap { grid-column:1 / -1; font-family:var(--mono); font-size:9.5px; color:var(--mut); margin-top:4px; }
 
-    @media (max-width: 820px) { .stats, .seats { grid-template-columns: 1fr 1fr; } table.trials { font-size: 11px; } }
+    /* ACTUAL — data table */
+    details.data { background:var(--card); border:1px solid var(--border); border-radius:var(--r); overflow:hidden; }
+    details.data summary { list-style:none; cursor:pointer; padding:10px 16px; font-family:var(--mono); font-size:11px; font-weight:600; color:var(--dim); display:flex; align-items:center; gap:8px; user-select:none; }
+    details.data summary::-webkit-details-marker{ display:none; }
+    details.data summary .tw{ transition:transform .2s; } details.data[open] summary .tw{ transform:rotate(90deg); }
+    details.data summary:hover{ color:var(--ink); }
+    table.t { width:100%; border-collapse:collapse; font-size:11.5px; border-top:1px solid var(--border); }
+    table.t th, table.t td { padding:7px 9px; text-align:right; border-bottom:1px solid var(--border); white-space:nowrap; }
+    table.t th:nth-child(2), table.t td:nth-child(2){ text-align:left; }
+    table.t thead th { font-family:var(--mono); font-size:8.5px; letter-spacing:.03em; text-transform:uppercase; color:var(--mut); font-weight:600; background:var(--elev); }
+    table.t tbody td { font-family:var(--mono); color:var(--dim); }
+    table.t tbody td.seat{ font-family:var(--font); font-weight:600; color:var(--ink); }
+    table.t tr.base td{ background:rgba(14,154,126,.05);} table.t tr.base td.seat{ color:var(--green);}
+    /* data-bar cells */
+    td.bar{ position:relative; }
+    td.bar .bw{ position:absolute; left:0; top:50%; transform:translateY(-50%); height:60%; border-radius:0 3px 3px 0; opacity:.85; }
+    td.bar .bn{ position:relative; padding-right:2px; }
+    td.bar.g .bw{ background:var(--green-t);} td.bar.a .bw{ background:var(--amber-t);} td.bar.r .bw{ background:var(--red-t);}
+    td.bar.g .bn{ color:var(--green);} td.bar.a .bn{ color:var(--amber);} td.bar.r .bn{ color:var(--red); font-weight:600;}
+    td.na{ color:var(--mut);}
+    tr.note td{ text-align:left; font-style:italic; font-size:10.5px; color:var(--dim); padding:3px 9px 8px 26px; }
+    tr.note.w td{ color:#8a6a12;} tr.note.b td{ color:#a8332c;}
+
+    /* ERROR ANALYSIS — seat map */
+    .ea { display:grid; grid-template-columns:300px 1fr; gap:20px; align-items:start; }
+    .mapwrap { background:var(--card); border:1px solid var(--border); border-radius:var(--r); padding:6px; }
+    .mapwrap svg{ width:100%; height:auto; display:block; }
+    .seat-label { font-family:var(--font); font-weight:700; font-size:11px; }
+    .seat-stat { font-family:var(--mono); font-size:8px; letter-spacing:.04em; text-transform:uppercase; }
+    .ea-side h3{ font-size:13px; font-weight:600; margin-bottom:3px; }
+    .rankrow { display:flex; align-items:center; gap:10px; padding:9px 0; border-bottom:1px solid var(--border); }
+    .rankrow:last-of-type{ border-bottom:none; }
+    .rankrow .num{ flex:0 0 auto; width:22px; height:22px; border-radius:999px; display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-size:11px; font-weight:700; color:#fff; }
+    .num.g{ background:var(--green);} .num.a{ background:var(--amber);} .num.r{ background:var(--red);}
+    .rankrow .seatn{ font-weight:600; font-size:13px; width:78px; }
+    .rankrow .qbar{ flex:1; height:8px; background:var(--elev); border-radius:4px; overflow:hidden; }
+    .rankrow .qbar i{ display:block; height:100%; border-radius:4px; }
+    .qbar i.g{ background:var(--green);} .qbar i.a{ background:var(--amber);} .qbar i.r{ background:var(--red);}
+    .rankrow .qv{ font-family:var(--mono); font-size:10.5px; color:var(--dim); width:96px; text-align:right; }
+    .fm-title{ font-family:var(--mono); font-size:9.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--mut); margin:14px 0 8px; }
+
+    /* ACTIONS */
+    .acts { display:grid; gap:9px; }
+    .act { display:flex; gap:12px; align-items:center; background:var(--card); border:1px solid var(--border); border-radius:var(--r); padding:11px 15px; }
+    .act .p{ flex:0 0 auto; font-family:var(--mono); font-size:9px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; padding:4px 8px; border-radius:5px; min-width:54px; text-align:center; }
+    .p.p1{ background:var(--red-t); color:var(--red);} .p.p2{ background:var(--amber-t); color:var(--amber);} .p.p3{ background:var(--elev); color:var(--dim);} .p.nx{ background:var(--blue-t); color:var(--blue);}
+    .act b{ font-size:13px; font-weight:600; } .act span{ color:var(--dim); font-size:12px; }
+    .act .sep{ color:var(--mut); margin:0 7px; }
+
+    .foot { margin-top:24px; padding-top:12px; border-top:1px solid var(--border); font-family:var(--mono); font-size:10px; color:var(--mut); letter-spacing:.02em; line-height:1.7; }
+    @media (max-width:840px){ .stats{ grid-template-columns:1fr 1fr;} .ea{ grid-template-columns:1fr;} .versus{ grid-template-columns:1fr;} }
   </style>
 </head>
 <body>
-  <span class="pill">Pax counting &middot; model test</span>
-  <h1>Passenger detection &mdash; Phase 1</h1>
-  <div class="sub">Camera vs. seat-sensor baseline &middot; vehicle #3091 &middot; ~3.5 km fixed route (HQ)</div>
+  <span class="pill reveal">Pax counting &middot; model test</span>
+  <h1 class="reveal" style="animation-delay:.04s">Passenger detection &mdash; Phase 1</h1>
+  <div class="sub reveal" style="animation-delay:.08s">Camera vs. seat-sensor baseline &middot; vehicle #3091 &middot; ~3.5 km fixed route (HQ)</div>
 
-  <p class="lead">
-    Phase 1 compares a <strong>camera</strong> against the <strong>seat-sensor baseline</strong> for detecting
-    passenger occupancy. Black trips were run on vehicle #3091 over a fixed ~3.5 km route inside HQ, across three
-    seating positions, recording each trip's duration, distance and fare; a stopwatch separately timed
-    passenger-entry to trip-end. <strong>Accuracy, best to worst: Front &gt; Rear-Right &gt; Rear-Left.</strong>
-  </p>
-
-  <div class="stats">
-    <div class="stat"><div class="stat-label">Setup</div><div class="stat-value">Camera<span class="unit">vs. seat sensor</span></div></div>
-    <div class="stat"><div class="stat-label">Trials</div><div class="stat-value">7<span class="unit">1 baseline + 6 camera</span></div></div>
-    <div class="stat stat--green"><div class="stat-label">Best</div><div class="stat-value">Front<span class="unit">&approx; baseline</span></div></div>
-    <div class="stat stat--red"><div class="stat-label">Needs work</div><div class="stat-value">Rear-Left<span class="unit">trip didn't start</span></div></div>
+  <div class="stats reveal" style="animation-delay:.12s">
+    <div class="stat"><div class="l">Setup</div><div class="v">Camera<small>vs. seat sensor</small></div></div>
+    <div class="stat"><div class="l">Trials</div><div class="v">7<small>1 baseline + 6</small></div></div>
+    <div class="stat g"><div class="l">Best</div><div class="v">Front<small>&approx; baseline</small></div></div>
+    <div class="stat r"><div class="l">Worst</div><div class="v">Rear-Left<small>trip didn't start</small></div></div>
   </div>
 
-  <!-- ===== 1 · TESTED ===== -->
-  <section>
-    <div class="section-head"><span class="step">Tested</span><span class="section-title">Method &amp; setup</span></div>
-    <p class="body-text">
-      A camera-based passenger detector is compared against the vehicle's seat sensor (treated as ground truth).
-      For each black trip a single passenger sits in one position; the camera's trip readings are compared to a
-      stopwatch and to the seat-sensor baseline. Differences in time and distance indicate how well the camera
-      detects occupancy.
-    </p>
-    <ul class="notes">
-      <li><strong>Seat sensor = baseline</strong>, treated as most accurate for passenger detection.</li>
-      <li><strong>Time &amp; distance differences</strong> vs. baseline are the detection-performance signal.</li>
-      <li><strong>Worst case tested: 1 passenger.</strong> More passengers would raise the chance a trip starts.</li>
-      <li>Trip readings come from the meter app (rounding error) &mdash; <strong>Mursaal</strong> is authoritative; these are initial results.</li>
-    </ul>
-  </section>
-
-  <!-- ===== 2 · EXPECTED ===== -->
-  <section>
-    <div class="section-head"><span class="step">Expected</span><span class="section-title">Camera should match the baseline</span></div>
-    <p class="body-text" style="margin-bottom:12px;">A well-performing camera reproduces the seat-sensor trip &mdash; small time and distance gaps. The baseline trip:</p>
-    <div class="baseline">
-      <span class="bl-label">Seat-sensor<br>baseline</span>
-      <div class="bl-metric"><b>7:08</b><span>trip duration</span></div>
-      <div class="bl-metric"><b>3.4 km</b><span>trip distance</span></div>
-      <div class="bl-metric"><b>25 s</b><span>&Delta; time</span></div>
-      <div class="bl-metric"><b>0.1 km</b><span>&Delta; distance</span></div>
-      <div class="bl-metric"><b>QAR 12</b><span>total fare</span></div>
+  <!-- 1 · TESTED -->
+  <section class="reveal" style="animation-delay:.16s">
+    <div class="sh"><span class="step">Tested</span><h2>Camera vs. seat sensor &middot; single passenger</h2></div>
+    <div class="versus">
+      <div class="vs-side base">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="8" width="18" height="12" rx="2"/><path d="M7 8V6a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2"/><circle cx="12" cy="14" r="2.5"/></svg></div>
+        <div class="tx"><b>Seat sensor</b><span>baseline &middot; ground truth</span></div>
+      </div>
+      <div class="vs-mid">VS</div>
+      <div class="vs-side cam">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></div>
+        <div class="tx"><b>Camera</b><span>under test</span></div>
+      </div>
+    </div>
+    <div class="chips">
+      <span class="chip green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Baseline = <b>seat sensor</b></span>
+      <span class="chip blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 14l3-3 3 3 4-5"/></svg>Signal = <b>&Delta; time &amp; distance</b></span>
+      <span class="chip purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Worst case = <b>1 passenger</b></span>
+      <span class="chip amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>Fares = meter app &middot; <b>Mursaal authoritative</b></span>
     </div>
   </section>
 
-  <!-- ===== 3 · ACTUAL ===== -->
-  <section>
-    <div class="section-head"><span class="step">Actual</span><span class="section-title">7 trials &middot; vehicle #3091</span><span class="section-note">&Delta; vs. baseline; green good &middot; amber/red poor</span></div>
-    <div class="table-wrap">
-      <table class="trials">
-        <thead>
-          <tr>
-            <th>#</th><th>Trial</th><th>Start</th><th>Stopwatch</th><th>Trip dur</th><th>&Delta; time</th><th>Trip km</th><th>&Delta; dist</th><th>Fare</th>
-          </tr>
-        </thead>
+  <!-- 2 · EXPECTED -->
+  <section class="reveal" style="animation-delay:.2s">
+    <div class="sh"><span class="step">Expected</span><h2>Camera should match the baseline</h2><span class="hint">small &Delta; = good detection</span></div>
+    <div class="baseline">
+      <div class="bl-head"><span>Seat-sensor<br>baseline</span></div>
+      <div class="m"><b>7:08</b><span>duration</span></div>
+      <div class="m"><b>3.4 km</b><span>distance</span></div>
+      <div class="m"><b>25 s</b><span>&Delta; time</span></div>
+      <div class="m"><b>0.1 km</b><span>&Delta; dist</span></div>
+      <div class="m"><b>QAR 12</b><span>fare</span></div>
+    </div>
+  </section>
+
+  <!-- 3 · ACTUAL -->
+  <section class="reveal" style="animation-delay:.24s">
+    <div class="sh"><span class="step">Actual</span><h2>Detection lag by trial</h2><span class="hint">&Delta; time vs. baseline (25 s)</span></div>
+    <div class="chart">
+      <div class="lagrow"><span class="lbl"><b>T1</b> Front</span><div class="track"></div><span class="val na">n/a</span></div>
+      <div class="lagrow"><span class="lbl" style="margin-top:-18px"></span><div class="lag-na" style="grid-column:2; margin-top:-26px">no stopwatch this trial</div><span></span></div>
+      <div class="lagrow"><span class="lbl"><b>T2</b> Front</span><div class="track"><div class="fill g" style="width:18%"></div></div><span class="val g">35 s</span></div>
+      <div class="lagrow"><span class="lbl"><b>T3</b> Front</span><div class="track"><div class="fill a" style="width:26%"></div></div><span class="val a">50 s</span></div>
+      <div class="lagrow"><span class="lbl"><b>T4</b> Rear-R</span><div class="track"><div class="fill r" style="width:97%"></div></div><span class="val r">194 s</span></div>
+      <div class="lagrow"><span class="lbl"><b>T5</b> Rear-R</span><div class="track"><div class="fill g" style="width:13%"></div></div><span class="val g">26 s</span></div>
+      <div class="lagrow"><span class="lbl"><b>T6</b> Rear-L</span><div class="track"></div><span class="val r" style="font-size:10px">fail</span></div>
+      <div class="lagrow"><span class="lbl" style="margin-top:-18px"></span><div class="lag-fail" style="grid-column:2; margin-top:-26px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M18 6 6 18M6 6l12 12"/></svg> trip did not start &mdash; never detected</div><span></span></div>
+      <div class="axis"><div class="scale"><span>0 s</span><span>baseline 25 s &middot;&middot;&middot;</span><span>200 s</span></div></div>
+    </div>
+
+    <details class="data">
+      <summary><svg class="tw" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M9 18l6-6-6-6"/></svg> Full trial data &middot; 7 rows, all readings</summary>
+      <table class="t">
+        <thead><tr><th>#</th><th>Trial</th><th>Start</th><th>Stopwatch</th><th>Trip dur</th><th>&Delta; time</th><th>Trip km</th><th>&Delta; dist</th><th>Fare</th></tr></thead>
         <tbody>
-          <tr class="baseline-row"><td>0</td><td class="seat">Seat sensor</td><td>11:50</td><td>7:33</td><td>7:08</td><td>25 s</td><td>3.4</td><td>0.1</td><td>12</td></tr>
-
-          <tr><td>1</td><td class="seat">Front</td><td>10:32</td><td class="na">&mdash;</td><td>7:58</td><td class="na">&mdash;</td><td>3.3</td><td class="good">0.1</td><td>11</td></tr>
-          <tr class="note-row"><td colspan="9">Route was shorter this trial; stopwatch not used.</td></tr>
-
-          <tr><td>2</td><td class="seat">Front</td><td>10:42</td><td>7:38</td><td>7:03</td><td class="good">35 s</td><td>3.3</td><td class="good">0.2</td><td>12</td></tr>
-
-          <tr><td>3</td><td class="seat">Front</td><td>10:52</td><td>8:32</td><td>7:42</td><td class="warn">50 s</td><td>2.7</td><td class="warn">0.8</td><td>11</td></tr>
-          <tr class="note-row warn-note"><td colspan="9">App shut down mid-trip &mdash; distance under-recorded.</td></tr>
-
-          <tr><td>4</td><td class="seat">Rear-Right</td><td>11:12</td><td>8:38</td><td>5:24</td><td class="bad">194 s</td><td>2.4</td><td class="bad">0.9</td><td>10</td></tr>
-          <tr class="note-row bad-note"><td colspan="9">Tester's shirt blended with the seats &mdash; passenger detected ~3 min late.</td></tr>
-
-          <tr><td>5</td><td class="seat">Rear-Right</td><td>11:27</td><td>8:04</td><td>7:38</td><td class="good">26 s</td><td>3.4</td><td class="good">0.1</td><td>12</td></tr>
-          <tr class="note-row"><td colspan="9">Tester in white shirt &mdash; detection back in line with baseline.</td></tr>
-
-          <tr><td>6</td><td class="seat">Rear-Left</td><td>11:39</td><td>7:30</td><td class="bad na">no start</td><td class="bad na">&mdash;</td><td class="bad na">&mdash;</td><td class="bad na">&mdash;</td><td class="na">&mdash;</td></tr>
-          <tr class="note-row bad-note"><td colspan="9">Tester in white shirt; trip did not start &mdash; passenger never detected.</td></tr>
+          <tr class="base"><td>0</td><td class="seat">Seat sensor</td><td>11:50</td><td>7:33</td><td>7:08</td><td>25 s</td><td>3.4</td><td>0.1</td><td>12</td></tr>
+          <tr><td>1</td><td class="seat">Front</td><td>10:32</td><td class="na">&mdash;</td><td>7:58</td><td class="na">&mdash;</td><td>3.3</td><td class="bar g"><span class="bw" style="width:11%"></span><span class="bn">0.1</span></td><td>11</td></tr>
+          <tr class="note"><td colspan="9">Route shorter this trial; stopwatch not used.</td></tr>
+          <tr><td>2</td><td class="seat">Front</td><td>10:42</td><td>7:38</td><td>7:03</td><td class="bar g"><span class="bw" style="width:18%"></span><span class="bn">35 s</span></td><td>3.3</td><td class="bar g"><span class="bw" style="width:22%"></span><span class="bn">0.2</span></td><td>12</td></tr>
+          <tr><td>3</td><td class="seat">Front</td><td>10:52</td><td>8:32</td><td>7:42</td><td class="bar a"><span class="bw" style="width:26%"></span><span class="bn">50 s</span></td><td>2.7</td><td class="bar a"><span class="bw" style="width:89%"></span><span class="bn">0.8</span></td><td>11</td></tr>
+          <tr class="note w"><td colspan="9">App shut down mid-trip &mdash; distance under-recorded.</td></tr>
+          <tr><td>4</td><td class="seat">Rear-R</td><td>11:12</td><td>8:38</td><td>5:24</td><td class="bar r"><span class="bw" style="width:97%"></span><span class="bn">194 s</span></td><td>2.4</td><td class="bar r"><span class="bw" style="width:100%"></span><span class="bn">0.9</span></td><td>10</td></tr>
+          <tr class="note b"><td colspan="9">Tester's shirt blended with the seats &mdash; passenger detected ~3 min late.</td></tr>
+          <tr><td>5</td><td class="seat">Rear-R</td><td>11:27</td><td>8:04</td><td>7:38</td><td class="bar g"><span class="bw" style="width:13%"></span><span class="bn">26 s</span></td><td>3.4</td><td class="bar g"><span class="bw" style="width:11%"></span><span class="bn">0.1</span></td><td>12</td></tr>
+          <tr class="note"><td colspan="9">Tester in white shirt &mdash; detection back in line with baseline.</td></tr>
+          <tr><td>6</td><td class="seat">Rear-L</td><td>11:39</td><td>7:30</td><td class="na r">no start</td><td class="na">&mdash;</td><td class="na">&mdash;</td><td class="na">&mdash;</td><td class="na">&mdash;</td></tr>
+          <tr class="note b"><td colspan="9">Tester in white shirt; trip did not start &mdash; passenger never detected.</td></tr>
         </tbody>
       </table>
+    </details>
+  </section>
+
+  <!-- 4 · ERROR ANALYSIS -->
+  <section class="reveal" style="animation-delay:.28s">
+    <div class="sh"><span class="step">Error analysis</span><h2>Detection quality by seat</h2></div>
+    <div class="ea">
+      <div class="mapwrap">
+        <svg viewBox="0 0 300 270" xmlns="http://www.w3.org/2000/svg">
+          <!-- car body -->
+          <rect x="64" y="14" width="172" height="242" rx="48" fill="#EEF0F4" stroke="#D5D8E0" stroke-width="2"/>
+          <path d="M88 40 Q150 26 212 40" fill="none" stroke="#D5D8E0" stroke-width="2"/>
+          <text x="150" y="30" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8" letter-spacing="0.1em" fill="#B0B3BE">FRONT</text>
+          <!-- camera + vision -->
+          <g opacity="0.5"><path d="M150 60 L96 116 M150 60 L204 116 M150 60 L120 196 M150 60 L180 196" stroke="#3B6FD6" stroke-width="1" stroke-dasharray="2,4"/></g>
+          <circle cx="150" cy="58" r="7" fill="#E4ECFA" stroke="#3B6FD6" stroke-width="1.5"/><circle cx="150" cy="58" r="2.5" fill="#3B6FD6"/>
+          <text x="150" y="74" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="7" fill="#3B6FD6">cam</text>
+          <!-- seats: driver, front, rear-L, rear-R -->
+          <!-- driver (front-left, not tested) -->
+          <rect x="78" y="96" width="62" height="62" rx="13" fill="#E4E7ED" stroke="#C7CBD4" stroke-width="1.5"/>
+          <text x="109" y="122" text-anchor="middle" class="seat-label" fill="#8E92A0">Driver</text>
+          <text x="109" y="135" text-anchor="middle" class="seat-stat" fill="#A8ADB8">not tested</text>
+          <!-- front passenger (best) -->
+          <rect x="160" y="96" width="62" height="62" rx="13" fill="#DDF1EA" stroke="#0E9A7E" stroke-width="2"/>
+          <circle cx="214" cy="102" r="9" fill="#0E9A7E"/><text x="214" y="105" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" font-weight="700" fill="#fff">1</text>
+          <text x="191" y="122" text-anchor="middle" class="seat-label" fill="#0E9A7E">Front</text>
+          <text x="191" y="135" text-anchor="middle" class="seat-stat" fill="#0E9A7E">&#8776; baseline</text>
+          <!-- rear-left (worst) -->
+          <rect x="78" y="178" width="62" height="62" rx="13" fill="#FBDFDC" stroke="#D9453E" stroke-width="2"/>
+          <circle cx="86" cy="184" r="9" fill="#D9453E"/><text x="86" y="187" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" font-weight="700" fill="#fff">3</text>
+          <text x="109" y="204" text-anchor="middle" class="seat-label" fill="#D9453E">Rear-L</text>
+          <text x="109" y="217" text-anchor="middle" class="seat-stat" fill="#D9453E">no start</text>
+          <!-- rear-right (variable) -->
+          <rect x="160" y="178" width="62" height="62" rx="13" fill="#FAEBCF" stroke="#C88A1A" stroke-width="2"/>
+          <circle cx="214" cy="184" r="9" fill="#C88A1A"/><text x="214" y="187" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" font-weight="700" fill="#fff">2</text>
+          <text x="191" y="204" text-anchor="middle" class="seat-label" fill="#C88A1A">Rear-R</text>
+          <text x="191" y="217" text-anchor="middle" class="seat-stat" fill="#C88A1A">variable</text>
+        </svg>
+      </div>
+      <div class="ea-side">
+        <div class="rankrow"><span class="num g">1</span><span class="seatn">Front</span><div class="qbar"><i class="g" style="width:92%"></i></div><span class="qv">&approx; baseline</span></div>
+        <div class="rankrow"><span class="num a">2</span><span class="seatn">Rear-Right</span><div class="qbar"><i class="a" style="width:55%"></i></div><span class="qv">contrast-sensitive</span></div>
+        <div class="rankrow"><span class="num r">3</span><span class="seatn">Rear-Left</span><div class="qbar"><i class="r" style="width:8%"></i></div><span class="qv">not detected</span></div>
+        <div class="fm-title">Failure modes</div>
+        <div class="chips">
+          <span class="chip red" style="border-color:rgba(217,69,62,.35)"><svg viewBox="0 0 24 24" fill="none" stroke="#D9453E" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>Rear-seat coverage</span>
+          <span class="chip amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.4 14.5 16 10 4 20"/><path d="M3 7h4l2-3h6l2 3h4v13H3z"/><circle cx="12" cy="13" r="3"/></svg>Clothing / seat contrast</span>
+          <span class="chip purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg>App stability</span>
+        </div>
+      </div>
     </div>
   </section>
 
-  <!-- ===== 4 · ERROR ANALYSIS ===== -->
-  <section>
-    <div class="section-head"><span class="step">Error analysis</span><span class="section-title">By seat position</span></div>
-    <div class="seats">
-      <div class="seatcard s-good">
-        <span class="rank">1 &middot; Best</span>
-        <h3>Front seat</h3>
-        <p>Tracks the baseline closely (&Delta;time 35&ndash;50 s). The one large distance gap was an <strong>app shutdown</strong>, not a detection miss.</p>
-      </div>
-      <div class="seatcard s-warn">
-        <span class="rank">2 &middot; Variable</span>
-        <h3>Rear-Right seat</h3>
-        <p>Works when contrast is good (&Delta;time 26 s, white shirt), but a <strong>low-contrast shirt</strong> blended with the seat and pushed detection ~3 min late.</p>
-      </div>
-      <div class="seatcard s-bad">
-        <span class="rank">3 &middot; Worst</span>
-        <h3>Rear-Left seat</h3>
-        <p>Passenger <strong>never detected</strong> &mdash; the trip did not start at all. Highest-priority gap.</p>
-      </div>
-    </div>
-    <p class="body-text" style="margin-top:12px;">
-      Failure modes: rear-seat coverage (especially Rear-Left), sensitivity to <strong>clothing/seat contrast</strong>,
-      and an <strong>app stability</strong> issue (mid-trip shutdown). Front-seat detection is production-close.
-    </p>
-  </section>
-
-  <!-- ===== 5 · ACTIONS ===== -->
-  <section>
-    <div class="section-head"><span class="step">Actions</span><span class="section-title">Model improvements &amp; next steps</span></div>
-    <div class="actions">
-      <div class="action"><span class="pri p1">P1</span><div class="a-body"><b>Rear-Left detection</b><p>Close the rear-left coverage gap so the trip reliably starts.</p></div></div>
-      <div class="action"><span class="pri p2">P2</span><div class="a-body"><b>Clothing / seat contrast</b><p>Make detection robust to low-contrast clothing against seat colour (Rear-Right case).</p></div></div>
-      <div class="action"><span class="pri p3">P3</span><div class="a-body"><b>App stability</b><p>Fix the mid-trip shutdown so distance/duration aren't under-recorded.</p></div></div>
-      <div class="action"><span class="pri next">Phase 2</span><div class="a-body"><b>Deploy on 5 taxis</b><p>Seat sensor as the primary source; camera measured in parallel to compare the two in production.</p></div></div>
-      <div class="action"><span class="pri next">Finance</span><div class="a-body"><b>Mursaal fare verification</b><p>Finance to verify the fare calculations on Mursaal (meter-app readings carry rounding error).</p></div></div>
+  <!-- 5 · ACTIONS -->
+  <section class="reveal" style="animation-delay:.32s">
+    <div class="sh"><span class="step">Actions</span><h2>Model improvements &amp; next steps</h2></div>
+    <div class="acts">
+      <div class="act"><span class="p p1">P1</span><div><b>Rear-Left detection</b><span class="sep">&middot;</span><span>close the coverage gap so the trip reliably starts</span></div></div>
+      <div class="act"><span class="p p2">P2</span><div><b>Clothing / seat contrast</b><span class="sep">&middot;</span><span>robust to low-contrast clothing vs seat colour (Rear-Right)</span></div></div>
+      <div class="act"><span class="p p3">P3</span><div><b>App stability</b><span class="sep">&middot;</span><span>fix mid-trip shutdown so distance/duration aren't lost</span></div></div>
+      <div class="act"><span class="p nx">Phase 2</span><div><b>Deploy on 5 taxis</b><span class="sep">&middot;</span><span>seat sensor primary; camera measured in parallel</span></div></div>
+      <div class="act"><span class="p nx">Finance</span><div><b>Mursaal fare check</b><span class="sep">&middot;</span><span>verify fare calculations (meter app has rounding error)</span></div></div>
     </div>
   </section>
 
-  <div class="foot">
+  <div class="foot reveal" style="animation-delay:.36s">
     Phase 1 passenger-detection test &middot; vehicle #3091 &middot; ~3.5 km fixed route, HQ &middot; single-passenger worst case.<br>
     Tester names anonymised. Fares are initial meter-app readings (rounding error); Mursaal verification pending with Finance.
   </div>
