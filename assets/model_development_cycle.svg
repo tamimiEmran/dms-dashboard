@@ -8,10 +8,10 @@
     3. Fleet expansion / target (green)  — 97% goal + early-exit at >71%
 
   The bottom-center status cluster (Deployed / Procurement / v3.1) hangs off the
-  weekly-iteration block. Box 1 (Deployed) is wired: it posts
+  weekly-iteration block. Box 3 (v3.1 / pax counting) is wired: it posts
   'open-deployment-overlay' to the parent (summary.html) and falls back to
-  details/fare-trip-validation.html in standalone view. Boxes 2 (Procurement)
-  and 3 (v3.1) are static (non-clickable).
+  details/fare-trip-validation.html in standalone view. Boxes 1 (Deployed)
+  and 2 (Procurement) are static (non-clickable).
 
   Date axis: 2026-04-14 → 2026-06-30 (77 days, ~15.3 px/day).
   Visual idiom borrowed from reports/dms/workflow.html.
@@ -247,20 +247,14 @@
        onclick is inert (return false) until a real href / overlay is wired in.
        Box 3 (v3.1) is intentionally non-clickable. -->
 
-  <!-- Box 1 — Deployed to 50 vehicles · DONE · clickable → fare/trip-data validation overlay -->
-  <a id="status-deployed-cta"
-     xlink:href="../presentations/2026-05-10-edge-deployment/details/fare-trip-validation.html"
-     href="../presentations/2026-05-10-edge-deployment/details/fare-trip-validation.html"
-     target="_top"
-     class="status-cta"
-     onclick="if(window.parent &amp;&amp; window.parent !== window){window.parent.postMessage({type:'open-deployment-overlay'},'*');return false;}return true;"
-     aria-label="Open fleet deployment fare and trip-data validation overlay">
-    <rect class="status-bg status-rect" x="782" y="450" width="322" height="50" rx="10" fill="#E8F5F1" stroke="#0E9A7E" stroke-width="2" />
+  <!-- Box 1 — Deployed to 50 vehicles · DONE · non-clickable -->
+  <g>
+    <rect x="782" y="450" width="322" height="50" rx="10" fill="#E8F5F1" stroke="#0E9A7E" stroke-width="2" />
     <text x="802" y="472" fill="#0E9A7E" font-size="10.5" font-weight="700" font-family="JetBrains Mono, monospace" letter-spacing="0.10em">FLEET DEPLOYMENT</text>
     <text x="802" y="490" fill="#1A1D26" font-size="13" font-weight="600">Deployed to 50 vehicles</text>
     <circle cx="1084" cy="468" r="9" fill="#0E9A7E" />
     <text x="1084" y="472" fill="#FFFFFF" font-size="12" font-weight="700" text-anchor="middle">&#x2713;</text>
-  </a>
+  </g>
 
   <!-- Box 2 — Components for whole-fleet expansion · IN PROGRESS · non-clickable -->
   <g>
@@ -271,15 +265,23 @@
     <text x="1050" y="524" fill="#C88A1A" font-size="8" font-weight="700" font-family="JetBrains Mono, monospace" letter-spacing="0.08em" text-anchor="middle">IN PROGRESS</text>
   </g>
 
-  <!-- Box 3 — v3.1 trained (done) + pax-counting note · non-clickable -->
-  <g>
-    <rect x="782" y="564" width="322" height="50" rx="10" fill="#E8F5F1" stroke="#0E9A7E" stroke-width="2" />
+  <!-- Box 3 — v3.1 / pax counting · DONE · clickable → pax-detection (Phase 1) overlay.
+       Posts the existing 'open-deployment-overlay' message (handled by summary.html's
+       deploymentFloater) — message/floater names kept for minimal churn. -->
+  <a id="status-paxcounting-cta"
+     xlink:href="../presentations/2026-05-10-edge-deployment/details/fare-trip-validation.html"
+     href="../presentations/2026-05-10-edge-deployment/details/fare-trip-validation.html"
+     target="_top"
+     class="status-cta"
+     onclick="if(window.parent &amp;&amp; window.parent !== window){window.parent.postMessage({type:'open-deployment-overlay'},'*');return false;}return true;"
+     aria-label="Open passenger-detection Phase 1 test overlay">
+    <rect class="status-bg status-rect" x="782" y="564" width="322" height="50" rx="10" fill="#E8F5F1" stroke="#0E9A7E" stroke-width="2" />
     <text x="802" y="580" fill="#0E9A7E" font-size="10.5" font-weight="700" font-family="JetBrains Mono, monospace" letter-spacing="0.10em">MODEL · v3.1</text>
     <text x="802" y="596" fill="#1A1D26" font-size="13" font-weight="600">Centralized dataset · <tspan font-family="JetBrains Mono, monospace">74%</tspan></text>
     <text x="802" y="610" fill="#5A5E6E" font-size="9.5">Pax counting &#183; under improvement for v2</text>
     <circle cx="1084" cy="582" r="9" fill="#0E9A7E" />
     <text x="1084" y="586" fill="#FFFFFF" font-size="12" font-weight="700" text-anchor="middle">&#x2713;</text>
-  </g>
+  </a>
 
   <!-- ===== V1.2 field test deployment annotation (May 7) =====
        Describes the hardware stack + scope of the May 7 field test.
