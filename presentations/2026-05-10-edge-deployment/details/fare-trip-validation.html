@@ -1,16 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <!--
-  Fare & trip-data validation (box 1 "Deployed to 50 vehicles" overlay).
+  Passenger-detection Phase 1 test (box 1 overlay).
 
-  Source: VMS_TripReport export "Black_trip_test" (report 2026-06-11),
-  trips 2026-06-02 -> 06-10. Raw export is PII (driver names/IDs, plates,
-  GPS) and is intentionally NOT served -- it lives git-ignored under
-  /_private/. This page is a curated, redacted summary only:
-    - The 6 yellow-flagged rows from the export are test vehicle KA 3019,
-      trips #6-11, no driver assigned -> no personal data shown.
-    - Anomaly exemplars use the KARWA TEST account label (not a person).
-  All figures transcribed from the export; see scripts note in the repo.
+  Source: engineering Phase 1 email + appendix table. Camera vs seat-sensor
+  baseline for passenger-occupancy detection, vehicle #3091, fixed ~3.5 km
+  route inside HQ, black trips across 3 seating positions.
+
+  Redaction: tester names anonymised ("tester"); no personal data shown.
+  Fare figures are initial meter-app readings (rounding error) — Mursaal is
+  authoritative; verification is a Finance next-step, not a result here.
+  Narrative order (per request): tested -> expected -> actual -> error
+  analysis -> actions.
 -->
 <head>
   <meta charset="UTF-8">
@@ -18,242 +19,213 @@
   <style id="dms-gate-hide">body{display:none!important}</style>
   <script src="../../../password-gate.js"></script>
   <meta name="viewport" content="width=1100">
-  <title>Fare &amp; trip-data validation &middot; Mursal test trips</title>
+  <title>Passenger detection &middot; Phase 1 test</title>
   <link
     href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=JetBrains+Mono:wght@400;500;600&display=swap"
     rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg: #F8F9FB;
-      --bg-card: #FFFFFF;
-      --bg-elevated: #F0F1F4;
-      --border: #E0E2E8;
-      --text: #1A1D26;
-      --text-dim: #5A5E6E;
-      --text-muted: #8E92A0;
-      --green: #0E9A7E;
-      --blue: #3B6FD6;
-      --amber: #C88A1A;
-      --red: #D9453E;
-      --flag-bg: #FFF1C2;
-      --flag-line: #E7B53C;
-      --font: 'DM Sans', system-ui, sans-serif;
-      --mono: 'JetBrains Mono', monospace;
-      --radius: 10px;
+      --bg: #F8F9FB; --bg-card: #FFFFFF; --bg-elevated: #F0F1F4; --border: #E0E2E8;
+      --text: #1A1D26; --text-dim: #5A5E6E; --text-muted: #8E92A0;
+      --green: #0E9A7E; --blue: #3B6FD6; --amber: #C88A1A; --red: #D9453E; --purple: #8B5CC4;
+      --good-bg: #E6F4EF; --warn-bg: #FBF0D6; --bad-bg: #FBE6E4;
+      --font: 'DM Sans', system-ui, sans-serif; --mono: 'JetBrains Mono', monospace; --radius: 10px;
     }
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--font);
-      line-height: 1.5;
-      padding: 32px 36px 48px;
-      min-height: 100vh;
-      max-width: 1040px;
-    }
-    .pill {
-      display: inline-block;
-      font-family: var(--mono);
-      font-size: 10px;
-      letter-spacing: 0.10em;
-      text-transform: uppercase;
-      padding: 4px 10px;
-      border-radius: 999px;
-      background: rgba(14, 154, 126, 0.10);
-      color: var(--green);
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
+    body { background: var(--bg); color: var(--text); font-family: var(--font); line-height: 1.5; padding: 32px 36px 48px; min-height: 100vh; max-width: 1040px; }
+    .pill { display: inline-block; font-family: var(--mono); font-size: 10px; letter-spacing: 0.10em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; background: rgba(139,92,196,0.10); color: var(--purple); font-weight: 700; margin-bottom: 8px; }
     h1 { font-size: 24px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 4px; }
-    .sub {
-      font-family: var(--mono); font-size: 12px; color: var(--text-muted);
-      letter-spacing: 0.04em; margin-bottom: 18px;
-    }
-    .lead { font-size: 13.5px; color: var(--text-dim); max-width: 860px; margin-bottom: 22px; }
+    .sub { font-family: var(--mono); font-size: 12px; color: var(--text-muted); letter-spacing: 0.04em; margin-bottom: 18px; }
+    .lead { font-size: 13.5px; color: var(--text-dim); max-width: 880px; margin-bottom: 22px; }
     .lead strong { color: var(--text); font-weight: 600; }
 
-    /* === STAT ROW === */
-    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 26px; }
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 26px; }
     .stat { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px; }
-    .stat-label {
-      font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.10em;
-      text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 6px;
-    }
-    .stat-value { font-size: 18px; font-weight: 700; line-height: 1.15; letter-spacing: -0.01em; }
-    .stat-value .unit { font-family: var(--mono); font-size: 11px; color: var(--text-muted); font-weight: 500; display: block; margin-top: 3px; letter-spacing: 0.02em; }
-    .stat--green .stat-value { color: var(--green); }
-    .stat--amber .stat-value { color: var(--amber); }
+    .stat-label { font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.10em; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 6px; }
+    .stat-value { font-size: 17px; font-weight: 700; line-height: 1.15; letter-spacing: -0.01em; }
+    .stat-value .unit { font-family: var(--mono); font-size: 10.5px; color: var(--text-muted); font-weight: 500; display: block; margin-top: 3px; letter-spacing: 0.02em; }
+    .stat--green .stat-value { color: var(--green); } .stat--amber .stat-value { color: var(--amber); } .stat--red .stat-value { color: var(--red); }
 
-    /* === SECTION === */
     section { margin-bottom: 26px; }
-    .section-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 12px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
-    .section-pill {
-      font-family: var(--mono); font-size: 10px; letter-spacing: 0.10em; text-transform: uppercase;
-      padding: 3px 9px; border-radius: 4px; font-weight: 700;
-      background: rgba(59, 111, 214, 0.10); color: var(--blue);
-    }
+    .section-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 12px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+    .step { font-family: var(--mono); font-size: 10px; font-weight: 700; color: #fff; background: var(--purple); border-radius: 4px; padding: 2px 7px; letter-spacing: 0.06em; }
     .section-title { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
     .section-note { font-family: var(--mono); font-size: 11px; color: var(--text-muted); margin-left: auto; }
 
-    /* === TRIPS TABLE === */
+    .body-text { font-size: 13px; color: var(--text-dim); max-width: 880px; }
+    .body-text strong { color: var(--text); font-weight: 600; }
+    ul.notes { list-style: none; margin-top: 10px; display: grid; gap: 7px; }
+    ul.notes li { font-size: 12.5px; color: var(--text-dim); padding-left: 18px; position: relative; }
+    ul.notes li::before { content: ""; position: absolute; left: 4px; top: 8px; width: 5px; height: 5px; border-radius: 999px; background: var(--text-muted); }
+
+    /* Expected / baseline callout */
+    .baseline { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; background: var(--bg-card); border: 1px solid var(--border); border-left: 3px solid var(--green); border-radius: var(--radius); padding: 14px 18px; }
+    .baseline .bl-label { font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--green); }
+    .baseline .bl-metric { display: flex; flex-direction: column; }
+    .baseline .bl-metric b { font-family: var(--mono); font-size: 16px; font-weight: 600; color: var(--text); }
+    .baseline .bl-metric span { font-family: var(--mono); font-size: 9.5px; color: var(--text-muted); letter-spacing: 0.04em; text-transform: uppercase; margin-top: 2px; }
+
+    /* Trials table */
     .table-wrap { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
-    table.trips { width: 100%; border-collapse: collapse; font-size: 12.5px; }
-    table.trips th, table.trips td { padding: 9px 12px; text-align: right; border-bottom: 1px solid var(--border); }
-    table.trips th:first-child, table.trips td:first-child,
-    table.trips th:nth-child(2), table.trips td:nth-child(2) { text-align: left; }
-    table.trips thead th {
-      font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.06em; text-transform: uppercase;
-      color: var(--text-muted); font-weight: 600; background: var(--bg-elevated);
-    }
-    table.trips thead th.fare { color: var(--blue); }
-    table.trips tbody td { font-family: var(--mono); }
-    table.trips tbody tr:last-child td { border-bottom: none; }
-    table.trips td.flag { background: var(--flag-bg); color: #7a5d10; font-weight: 600; box-shadow: inset 2px 0 0 var(--flag-line); }
-    table.trips td.fare { color: var(--blue); }
-    .legend { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 10px; font-size: 11.5px; color: var(--text-dim); }
-    .legend span { display: inline-flex; align-items: center; gap: 6px; }
-    .swatch { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
-    .swatch.y { background: var(--flag-bg); border: 1px solid var(--flag-line); }
-    .swatch.b { background: rgba(59,111,214,0.12); border: 1px solid var(--blue); }
+    table.trials { width: 100%; border-collapse: collapse; font-size: 12px; }
+    table.trials th, table.trials td { padding: 8px 9px; text-align: right; border-bottom: 1px solid var(--border); white-space: nowrap; }
+    table.trials th:nth-child(2), table.trials td:nth-child(2) { text-align: left; }
+    table.trials thead th { font-family: var(--mono); font-size: 9px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-muted); font-weight: 600; background: var(--bg-elevated); }
+    table.trials tbody td { font-family: var(--mono); }
+    table.trials tbody td.seat { font-family: var(--font); font-weight: 600; color: var(--text); }
+    table.trials tr.baseline-row td { background: rgba(14,154,126,0.06); }
+    table.trials tr.baseline-row td.seat { color: var(--green); }
+    td.good { color: var(--green); } td.warn { color: var(--amber); background: var(--warn-bg); } td.bad { color: var(--red); background: var(--bad-bg); font-weight: 600; }
+    td.na { color: var(--text-muted); }
+    tr.note-row td { text-align: left; font-family: var(--font); font-size: 11px; color: var(--text-dim); padding: 4px 9px 9px 30px; border-bottom: 1px solid var(--border); font-style: italic; }
+    tr.note-row.warn-note td { color: #8a6a12; } tr.note-row.bad-note td { color: #a8332c; }
 
-    /* === EVIDENCE === */
-    .ev-intro { font-size: 13px; color: var(--text-dim); margin-bottom: 12px; max-width: 860px; }
-    .evidence { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-    .ev-card { background: var(--bg-card); border: 1px solid var(--border); border-left: 3px solid var(--amber); border-radius: var(--radius); padding: 13px 15px; }
-    .ev-tag { font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--amber); font-weight: 700; margin-bottom: 8px; }
-    .ev-big { font-family: var(--mono); font-size: 21px; font-weight: 600; letter-spacing: -0.02em; }
-    .ev-big .u { font-size: 11px; color: var(--text-muted); margin-left: 3px; }
-    .ev-row { display: flex; justify-content: space-between; font-size: 11.5px; font-family: var(--mono); color: var(--text-dim); margin-top: 7px; }
-    .ev-row b { color: var(--text); font-weight: 600; }
-    .ev-diag { font-size: 12px; color: var(--text-dim); margin-top: 9px; padding-top: 9px; border-top: 1px solid var(--border); }
+    /* Error-analysis seat cards */
+    .seats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .seatcard { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; border-top: 3px solid var(--border); }
+    .seatcard.s-good { border-top-color: var(--green); } .seatcard.s-warn { border-top-color: var(--amber); } .seatcard.s-bad { border-top-color: var(--red); }
+    .seatcard h3 { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+    .seatcard .rank { font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+    .s-good .rank { color: var(--green); } .s-warn .rank { color: var(--amber); } .s-bad .rank { color: var(--red); }
+    .seatcard p { font-size: 12px; color: var(--text-dim); margin-top: 8px; }
 
-    /* === VERDICT === */
-    .verdict { display: flex; gap: 16px; align-items: flex-start; background: linear-gradient(0deg, rgba(14,154,126,0.05), rgba(14,154,126,0.05)), var(--bg-card); border: 1px solid rgba(14,154,126,0.30); border-radius: var(--radius); padding: 16px 18px; }
-    .verdict-check { flex: 0 0 auto; width: 30px; height: 30px; border-radius: 999px; background: var(--green); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; }
-    .verdict h3 { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
-    .verdict p { font-size: 12.5px; color: var(--text-dim); }
+    /* Actions */
+    .actions { display: grid; gap: 10px; }
+    .action { display: flex; gap: 12px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 15px; align-items: flex-start; }
+    .action .pri { flex: 0 0 auto; font-family: var(--mono); font-size: 9px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; margin-top: 1px; }
+    .pri.p1 { background: var(--bad-bg); color: var(--red); } .pri.p2 { background: var(--warn-bg); color: var(--amber); } .pri.p3 { background: var(--bg-elevated); color: var(--text-dim); } .pri.next { background: rgba(59,111,214,0.10); color: var(--blue); }
+    .action .a-body b { font-size: 13px; font-weight: 600; } .action .a-body p { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
 
     .foot { margin-top: 26px; padding-top: 12px; border-top: 1px solid var(--border); font-family: var(--mono); font-size: 10.5px; color: var(--text-muted); letter-spacing: 0.02em; line-height: 1.7; }
 
-    @media (max-width: 760px) {
-      .stats { grid-template-columns: repeat(2, 1fr); }
-      .evidence { grid-template-columns: 1fr; }
-    }
+    @media (max-width: 820px) { .stats, .seats { grid-template-columns: 1fr 1fr; } table.trials { font-size: 11px; } }
   </style>
 </head>
 <body>
-  <span class="pill">Fleet deployment</span>
-  <h1>Fare &amp; trip-data validation</h1>
-  <div class="sub">VMS &middot; Mursal test trips &middot; 2026-06-02 &rarr; 06-10</div>
+  <span class="pill">Pax counting &middot; model test</span>
+  <h1>Passenger detection &mdash; Phase 1</h1>
+  <div class="sub">Camera vs. seat-sensor baseline &middot; vehicle #3091 &middot; ~3.5 km fixed route (HQ)</div>
 
   <p class="lead">
-    Fare calculations on the Mursal test trips <strong>reconcile correctly</strong>. The
-    <strong>Distance&nbsp;(KM)</strong>, <strong>Start&nbsp;Time</strong> and
-    <strong>Trip&nbsp;Duration</strong> values are flagged across the six test trips below.
+    Phase 1 compares a <strong>camera</strong> against the <strong>seat-sensor baseline</strong> for detecting
+    passenger occupancy. Black trips were run on vehicle #3091 over a fixed ~3.5 km route inside HQ, across three
+    seating positions, recording each trip's duration, distance and fare; a stopwatch separately timed
+    passenger-entry to trip-end. <strong>Accuracy, best to worst: Front &gt; Rear-Right &gt; Rear-Left.</strong>
   </p>
 
   <div class="stats">
-    <div class="stat stat--green">
-      <div class="stat-label">Fare calculation</div>
-      <div class="stat-value">Verified<span class="unit">arithmetic reconciles</span></div>
-    </div>
-    <div class="stat stat--amber">
-      <div class="stat-label">Fields flagged</div>
-      <div class="stat-value">3<span class="unit">KM &middot; Start &middot; Duration</span></div>
-    </div>
-    <div class="stat">
-      <div class="stat-label">Flagged test trips</div>
-      <div class="stat-value">6<span class="unit">test vehicle KA&nbsp;3019</span></div>
-    </div>
+    <div class="stat"><div class="stat-label">Setup</div><div class="stat-value">Camera<span class="unit">vs. seat sensor</span></div></div>
+    <div class="stat"><div class="stat-label">Trials</div><div class="stat-value">7<span class="unit">1 baseline + 6 camera</span></div></div>
+    <div class="stat stat--green"><div class="stat-label">Best</div><div class="stat-value">Front<span class="unit">&approx; baseline</span></div></div>
+    <div class="stat stat--red"><div class="stat-label">Needs work</div><div class="stat-value">Rear-Left<span class="unit">trip didn't start</span></div></div>
   </div>
 
-  <!-- ===== FLAGGED FIELDS ===== -->
+  <!-- ===== 1 · TESTED ===== -->
   <section>
-    <div class="section-head">
-      <span class="section-pill" style="background:rgba(200,138,26,0.12);color:var(--amber)">Flagged fields</span>
-      <span class="section-title">6 controlled test trips &middot; KA&nbsp;3019 &middot; 10&nbsp;Jun&nbsp;2026</span>
-      <span class="section-note">yellow = flagged cell</span>
+    <div class="section-head"><span class="step">Tested</span><span class="section-title">Method &amp; setup</span></div>
+    <p class="body-text">
+      A camera-based passenger detector is compared against the vehicle's seat sensor (treated as ground truth).
+      For each black trip a single passenger sits in one position; the camera's trip readings are compared to a
+      stopwatch and to the seat-sensor baseline. Differences in time and distance indicate how well the camera
+      detects occupancy.
+    </p>
+    <ul class="notes">
+      <li><strong>Seat sensor = baseline</strong>, treated as most accurate for passenger detection.</li>
+      <li><strong>Time &amp; distance differences</strong> vs. baseline are the detection-performance signal.</li>
+      <li><strong>Worst case tested: 1 passenger.</strong> More passengers would raise the chance a trip starts.</li>
+      <li>Trip readings come from the meter app (rounding error) &mdash; <strong>Mursaal</strong> is authoritative; these are initial results.</li>
+    </ul>
+  </section>
+
+  <!-- ===== 2 · EXPECTED ===== -->
+  <section>
+    <div class="section-head"><span class="step">Expected</span><span class="section-title">Camera should match the baseline</span></div>
+    <p class="body-text" style="margin-bottom:12px;">A well-performing camera reproduces the seat-sensor trip &mdash; small time and distance gaps. The baseline trip:</p>
+    <div class="baseline">
+      <span class="bl-label">Seat-sensor<br>baseline</span>
+      <div class="bl-metric"><b>7:08</b><span>trip duration</span></div>
+      <div class="bl-metric"><b>3.4 km</b><span>trip distance</span></div>
+      <div class="bl-metric"><b>25 s</b><span>&Delta; time</span></div>
+      <div class="bl-metric"><b>0.1 km</b><span>&Delta; distance</span></div>
+      <div class="bl-metric"><b>QAR 12</b><span>total fare</span></div>
     </div>
+  </section>
+
+  <!-- ===== 3 · ACTUAL ===== -->
+  <section>
+    <div class="section-head"><span class="step">Actual</span><span class="section-title">7 trials &middot; vehicle #3091</span><span class="section-note">&Delta; vs. baseline; green good &middot; amber/red poor</span></div>
     <div class="table-wrap">
-      <table class="trips">
+      <table class="trials">
         <thead>
           <tr>
-            <th>Trip&nbsp;#</th>
-            <th>Start time</th>
-            <th>Duration (min)</th>
-            <th>Distance (km)</th>
-            <th class="fare">Meter (QAR)</th>
-            <th class="fare">Total (QAR)</th>
+            <th>#</th><th>Trial</th><th>Start</th><th>Stopwatch</th><th>Trip dur</th><th>&Delta; time</th><th>Trip km</th><th>&Delta; dist</th><th>Fare</th>
           </tr>
         </thead>
         <tbody>
-          <tr><td>6</td>  <td>10:32:30</td>            <td>8.00</td>            <td class="flag">3.31</td> <td class="fare">4</td>  <td class="fare">11</td></tr>
-          <tr><td>7</td>  <td>10:43:20</td>            <td class="flag">7.08</td> <td class="flag">3.34</td> <td class="fare">5</td>  <td class="fare">12</td></tr>
-          <tr><td>8</td>  <td>10:52:50</td>            <td class="flag">7.73</td> <td class="flag">2.77</td> <td class="fare">4</td>  <td class="fare">11</td></tr>
-          <tr><td>9</td>  <td class="flag">11:15:21</td> <td class="flag">5.45</td> <td class="flag">2.37</td> <td class="fare">3</td>  <td class="fare">10</td></tr>
-          <tr><td>10</td> <td>11:27:38</td>            <td class="flag">7.72</td> <td class="flag">3.38</td> <td class="fare">5</td>  <td class="fare">12</td></tr>
-          <tr><td>11</td> <td class="flag">11:51:04</td> <td class="flag">7.20</td> <td class="flag">3.36</td> <td class="fare">5</td>  <td class="fare">12</td></tr>
+          <tr class="baseline-row"><td>0</td><td class="seat">Seat sensor</td><td>11:50</td><td>7:33</td><td>7:08</td><td>25 s</td><td>3.4</td><td>0.1</td><td>12</td></tr>
+
+          <tr><td>1</td><td class="seat">Front</td><td>10:32</td><td class="na">&mdash;</td><td>7:58</td><td class="na">&mdash;</td><td>3.3</td><td class="good">0.1</td><td>11</td></tr>
+          <tr class="note-row"><td colspan="9">Route was shorter this trial; stopwatch not used.</td></tr>
+
+          <tr><td>2</td><td class="seat">Front</td><td>10:42</td><td>7:38</td><td>7:03</td><td class="good">35 s</td><td>3.3</td><td class="good">0.2</td><td>12</td></tr>
+
+          <tr><td>3</td><td class="seat">Front</td><td>10:52</td><td>8:32</td><td>7:42</td><td class="warn">50 s</td><td>2.7</td><td class="warn">0.8</td><td>11</td></tr>
+          <tr class="note-row warn-note"><td colspan="9">App shut down mid-trip &mdash; distance under-recorded.</td></tr>
+
+          <tr><td>4</td><td class="seat">Rear-Right</td><td>11:12</td><td>8:38</td><td>5:24</td><td class="bad">194 s</td><td>2.4</td><td class="bad">0.9</td><td>10</td></tr>
+          <tr class="note-row bad-note"><td colspan="9">Tester's shirt blended with the seats &mdash; passenger detected ~3 min late.</td></tr>
+
+          <tr><td>5</td><td class="seat">Rear-Right</td><td>11:27</td><td>8:04</td><td>7:38</td><td class="good">26 s</td><td>3.4</td><td class="good">0.1</td><td>12</td></tr>
+          <tr class="note-row"><td colspan="9">Tester in white shirt &mdash; detection back in line with baseline.</td></tr>
+
+          <tr><td>6</td><td class="seat">Rear-Left</td><td>11:39</td><td>7:30</td><td class="bad na">no start</td><td class="bad na">&mdash;</td><td class="bad na">&mdash;</td><td class="bad na">&mdash;</td><td class="na">&mdash;</td></tr>
+          <tr class="note-row bad-note"><td colspan="9">Tester in white shirt; trip did not start &mdash; passenger never detected.</td></tr>
         </tbody>
       </table>
     </div>
-    <div class="legend">
-      <span><i class="swatch y"></i> Flagged cell (Start / Duration / KM, per cell)</span>
-      <span><i class="swatch b"></i> Fare fields &mdash; verified correct</span>
-    </div>
   </section>
 
-  <!-- ===== EVIDENCE ===== -->
+  <!-- ===== 4 · ERROR ANALYSIS ===== -->
   <section>
-    <div class="section-head">
-      <span class="section-pill" style="background:rgba(200,138,26,0.12);color:var(--amber)">Why it matters</span>
-      <span class="section-title">Trips that never closed cleanly</span>
+    <div class="section-head"><span class="step">Error analysis</span><span class="section-title">By seat position</span></div>
+    <div class="seats">
+      <div class="seatcard s-good">
+        <span class="rank">1 &middot; Best</span>
+        <h3>Front seat</h3>
+        <p>Tracks the baseline closely (&Delta;time 35&ndash;50 s). The one large distance gap was an <strong>app shutdown</strong>, not a detection miss.</p>
+      </div>
+      <div class="seatcard s-warn">
+        <span class="rank">2 &middot; Variable</span>
+        <h3>Rear-Right seat</h3>
+        <p>Works when contrast is good (&Delta;time 26 s, white shirt), but a <strong>low-contrast shirt</strong> blended with the seat and pushed detection ~3 min late.</p>
+      </div>
+      <div class="seatcard s-bad">
+        <span class="rank">3 &middot; Worst</span>
+        <h3>Rear-Left seat</h3>
+        <p>Passenger <strong>never detected</strong> &mdash; the trip did not start at all. Highest-priority gap.</p>
+      </div>
     </div>
-    <p class="ev-intro">
-      The fare formula is sound &mdash; <strong>Total = Meter + Additional + Waiting</strong> reconciles on every row.
-      The break is upstream: when a trip is not closed cleanly, <strong>Trip Duration</strong> inflates, the derived
-      waiting fare balloons, and <strong>Distance / Start</strong> drift from the real run. The same
-      <code>KARWA&nbsp;TEST</code> account produced these:
+    <p class="body-text" style="margin-top:12px;">
+      Failure modes: rear-seat coverage (especially Rear-Left), sensitivity to <strong>clothing/seat contrast</strong>,
+      and an <strong>app stability</strong> issue (mid-trip shutdown). Front-seat detection is production-close.
     </p>
-    <div class="evidence">
-      <div class="ev-card">
-        <div class="ev-tag">KARWA TEST &middot; KA 3122</div>
-        <div class="ev-big">8.5<span class="u">h open</span></div>
-        <div class="ev-row"><span>Distance</span><b>0.37 km</b></div>
-        <div class="ev-row"><span>Waiting fare</span><b>QAR 266</b></div>
-        <div class="ev-diag">509 min logged for a 0.37&nbsp;km trip &mdash; meter left running.</div>
-      </div>
-      <div class="ev-card">
-        <div class="ev-tag">KARWA TEST &middot; KA 2668</div>
-        <div class="ev-big">22.8<span class="u">h open</span></div>
-        <div class="ev-row"><span>Distance</span><b>1.14 km</b></div>
-        <div class="ev-row"><span>Waiting fare</span><b>QAR 724</b></div>
-        <div class="ev-diag">~23&nbsp;h duration on a ~1&nbsp;km trip drives a runaway waiting fare.</div>
-      </div>
-      <div class="ev-card">
-        <div class="ev-tag">KARWA TEST &middot; KA 3099</div>
-        <div class="ev-big">8.1<span class="u">days open</span></div>
-        <div class="ev-row"><span>Distance</span><b>16.0 km</b></div>
-        <div class="ev-row"><span>Waiting fare</span><b>QAR 6,246</b></div>
-        <div class="ev-diag">Meter ran 02&rarr;10 Jun, so Start &amp; Duration diverge from the real trip.</div>
-      </div>
-    </div>
   </section>
 
-  <!-- ===== VERDICT ===== -->
-  <div class="verdict">
-    <div class="verdict-check">&#x2713;</div>
-    <div>
-      <h3>Fare engine: correct</h3>
-      <p>
-        Fare arithmetic reconciles across the reviewed trips &mdash;
-        <strong>Total = Meter + Additional + Waiting</strong> on every row.
-      </p>
+  <!-- ===== 5 · ACTIONS ===== -->
+  <section>
+    <div class="section-head"><span class="step">Actions</span><span class="section-title">Model improvements &amp; next steps</span></div>
+    <div class="actions">
+      <div class="action"><span class="pri p1">P1</span><div class="a-body"><b>Rear-Left detection</b><p>Close the rear-left coverage gap so the trip reliably starts.</p></div></div>
+      <div class="action"><span class="pri p2">P2</span><div class="a-body"><b>Clothing / seat contrast</b><p>Make detection robust to low-contrast clothing against seat colour (Rear-Right case).</p></div></div>
+      <div class="action"><span class="pri p3">P3</span><div class="a-body"><b>App stability</b><p>Fix the mid-trip shutdown so distance/duration aren't under-recorded.</p></div></div>
+      <div class="action"><span class="pri next">Phase 2</span><div class="a-body"><b>Deploy on 5 taxis</b><p>Seat sensor as the primary source; camera measured in parallel to compare the two in production.</p></div></div>
+      <div class="action"><span class="pri next">Finance</span><div class="a-body"><b>Mursaal fare verification</b><p>Finance to verify the fare calculations on Mursaal (meter-app readings carry rounding error).</p></div></div>
     </div>
-  </div>
+  </section>
 
   <div class="foot">
-    Curated, redacted summary of the VMS_TripReport export (report 2026-06-11; trips 02&ndash;10&nbsp;Jun&nbsp;2026).<br>
-    Raw export holds driver / plate / GPS data and is held privately &mdash; not published. Figures transcribed from the flagged rows (test vehicle KA&nbsp;3019, no driver assigned) and KARWA&nbsp;TEST account anomalies.
+    Phase 1 passenger-detection test &middot; vehicle #3091 &middot; ~3.5 km fixed route, HQ &middot; single-passenger worst case.<br>
+    Tester names anonymised. Fares are initial meter-app readings (rounding error); Mursaal verification pending with Finance.
   </div>
 </body>
 </html>
