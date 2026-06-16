@@ -150,6 +150,8 @@
     .act { display:flex; gap:12px; align-items:center; background:var(--card); border:1px solid var(--border); border-radius:var(--r); padding:11px 15px; }
     .act .p{ flex:0 0 auto; font-family:var(--mono); font-size:9px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; padding:4px 8px; border-radius:5px; min-width:54px; text-align:center; }
     .p.p1{ background:var(--red-t); color:var(--red);} .p.p2{ background:var(--amber-t); color:var(--amber);} .p.p3{ background:var(--elev); color:var(--dim);} .p.nx{ background:var(--blue-t); color:var(--blue);}
+    .p.done{ background:var(--green-t); color:var(--green); display:inline-flex; align-items:center; justify-content:center; gap:4px; }
+    .p.done svg{ width:11px; height:11px; flex:0 0 auto; }
     .act b{ font-size:13px; font-weight:600; } .act span{ color:var(--dim); font-size:12px; }
     .act .sep{ color:var(--mut); margin:0 7px; }
 
@@ -299,8 +301,8 @@
       <div class="act"><span class="p p1">P1</span><div><b>Rear-Left detection</b><span class="sep">&middot;</span><span>close the coverage gap so the trip reliably starts</span></div></div>
       <div class="act"><span class="p p2">P2</span><div><b>Clothing / seat contrast</b><span class="sep">&middot;</span><span>robust to low-contrast clothing vs seat colour (Rear-Right)</span></div></div>
       <div class="act"><span class="p p3">P3</span><div><b>App stability</b><span class="sep">&middot;</span><span>fix mid-trip shutdown so distance/duration aren't lost</span></div></div>
-      <div class="act"><span class="p nx">Phase 2</span><div><b>Deploy on 5 taxis</b><span class="sep">&middot;</span><span>seat sensor primary; camera measured in parallel</span></div></div>
-      <div class="act"><span class="p nx">Finance</span><div><b>Mursaal fare check</b><span class="sep">&middot;</span><span>verify fare calculations (meter app has rounding error)</span></div></div>
+      <div class="act"><span class="p done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg>Phase 2</span><div><b>Deploy on 5 taxis</b><span class="sep">&middot;</span><span>seat sensor primary; camera measured in parallel</span></div></div>
+      <div class="act"><span class="p done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg>Finance</span><div><b>Mursaal fare check</b><span class="sep">&middot;</span><span>verify fare calculations (meter app has rounding error)</span></div></div>
     </div>
   </section>
 
