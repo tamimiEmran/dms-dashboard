@@ -52,15 +52,15 @@ injected into real cabin clips (6 clips, KA2068).</p>
   
     <div class="cards">
       <div class="card good"><div class="v">100%</div><div class="k">covered — detection rate</div></div>
-      <div class="card good"><div class="v">100%</div><div class="k">lighting distractor → stays normal</div></div>
+      <div class="card good"><div class="v">100%</div><div class="k">benign lighting change → correctly ignored</div></div>
       <div class="card warn"><div class="v">9%</div><div class="k">false-alarm on clean frames</div></div>
       <div class="card"><div class="v">64%/53%</div><div class="k">moved / defocused (partial)</div></div>
     </div>
   <div class="row">
     <div style="flex:1 1 360px">
       <table><thead><tr><th>injected condition</th><th class="num">detection</th><th class="num">false alarm</th><th class="num">latency (frames)</th></tr></thead>
-      <tbody><tr><td>normal (control)</td><td class='num'>98%</td><td class='num'>9%</td><td class='num'>—</td></tr><tr><td>covered</td><td class='num'>100%</td><td class='num'>9%</td><td class='num'>0</td></tr><tr><td>defocused</td><td class='num'>53%</td><td class='num'>9%</td><td class='num'>0</td></tr><tr><td>moved</td><td class='num'>64%</td><td class='num'>9%</td><td class='num'>0</td></tr><tr><td>bright_shift (distractor)</td><td class='num'>100%</td><td class='num'>9%</td><td class='num'>—</td></tr></tbody></table>
-      <p class="note">Covered is detected reliably and the lighting distractor is correctly ignored
+      <tbody><tr><td>Normal (control)</td><td class='num'>98%</td><td class='num'>9%</td><td class='num'>—</td></tr><tr><td>Covered</td><td class='num'>100%</td><td class='num'>9%</td><td class='num'>0</td></tr><tr><td>Defocused</td><td class='num'>53%</td><td class='num'>9%</td><td class='num'>0</td></tr><tr><td>Moved</td><td class='num'>64%</td><td class='num'>9%</td><td class='num'>0</td></tr><tr><td>Benign lighting change</td><td class='num'>100%</td><td class='num'>9%</td><td class='num'>—</td></tr></tbody></table>
+      <p class="note">Covered is detected reliably and a benign lighting change is correctly ignored
       (the key false-alarm test). Moved and defocused are partial at the per-frame level — single-frame
       flicker on a sustained event — which a temporal persistence stage (debounce) is designed to smooth.
       Numbers are on <b>synthetic</b> tamper from one camera; they measure detector behaviour, not field accuracy.</p>
@@ -75,20 +75,20 @@ injected into real cabin clips (6 clips, KA2068).</p>
   engages. The overlay shows the detector's <b>live verdict</b> and the applied tamper + severity.</p>
   <div class="grid2">
         <figure class="vid">
-          <img src="assets/clips/covered.gif" alt="covered example" loading="lazy">
-          <figcaption><b>covered</b> → expected verdict <span class="tag red">covered</span><br>Lens blocked / taped — the image goes flat: sharpness, edges and intensity spread all collapse.</figcaption>
+          <img src="assets/clips/covered.gif" alt="Covered example" loading="lazy">
+          <figcaption><b>Covered</b> → expected verdict <span class="tag red">covered</span><br>Lens blocked / taped — the image goes flat: sharpness, edges and intensity spread all collapse.</figcaption>
         </figure>
         <figure class="vid">
-          <img src="assets/clips/defocused.gif" alt="defocused example" loading="lazy">
-          <figcaption><b>defocused</b> → expected verdict <span class="tag red">defocused</span><br>Out-of-focus optics — sharpness and edges collapse, but the overall brightness spread is preserved.</figcaption>
+          <img src="assets/clips/defocused.gif" alt="Defocused example" loading="lazy">
+          <figcaption><b>Defocused</b> → expected verdict <span class="tag red">defocused</span><br>Out-of-focus optics — sharpness and edges collapse, but the overall brightness spread is preserved.</figcaption>
         </figure>
         <figure class="vid">
-          <img src="assets/clips/moved.gif" alt="moved example" loading="lazy">
-          <figcaption><b>moved</b> → expected verdict <span class="tag red">moved</span><br>Camera knocked / re-aimed — the whole view shifts vs the calibrated reference; structure itself stays sharp.</figcaption>
+          <img src="assets/clips/moved.gif" alt="Moved example" loading="lazy">
+          <figcaption><b>Moved</b> → expected verdict <span class="tag red">moved</span><br>Camera knocked / re-aimed — the whole view shifts vs the calibrated reference; structure itself stays sharp.</figcaption>
         </figure>
         <figure class="vid">
-          <img src="assets/clips/bright_shift.gif" alt="bright_shift example" loading="lazy">
-          <figcaption><b>bright_shift</b> → expected verdict <span class="tag green">normal</span><br>DISTRACTOR: a global lighting change (not tampering). The detector should stay NORMAL — brightness moves but structure doesn't.</figcaption>
+          <img src="assets/clips/bright_shift.gif" alt="Benign lighting change example" loading="lazy">
+          <figcaption><b>Benign lighting change</b> → expected verdict <span class="tag green">normal</span><br>A lighting change, not tampering (day/night, glare, IR illuminator). The detector should stay normal — brightness changes but image structure does not.</figcaption>
         </figure></div>
 </section>
 
