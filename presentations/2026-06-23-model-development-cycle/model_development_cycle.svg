@@ -239,13 +239,16 @@
   <text x="1301" y="418" fill="#1A1D26" font-size="10.5" text-anchor="middle">→ fleet expansion (100 vehicles)</text>
   <text x="1301" y="432" fill="#5A5E6E" font-size="9.5" text-anchor="middle" font-family="JetBrains Mono, monospace" letter-spacing="0.04em">2026-06-30</text>
 
-  <!-- ===== Status cluster (replaces the former early-exit + decision boxes) =====
-       Three milestone-status boxes hanging off the weekly-iteration block, center
-       x=943 so the green connector drops into box 1. Status convention:
-         green check chip = done;  amber "IN PROGRESS" pill = in progress.
-       Boxes 1 & 2 are clickable placeholders — link target TBD (user will supply);
-       onclick is inert (return false) until a real href / overlay is wired in.
-       Box 3 (v3.1) is intentionally non-clickable. -->
+  <!-- ===== Status cluster =====
+       Left column (x=782, hangs off the weekly-iteration block; green connector
+       drops into box 1):
+         Box 1  Fleet deployment   — clickable → details/fleet-deployment-progress
+         Box 2  Procurement        — static, in progress
+         Box 3  Model v3.1         — clickable → details/fare-trip-validation
+       Right column (x=1118, alongside boxes 1–2):
+         Box 4  Tampering detection — clickable → ../../reports/tampering report
+         Box 5  Raqeeb integration  — static, done
+       Status convention: green check chip = done/ready; amber pill = in progress. -->
 
   <!-- Box 1 — Deployed to 95 vehicles · DONE · clickable → fleet-deployment-progress overlay -->
   <a id="status-deployed-cta"
@@ -288,6 +291,30 @@
     <circle cx="1084" cy="582" r="9" fill="#0E9A7E" />
     <text x="1084" y="586" fill="#FFFFFF" font-size="12" font-weight="700" text-anchor="middle">&#x2713;</text>
   </a>
+
+  <!-- Box 4 — Tampering detection · READY · clickable → tampering report overlay -->
+  <a id="status-tampering-cta"
+     xlink:href="../../reports/tampering/index.html"
+     href="../../reports/tampering/index.html"
+     target="_top"
+     class="status-cta"
+     onclick="if(window.parent &amp;&amp; window.parent !== window){window.parent.postMessage({type:'open-tampering-overlay'},'*');return false;}return true;"
+     aria-label="Open tampering detection report overlay">
+    <rect class="status-bg status-rect" x="1118" y="450" width="268" height="50" rx="10" fill="#E8F5F1" stroke="#0E9A7E" stroke-width="2" />
+    <text x="1136" y="472" fill="#0E9A7E" font-size="10.5" font-weight="700" font-family="JetBrains Mono, monospace" letter-spacing="0.10em">TAMPERING DETECTION</text>
+    <text x="1136" y="490" fill="#1A1D26" font-size="13" font-weight="600">Detection ready</text>
+    <circle cx="1366" cy="468" r="9" fill="#0E9A7E" />
+    <text x="1366" y="472" fill="#FFFFFF" font-size="12" font-weight="700" text-anchor="middle">&#x2713;</text>
+  </a>
+
+  <!-- Box 5 — Raqeeb integration · DONE · non-clickable -->
+  <g>
+    <rect x="1118" y="507" width="268" height="50" rx="10" fill="#E8F5F1" stroke="#0E9A7E" stroke-width="2" />
+    <text x="1136" y="529" fill="#0E9A7E" font-size="10.5" font-weight="700" font-family="JetBrains Mono, monospace" letter-spacing="0.10em">RAQEEB INTEGRATION</text>
+    <text x="1136" y="547" fill="#1A1D26" font-size="13" font-weight="600">Integration done</text>
+    <circle cx="1366" cy="525" r="9" fill="#0E9A7E" />
+    <text x="1366" y="529" fill="#FFFFFF" font-size="12" font-weight="700" text-anchor="middle">&#x2713;</text>
+  </g>
 
   <!-- ===== V1.2 field test deployment annotation (May 7) =====
        Describes the hardware stack + scope of the May 7 field test.
