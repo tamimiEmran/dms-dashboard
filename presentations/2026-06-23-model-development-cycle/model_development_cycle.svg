@@ -242,16 +242,14 @@
   <text x="1301" y="432" fill="#5A5E6E" font-size="9.5" text-anchor="middle" font-family="JetBrains Mono, monospace" letter-spacing="0.04em">2026-06-30</text>
 
   <!-- ===== Status cluster =====
-       Top row (left column width, x=782–1104, split into two side-by-side boxes
-       that sum to 322; green connector drops onto their shared seam):
-         Box 1  Fleet deployment   — left half, clickable → details/fleet-deployment-progress
-         Box 5  Raqeeb integration — right half, static, done
-       Left column continues below the top row (x=782, w=322):
-         Box 2  Procurement        — static, in progress
-         Box 3  Model v3.1         — clickable → details/fare-trip-validation
-       Right column (x=1118, tucked under the 97% TARGET box, bottom-aligned with
-       the top row):
-         Box 4  Tampering detection — clickable → ../../reports/tampering report
+       Three rows in the left column (x=782–1104). The top and bottom rows are each
+       split into a pair of side-by-side boxes that sum to 322 (the full column width):
+         Top row    Box 1 Fleet deployment   | Box 5 Raqeeb integration
+                    (green connector drops onto their shared seam)
+         Mid row    Box 2 Procurement — full width, static, in progress
+         Bottom row Box 4 Tampering detection | Box 3 Model · v3.3
+       Clickable: Fleet → fleet-deployment-progress; Model → fare-trip-validation;
+       Tampering → ../../reports/tampering report. Raqeeb / Procurement are static.
        Status convention: green check chip = done/ready; amber pill = in progress. -->
 
   <!-- Box 1 — FLEET DEPLOYMENT · 95 vehicles · DONE · clickable → fleet-deployment-progress overlay.
@@ -281,9 +279,9 @@
     <text x="1050" y="524" fill="#C88A1A" font-size="8" font-weight="700" font-family="JetBrains Mono, monospace" letter-spacing="0.08em" text-anchor="middle">IN PROGRESS</text>
   </g>
 
-  <!-- Box 3 — v3.1 / pax counting · DONE · clickable → pax-detection (Phase 1) overlay.
-       Posts the existing 'open-deployment-overlay' message (handled by summary.html's
-       deploymentFloater) — message/floater names kept for minimal churn. -->
+  <!-- Box 3 — MODEL · v3.3 / pax counting · DONE · clickable → pax-detection (Phase 1) overlay.
+       Right half of the bottom status row (paired with Tampering on the left). Posts the
+       existing 'open-deployment-overlay' message (handled by summary.html's deploymentFloater). -->
   <a id="status-paxcounting-cta"
      xlink:href="details/fare-trip-validation.html"
      href="details/fare-trip-validation.html"
@@ -291,15 +289,16 @@
      class="status-cta"
      onclick="if(window.parent &amp;&amp; window.parent !== window){window.parent.postMessage({type:'open-deployment-overlay'},'*');return false;}return true;"
      aria-label="Open passenger-detection Phase 1 test overlay">
-    <rect class="status-bg status-rect" x="782" y="564" width="322" height="50" rx="10" fill="#E8F5F1" stroke="#0E9A7E" stroke-width="2" />
-    <text x="802" y="580" fill="#0E9A7E" font-size="10.5" font-weight="700" font-family="JetBrains Mono, monospace" letter-spacing="0.10em">MODEL · v3.1</text>
-    <text x="802" y="596" fill="#1A1D26" font-size="13" font-weight="600">Centralized dataset · <tspan font-family="JetBrains Mono, monospace">74%</tspan></text>
-    <text x="802" y="610" fill="#5A5E6E" font-size="9.5">Pax counting &#183; under improvement for v2</text>
-    <circle cx="1084" cy="582" r="9" fill="#0E9A7E" />
-    <text x="1084" y="586" fill="#FFFFFF" font-size="12" font-weight="700" text-anchor="middle">&#x2713;</text>
+    <rect class="status-bg status-rect" x="946" y="564" width="158" height="62" rx="10" fill="#E8F5F1" stroke="#0E9A7E" stroke-width="2" />
+    <text x="962" y="585" fill="#0E9A7E" font-size="9.5" font-weight="700" font-family="JetBrains Mono, monospace" letter-spacing="0.05em">MODEL · v3.3</text>
+    <text x="962" y="603" fill="#1A1D26" font-size="10" font-weight="600">Centralized dataset · <tspan font-family="JetBrains Mono, monospace">74%</tspan></text>
+    <text x="962" y="619" fill="#5A5E6E" font-size="9.5">Pax counting &#183; v2</text>
+    <circle cx="1086" cy="582" r="7" fill="#0E9A7E" />
+    <text x="1086" y="586" fill="#FFFFFF" font-size="10" font-weight="700" text-anchor="middle">&#x2713;</text>
   </a>
 
-  <!-- Box 4 — Tampering detection · READY · clickable → tampering report overlay -->
+  <!-- Box 4 — TAMPERING DETECTION · READY · clickable → tampering report overlay.
+       Left half of the bottom status row (paired with Model on the right). -->
   <a id="status-tampering-cta"
      xlink:href="../../reports/tampering/index.html"
      href="../../reports/tampering/index.html"
@@ -307,11 +306,11 @@
      class="status-cta"
      onclick="if(window.parent &amp;&amp; window.parent !== window){window.parent.postMessage({type:'open-tampering-overlay'},'*');return false;}return true;"
      aria-label="Open tampering detection report overlay">
-    <rect class="status-bg status-rect" x="1118" y="450" width="268" height="50" rx="10" fill="#E8F5F1" stroke="#0E9A7E" stroke-width="2" />
-    <text x="1136" y="472" fill="#0E9A7E" font-size="10.5" font-weight="700" font-family="JetBrains Mono, monospace" letter-spacing="0.10em">TAMPERING DETECTION</text>
-    <text x="1136" y="490" fill="#1A1D26" font-size="13" font-weight="600">Detection ready</text>
-    <circle cx="1366" cy="468" r="9" fill="#0E9A7E" />
-    <text x="1366" y="472" fill="#FFFFFF" font-size="12" font-weight="700" text-anchor="middle">&#x2713;</text>
+    <rect class="status-bg status-rect" x="782" y="564" width="158" height="62" rx="10" fill="#E8F5F1" stroke="#0E9A7E" stroke-width="2" />
+    <text x="798" y="585" fill="#0E9A7E" font-size="9.5" font-weight="700" font-family="JetBrains Mono, monospace" letter-spacing="0.04em">TAMPERING DETECTION</text>
+    <text x="798" y="603" fill="#1A1D26" font-size="13" font-weight="600">Detection ready</text>
+    <circle cx="924" cy="582" r="7" fill="#0E9A7E" />
+    <text x="924" y="586" fill="#FFFFFF" font-size="10" font-weight="700" text-anchor="middle">&#x2713;</text>
   </a>
 
   <!-- Box 5 — RAQEEB INTEGRATION · DONE · non-clickable.
