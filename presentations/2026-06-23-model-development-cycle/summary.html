@@ -135,10 +135,30 @@
         <iframe id="hwAssessmentFloaterFrame" src="" loading="lazy" class="floater-frame" title="HW assessment &middot; Howen MDT performance"></iframe>
       </div>
     </div>
+
+    <!-- Tampering detection box → open-tampering-overlay -->
+    <div class="floater" id="tamperingFloater"
+         onclick="closeTamperingFloater()"
+         role="dialog" aria-modal="true"
+         aria-label="Tampering detection report">
+      <div class="floater-panel" onclick="event.stopPropagation()">
+        <a class="floater-open"
+           href="../../reports/tampering/index.html"
+           target="_blank" rel="noopener" title="Open in new tab">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+            <polyline points="15 3 21 3 21 9" />
+            <line x1="10" y1="14" x2="21" y2="3" />
+          </svg>
+        </a>
+        <button class="floater-close" onclick="closeTamperingFloater()" aria-label="Close">&times;</button>
+        <iframe id="tamperingFloaterFrame" src="" loading="lazy" class="floater-frame" title="Tampering detection report"></iframe>
+      </div>
+    </div>
   </div>
 
   <script>
-    // Three scoped floaters — each listens for the SVG's postMessage and iframes
+    // Four scoped floaters — each listens for the SVG's postMessage and iframes
     // the matching local detail page (details/).
     function makeFloater(floaterId, frameId, src, msgType, closeName) {
       const floater = document.getElementById(floaterId);
@@ -160,6 +180,7 @@
     makeFloater('deploymentFloater', 'deploymentFloaterFrame', 'details/fare-trip-validation.html', 'open-deployment-overlay', 'closeDeploymentFloater');
     makeFloater('fleetFloater', 'fleetFloaterFrame', 'details/fleet-deployment-progress.html', 'open-fleet-overlay', 'closeFleetFloater');
     makeFloater('hwAssessmentFloater', 'hwAssessmentFloaterFrame', 'details/hw-assessment.html', 'open-hw-assessment-overlay', 'closeHwAssessmentFloater');
+    makeFloater('tamperingFloater', 'tamperingFloaterFrame', '../../reports/tampering/index.html', 'open-tampering-overlay', 'closeTamperingFloater');
   </script>
 </body>
 </html>
