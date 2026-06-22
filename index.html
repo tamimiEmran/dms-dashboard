@@ -102,6 +102,15 @@
       gap: 20px;
     }
 
+    /* Single-column list (Past Presentations) — constrained width so cards
+       don't span the full page. */
+    .cards-column {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      max-width: 560px;
+    }
+
     /* === Base card === */
     .card {
       background: var(--bg-card);
@@ -1684,19 +1693,16 @@
     }
 
     function renderPastSection(items) {
-      const rich = items.filter(p => p.materials && p.materials.length > 0);
-      const simple = items.filter(p => !p.materials || p.materials.length === 0);
-
-      let html = `
+      // `items` arrives sorted by date (newest first). Render every past
+      // presentation as a uniform single-column card — no full-width rich
+      // rows — with any supporting materials kept as inline pill links.
+      const cardsHtml = items.map(p => renderCard(p)).join('');
+      return `
         <div class="section">
           <div class="section-title">Past Presentations</div>
-          <div class="section-subtitle">Previously presented</div>`;
-      rich.forEach(p => { html += renderRichRow(p); });
-      if (simple.length) {
-        html += `<div class="cards-grid">${simple.map(p => renderCard(p)).join('')}</div>`;
-      }
-      html += `</div>`;
-      return html;
+          <div class="section-subtitle">Previously presented</div>
+          <div class="cards-column">${cardsHtml}</div>
+        </div>`;
     }
 
     function renderCard(p) {
@@ -1712,8 +1718,20 @@
           <div class="stat-label">${s.label}</div>
         </div>`).join('');
 
+      // Supporting materials become inline pills inside the card (so the
+      // single-column layout keeps them reachable without a side grid).
+      const detailLinksHtml = (p.materials || []).map(m => {
+        const label = m.pillLabel || m.title;
+        if (m.action === 'lightbox') {
+          return `<a href="#" class="detail-link" onclick="event.preventDefault();event.stopPropagation();openLightbox();">${label}</a>`;
+        }
+        return `<a href="${m.file}" class="detail-link" onclick="event.stopPropagation();">${label}</a>`;
+      }).join('');
+
+      // Card is a <div> (not <a>) so the material pills can be real links
+      // without nesting anchors. The whole card navigates on click.
       return `
-        <a class="card past" href="${p.file}">
+        <div class="card past" style="cursor:pointer" onclick="if(event.target.closest('a'))return;window.location.href='${p.file}'">
           <div class="card-strip"></div>
           <div class="card-body">
             <div class="card-top">
@@ -1724,8 +1742,9 @@
             <div class="card-subtitle">${p.subtitle}</div>
             <div class="card-tags">${tagsHtml}</div>
             <div class="card-stats">${statsHtml}</div>
+            ${detailLinksHtml ? `<div class="detail-links">${detailLinksHtml}</div>` : ''}
           </div>
-        </a>`;
+        </div>`;
     }
 
     function renderResourcesSection(items) {
