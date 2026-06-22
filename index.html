@@ -102,15 +102,6 @@
       gap: 20px;
     }
 
-    /* Single-column list (Past Presentations) — constrained width so cards
-       don't span the full page. */
-    .cards-column {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      max-width: 560px;
-    }
-
     /* === Base card === */
     .card {
       background: var(--bg-card);
@@ -1044,7 +1035,7 @@
             <div class="hero-title">DMS Roadmap</div>
             <div class="hero-subtitle">Three-phase plan &mdash; data collection &rarr; open-source model fusion (5&ndash;10 May) &rarr; Jetson Nano edge deployment + live-vehicle pilot (30 Jun, 97% target)</div>
           </div>
-          <a class="hero-link-badge" href="docs/roadmap_2026-05-06.pdf" target="_blank" rel="noopener">
+          <a class="hero-link-badge" href="docs/dms_roadmap_2026-06-22.pdf" target="_blank" rel="noopener">
             Open PDF
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="15 3 21 3 21 9"/>
@@ -1053,7 +1044,7 @@
           </a>
         </div>
         <div class="hero-pdf-wrapper">
-          <iframe src="docs/roadmap_2026-05-06.pdf#toolbar=0&navpanes=0&scrollbar=0&view=FitH"
+          <iframe src="docs/dms_roadmap_2026-06-22.pdf#toolbar=0&navpanes=0&scrollbar=0&view=FitH"
                   title="DMS Roadmap PDF"
                   allow="fullscreen"></iframe>
         </div>
@@ -1694,14 +1685,15 @@
 
     function renderPastSection(items) {
       // `items` arrives sorted by date (newest first). Render every past
-      // presentation as a uniform single-column card — no full-width rich
-      // rows — with any supporting materials kept as inline pill links.
+      // presentation as a uniform card in the responsive grid — wraps to
+      // 3 / 2 / 1 columns by viewport width, no full-width rich rows — with
+      // any supporting materials kept as inline pill links.
       const cardsHtml = items.map(p => renderCard(p)).join('');
       return `
         <div class="section">
           <div class="section-title">Past Presentations</div>
           <div class="section-subtitle">Previously presented</div>
-          <div class="cards-column">${cardsHtml}</div>
+          <div class="cards-grid">${cardsHtml}</div>
         </div>`;
     }
 
