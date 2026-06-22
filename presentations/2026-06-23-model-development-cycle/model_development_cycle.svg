@@ -247,7 +247,7 @@
        onclick is inert (return false) until a real href / overlay is wired in.
        Box 3 (v3.1) is intentionally non-clickable. -->
 
-  <!-- Box 1 — Deployed to 90 vehicles · DONE · clickable → fleet-deployment-progress overlay -->
+  <!-- Box 1 — Deployed to 95 vehicles · DONE · clickable → fleet-deployment-progress overlay -->
   <a id="status-deployed-cta"
      xlink:href="details/fleet-deployment-progress.html"
      href="details/fleet-deployment-progress.html"
@@ -257,7 +257,7 @@
      aria-label="Open fleet deployment progress overlay">
     <rect class="status-bg status-rect" x="782" y="450" width="322" height="50" rx="10" fill="#E8F5F1" stroke="#0E9A7E" stroke-width="2" />
     <text x="802" y="472" fill="#0E9A7E" font-size="10.5" font-weight="700" font-family="JetBrains Mono, monospace" letter-spacing="0.10em">FLEET DEPLOYMENT</text>
-    <text x="802" y="490" fill="#1A1D26" font-size="13" font-weight="600">Deployed to 90 vehicles</text>
+    <text x="802" y="490" fill="#1A1D26" font-size="13" font-weight="600">Deployed to 95 vehicles</text>
     <circle cx="1084" cy="468" r="9" fill="#0E9A7E" />
     <text x="1084" y="472" fill="#FFFFFF" font-size="12" font-weight="700" text-anchor="middle">&#x2713;</text>
   </a>
