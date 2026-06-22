@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+  Fleet deployment progress (box 1 overlay).
+  Two status matrices:
+    HW deployment  — Howen / QOHO  x  Streaming / Connectivity / Deployment
+    Model development — PAX / DMS   x  QA / Improvement
+  Styled to match the box-3 pax-detection page (same tokens).
+-->
+<head>
+  <meta charset="UTF-8">
+  <meta name="robots" content="noindex,nofollow">
+  <style id="dms-gate-hide">body{display:none!important}</style>
+  <script src="../../../password-gate.js"></script>
+  <meta name="viewport" content="width=1100">
+  <title>Fleet deployment &middot; progress</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:#F8F9FB; --card:#FFFFFF; --elev:#F0F1F4; --border:#E0E2E8;
+      --ink:#1A1D26; --dim:#5A5E6E; --mut:#8E92A0;
+      --green:#0E9A7E; --blue:#3B6FD6; --amber:#C88A1A; --red:#D9453E; --purple:#8B5CC4;
+      --green-t:#DDF1EA; --amber-t:#FAEBCF; --blue-t:#E4ECFA;
+      --font:'DM Sans', system-ui, sans-serif; --mono:'JetBrains Mono', monospace; --r:10px;
+    }
+    body { background:radial-gradient(120% 80% at 100% 0%, rgba(14,154,126,.05), transparent 60%), var(--bg); color:var(--ink); font-family:var(--font); line-height:1.45; padding:30px 34px 46px; min-height:100vh; max-width:980px; }
+    .pill { display:inline-block; font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.10em; text-transform:uppercase; padding:4px 10px; border-radius:999px; background:rgba(14,154,126,.10); color:var(--green); margin-bottom:8px; }
+    h1 { font-size:25px; font-weight:700; letter-spacing:-.025em; margin-bottom:4px; }
+    .sub { font-family:var(--mono); font-size:12px; color:var(--mut); letter-spacing:.03em; margin-bottom:22px; }
+
+    .reveal { opacity:0; transform:translateY(8px); animation:rise .5s cubic-bezier(.2,.7,.2,1) forwards; }
+    @keyframes rise { to { opacity:1; transform:none; } }
+    @media (prefers-reduced-motion: reduce){ .reveal{ animation:none; opacity:1; transform:none; } }
+
+    .stats { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:26px; }
+    .stat { background:var(--card); border:1px solid var(--border); border-radius:var(--r); padding:11px 13px; border-top:3px solid var(--border); }
+    .stat.g{ border-top-color:var(--green);} .stat.a{ border-top-color:var(--amber);}
+    .stat .l { font-family:var(--mono); font-size:9px; letter-spacing:.10em; text-transform:uppercase; color:var(--mut); font-weight:600; margin-bottom:5px; }
+    .stat .v { font-size:16px; font-weight:700; letter-spacing:-.01em; line-height:1.1; }
+    .stat .v small { display:block; font-family:var(--mono); font-size:10px; font-weight:500; color:var(--mut); margin-top:3px; }
+    .stat.g .v{color:var(--green)} .stat.a .v{color:var(--amber)}
+
+    section { margin-bottom:24px; }
+    .sh { display:flex; align-items:center; gap:10px; margin-bottom:13px; }
+    .sh .tag { font-family:var(--mono); font-size:10px; font-weight:700; color:#fff; border-radius:5px; padding:3px 9px; letter-spacing:.05em; text-transform:uppercase; }
+    .tag.hw{ background:var(--blue);} .tag.md{ background:var(--purple);}
+    .sh h2 { font-size:14px; font-weight:600; letter-spacing:-.01em; }
+    .sh .hint { margin-left:auto; font-family:var(--mono); font-size:10.5px; color:var(--mut); }
+
+    /* matrix */
+    .matrix { background:var(--card); border:1px solid var(--border); border-radius:var(--r); padding:14px 16px; }
+    .mrow { display:grid; grid-template-columns:138px 1fr 1fr; gap:10px; align-items:stretch; }
+    .mrow + .mrow { margin-top:9px; }
+    .mhead .mlabel{ background:transparent; border:none; }
+    .mh { display:flex; align-items:center; gap:9px; padding:4px 2px; }
+    .mh .ic { width:26px; height:26px; border-radius:7px; display:flex; align-items:center; justify-content:center; flex:0 0 auto; background:var(--elev); color:var(--dim); }
+    .mh .ic svg{ width:15px; height:15px; }
+    .mh b { font-size:13.5px; font-weight:700; } .mh span{ display:block; font-family:var(--mono); font-size:9px; letter-spacing:.06em; text-transform:uppercase; color:var(--mut); margin-top:1px; }
+    .mlabel { display:flex; align-items:center; font-weight:600; font-size:12.5px; color:var(--ink); padding-left:2px; }
+    .mlabel .mn { font-family:var(--mono); font-size:9px; color:var(--mut); margin-left:7px; font-weight:500; }
+
+    .cell { border-radius:8px; padding:9px 12px; display:flex; align-items:center; gap:10px; border:1px solid var(--border); background:var(--elev); }
+    .cell .ico { width:20px; height:20px; border-radius:999px; flex:0 0 auto; display:flex; align-items:center; justify-content:center; color:#fff; }
+    .cell .ico svg{ width:12px; height:12px; }
+    .cell .ct b { font-size:12.5px; font-weight:600; display:block; line-height:1.2; }
+    .cell .ct span { font-family:var(--mono); font-size:9.5px; letter-spacing:.02em; color:var(--mut); }
+    .cell.done { background:var(--green-t); border-color:rgba(14,154,126,.30); }
+    .cell.done .ico{ background:var(--green);} .cell.done .ct b{ color:var(--green);}
+    .cell.prog { background:var(--amber-t); border-color:rgba(200,138,26,.38); }
+    .cell.prog .ico{ background:var(--amber);} .cell.prog .ct b{ color:var(--amber);} .cell.prog .ct span{ color:#8a6a12;}
+    .cell.iter { background:var(--blue-t); border-color:rgba(59,111,214,.30); }
+    .cell.iter .ico{ background:var(--blue);} .cell.iter .ct b{ color:var(--blue);}
+
+    .legend { display:flex; gap:18px; flex-wrap:wrap; margin-top:14px; font-size:11.5px; color:var(--dim); }
+    .legend span{ display:inline-flex; align-items:center; gap:7px; }
+    .lg-dot{ width:11px; height:11px; border-radius:999px; }
+    .lg-dot.d{ background:var(--green);} .lg-dot.p{ background:var(--amber);} .lg-dot.i{ background:var(--blue);}
+
+    .foot { margin-top:24px; padding-top:12px; border-top:1px solid var(--border); font-family:var(--mono); font-size:10px; color:var(--mut); letter-spacing:.02em; line-height:1.7; }
+    @media (max-width:760px){ .stats{ grid-template-columns:1fr 1fr;} .mrow{ grid-template-columns:96px 1fr 1fr;} }
+  </style>
+</head>
+<body>
+  <span class="pill reveal">Fleet deployment</span>
+  <h1 class="reveal" style="animation-delay:.04s">Deployed to 90 vehicles</h1>
+  <div class="sub reveal" style="animation-delay:.08s">Hardware deployment &amp; model development &middot; progress</div>
+
+  <div class="stats reveal" style="animation-delay:.12s">
+    <div class="stat a"><div class="l">Howen &middot; HW</div><div class="v">2 / 3<small>connectivity next wk</small></div></div>
+    <div class="stat g"><div class="l">QOHO &middot; HW</div><div class="v">3 / 3<small>complete</small></div></div>
+    <div class="stat g"><div class="l">PAX &middot; model</div><div class="v">QA done<small>+ weekly iteration</small></div></div>
+    <div class="stat a"><div class="l">DMS &middot; model</div><div class="v">QA in prog<small>+ weekly iteration</small></div></div>
+  </div>
+
+  <!-- HW DEPLOYMENT -->
+  <section class="reveal" style="animation-delay:.16s">
+    <div class="sh"><span class="tag hw">HW deployment</span><h2>Hardware units</h2><span class="hint">Howen &middot; QOHO</span></div>
+    <div class="matrix">
+      <div class="mrow mhead">
+        <div class="mlabel"></div>
+        <div class="mh"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 18v2M18 18v2M7 10h.01M11 10h.01"/></svg></div><div><b>Howen</b><span>OBU + MHero</span></div></div>
+        <div class="mh"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 18v2M18 18v2M7 10h.01M11 10h.01"/></svg></div><div><b>QOHO</b><span>device</span></div></div>
+      </div>
+      <div class="mrow">
+        <div class="mlabel">Streaming</div>
+        <div class="cell done"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg></div><div class="ct"><b>Done</b></div></div>
+        <div class="cell done"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg></div><div class="ct"><b>Done</b></div></div>
+      </div>
+      <div class="mrow">
+        <div class="mlabel">Connectivity</div>
+        <div class="cell prog"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><div class="ct"><b>In progress</b><span>target next week</span></div></div>
+        <div class="cell done"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg></div><div class="ct"><b>Done</b></div></div>
+      </div>
+      <div class="mrow">
+        <div class="mlabel">Deployment</div>
+        <div class="cell done"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg></div><div class="ct"><b>Done</b></div></div>
+        <div class="cell done"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg></div><div class="ct"><b>Done</b></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MODEL DEVELOPMENT -->
+  <section class="reveal" style="animation-delay:.2s">
+    <div class="sh"><span class="tag md">Model development</span><h2>Models</h2><span class="hint">PAX &middot; DMS</span></div>
+    <div class="matrix">
+      <div class="mrow mhead">
+        <div class="mlabel"></div>
+        <div class="mh"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0"/><circle cx="17.5" cy="9" r="2.2"/><path d="M15 20a5 5 0 0 1 7-4.5"/></svg></div><div><b>PAX</b><span>passenger count</span></div></div>
+        <div class="mh"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="9" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/><path d="M9 9h.01M15 9h.01"/></svg></div><div><b>DMS</b><span>driver monitoring</span></div></div>
+      </div>
+      <div class="mrow">
+        <div class="mlabel">QA</div>
+        <div class="cell done"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg></div><div class="ct"><b>Done</b></div></div>
+        <div class="cell prog"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><div class="ct"><b>In progress</b></div></div>
+      </div>
+      <div class="mrow">
+        <div class="mlabel">Improvement</div>
+        <div class="cell iter"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 21v-5h5"/></svg></div><div class="ct"><b>Weekly iteration</b></div></div>
+        <div class="cell iter"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 21v-5h5"/></svg></div><div class="ct"><b>Weekly iteration</b></div></div>
+      </div>
+    </div>
+    <div class="legend">
+      <span><i class="lg-dot d"></i> Done</span>
+      <span><i class="lg-dot p"></i> In progress</span>
+      <span><i class="lg-dot i"></i> Weekly iteration (ongoing)</span>
+    </div>
+  </section>
+
+  <!-- VEHICLE LIST (collapsible) -->
+  <section class="reveal" style="animation-delay:.28s">
+    <style>
+      .veh-details { background:var(--card); border:1px solid var(--border); border-radius:var(--r); overflow:hidden; }
+      .veh-details > summary { list-style:none; cursor:pointer; display:flex; align-items:center; gap:10px; padding:13px 16px; user-select:none; }
+      .veh-details > summary::-webkit-details-marker { display:none; }
+      .veh-details > summary .tag { font-family:var(--mono); font-size:10px; font-weight:700; color:#fff; background:var(--green); border-radius:5px; padding:3px 9px; letter-spacing:.05em; text-transform:uppercase; }
+      .veh-details > summary h2 { font-size:14px; font-weight:600; letter-spacing:-.01em; }
+      .veh-details > summary .count { margin-left:auto; font-family:var(--mono); font-size:10.5px; color:var(--mut); }
+      .veh-details > summary .chev { color:var(--mut); display:flex; transition:transform .2s; }
+      .veh-details[open] > summary .chev { transform:rotate(90deg); }
+      .veh-wrap { max-height:430px; overflow:auto; border-top:1px solid var(--border); }
+      table.veh { border-collapse:collapse; width:100%; font-size:12px; }
+      table.veh thead th { position:sticky; top:0; z-index:1; background:var(--elev); color:var(--dim); font-family:var(--mono); font-size:9.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; text-align:left; padding:9px 12px; border-bottom:1px solid var(--border); white-space:nowrap; }
+      table.veh tbody td { padding:7px 12px; border-bottom:1px solid var(--border); }
+      table.veh tbody tr:nth-child(even){ background:rgba(240,241,244,.45); }
+      table.veh tbody tr:hover{ background:var(--green-t); }
+      table.veh td.n { font-family:var(--mono); color:var(--mut); }
+      table.veh td.vno { font-family:var(--mono); font-weight:600; }
+      table.veh td.pending { color:var(--amber); font-weight:600; }
+      table.veh td.rmk { color:var(--dim); font-size:11px; }
+    </style>
+    <details class="veh-details">
+      <summary>
+        <span class="tag">Vehicle list</span>
+        <h2>Deployed vehicles</h2>
+        <span class="count">90 vehicles &middot; click to expand</span>
+        <span class="chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 6l6 6-6 6"/></svg></span>
+      </summary>
+      <div class="veh-wrap">
+        <table class="veh">
+          <thead><tr><th>N</th><th>Vehicle No.</th><th>Make</th><th>Model</th><th>Model Year</th><th>Date Released</th><th>Remarks</th></tr></thead>
+          <tbody>
+          <tr><td class="n">1</td><td class="vno">22727</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>10/06/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">2</td><td class="vno">22761</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>10/06/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">3</td><td class="vno">22791</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>10/06/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">4</td><td class="vno">22826</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>10/06/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">5</td><td class="vno">22806</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>10/06/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">6</td><td class="vno">22725</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>10/06/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">7</td><td class="vno">22829</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>10/06/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">8</td><td class="vno">22870</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>10/06/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">9</td><td class="vno">22722</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>10/06/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">10</td><td class="vno">22786</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>10/06/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">11</td><td class="vno">22780</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>11/06/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">12</td><td class="vno">22852</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>11/06/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">13</td><td class="vno">22822</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>11/06/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">14</td><td class="vno">22749</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>11/06/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">15</td><td class="vno">22799</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>11/06/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">16</td><td class="vno">22766</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>11/06/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">17</td><td class="vno">22746</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>11/06/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">18</td><td class="vno">22832</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>11/06/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">19</td><td class="vno">22736</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>11/06/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">20</td><td class="vno">22861</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>12/06/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">21</td><td class="vno">22807</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>12/06/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">22</td><td class="vno">22767</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>06/12/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">23</td><td class="vno">22793</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>06/12/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">24</td><td class="vno">22712</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>06/12/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">25</td><td class="vno">22764</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>06/12/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">26</td><td class="vno">22872</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>06/12/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">27</td><td class="vno">22716</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>06/12/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">28</td><td class="vno">22745</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>06/12/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">29</td><td class="vno">22691</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>06/12/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">30</td><td class="vno">22803</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/13/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">31</td><td class="vno">22846</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/13/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">32</td><td class="vno">22867</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/13/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">33</td><td class="vno">22776</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/13/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">34</td><td class="vno">22760</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/13/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">35</td><td class="vno">22731</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/13/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">36</td><td class="vno">22758</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/14/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">37</td><td class="vno">22687</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/14/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">38</td><td class="vno">22732</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/14/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">39</td><td class="vno">22774</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/14/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">40</td><td class="vno">22717</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/14/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">41</td><td class="vno">22790</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/14/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">42</td><td class="vno">22681</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/14/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">43</td><td class="vno">22730</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/14/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">44</td><td class="vno">22698</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/14/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">45</td><td class="vno">22743</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/14/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">46</td><td class="vno">2503</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/14/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">47</td><td class="vno">22737</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/14/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">48</td><td class="vno">22805</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/15/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">49</td><td class="vno">22702</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/15/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">50</td><td class="vno">22815</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/15/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">51</td><td class="vno">22708</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/15/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">52</td><td class="vno">22757</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/15/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">53</td><td class="vno">22711</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/15/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">54</td><td class="vno">22692</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/15/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">55</td><td class="vno">22841</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/15/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">56</td><td class="vno">22718</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/15/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">57</td><td class="vno">22854</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/15/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">58</td><td class="vno">22674</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/15/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">59</td><td class="vno">22810</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/16/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">60</td><td class="vno">22714</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/16/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">61</td><td class="vno">22814</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/16/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">62</td><td class="vno">22820</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/16/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">63</td><td class="vno">22754</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/16/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">64</td><td class="vno">22847</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/16/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">65</td><td class="vno">22824</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/16/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">66</td><td class="vno">22817</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/16/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">67</td><td class="vno">22723</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/16/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">68</td><td class="vno">960850</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/16/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">69</td><td class="vno">22720</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/17/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">70</td><td class="vno">22689</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/17/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">71</td><td class="vno">22835</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/17/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">72</td><td class="vno">22794</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/17/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">73</td><td class="vno">22869</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/17/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">74</td><td class="vno">22848</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/18/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">75</td><td class="vno">22773</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/18/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">76</td><td class="vno">22707</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/19/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">77</td><td class="vno">22755</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/19/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">78</td><td class="vno">22729</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/19/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">79</td><td class="vno">22739</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/19/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">80</td><td class="vno">22836</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/19/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">81</td><td class="vno">22802</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/19/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">82</td><td class="vno">22672</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/20/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">83</td><td class="vno">22741</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/20/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">84</td><td class="vno">22703</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/20/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">85</td><td class="vno">22705</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/20/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">86</td><td class="vno">22818</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td>6/20/2026</td><td class="rmk"></td></tr>
+          <tr><td class="n">87</td><td class="vno">22838</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td class="pending">Pending</td><td class="rmk">Already Parked KT workshop Date 21/06/2026</td></tr>
+          <tr><td class="n">88</td><td class="vno">22782</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td class="pending">Pending</td><td class="rmk">Already Parked KT workshop Date 21/06/2026</td></tr>
+          <tr><td class="n">89</td><td class="vno">22788</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td class="pending">Pending</td><td class="rmk">Already Parked KT workshop Date 21/06/2026</td></tr>
+          <tr><td class="n">90</td><td class="vno">22763</td><td>Toyota</td><td>VELOZ</td><td>2024</td><td class="pending">Pending</td><td class="rmk">Already Parked KT workshop Date 21/06/2026</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+  </section>
+
+  <div class="foot reveal" style="animation-delay:.24s">
+    Fleet deployment progress &middot; hardware (Howen, QOHO) + model development (PAX, DMS).<br>
+    Status as of the current sprint; HW connectivity (Howen) targeted for next week.
+  </div>
+</body>
+</html>

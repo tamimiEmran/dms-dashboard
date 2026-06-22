@@ -7,9 +7,9 @@
   Stripped from 2026-05-10-edge-deployment/summary.html down to just the
   model-cycle hero + its three detail floaters.
 
-  The SVG is the shared current version (../../assets/model_development_cycle.svg,
-  status cluster). The box overlays reuse the edge-deployment detail pages via
-  ../2026-05-10-edge-deployment/details/ (no duplication).
+  Self-contained copy: the SVG (model_development_cycle.svg) and the three
+  box-overlay detail pages (details/) are local to this folder, so editing
+  them here does not affect the 16 Jun deck or the 10 May edge-deployment.
 -->
 <head>
   <meta charset="UTF-8">
@@ -68,11 +68,11 @@
     <span class="head-sub">click a status box for its deployment / pax-detection detail</span>
   </div>
 
-  <!-- Hero visual: shared model_development_cycle.svg. The SVG's status-box
+  <!-- Hero visual: local model_development_cycle.svg (this folder's copy). The SVG's status-box
        click handlers post messages to this parent; the floaters below listen
-       and open the matching edge-deployment detail page inline. -->
+       and open the matching local detail page (details/) inline. -->
   <div class="model-cycle-host">
-    <object data="../../assets/model_development_cycle.svg" type="image/svg+xml" class="model-cycle-svg">
+    <object data="model_development_cycle.svg" type="image/svg+xml" class="model-cycle-svg">
       Model Development Cycle
     </object>
 
@@ -83,7 +83,7 @@
          aria-label="Passenger detection &middot; Phase 1 test">
       <div class="floater-panel" onclick="event.stopPropagation()">
         <a class="floater-open"
-           href="../2026-05-10-edge-deployment/details/fare-trip-validation.html"
+           href="details/fare-trip-validation.html"
            target="_blank" rel="noopener" title="Open in new tab">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
@@ -103,7 +103,7 @@
          aria-label="Fleet deployment &middot; progress">
       <div class="floater-panel" onclick="event.stopPropagation()">
         <a class="floater-open"
-           href="../2026-05-10-edge-deployment/details/fleet-deployment-progress.html"
+           href="details/fleet-deployment-progress.html"
            target="_blank" rel="noopener" title="Open in new tab">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
@@ -123,7 +123,7 @@
          aria-label="HW assessment &middot; Howen MDT performance">
       <div class="floater-panel" onclick="event.stopPropagation()">
         <a class="floater-open"
-           href="../2026-05-10-edge-deployment/details/hw-assessment.html"
+           href="details/hw-assessment.html"
            target="_blank" rel="noopener" title="Open in new tab">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
@@ -139,7 +139,7 @@
 
   <script>
     // Three scoped floaters — each listens for the SVG's postMessage and iframes
-    // the matching edge-deployment detail page (../2026-05-10-edge-deployment/details/).
+    // the matching local detail page (details/).
     function makeFloater(floaterId, frameId, src, msgType, closeName) {
       const floater = document.getElementById(floaterId);
       const frame = document.getElementById(frameId);
@@ -157,9 +157,9 @@
         if (e.key === 'Escape' && floater.classList.contains('active')) close();
       });
     }
-    makeFloater('deploymentFloater', 'deploymentFloaterFrame', '../2026-05-10-edge-deployment/details/fare-trip-validation.html', 'open-deployment-overlay', 'closeDeploymentFloater');
-    makeFloater('fleetFloater', 'fleetFloaterFrame', '../2026-05-10-edge-deployment/details/fleet-deployment-progress.html', 'open-fleet-overlay', 'closeFleetFloater');
-    makeFloater('hwAssessmentFloater', 'hwAssessmentFloaterFrame', '../2026-05-10-edge-deployment/details/hw-assessment.html', 'open-hw-assessment-overlay', 'closeHwAssessmentFloater');
+    makeFloater('deploymentFloater', 'deploymentFloaterFrame', 'details/fare-trip-validation.html', 'open-deployment-overlay', 'closeDeploymentFloater');
+    makeFloater('fleetFloater', 'fleetFloaterFrame', 'details/fleet-deployment-progress.html', 'open-fleet-overlay', 'closeFleetFloater');
+    makeFloater('hwAssessmentFloater', 'hwAssessmentFloaterFrame', 'details/hw-assessment.html', 'open-hw-assessment-overlay', 'closeHwAssessmentFloater');
   </script>
 </body>
 </html>
