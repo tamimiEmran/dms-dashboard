@@ -227,8 +227,10 @@
   <line x1="650" y1="244" x2="1235" y2="244" stroke="#3B6FD6" stroke-width="1.2" marker-end="url(#mdc-arrow-b)" />
 
   <!-- ===== Connector: iter block middle-bottom → status cluster top-middle ===== -->
-  <!-- Straight drop from the weekly iteration block center into the status cluster (box 1). -->
-  <path d="M943,250 L943,450" fill="none" stroke="#0E9A7E" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#mdc-arrow-g)" />
+  <!-- Straight drop from the weekly iteration block center into the top status row.
+       Shortened (ends y=428, not 450) to give the side-by-side Fleet/Raqeeb row
+       extra height; lands on the seam between the two boxes. -->
+  <path d="M943,250 L943,428" fill="none" stroke="#0E9A7E" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#mdc-arrow-g)" />
 
   <!-- ===== 97% target milestone (Jun 30) — below axis, fleet expansion outcome ===== -->
   <circle cx="1280" cy="290" r="6" fill="#0E9A7E" />
@@ -240,17 +242,21 @@
   <text x="1301" y="432" fill="#5A5E6E" font-size="9.5" text-anchor="middle" font-family="JetBrains Mono, monospace" letter-spacing="0.04em">2026-06-30</text>
 
   <!-- ===== Status cluster =====
-       Left column (x=782, hangs off the weekly-iteration block; green connector
-       drops into box 1):
-         Box 1  Fleet deployment   — clickable → details/fleet-deployment-progress
+       Top row (left column width, x=782–1104, split into two side-by-side boxes
+       that sum to 322; green connector drops onto their shared seam):
+         Box 1  Fleet deployment   — left half, clickable → details/fleet-deployment-progress
+         Box 5  Raqeeb integration — right half, static, done
+       Left column continues below the top row (x=782, w=322):
          Box 2  Procurement        — static, in progress
          Box 3  Model v3.1         — clickable → details/fare-trip-validation
-       Right column (x=1118, alongside boxes 1–2):
+       Right column (x=1118, tucked under the 97% TARGET box, bottom-aligned with
+       the top row):
          Box 4  Tampering detection — clickable → ../../reports/tampering report
-         Box 5  Raqeeb integration  — static, done
        Status convention: green check chip = done/ready; amber pill = in progress. -->
 
-  <!-- Box 1 — Deployed to 95 vehicles · DONE · clickable → fleet-deployment-progress overlay -->
+  <!-- Box 1 — FLEET DEPLOYMENT · 95 vehicles · DONE · clickable → fleet-deployment-progress overlay.
+       Left half of the top status row (paired with Raqeeb on the right); taller than the
+       full-width boxes below so the value wraps to two lines. -->
   <a id="status-deployed-cta"
      xlink:href="details/fleet-deployment-progress.html"
      href="details/fleet-deployment-progress.html"
@@ -258,11 +264,12 @@
      class="status-cta"
      onclick="if(window.parent &amp;&amp; window.parent !== window){window.parent.postMessage({type:'open-fleet-overlay'},'*');return false;}return true;"
      aria-label="Open fleet deployment progress overlay">
-    <rect class="status-bg status-rect" x="782" y="450" width="322" height="50" rx="10" fill="#E8F5F1" stroke="#0E9A7E" stroke-width="2" />
-    <text x="802" y="472" fill="#0E9A7E" font-size="10.5" font-weight="700" font-family="JetBrains Mono, monospace" letter-spacing="0.10em">FLEET DEPLOYMENT</text>
-    <text x="802" y="490" fill="#1A1D26" font-size="13" font-weight="600">Deployed to 95 vehicles</text>
-    <circle cx="1084" cy="468" r="9" fill="#0E9A7E" />
-    <text x="1084" y="472" fill="#FFFFFF" font-size="12" font-weight="700" text-anchor="middle">&#x2713;</text>
+    <rect class="status-bg status-rect" x="782" y="428" width="158" height="72" rx="10" fill="#E8F5F1" stroke="#0E9A7E" stroke-width="2" />
+    <text x="798" y="453" fill="#0E9A7E" font-size="10" font-weight="700" font-family="JetBrains Mono, monospace" letter-spacing="0.08em">FLEET DEPLOYMENT</text>
+    <text x="798" y="477" fill="#1A1D26" font-size="13" font-weight="600">Deployed to</text>
+    <text x="798" y="494" fill="#1A1D26" font-size="13" font-weight="600">95 vehicles</text>
+    <circle cx="920" cy="462" r="8" fill="#0E9A7E" />
+    <text x="920" y="466" fill="#FFFFFF" font-size="11" font-weight="700" text-anchor="middle">&#x2713;</text>
   </a>
 
   <!-- Box 2 — Components for whole-fleet expansion · IN PROGRESS · non-clickable -->
@@ -307,13 +314,14 @@
     <text x="1366" y="472" fill="#FFFFFF" font-size="12" font-weight="700" text-anchor="middle">&#x2713;</text>
   </a>
 
-  <!-- Box 5 — Raqeeb integration · DONE · non-clickable -->
+  <!-- Box 5 — RAQEEB INTEGRATION · DONE · non-clickable.
+       Right half of the top status row (paired with Fleet on the left). -->
   <g>
-    <rect x="1118" y="507" width="268" height="50" rx="10" fill="#E8F5F1" stroke="#0E9A7E" stroke-width="2" />
-    <text x="1136" y="529" fill="#0E9A7E" font-size="10.5" font-weight="700" font-family="JetBrains Mono, monospace" letter-spacing="0.10em">RAQEEB INTEGRATION</text>
-    <text x="1136" y="547" fill="#1A1D26" font-size="13" font-weight="600">Integration done</text>
-    <circle cx="1366" cy="525" r="9" fill="#0E9A7E" />
-    <text x="1366" y="529" fill="#FFFFFF" font-size="12" font-weight="700" text-anchor="middle">&#x2713;</text>
+    <rect x="946" y="428" width="158" height="72" rx="10" fill="#E8F5F1" stroke="#0E9A7E" stroke-width="2" />
+    <text x="962" y="453" fill="#0E9A7E" font-size="10" font-weight="700" font-family="JetBrains Mono, monospace" letter-spacing="0.08em">RAQEEB INTEGRATION</text>
+    <text x="962" y="481" fill="#1A1D26" font-size="13" font-weight="600">Integration done</text>
+    <circle cx="1084" cy="462" r="8" fill="#0E9A7E" />
+    <text x="1084" y="466" fill="#FFFFFF" font-size="11" font-weight="700" text-anchor="middle">&#x2713;</text>
   </g>
 
   <!-- ===== V1.2 field test deployment annotation (May 7) =====
