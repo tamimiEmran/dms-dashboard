@@ -313,15 +313,22 @@
     <text x="924" y="586" fill="#FFFFFF" font-size="10" font-weight="700" text-anchor="middle">&#x2713;</text>
   </a>
 
-  <!-- Box 5 — RAQEEB INTEGRATION · DONE · non-clickable.
-       Right half of the top status row (paired with Fleet on the left). -->
-  <g>
-    <rect x="946" y="428" width="158" height="72" rx="10" fill="#E8F5F1" stroke="#0E9A7E" stroke-width="2" />
+  <!-- Box 5 — RAQEEB INTEGRATION · DONE · links out to the Raqeeb ITMS portal.
+       Right half of the top status row (paired with Fleet on the left).
+       External target -> opens in a new tab so the dashboard is left in place. -->
+  <a id="status-raqeeb-cta"
+     xlink:href="https://rqb-itms.karwatechnologies.com/"
+     href="https://rqb-itms.karwatechnologies.com/"
+     target="_blank"
+     rel="noopener"
+     class="status-cta"
+     aria-label="Open the Raqeeb ITMS portal (opens in a new tab)">
+    <rect class="status-bg status-rect" x="946" y="428" width="158" height="72" rx="10" fill="#E8F5F1" stroke="#0E9A7E" stroke-width="2" />
     <text x="962" y="453" fill="#0E9A7E" font-size="10" font-weight="700" font-family="JetBrains Mono, monospace" letter-spacing="0.08em">RAQEEB INTEGRATION</text>
     <text x="962" y="481" fill="#1A1D26" font-size="13" font-weight="600">Integration done</text>
     <circle cx="1084" cy="462" r="8" fill="#0E9A7E" />
     <text x="1084" y="466" fill="#FFFFFF" font-size="11" font-weight="700" text-anchor="middle">&#x2713;</text>
-  </g>
+  </a>
 
   <!-- ===== V1.2 field test deployment annotation (May 7) =====
        Describes the hardware stack + scope of the May 7 field test.
