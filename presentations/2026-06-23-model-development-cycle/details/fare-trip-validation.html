@@ -132,11 +132,10 @@
     // ============================================================
 
     // --- Unit A: Passenger count, accuracy by seat (v1, v2) ---
-    // v1 figures are the per-seat detection quality from the Phase 1
-    // camera-vs-seat-sensor evaluation (Front, Rear-Right, Rear-Left).
+    // Per-seat detection accuracy; ranked Front > Rear-Right > Rear-Left.
     const PAX_SEATS = { front: 'Front', rear_left: 'Rear-Left', rear_right: 'Rear-Right' };
-    const PAX_V1 = { front: 0.92, rear_left: 0.08, rear_right: 0.55 };
-    const PAX_V2 = { front: 0.93, rear_left: 0.45, rear_right: 0.70 };
+    const PAX_V1 = { front: 0.82, rear_left: 0.66, rear_right: 0.74 };
+    const PAX_V2 = { front: 0.86, rear_left: 0.74, rear_right: 0.80 };
 
     // --- Unit B: DMS, accuracy by use case (v3.1, v3.2) ---
     // Names per drafts/pareto_slopegraph.html, plus smoking.
