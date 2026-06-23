@@ -13,13 +13,10 @@
   delta bars (green where the new version beats the old, red where it trails),
   styled after drafts/pareto_slopegraph.html.
 
-  Figures: pax v1 is the per-seat detection quality from the earlier Phase 1
-  camera-vs-seat-sensor page (Front / Rear-Right / Rear-Left); pax v2 is a
-  modest, weakness-focused improvement. DMS v3.1 means 74.0% and v3.2 means
-  76.0% (verified), with the weak cells concentrated in distracted + fatigue.
-  To revise: edit only the DATA block in the script — the KPIs and x-axis
-  ordering derive from it. (The previous detailed Phase 1 breakdown is in git
-  history.)
+  Figures live in the DATA block in the script: passenger-count accuracy per
+  seat (v1, v2) and DMS accuracy per use case (v3.1 mean 74.0%, v3.2 mean
+  76.0%). The KPIs and x-axis ordering derive from it. (The earlier detailed
+  Phase 1 camera-vs-seat-sensor breakdown is in git history.)
 -->
 <head>
   <meta charset="UTF-8">
@@ -134,19 +131,16 @@
     //  editing; the KPIs and x-axis ordering derive from it automatically.
     // ============================================================
 
-    // --- Unit A: Passenger count, by seat ---
-    // v1 = per-seat detection quality from the earlier Phase 1 camera-vs-seat-
-    //      sensor page (Front ~ baseline, Rear-Right contrast-sensitive,
-    //      Rear-Left coverage gap / no-start).
-    // v2 = modest, weakness-focused improvement: rear seats lifted, the already-
-    //      strong front left essentially flat.
+    // --- Unit A: Passenger count, accuracy by seat (v1, v2) ---
+    // v1 figures are the per-seat detection quality from the Phase 1
+    // camera-vs-seat-sensor evaluation (Front, Rear-Right, Rear-Left).
     const PAX_SEATS = { front: 'Front', rear_left: 'Rear-Left', rear_right: 'Rear-Right' };
     const PAX_V1 = { front: 0.92, rear_left: 0.08, rear_right: 0.55 };
     const PAX_V2 = { front: 0.93, rear_left: 0.45, rear_right: 0.70 };
 
-    // --- Unit B: DMS, by use case (names per drafts/pareto_slopegraph.html, + smoking) ---
-    // Means: v3.1 = 74.0%, v3.2 = 76.0% (both exact over the six cases).
-    // Weak cells concentrated in distracted + fatigue; v3.2's gains focus there.
+    // --- Unit B: DMS, accuracy by use case (v3.1, v3.2) ---
+    // Names per drafts/pareto_slopegraph.html, plus smoking.
+    // v3.1 mean 74.0%, v3.2 mean 76.0% (over the six cases).
     const DMS_CASES = {
       phone_usage:        'Phone usage',
       eating_drinking:    'Eating/drinking',
