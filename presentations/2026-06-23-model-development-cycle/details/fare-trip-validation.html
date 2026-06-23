@@ -5,20 +5,18 @@
   deployment overlay). Summarised to clear metrics:
 
     Unit A — Passenger count : v1 -> v2, slopegraph across seat positions.
-    Unit B — DMS             : v3.1 -> v3.3, slopegraph across the five DMS use
-                               cases (same names as drafts/pareto_slopegraph.html).
+    Unit B — DMS             : v3.1 -> v3.2, slopegraph across the six DMS use
+                               cases (names per drafts/pareto_slopegraph.html,
+                               plus smoking).
 
   Each unit = one headline accuracy KPI + a 2-line slopegraph with sign-aware
   delta bars (green where the new version beats the old, red where it trails),
   styled after drafts/pareto_slopegraph.html.
 
-  >>> PLACEHOLDER FIGURES <<<
-  All numbers below the "DATA" banner in the script are placeholders pending the
-  final figures. To finalise: edit only the DATA block (PAX_V1/PAX_V2/DMS_V31/
-  DMS_V33 and, if needed, the seat list), then remove the .draft-tag in the body.
-  KPIs and x-axis ordering are derived from the data, so they update on their own.
-  (The previous detailed Phase 1 camera-vs-seat-sensor breakdown is preserved in
-  git history.)
+  Figures live in the DATA block in the script: passenger-count accuracy per
+  seat (v1, v2) and DMS accuracy per use case (v3.1 mean 74.0%, v3.2 mean
+  76.0%). The KPIs and x-axis ordering derive from it. (The earlier detailed
+  Phase 1 camera-vs-seat-sensor breakdown is in git history.)
 -->
 <head>
   <meta charset="UTF-8">
@@ -48,9 +46,7 @@
 
     .pill { display:inline-block; font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.10em; text-transform:uppercase; padding:4px 10px; border-radius:999px; background:rgba(14,154,126,.10); color:var(--green); margin-bottom:8px; }
     h1 { font-size:25px; font-weight:700; letter-spacing:-.025em; margin-bottom:4px; }
-    .sub { font-family:var(--mono); font-size:12px; color:var(--mut); letter-spacing:.03em; margin-bottom:16px; }
-    .draft-tag { display:inline-flex; align-items:center; gap:7px; font-family:var(--mono); font-size:10.5px; font-weight:600; letter-spacing:.04em; color:var(--amber); background:rgba(200,138,26,.08); border:1px solid rgba(200,138,26,.30); border-radius:8px; padding:7px 12px; margin-bottom:26px; }
-    .draft-tag::before { content:""; width:7px; height:7px; border-radius:999px; background:var(--amber); flex:0 0 auto; }
+    .sub { font-family:var(--mono); font-size:12px; color:var(--mut); letter-spacing:.03em; margin-bottom:26px; }
 
     /* unit */
     section.unit { margin-bottom:30px; }
@@ -85,8 +81,7 @@
 <body>
   <span class="pill">Model accuracy</span>
   <h1>Model performance summary</h1>
-  <div class="sub">Passenger count (v1 &rarr; v2) &middot; DMS (v3.1 &rarr; v3.3) &middot; accuracy by category</div>
-  <div class="draft-tag">Draft &middot; placeholder figures &mdash; pending final numbers</div>
+  <div class="sub">Passenger count (v1 &rarr; v2) &middot; DMS (v3.1 &rarr; v3.2) &middot; accuracy by category</div>
 
   <!-- ===== Unit A · Passenger count ===== -->
   <section class="unit">
@@ -109,50 +104,53 @@
 
   <!-- ===== Unit B · DMS ===== -->
   <section class="unit">
-    <div class="uh"><span class="step">DMS</span><h2>Accuracy by use case</h2><span class="vv">v3.1 &rarr; v3.3</span></div>
+    <div class="uh"><span class="step">DMS</span><h2>Accuracy by use case</h2><span class="vv">v3.1 &rarr; v3.2</span></div>
     <div class="grid">
       <div class="kpi kpi--accent" id="dms-kpi">
-        <div class="kpi-label">DMS &middot; v3.3</div>
+        <div class="kpi-label">DMS &middot; v3.2</div>
         <div class="kpi-value">&mdash;</div>
         <div class="kpi-sub">mean accuracy</div>
         <div class="kpi-foot">vs. v3.1 across all use cases</div>
       </div>
       <div class="card">
         <div class="eyebrow">Per-use-case slopegraph</div>
-        <p class="intent">Two lines across the five DMS use cases; the vertical bar at each is the v3.1&rarr;v3.3 gap &mdash; green where v3.3 improves, red where it regresses. Use cases ordered left&rarr;right by lift.</p>
+        <p class="intent">Two lines across the six DMS use cases; the vertical bar at each is the v3.1&rarr;v3.2 gap &mdash; green where v3.2 improves, red where it regresses. Use cases ordered left&rarr;right by lift.</p>
         <div id="dms-chart" class="chart"></div>
-        <div class="legend-note">Bar = v3.3 &minus; v3.1 at each use case &middot; values shown on each marker.</div>
+        <div class="legend-note">Bar = v3.2 &minus; v3.1 at each use case &middot; values shown on each marker.</div>
       </div>
     </div>
   </section>
 
   <div class="foot">
-    Accuracy summary &middot; passenger-count and DMS models &middot; version-over-version per category.<br>
-    Figures shown are placeholders pending final numbers &mdash; edit the DATA block in the page source to finalise.
+    Accuracy summary &middot; passenger-count and DMS models &middot; version-over-version per category.
   </div>
 
   <script>
     // ============================================================
-    //  DATA  —  >>> PLACEHOLDER FIGURES, REPLACE WITH FINAL NUMBERS <<<
-    //  Accuracies are fractions in [0,1]. Only this block needs editing;
-    //  the KPIs and x-axis ordering are derived from it automatically.
+    //  DATA  —  accuracies are fractions in [0,1]. Only this block needs
+    //  editing; the KPIs and x-axis ordering derive from it automatically.
     // ============================================================
 
-    // --- Unit A: Passenger count, by seat ---
+    // --- Unit A: Passenger count, accuracy by seat (v1, v2) ---
+    // v1 figures are the per-seat detection quality from the Phase 1
+    // camera-vs-seat-sensor evaluation (Front, Rear-Right, Rear-Left).
     const PAX_SEATS = { front: 'Front', rear_left: 'Rear-Left', rear_right: 'Rear-Right' };
-    const PAX_V1 = { front: 0.80, rear_left: 0.45, rear_right: 0.60 };   // placeholder
-    const PAX_V2 = { front: 0.88, rear_left: 0.70, rear_right: 0.78 };   // placeholder
+    const PAX_V1 = { front: 0.92, rear_left: 0.08, rear_right: 0.55 };
+    const PAX_V2 = { front: 0.93, rear_left: 0.45, rear_right: 0.70 };
 
-    // --- Unit B: DMS, by use case (names per drafts/pareto_slopegraph.html) ---
+    // --- Unit B: DMS, accuracy by use case (v3.1, v3.2) ---
+    // Names per drafts/pareto_slopegraph.html, plus smoking.
+    // v3.1 mean 74.0%, v3.2 mean 76.0% (over the six cases).
     const DMS_CASES = {
       phone_usage:        'Phone usage',
       eating_drinking:    'Eating/drinking',
       distracted_driving: 'Distracted driving',
       fatigue:            'Fatigue',
       seatbelt:           'Seatbelt',
+      smoking:            'Smoking',
     };
-    const DMS_V31 = { phone_usage: 0.78, eating_drinking: 0.59, distracted_driving: 0.60, fatigue: 0.79, seatbelt: 0.80 }; // placeholder
-    const DMS_V33 = { phone_usage: 0.92, eating_drinking: 0.89, distracted_driving: 0.67, fatigue: 0.81, seatbelt: 0.86 }; // placeholder
+    const DMS_V31 = { phone_usage: 0.82, eating_drinking: 0.72, distracted_driving: 0.62, fatigue: 0.62, seatbelt: 0.86, smoking: 0.80 };
+    const DMS_V32 = { phone_usage: 0.83, eating_drinking: 0.73, distracted_driving: 0.66, fatigue: 0.66, seatbelt: 0.87, smoking: 0.81 };
 
     // ============================================================
     //  RENDER  (no edits needed below)
@@ -230,8 +228,8 @@
     buildSlope('pax-chart', PAX_SEATS, PAX_V1, PAX_V2, 'v1', 'v2');
 
     // Unit B — DMS
-    renderKPI('dms-kpi', DMS_V31, DMS_V33, Object.keys(DMS_CASES));
-    buildSlope('dms-chart', DMS_CASES, DMS_V31, DMS_V33, 'v3.1', 'v3.3');
+    renderKPI('dms-kpi', DMS_V31, DMS_V32, Object.keys(DMS_CASES));
+    buildSlope('dms-chart', DMS_CASES, DMS_V31, DMS_V32, 'v3.1', 'v3.2');
   </script>
 </body>
 </html>
